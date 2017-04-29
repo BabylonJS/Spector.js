@@ -1,10 +1,12 @@
-SpectorJS
+SpectorJS 
 =========
 
 ## Summary
 **Explore and Troubleshoot your WebGL scenes (All engines and Vanilla script support) with ease.**
 
 Spector is a tool aim to *WebGl* developers willing to know what happens on their context. It enables capturing all the available information from a frame. You will be empowered to look at your entire **commands list** with their asoociated **visual states** and **context information**.
+
+[![Build Status](https://travis-ci.org/BabylonJS/Spector.js.svg?branch=master)](https://travis-ci.org/BabylonJS/Spector.js)
 
 This can be used either as a *browser extension* or directly form your page.
 
