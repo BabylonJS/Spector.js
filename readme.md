@@ -129,16 +129,6 @@ If you are looking for the temporary generated .js or .map files, they are all a
 
 I would recommend developping on [VsCode](https://code.visualstudio.com/) as the entire setup is present so that if you install the chrome debugger extension you can directly debug from your typescript files by pressing f5.
 
-## ToDoS
-Here are the next big steps will take on the road to V1.
-
-1. **More documentation**
-2. Safari Extension
-3. Ship as npm package
-4. Deploy extensions to the browser market place
-5. More analytics
-6. Remote mode
-
 ## Contribute
 Any bugs are welcomed as Github issues. And if you are willing to help, do not hesitate to make a Pull Request.
 
