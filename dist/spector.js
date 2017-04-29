@@ -2023,6 +2023,7 @@ var SPECTOR;
             "drawArraysInstanced",
             "drawBuffers",
             "drawElementsInstanced",
+            "drawElementsInstancedANGLE",
             "drawRangeElements"
         ];
         var BaseState = (function () {
@@ -3091,7 +3092,7 @@ var SPECTOR;
                 if (type === SPECTOR.WebGlConstants.RENDERBUFFER.value) {
                     gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                     gl.framebufferRenderbuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, SPECTOR.WebGlConstants.RENDERBUFFER.value, storage);
-                    this.getCapture(gl, webglConstant.name, width, height);
+                    this.getCapture(gl, webglConstant.name, x, y, width, height);
                     gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, frameBuffer);
                 }
                 else if (type === SPECTOR.WebGlConstants.TEXTURE.value) {
@@ -3110,7 +3111,7 @@ var SPECTOR;
                     }
                     var status_1 = this.context.checkFramebufferStatus(SPECTOR.WebGlConstants.FRAMEBUFFER.value);
                     if (status_1 === SPECTOR.WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
-                        this.getCapture(gl, webglConstant.name, width, height);
+                        this.getCapture(gl, webglConstant.name, x, y, width, height);
                     }
                     gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, frameBuffer);
                 }

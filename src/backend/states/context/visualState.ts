@@ -88,7 +88,7 @@ namespace SPECTOR.States {
             if (type === WebGlConstants.RENDERBUFFER.value) {
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                 gl.framebufferRenderbuffer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value, WebGlConstants.RENDERBUFFER.value, storage);
-                this.getCapture(gl, webglConstant.name, width, height);            
+                this.getCapture(gl, webglConstant.name, x, y, width, height);            
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, frameBuffer);            
             }
             else if (type === WebGlConstants.TEXTURE.value) {
@@ -112,7 +112,7 @@ namespace SPECTOR.States {
                 
                 const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);
                 if (status === WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
-                    this.getCapture(gl, webglConstant.name, width, height);
+                    this.getCapture(gl, webglConstant.name, x, y, width, height);
                 }
 
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, frameBuffer);

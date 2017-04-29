@@ -189,7 +189,6 @@ var trackCanvases = function () {
                 }
             }
 
-            debugger;
             if (canvasesInformation.length > 0) {                
                 // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
                 sendMessage({ canvases: canvasesInformation, present: sessionStorage.getItem(spectorLoadedKey) ? 2 : 1 }, function (response) {
