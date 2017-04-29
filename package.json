@@ -3,7 +3,12 @@
   "version": "0.0.1",
   "description": "Explore and Troubleshoot your WebGL scenes with ease.",
   "main": "./dist/spector.bundle.js",
-  "author": "Sebavan",
+  "author": "@SpectorSeb",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/BabylonJS/Spector.js.git"
+  },
+  "homepage": "https://spector.babylonjs.com",
   "license": "MIT",
   "scripts": {
     "html": "node ./tools/devLiveReloadServer.js /../built/",
