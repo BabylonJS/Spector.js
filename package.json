@@ -1,0 +1,37 @@
+{
+  "name": "spectorjs",
+  "version": "0.0.1",
+  "description": "Explore and Troubleshoot your WebGL scenes with ease.",
+  "main": "./dist/spector.bundle.js",
+  "author": "Sebavan",
+  "license": "MIT",
+  "scripts": {
+    "html": "node ./tools/devLiveReloadServer.js /../built/",
+    "watch:ts": "tsc -w -p ./src",
+    "watch:css": "node-sass -r -w --source-map true -o built src",
+    "watch": "parallelshell \"npm run watch:ts\" \"npm run watch:css\"",
+    "start": "parallelshell \"npm run html\" \"npm run watch\"",
+    "build:ts": "tsc -p ./src --outFile \"dist/spector.js\"",
+    "build:css": "node-sass -r -o dist src",
+    "build:tscss": "parallelshell \"npm run build:ts\" \"npm run build:css\"",
+    "build:bundle": "webpack --optimize-minimize --config tools/webpack.config.js",
+    "build:copybuild:copy:bundle": "node ./tools/copy.js /../dist/spector.bundle.js /../extensions/spector.bundle.js",
+    "build:copy:vendor:prismjs": "node ./tools/copy.js /../vendors/prism.js /../dist/prism.js",
+    "build:copy:vendor:prismcss": "node ./tools/copy.js /../vendors/prism.css /../dist/prism.css",
+    "build:copy:vendor": "npm run build:copy:vendor:prismjs & npm run build:copy:vendor:prismcss",
+    "build": "npm run build:tscss & npm run build:copy:vendor & npm run build:bundle & npm run build:copybuild:copy:bundle",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -r built/* & rm -r /dist/* & rm -r /extensions/spector.bundle.js"
+  },
+  "devDependencies": {
+    "css-loader": "^0.28.0",
+    "exports-loader": "^0.6.4",
+    "http-server": "^0.9.0",
+    "livereload": "^0.6.2",
+    "node-sass": "^4.5.2",
+    "parallelshell": "^2.0.0",
+    "style-loader": "^0.16.1",
+    "typescript": "^2.2.2",
+    "webpack": "^2.4.1"
+  }
+}

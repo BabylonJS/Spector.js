@@ -1,0 +1,46 @@
+{
+  "manifest_version": 2,
+  "minimum_chrome_version": "20",
+  "name" : "Spector",
+  "version" : "0.02",
+  "homepage_url": "http://spector.github.com/spector/",
+  "description" : "Explore and Troubleshoot your WebGL scenes with ease.",
+  "author": "Sebavan",
+  
+  "permissions": [
+    "tabs", "http://*/*", "https://*/*"
+  ],
+  "page_action" :
+  {
+    "default_icon" : {
+      "19": "spectorjs-19.png",
+      "38": "spectorjs-38.png"
+    },
+    "default_title" : "Debug with Spector"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts" : [
+    {
+      "matches" : [
+        "file://*/*",
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js" : ["contentscript.js"],
+      "run_at" : "document_start",
+      "all_frames" : true
+    }
+  ],
+  "web_accessible_resources": [
+    "spector.bundle.js",
+    "popup.js",
+    "result.js"
+  ],
+  "icons" : {
+    "48" : "spectorjs-48.png",
+    "128" : "spectorjs-128.png"
+  }
+}

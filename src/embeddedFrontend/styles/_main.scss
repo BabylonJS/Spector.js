@@ -1,0 +1,38 @@
+$background:#222;
+$background-even:#444;
+$foreground:#f9f9f9;
+$foreground-light:#d9d9d9;
+$foreground-focus:#c9c9c9;
+$foreground-important:#f29766;
+$foreground-title:#5db0d7;
+$selected: darken($foreground-important, 20%);
+$margin: 10px;
+
+$transition-time: 0.3s;
+
+@mixin img-checkboard() {
+  background-image:
+    -moz-linear-gradient(45deg, $foreground-light 25%, transparent 25%), 
+    -moz-linear-gradient(-45deg, $foreground-light 25%, transparent 25%),
+    -moz-linear-gradient(45deg, transparent 75%, $foreground-light 75%),
+    -moz-linear-gradient(-45deg, transparent 75%, $foreground-light 75%);
+  background-image:
+    -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.25, $foreground-focus), color-stop(.25, transparent)), 
+    -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.25, $foreground-focus), color-stop(.25, transparent)),
+    -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.75, transparent), color-stop(.75, $foreground-focus)),
+    -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.75, transparent), color-stop(.75, $foreground-focus));
+
+  -moz-background-size:50px 50px;
+  background-size:50px 50px;
+  -webkit-background-size:50px 51px;
+
+  background-position:0 0, 25px 0, 25px -25px, 0px 25px;
+}
+
+@mixin on-hover() {
+    color: $foreground-focus;      
+    cursor: pointer;
+    transition: color $transition-time;
+    -webkit-transition: color $transition-time;
+    -moz-transition: color $transition-time; 
+}

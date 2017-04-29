@@ -1,0 +1,53 @@
+{
+    "version": "0.1.0",
+    "configurations": [
+        {
+            "name": "Launch debug (Chrome)",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:1337/sample/index.html",
+            "webRoot": "${workspaceRoot}/",
+            "sourceMaps": true,
+            "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
+            "runtimeArgs": [
+                "--enable-unsafe-es3-apis" 
+            ]
+        },         
+        {
+            "name": "Launch debug Extension (Chrome)",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:1337/sample/indexExtension.html",
+            "webRoot": "${workspaceRoot}/",
+            "sourceMaps": true,
+            "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
+            "runtimeArgs": [
+                "--enable-unsafe-es3-apis" 
+            ]
+        },
+        {
+            "name": "Launch debug (Chrome+WebGL 1.0 forced)",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:1337/sample/index.html",
+            "webRoot": "${workspaceRoot}/",
+            "sourceMaps": true,
+            "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
+            "runtimeArgs": [
+                "--disable-es3-apis" 
+            ]
+        },         
+        {
+            "name": "Launch debug Extension (Chrome+WebGL 1.0 forced)",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:1337/sample/indexExtension.html",
+            "webRoot": "${workspaceRoot}/",
+            "sourceMaps": true,
+            "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
+            "runtimeArgs": [
+                "--disable-es3-apis" 
+            ]
+        }
+    ]
+}

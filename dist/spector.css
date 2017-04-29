@@ -1,0 +1,545 @@
+.resultViewComponent {
+  position: absolute;
+  z-index: 99999;
+  top: 10px;
+  left: 10px;
+  bottom: 10px;
+  right: 10px;
+  background-color: #222;
+  opacity: 1;
+  visibility: hidden;
+  display: none;
+  color: #f9f9f9;
+  font-family: Consolas, monaco, monospace;
+  font-size: 14px;
+  font-weight: 500; }
+  .resultViewComponent.active {
+    visibility: visible;
+    display: block; }
+  .resultViewComponent, .resultViewComponent:after, .resultViewComponent:before {
+    box-sizing: content-box; }
+
+.resultViewMenuComponent {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  flex: 1 100%;
+  display: flex;
+  flex-flow: row wrap;
+  height: 60px;
+  outline: 0 none;
+  list-style: none;
+  margin: 0;
+  background: #444;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+  justify-content: flex-end; }
+  .resultViewMenuComponent .resultViewMenuOpen {
+    display: none;
+    visibility: hidden; }
+  .resultViewMenuComponent a {
+    outline: 0 none;
+    text-decoration: none;
+    display: block;
+    padding: 20px;
+    color: #f9f9f9;
+    background: #444; }
+    .resultViewMenuComponent a.active {
+      background: #222;
+      color: #f29766; }
+    .resultViewMenuComponent a:hover {
+      background: #222;
+      color: #c9c9c9;
+      cursor: pointer;
+      transition: color 0.3s;
+      -webkit-transition: color 0.3s;
+      -moz-transition: color 0.3s; }
+      .resultViewMenuComponent a:hover.active {
+        color: #f29766;
+        transition: color 0;
+        -webkit-transition: color 0;
+        -moz-transition: color 0; }
+    .resultViewMenuComponent a.clearSearch {
+      display: inline;
+      padding: 0px;
+      margin-left: -30px;
+      margin-right: 20px;
+      z-index: 9000;
+      color: #f29766; }
+      .resultViewMenuComponent a.clearSearch:hover {
+        background: #444;
+        color: #f9f9f9; }
+  @media all and (max-width: 1024px) {
+    .resultViewMenuComponent {
+      padding: 0px;
+      position: absolute;
+      overflow-y: visible;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+      z-index: 999999;
+      display: block; }
+      .resultViewMenuComponent .resultViewMenuOpen {
+        display: block;
+        visibility: visible; }
+      .resultViewMenuComponent li:not(.resultViewMenuSmall) {
+        display: none;
+        visibility: hidden; }
+      .resultViewMenuComponent li {
+        background: #444; }
+      .resultViewMenuComponent a.active {
+        background: #444; } }
+  .resultViewMenuComponent input {
+    border: 0;
+    font-family: consolas;
+    line-height: 20px;
+    margin: 10px;
+    padding: 10px;
+    background: #444;
+    color: #f9f9f9; }
+    .resultViewMenuComponent input:focus {
+      border: 0;
+      box-shadow: 0 0px 0px #f9f9f9 inset, 0 0 2px #f29766;
+      outline: 0 none; }
+  .resultViewMenuComponent .clearSearch {
+    display: inline;
+    padding: 0px;
+    margin-left: -30px;
+    z-index: 9000;
+    color: #f29766; }
+  .resultViewMenuComponent ::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    color: #f29766;
+    font-style: italic; }
+  .resultViewMenuComponent :-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #f29766;
+    font-style: italic; }
+  .resultViewMenuComponent ::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #f29766;
+    font-style: italic; }
+  .resultViewMenuComponent :-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: #f29766;
+    font-style: italic; }
+
+.resultViewContentComponent {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  bottom: 0;
+  right: 0; }
+
+.captureListComponent {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #222;
+  z-index: 9000;
+  display: none;
+  visibility: hidden;
+  overflow-y: visible;
+  overflow-x: hidden; }
+  .captureListComponent.active {
+    display: block;
+    visibility: visible; }
+  .captureListComponent .openCaptureFile {
+    border: 1px dashed #f9f9f9;
+    display: block;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    font-style: italic; }
+    .captureListComponent .openCaptureFile span {
+      line-height: 100%;
+      vertical-align: middle; }
+  .captureListComponent ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+    justify-content: flex-start; }
+    .captureListComponent ul li {
+      margin: 10px; }
+      .captureListComponent ul li img {
+        width: 290px;
+        background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
+        background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9));
+        -moz-background-size: 50px 50px;
+        background-size: 50px 50px;
+        -webkit-background-size: 50px 51px;
+        background-position: 0 0, 25px 0, 25px -25px, 0px 25px;
+        display: block; }
+      .captureListComponent ul li span {
+        display: block;
+        text-align: center;
+        border: 10px solid #222; }
+        .captureListComponent ul li span .captureListItemSave {
+          color: #f9f9f9;
+          font-size: 16px;
+          margin-left: 10px;
+          position: relative;
+          padding: 3px 8px 3px 32px; }
+          .captureListComponent ul li span .captureListItemSave:before, .captureListComponent ul li span .captureListItemSave:after {
+            box-sizing: border-box;
+            content: "";
+            position: absolute; }
+          .captureListComponent ul li span .captureListItemSave:before {
+            background: #d9d9d9;
+            border-color: #f9f9f9;
+            border-style: solid;
+            border-width: 7px 2px 1px;
+            border-radius: 1px;
+            height: 16px;
+            left: 8px;
+            top: 5px;
+            width: 16px; }
+          .captureListComponent ul li span .captureListItemSave:after {
+            background: #f9f9f9;
+            border-color: #d9d9d9;
+            border-style: solid;
+            border-width: 1px 1px 1px 4px;
+            height: 5px;
+            left: 13px;
+            top: 5px;
+            width: 7px; }
+      .captureListComponent ul li:hover {
+        cursor: pointer; }
+      .captureListComponent ul li.active span {
+        background: #df5a13;
+        border: 10px solid #df5a13; }
+        .captureListComponent ul li.active span .captureListItemSave:before {
+          background: #f29766; }
+        .captureListComponent ul li.active span .captureListItemSave:after {
+          border-color: #f29766; }
+
+.visualStateListComponent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 80%;
+  overflow-y: visible;
+  overflow-x: hidden; }
+  .visualStateListComponent ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none; }
+    .visualStateListComponent ul li {
+      margin: 10px; }
+      .visualStateListComponent ul li img {
+        display: block;
+        width: 100%;
+        margin: 0px;
+        padding: 0px;
+        box-sizing: border-box;
+        background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
+        background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9));
+        -moz-background-size: 50px 50px;
+        background-size: 50px 50px;
+        -webkit-background-size: 50px 51px;
+        background-position: 0 0, 25px 0, 25px -25px, 0px 25px; }
+      .visualStateListComponent ul li:hover {
+        cursor: pointer; }
+      .visualStateListComponent ul li span {
+        border: 10px solid #222;
+        background: #222;
+        box-sizing: border-box;
+        display: inline-block;
+        width: 100%;
+        margin: 0px;
+        padding: 0px; }
+      .visualStateListComponent ul li.active span {
+        border: 10px solid #df5a13;
+        background: #df5a13; }
+
+.commandListComponent {
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 40%;
+  bottom: 0; }
+  .commandListComponent ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    overflow-y: visible;
+    overflow-x: hidden;
+    height: 100%; }
+    .commandListComponent ul li {
+      padding: 10px; }
+      .commandListComponent ul li:hover {
+        color: #c9c9c9;
+        cursor: pointer;
+        transition: color 0.3s;
+        -webkit-transition: color 0.3s;
+        -moz-transition: color 0.3s; }
+      .commandListComponent ul li:nth-child(even) {
+        background: #444; }
+      .commandListComponent ul li:nth-child(odd) {
+        background: #222; }
+      .commandListComponent ul li .important {
+        font-weight: 800; }
+        .commandListComponent ul li .important.deprecated {
+          color: red; }
+        .commandListComponent ul li .important.unused {
+          color: yellow; }
+        .commandListComponent ul li .important.disabled {
+          color: gray; }
+        .commandListComponent ul li .important.redundant {
+          color: orange; }
+        .commandListComponent ul li .important.valid {
+          color: greenyellow; }
+      .commandListComponent ul li.active {
+        background: #df5a13; }
+
+.commandDetailComponent {
+  position: absolute;
+  top: 0;
+  left: 60%;
+  right: 0;
+  bottom: 0;
+  overflow-y: visible;
+  overflow-x: hidden; }
+
+.jsonGroupComponent {
+  display: block;
+  margin: 10px;
+  padding-bottom: 10px; }
+  .jsonGroupComponent .jsonGroupComponentTitle {
+    display: block;
+    font-size: 16px;
+    color: #5db0d7;
+    border-bottom: 1px solid #5db0d7;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    text-transform: capitalize; }
+  .jsonGroupComponent ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none; }
+    .jsonGroupComponent ul li:nth-child(even) {
+      background: #222; }
+    .jsonGroupComponent ul li:nth-child(odd) {
+      background: #222; }
+
+.jsonItemComponentKey {
+  color: #f29766; }
+
+.jsonItemComponentValue {
+  white-space: pre-wrap; }
+
+[commandName=onOpenSourceClicked]:hover {
+  color: #c9c9c9;
+  cursor: pointer;
+  transition: color 0.3s;
+  -webkit-transition: color 0.3s;
+  -moz-transition: color 0.3s; }
+
+.jsonVisualStateItemComponent {
+  text-align: center; }
+  .jsonVisualStateItemComponent img {
+    margin: 10px;
+    background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
+    background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9));
+    -moz-background-size: 50px 50px;
+    background-size: 50px 50px;
+    -webkit-background-size: 50px 51px;
+    background-position: 0 0, 25px 0, 25px -25px, 0px 25px; }
+  .jsonVisualStateItemComponent span {
+    display: block; }
+
+.jsonContentComponent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: visible;
+  overflow-x: hidden; }
+
+.sourceCodeComponent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #222;
+  z-index: 9000;
+  overflow-y: visible;
+  overflow-x: visible;
+  overflow: auto; }
+  .sourceCodeComponent .sourceCodeComponentTitle {
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 50px;
+    color: #f29766;
+    padding: 1em;
+    margin: .5em 0; }
+
+.captureMenuComponent {
+  position: absolute;
+  z-index: 99999;
+  top: 10px;
+  left: 50%;
+  margin-left: -200px;
+  height: 40px;
+  width: 400px;
+  background-color: #222;
+  opacity: 0.6;
+  visibility: hidden;
+  display: none;
+  color: #f9f9f9;
+  font-family: Consolas, monaco, monospace;
+  font-size: 14px;
+  font-weight: 500; }
+  .captureMenuComponent.active {
+    visibility: visible;
+    display: block; }
+  .captureMenuComponent, .captureMenuComponent:after, .captureMenuComponent:before {
+    box-sizing: content-box; }
+
+.canvasListComponent {
+  float: left;
+  width: 50%;
+  height: 100%; }
+  .canvasListComponent [commandName=onCanvasSelection] {
+    vertical-align: center;
+    line-height: 40px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 180px;
+    display: inline-block;
+    overflow: hidden;
+    margin: 0px 10px; }
+    .canvasListComponent [commandName=onCanvasSelection]:hover {
+      color: #c9c9c9;
+      cursor: pointer;
+      transition: color 0.3s;
+      -webkit-transition: color 0.3s;
+      -moz-transition: color 0.3s; }
+  .canvasListComponent ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    position: absolute;
+    top: 40px;
+    width: 400px;
+    background-color: #222; }
+    .canvasListComponent ul li {
+      margin: 10px; }
+      .canvasListComponent ul li:hover {
+        color: #c9c9c9;
+        cursor: pointer;
+        transition: color 0.3s;
+        -webkit-transition: color 0.3s;
+        -moz-transition: color 0.3s; }
+
+.captureMenuActionsComponent {
+  float: left;
+  width: 30%;
+  height: 100%;
+  margin-top: 7.5px; }
+  .captureMenuActionsComponent div {
+    float: left; }
+  .captureMenuActionsComponent [commandName=onCaptureRequested] {
+    border-radius: 50%;
+    background: #222;
+    border: 2px solid red;
+    width: 21px;
+    height: 21px; }
+    .captureMenuActionsComponent [commandName=onCaptureRequested]:hover {
+      background: red;
+      cursor: pointer;
+      transition: background 0.3s;
+      -webkit-transition: background 0.3s;
+      -moz-transition: background 0.3s; }
+  .captureMenuActionsComponent [commandName=onPlayRequested], .captureMenuActionsComponent [commandName=onPlayNextFrameRequested] {
+    width: 21px;
+    height: 21px;
+    border: 2px solid #f9f9f9;
+    border-radius: 50%;
+    margin-left: 9px; }
+    .captureMenuActionsComponent [commandName=onPlayRequested]:before, .captureMenuActionsComponent [commandName=onPlayNextFrameRequested]:before {
+      content: '';
+      position: absolute;
+      display: inline-block;
+      margin-top: 6px;
+      margin-left: 4px;
+      width: 7px;
+      height: 7px;
+      border-top: 2px solid #f9f9f9;
+      border-right: 2px solid #f9f9f9;
+      background-color: #f9f9f9;
+      -moz-transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg);
+      z-index: -20; }
+    .captureMenuActionsComponent [commandName=onPlayRequested]:after, .captureMenuActionsComponent [commandName=onPlayNextFrameRequested]:after {
+      content: '';
+      position: absolute;
+      display: inline-block;
+      width: 8px;
+      height: 20px;
+      background-color: #222;
+      z-index: -10; }
+    .captureMenuActionsComponent [commandName=onPlayRequested]:hover, .captureMenuActionsComponent [commandName=onPlayNextFrameRequested]:hover {
+      cursor: pointer;
+      border: 2px solid #c9c9c9;
+      transition: border 0.3s;
+      -webkit-transition: border 0.3s;
+      -moz-transition: border 0.3s; }
+  .captureMenuActionsComponent [commandName=onPauseRequested] {
+    width: 21px;
+    height: 21px;
+    border: 2px solid #f9f9f9;
+    border-radius: 50%;
+    margin-left: 9px; }
+    .captureMenuActionsComponent [commandName=onPauseRequested]:before {
+      content: '';
+      position: absolute;
+      display: inline-block;
+      width: 2px;
+      height: 13px;
+      margin-left: 12px;
+      margin-top: 4px;
+      background-color: #f9f9f9; }
+    .captureMenuActionsComponent [commandName=onPauseRequested]:after {
+      content: '';
+      position: absolute;
+      display: inline-block;
+      width: 2px;
+      height: 13px;
+      margin-left: 7px;
+      margin-top: 4px;
+      background-color: #f9f9f9; }
+    .captureMenuActionsComponent [commandName=onPauseRequested]:hover {
+      cursor: pointer;
+      border: 2px solid #c9c9c9;
+      transition: border 0.3s;
+      -webkit-transition: border 0.3s;
+      -moz-transition: border 0.3s; }
+  .captureMenuActionsComponent [commandName=onPlayNextFrameRequested]:before {
+    background-color: #222; }
+
+.fpsCounterComponent {
+  float: left;
+  width: 20%;
+  vertical-align: center;
+  line-height: 40px;
+  white-space: nowrap; }

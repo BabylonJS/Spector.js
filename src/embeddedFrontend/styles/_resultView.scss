@@ -1,0 +1,538 @@
+@import './_main';
+
+.resultViewComponent {
+  position:absolute; 
+  z-index: 99999;
+  top: $margin;
+  left: $margin;  
+  bottom: $margin;
+  right: $margin;
+  background-color: $background; 
+  opacity: 1;
+  visibility: hidden;
+  display: none;
+  color: $foreground;
+
+  font-family: Consolas, monaco, monospace;
+  font-size: 14px;
+  font-weight: 500;
+  
+  &.active {
+    visibility: visible;
+    display: block;
+  }
+
+  &, &:after, &:before {
+    box-sizing: content-box;
+  }
+}
+
+$menuBaseHeight: 20px;
+$menuHeight: $menuBaseHeight * 3;
+
+.resultViewMenuComponent {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: $menuBaseHeight;
+  flex: 1 100%;
+  display: flex;
+  flex-flow: row wrap;
+  height: $menuHeight;
+  outline: 0 none;
+  
+  list-style: none;
+  margin: 0; 
+  
+  background: $background-even;
+  
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+
+  .resultViewMenuOpen {
+    display: none;
+    visibility: hidden;
+  }
+
+  a {
+    outline: 0 none;
+    text-decoration: none;
+    display: block;
+    padding: $menuBaseHeight;
+    color: $foreground;
+    background: $background-even;
+
+    &.active {
+      background: $background;
+      color: $foreground-important;
+    }
+
+    &:hover {
+      background: $background;
+      color: $foreground-focus;      
+      cursor: pointer;
+      transition: color $transition-time;
+      -webkit-transition: color $transition-time;
+      -moz-transition: color $transition-time;
+
+      &.active {
+        color: $foreground-important;
+        transition: color 0;
+        -webkit-transition: color 0;
+        -moz-transition: color 0;
+      } 
+    }
+
+    &.clearSearch {
+      display: inline;
+      padding: 0px;
+      margin-left: -30px;
+      margin-right: 20px;
+      z-index: 9000;
+      color: $foreground-important;    
+      
+      &:hover {
+        background: $background-even;
+        color: $foreground;
+      }
+    }
+  }
+
+  @media all and (max-width: 1024px) {
+    .resultViewMenuOpen {
+      display: block;
+      visibility: visible;
+    }
+
+    li:not(.resultViewMenuSmall) {
+      display: none;
+      visibility: hidden;
+    }
+
+    li {
+      background: $background-even;
+    }
+    
+    padding: 0px;
+    position: absolute;
+    overflow-y: visible;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index: 999999;
+    display: block;
+
+    a.active {
+      background: $background-even;
+    }
+  }
+
+  input {
+    border: 0;
+    font-family: consolas;
+    line-height: 20px;
+    margin: 20px - $margin;
+    padding: $margin;
+    background: $background-even;
+    color: $foreground;
+
+    &:focus {
+      border: 0;
+      box-shadow: 0 0px 0px $foreground inset, 0 0 2px $foreground-important;
+      outline: 0 none;
+    }
+  }
+
+  .clearSearch {
+    display: inline;
+    padding: 0px;
+    margin-left: -30px;
+    z-index: 9000;
+    color: $foreground-important;
+  }
+
+  ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: $foreground-important; 
+    font-style: italic;     
+  }
+  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: $foreground-important; 
+    font-style: italic;     
+  }
+  ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: $foreground-important; 
+    font-style: italic;     
+  }
+  :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: $foreground-important; 
+    font-style: italic;     
+  }
+}
+
+// @media all and (max-width: 800px) {
+//   .resultViewMenuComponent {
+//     justify-content: space-around;
+//   }
+// }
+
+// @media all and (max-width: 600px) {
+//   .resultViewMenuComponent {
+//     -webkit-flex-flow: column wrap;
+//     flex-flow: column wrap;
+//     padding: 0;
+//   }
+  
+//   .resultViewMenuComponent a { 
+//     text-align: center; 
+//     padding: 10px;
+//   }
+  
+//   .resultViewMenuComponent li:last-of-type a {
+//     border-bottom: none;
+//   }
+// }
+
+.resultViewContentComponent {
+  position:absolute; 
+  top: $menuHeight;
+  left: 0;  
+  bottom: 0;
+  right: 0;
+}
+
+.captureListComponent {
+  position:absolute; 
+  top: $menuHeight;
+  left: 0;  
+  bottom: 0;
+  right: 0;
+  background: $background;
+  z-index: 9000;
+  display: none;
+  visibility: hidden;  
+  overflow-y: visible;
+  overflow-x: hidden;
+
+  &.active {
+    display: block;
+    visibility: visible;
+  }
+
+  .openCaptureFile {
+    border: 1px dashed $foreground;
+    display: block;
+    margin: $margin;
+    padding: $margin;
+    text-align: center;
+    font-style: italic;
+    
+    span {
+      line-height: 100%;
+      vertical-align: middle;
+    }
+  }
+
+  ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;    
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+
+    li {
+      margin: $margin;
+
+      img {
+        width: 300px - $margin;
+        @include img-checkboard();
+        display: block;
+      }
+
+      span {
+        display: block;
+        text-align: center;
+        border: $margin solid $background;
+
+        .captureListItemSave {
+          color: $foreground;
+          font-size: 16px;
+          margin-left: 10px;
+          position: relative;
+          padding: 3px 8px 3px 32px;
+          
+          &:before, &:after {
+            box-sizing: border-box;
+            content: "";
+            position: absolute;
+          }
+          &:before {
+            background: $foreground-light;
+            border-color: $foreground;
+            border-style: solid;
+            border-width: 7px 2px 1px;
+            border-radius: 1px;
+            height: 16px;
+            left: 8px;
+            top: 5px;
+            width: 16px;
+          }
+          &:after {
+            background: $foreground;
+            border-color: $foreground-light;
+            border-style: solid;
+            border-width: 1px 1px 1px 4px;
+            height: 5px;
+            left: 13px;
+            top: 5px;
+            width: 7px;
+          }
+        }
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      &.active {
+        span {
+          background: $selected;
+          border: $margin solid $selected;
+
+          .captureListItemSave {
+            &:before {
+              background: $foreground-important
+            }
+            &:after {
+              border-color: $foreground-important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+$visualStateListComponentWidth: 20%;
+.visualStateListComponent {
+  position:absolute; 
+  top: 0;
+  left: 0;  
+  bottom: 0;    
+  right: 100% - $visualStateListComponentWidth;
+  overflow-y: visible;
+  overflow-x: hidden;
+
+  ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    li {
+      margin: $margin;
+
+      img {
+        display: block;
+        width:100%;
+        margin:0px;
+        padding:0px;
+        box-sizing: border-box;
+        @include img-checkboard();
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      span {
+          border: $margin solid $background;
+          background: $background;
+          box-sizing: border-box;
+          display: inline-block;
+          width:100%;
+          margin:0px;
+          padding:0px;
+      }
+
+      &.active {
+        span {
+            border: $margin solid $selected;
+            background: $selected;
+        }
+      }
+    }
+  }
+}
+
+$commandDetailComponentWidth: 40%;
+.commandListComponent {
+  position:absolute; 
+  top: 0;
+  left: $visualStateListComponentWidth; 
+  right: $commandDetailComponentWidth;
+  bottom: 0;
+
+  ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    overflow-y: visible;
+    overflow-x: hidden;
+    height:100%;
+
+    li {
+      padding: $margin;
+
+      &:hover {
+        @include on-hover();
+      }
+
+      &:nth-child(even) {
+        background: $background-even;
+      }
+
+      &:nth-child(odd) {        
+        background: $background;
+      }
+
+      .important{
+        font-weight: 800;
+        // &.unknown {
+        // }
+        &.deprecated {
+            color: red;
+        }
+        &.unused {
+            color: yellow;
+        }
+        &.disabled {
+            color: gray;
+        }
+        &.redundant {          
+            color: orange;
+        }
+        &.valid {          
+            color: greenyellow;
+        }
+      }
+
+      &.active {
+          background: $selected;
+          
+      }
+    }
+  }
+}
+
+.commandDetailComponent {
+  position:absolute; 
+  top: 0;
+  left: 100% - $commandDetailComponentWidth; 
+  right: 0;
+  bottom: 0;
+  overflow-y: visible;
+  overflow-x: hidden;
+}
+
+.jsonGroupComponent {
+  display: block;
+  margin: $margin;
+  padding-bottom: $margin;
+
+  .jsonGroupComponentTitle {
+    display: block;
+    font-size: 16px;
+    color: $foreground-title;
+    border-bottom: 1px solid $foreground-title;
+    padding-bottom: $margin;
+    margin-bottom: $margin;
+    text-transform: capitalize;
+  }
+
+  ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+
+    li {
+      &:nth-child(even) {
+        background: $background;
+      }
+
+      &:nth-child(odd) {        
+        background: $background;
+      }
+    } 
+  }
+}
+
+.jsonItemComponentKey {
+  color: $foreground-important;
+}
+
+.jsonItemComponentValue {
+  white-space: pre-wrap;
+}
+
+[commandName=onOpenSourceClicked] {
+  &:hover {
+    @include on-hover();
+  }
+}
+
+.jsonVisualStateItemComponent {
+  text-align: center;
+  
+  img {
+    margin: $margin;
+    @include img-checkboard();
+  }
+
+  span {
+    display: block;
+  }
+}
+
+.jsonContentComponent {
+  position:absolute; 
+  top: 0;
+  left: 0; 
+  right: 0;
+  bottom: 0;
+  overflow-y: visible;
+  overflow-x: hidden;
+}
+
+.sourceCodeComponent {
+  position:absolute; 
+  top: 0;
+  left: 0;  
+  bottom: 0;
+  right: 0;
+  background: $background;
+  z-index: 9000;
+  
+  overflow-y: visible;
+  overflow-x: visible;
+  overflow: auto;
+
+  .sourceCodeComponentTitle {
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 50px;
+    color: $foreground-important;
+    padding: 1em;
+    margin: .5em 0;
+  }
+}

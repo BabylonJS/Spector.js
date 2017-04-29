@@ -1,0 +1,204 @@
+@import './_main';
+
+$captureMenuComponentWidth: 400px;
+$captureMenuComponentHeight: 40px;
+
+.captureMenuComponent {
+  position:absolute;
+  z-index: 99999; 
+  top: $margin;
+  left: 50%;
+  margin-left: -$captureMenuComponentWidth / 2;
+  height: $captureMenuComponentHeight;
+  width: $captureMenuComponentWidth; 
+  background-color: $background; 
+  opacity: 0.6;
+  visibility: hidden;
+  display: none;
+  color: $foreground;
+
+  font-family: Consolas, monaco, monospace;
+	font-size: 14px;
+  font-weight: 500;
+  
+  &.active {
+    visibility: visible;
+    display: block;
+  }
+
+  &, &:after, &:before {
+    box-sizing: content-box;
+  }
+}
+
+.canvasListComponent {
+  float: left;
+  width: 50%;
+  height: 100%;
+  
+  [commandName=onCanvasSelection] {
+    vertical-align: center;
+    line-height: $captureMenuComponentHeight;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: $captureMenuComponentWidth / 2 - $margin * 2;
+    display: inline-block;
+    overflow: hidden;
+    margin: 0px $margin;
+
+    &:hover {
+      color: $foreground-focus;      
+      cursor: pointer;
+      transition: color $transition-time;
+      -webkit-transition: color $transition-time;
+      -moz-transition: color $transition-time; 
+    }
+  }
+
+  ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    position: absolute;
+    top: $captureMenuComponentHeight;
+    width: $captureMenuComponentWidth;
+    background-color: $background;    
+
+    li {
+      margin: $margin;
+
+      &:hover {
+        color: $foreground-focus;      
+        cursor: pointer;
+        transition: color $transition-time;
+        -webkit-transition: color $transition-time;
+        -moz-transition: color $transition-time; 
+      }
+    }
+  }
+}
+
+$size: 25px;
+$border: 2px;
+.captureMenuActionsComponent {
+  float:left;
+  width: 30%;
+  height: 100%;
+  margin-top: ($captureMenuComponentHeight - $size) / 2;
+
+  div {
+    float: left;
+  }
+
+  [commandName=onCaptureRequested] {
+    border-radius: 50%;
+    background: $background;
+    border: $border solid red; 
+    width: $size - $border * 2;
+    height: $size - $border * 2;
+
+    &:hover {      
+      background: red;     
+      cursor: pointer; 
+      transition: background $transition-time;
+      -webkit-transition: background $transition-time;
+      -moz-transition: background $transition-time; 
+    }
+  }
+
+  [commandName=onPlayRequested] {
+    width: $size - 2 * $border;
+    height: $size - 2 * $border;
+    border: $border solid $foreground;
+    border-radius: 50%;
+    margin-left: 9px;
+
+    &:before {      
+      content: '';
+      position: absolute;
+      display: inline-block;
+      margin-top: 6px;
+      margin-left: 4px;
+      width: 7px;
+      height: 7px;
+      border-top: $border solid $foreground;
+      border-right: $border solid $foreground;
+      background-color: $foreground;
+      -moz-transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg);
+      z-index: -20;
+    }
+
+    &:after {
+     content: '';
+      position: absolute;
+      display: inline-block;
+      width: 8px;
+      height: 20px;
+      background-color: $background;
+      z-index: -10;
+    }
+
+    &:hover {   
+      cursor: pointer;
+      border: $border solid $foreground-focus;
+      transition: border $transition-time;
+      -webkit-transition: border $transition-time;
+      -moz-transition: border $transition-time;    
+    }
+  }
+  [commandName=onPauseRequested] {
+    width: $size - 2 * $border;
+    height: $size - 2 * $border;
+    border: $border solid $foreground;
+    border-radius: 50%;
+    margin-left: 9px;
+
+    &:before {      
+      content: '';
+      position: absolute;
+      display: inline-block;
+      width: $border;
+      height: 13px;
+      margin-left: 12px;
+      margin-top: 4px;
+      background-color: $foreground;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      display: inline-block;
+      width: $border;
+      height: 13px;
+      margin-left: 7px;
+      margin-top: 4px;
+      background-color: $foreground;
+    }
+
+    &:hover {   
+      cursor: pointer;
+      border: $border solid $foreground-focus;
+      transition: border $transition-time;
+      -webkit-transition: border $transition-time;
+      -moz-transition: border $transition-time;  
+    }
+  }
+
+  [commandName=onPlayNextFrameRequested] {
+    @extend [commandName=onPlayRequested];
+
+    &:before {      
+      background-color: $background;
+    }
+  }
+}
+
+.fpsCounterComponent {
+  float:left;
+  width: 20%;
+  vertical-align: center;
+  line-height: $captureMenuComponentHeight;
+  white-space: nowrap;
+}
