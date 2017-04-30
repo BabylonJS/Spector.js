@@ -8,14 +8,14 @@ Spector is a tool aim to *WebGl* developers willing to know what happens on thei
 
 [![Build Status](https://travis-ci.org/BabylonJS/Spector.js.svg?branch=master)](https://travis-ci.org/BabylonJS/Spector.js)
 
-This can be used either as a *browser extension* or directly form your page.
+This can be used either as a *browser extension* or directly from your page.
 
 <p align="center">
   <img src="documentation/pictures/title.png" style="width:512px">
 </p>
 
 ## Why
-As a core member of the BabylonJS team I often found the need of debugging what is happening to my webgl context. I was a huge fan of webgl inspector until we introduce WebGl2 in Babylon. As the WebGL community as a whole is our focus, I thought it would be great to share an extension compatible with all the Webgl/Webgl2 engines available.
+As a core member of the BabylonJS team I often found the need of debugging what is happening to my webgl context. I was a huge fan of webgl inspector until we introduced WebGl2 in Babylon. As the WebGL community as a whole is our focus, I thought it would be great to share an extension compatible with all the Webgl/Webgl2 engines available.
 
 ## How to use the extension
 The extension has been designed to be cross browser. As it is not currently deployed to the browser extension marketplace, you can easily sideload it in your browser of choice. 

@@ -5,18 +5,21 @@ $captureMenuComponentHeight: 40px;
 
 .captureMenuComponent {
   position:absolute;
+  padding:7px;  
   z-index: 99999; 
-  top: $margin;
+  top: 10px;
   left: 50%;
   margin-left: -$captureMenuComponentWidth / 2;
   height: $captureMenuComponentHeight;
   width: $captureMenuComponentWidth; 
-  background-color: $background; 
-  opacity: 0.6;
+  border : 2px solid $background;   
+  background-color: rgba($background, 0.7); 
+  border-radius: 5px;
   visibility: hidden;
   display: none;
   color: $foreground;
-
+  box-sizing: border-box;
+  
   font-family: Consolas, monaco, monospace;
 	font-size: 14px;
   font-weight: 500;
