@@ -6,7 +6,7 @@ namespace SPECTOR.EmbeddedFrontend {
             if (state.Attachments) {
                 for (const imageState of state.Attachments) {
                     const img = document.createElement("img");
-                    img.src = imageState.src;
+                    img.src = encodeURI(imageState.src);
                     divHolder.appendChild(img);
                     
                     if (state.Attachments.length > 1) { 

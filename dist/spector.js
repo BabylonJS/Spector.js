@@ -3726,8 +3726,10 @@ var SPECTOR;
             function BaseNoneGenericComponent(eventConstructor, logger) {
                 this.eventConstructor = eventConstructor;
                 this.logger = logger;
+                this.dummyTextGeneratorElement = document.createElement("div");
             }
             BaseNoneGenericComponent.prototype.createFromHtml = function (html) {
+                // IE 11 Compatibility prevents to reuse the div. 
                 var dummyElement = document.createElement("div");
                 dummyElement.innerHTML = html;
                 return dummyElement.firstElementChild;
@@ -3754,10 +3756,12 @@ var SPECTOR;
                         subst = subst.join('');
                     }
                     // If the substitution is preceded by a dollar sign,
-                    // we escape special characters in it
+                    // we do not escape special characters in it
                     if (lit && lit.length > 0 && lit[lit.length - 1] === '$') {
-                        subst = _this.htmlEscape(subst);
                         lit = lit.slice(0, -1);
+                    }
+                    else {
+                        subst = _this.htmlEscape(subst);
                     }
                     result += lit;
                     result += subst;
@@ -3768,14 +3772,21 @@ var SPECTOR;
                 result += raw[raw.length - 1]; // (A)
                 return result;
             };
-            // THX to http://2ality.com/2015/01/template-strings-html.html
             BaseNoneGenericComponent.prototype.htmlEscape = function (str) {
-                return str.replace(/&/g, '&amp;') // first!
-                    .replace(/>/g, '&gt;')
-                    .replace(/</g, '&lt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#39;')
-                    .replace(/`/g, '&#96;');
+                if (str === null || str === undefined || str.length === 0) {
+                    return str;
+                }
+                this.dummyTextGeneratorElement.innerText = str;
+                return this.dummyTextGeneratorElement.innerHTML;
+                // Keep as a ref:
+                // http://stackoverflow.com/questions/1219860/html-encoding-lost-when-attribute-read-from-input-field
+                // THX to http://2ality.com/2015/01/template-strings-html.html
+                // return str.replace(/&/g, '&amp;') // first!
+                //         .replace(/>/g, '&gt;')
+                //         .replace(/</g, '&lt;')
+                //         .replace(/"/g, '&quot;')
+                //         .replace(/'/g, '&#39;')
+                //         .replace(/`/g, '&#96;');
             };
             return BaseNoneGenericComponent;
         }());
@@ -4290,7 +4301,7 @@ var SPECTOR;
                 return _this;
             }
             CaptureMenuActionsComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div class=\"captureMenuActionsComponent\">\n                <div commandName=\"onCaptureRequested\">\n                </div>\n                ", "\n            </div>"], _a.raw = ["\n            <div class=\"captureMenuActionsComponent\">\n                <div commandName=\"onCaptureRequested\">\n                </div>\n                ",
+                var htmlString = (_a = ["\n            <div class=\"captureMenuActionsComponent\">\n                <div commandName=\"onCaptureRequested\">\n                </div>\n                $", "\n            </div>"], _a.raw = ["\n            <div class=\"captureMenuActionsComponent\">\n                <div commandName=\"onCaptureRequested\">\n                </div>\n                $",
                     "\n            </div>"], this.htmlTemplate(_a, !state ?
                     "<div commandName=\"onPlayRequested\">\n                    </div>\n                    <div commandName=\"onPlayNextFrameRequested\">\n                    </div>"
                     :
@@ -4620,7 +4631,7 @@ var SPECTOR;
                     for (var _i = 0, _a = state.capture.endState.VisualState.Attachments; _i < _a.length; _i++) {
                         var imageState = _a[_i];
                         var img = document.createElement("img");
-                        img.src = imageState.src;
+                        img.src = encodeURI(imageState.src);
                         liHolder.appendChild(img);
                     }
                 }
@@ -4685,7 +4696,7 @@ var SPECTOR;
                     for (var _i = 0, _a = state.VisualState.Attachments; _i < _a.length; _i++) {
                         var imageState = _a[_i];
                         var img = document.createElement("img");
-                        img.src = imageState.src;
+                        img.src = encodeURI(imageState.src);
                         liHolder.appendChild(img);
                         if (state.VisualState.Attachments.length > 1) {
                             var attachment = document.createElement("span");
@@ -4891,7 +4902,7 @@ var SPECTOR;
                     for (var _i = 0, _a = state.Attachments; _i < _a.length; _i++) {
                         var imageState = _a[_i];
                         var img = document.createElement("img");
-                        img.src = imageState.src;
+                        img.src = encodeURI(imageState.src);
                         divHolder.appendChild(img);
                         if (state.Attachments.length > 1) {
                             var attachment = document.createElement("span");
@@ -5009,7 +5020,7 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             SourceCodeComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div class=\"sourceCodeComponent\">\n                <span class=\"sourceCodeComponentTitle\">", "</span>\n                <pre class=\"language-glsl\"><code>", "</code></pre>                \n            </div>"], _a.raw = ["\n            <div class=\"sourceCodeComponent\">\n                <span class=\"sourceCodeComponentTitle\">", "</span>\n                <pre class=\"language-glsl\"><code>", "</code></pre>                \n            </div>"], this.htmlTemplate(_a, state.description, state.source));
+                var htmlString = (_a = ["\n            <div class=\"sourceCodeComponent\">\n                <span class=\"sourceCodeComponentTitle\">", "</span>\n                <pre class=\"language-glsl\"><code>$", "</code></pre>                \n            </div>"], _a.raw = ["\n            <div class=\"sourceCodeComponent\">\n                <span class=\"sourceCodeComponentTitle\">", "</span>\n                <pre class=\"language-glsl\"><code>$", "</code></pre>                \n            </div>"], this.htmlTemplate(_a, state.description, state.source));
                 var element = this.renderElementFromTemplate(htmlString, state, stateId);
                 Prism.highlightElement(element.querySelector('pre'));
                 return element;

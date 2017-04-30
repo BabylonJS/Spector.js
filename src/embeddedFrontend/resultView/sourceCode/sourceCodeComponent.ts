@@ -13,7 +13,7 @@ namespace SPECTOR.EmbeddedFrontend {
             const htmlString = this.htmlTemplate`
             <div class="sourceCodeComponent">
                 <span class="sourceCodeComponentTitle">${state.description}</span>
-                <pre class="language-glsl"><code>${state.source}</code></pre>                
+                <pre class="language-glsl"><code>$${state.source}</code></pre>                
             </div>`;
 
             const element = this.renderElementFromTemplate(htmlString, state, stateId); 
