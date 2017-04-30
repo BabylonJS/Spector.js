@@ -1,16 +1,15 @@
 namespace SPECTOR.EmbeddedFrontend {
     export abstract class BaseNoneGenericComponent {
-        private readonly dummyElement: Element;
-        
-        constructor(protected readonly eventConstructor: EventConstructor, protected readonly logger: ILogger) {
-            this.dummyElement = document.createElement("div");
-        }
+
+        constructor(protected readonly eventConstructor: EventConstructor, protected readonly logger: ILogger) { }
 
         public abstract render(state: any, stateId: number): Element;
 
         protected createFromHtml(html: string): Element {
-            this.dummyElement.innerHTML = html;
-            return this.dummyElement.firstElementChild;
+            // IE 11 Compatibility prevents to reuse the div. 
+            const dummyElement = document.createElement("div");
+            dummyElement.innerHTML = html;
+            return dummyElement.firstElementChild;            
         }
 
         // THX to http://2ality.com/2015/01/template-strings-html.html

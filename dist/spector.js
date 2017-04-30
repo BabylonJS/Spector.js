@@ -3726,11 +3726,11 @@ var SPECTOR;
             function BaseNoneGenericComponent(eventConstructor, logger) {
                 this.eventConstructor = eventConstructor;
                 this.logger = logger;
-                this.dummyElement = document.createElement("div");
             }
             BaseNoneGenericComponent.prototype.createFromHtml = function (html) {
-                this.dummyElement.innerHTML = html;
-                return this.dummyElement.firstElementChild;
+                var dummyElement = document.createElement("div");
+                dummyElement.innerHTML = html;
+                return dummyElement.firstElementChild;
             };
             // THX to http://2ality.com/2015/01/template-strings-html.html
             BaseNoneGenericComponent.prototype.htmlTemplate = function (literalSections) {
