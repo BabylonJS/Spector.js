@@ -1,8 +1,10 @@
 @import './_main';
 
+/* The main window */
 .resultViewComponent {
-  position:absolute; 
-  z-index: 99999;
+  position:absolute;  
+  z-index: 99999; 
+  border : 1px solid darken($background, 20%);  
   top: $margin;
   left: $margin;  
   bottom: $margin;
@@ -13,7 +15,7 @@
   display: none;
   color: $foreground;
 
-  font-family: Consolas, monaco, monospace;
+  font-family: Consolas, monaco, monospace; 
   font-size: 14px;
   font-weight: 500;
   
@@ -28,18 +30,21 @@
 }
 
 $menuBaseHeight: 20px;
-$menuHeight: $menuBaseHeight * 3;
+$menuHeight: $menuBaseHeight * 2;
 
 .resultViewMenuComponent {
-  font-size: 16px;
-  font-weight: 500;
-  line-height: $menuBaseHeight;
+  font-family: 'Montserrat', sans-serif;
+  // text-transform: uppercase; 
+  font-size: 13px;
+  font-weight: 300;
+  line-height: $menuHeight;
   flex: 1 100%;
   display: flex;
   flex-flow: row wrap;
   height: $menuHeight;
   outline: 0 none;
-  
+  border-bottom:2px solid $background; 
+   box-sizing: border-box;
   list-style: none;
   margin: 0; 
   
@@ -64,13 +69,17 @@ $menuHeight: $menuBaseHeight * 3;
     outline: 0 none;
     text-decoration: none;
     display: block;
-    padding: $menuBaseHeight;
-    color: $foreground;
+    padding: 0 $menuBaseHeight 0 $menuBaseHeight;
+    color: darken(white, 20%);
     background: $background-even;
+    box-sizing: border-box;
+    height:100%;  
 
     &.active {
       background: $background;
-      color: $foreground-important;
+      color:white;
+      font-weight:400;
+      border-bottom:2px solid $foreground-important;
     }
 
     &:hover {
@@ -91,7 +100,7 @@ $menuHeight: $menuBaseHeight * 3;
 
     &.clearSearch {
       display: inline;
-      padding: 0px;
+      padding: 0px; 
       margin-left: -30px;
       margin-right: 20px;
       z-index: 9000;
@@ -136,43 +145,52 @@ $menuHeight: $menuBaseHeight * 3;
 
   input {
     border: 0;
-    font-family: consolas;
-    line-height: 20px;
-    margin: 20px - $margin;
-    padding: $margin;
-    background: $background-even;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    padding:0 $menuBaseHeight 0 $menuBaseHeight;
+    // line-height: 20px;
+    // margin: 20px - $margin;
+    // padding: $margin;
+    background: lighten($background-even, 10%);
     color: $foreground;
+    height:100%; 
+    position:relative;
+    top:-1px; // because of ul.border
+    box-sizing: border-box;
 
     &:focus {
+      // border : 2px solid $background;
       border: 0;
-      box-shadow: 0 0px 0px $foreground inset, 0 0 2px $foreground-important;
+      // box-shadow: 0 0px 0px $foreground inset, 0 0 2px $foreground-important;
       outline: 0 none;
     }
   }
 
   .clearSearch {
+    position:relative;
+    background:transparent;
     display: inline;
     padding: 0px;
     margin-left: -30px;
     z-index: 9000;
     color: $foreground-important;
+    
+    &:hover {
+      background:transparent !important;
+    }
   }
 
   ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-    color: $foreground-important; 
-    font-style: italic;     
+    color:  darken(white, 20%);
   }
   :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    color: $foreground-important; 
-    font-style: italic;     
+    color:  darken(white, 20%); 
   }
   ::-moz-placeholder { /* Mozilla Firefox 19+ */
-    color: $foreground-important; 
-    font-style: italic;     
+    color:  darken(white, 20%); 
   }
   :-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color: $foreground-important; 
-    font-style: italic;     
+    color:  darken(white, 20%); 
   }
 }
 

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400');
+
 $background:#222;
 $background-even:#444;
 $foreground:#f9f9f9;
@@ -6,7 +8,7 @@ $foreground-focus:#c9c9c9;
 $foreground-important:#f29766;
 $foreground-title:#5db0d7;
 $selected: darken($foreground-important, 20%);
-$margin: 10px;
+$margin: 5px; 
 
 $transition-time: 0.3s;
 
