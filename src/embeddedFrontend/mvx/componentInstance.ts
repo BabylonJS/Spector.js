@@ -55,7 +55,12 @@ namespace SPECTOR.EmbeddedFrontend {
             if (indexInContainer >= parentContainer.children.length) {                
                 parentContainer.appendChild(element);
                 if (this.__cachedCurrentDomNode && lastOperation === LastOperation.Update) {
-                    this.__cachedCurrentDomNode.remove();
+                    if (this.__cachedCurrentDomNode.remove) {
+                        this.__cachedCurrentDomNode.remove();
+                    }
+                    else if (this.__cachedCurrentDomNode.parentNode) {
+                        this.__cachedCurrentDomNode.parentNode.removeChild(this.__cachedCurrentDomNode);
+                    }
                 }
             }
             else {
@@ -72,10 +77,20 @@ namespace SPECTOR.EmbeddedFrontend {
 
         private removeNode() {
             if (this.domNode && this.domNode.parentElement) {
-                this.domNode.remove();
+                if (this.domNode.remove) {
+                    this.domNode.remove();
+                }
+                else if (this.domNode.parentNode) {
+                    this.domNode.parentNode.removeChild(this.domNode);
+                }
             }
             if (this.__cachedCurrentDomNode && this.__cachedCurrentDomNode.parentElement) {
-                this.__cachedCurrentDomNode.remove();
+                if (this.__cachedCurrentDomNode.remove) {
+                    this.__cachedCurrentDomNode.remove();
+                }
+                else if (this.__cachedCurrentDomNode.parentNode) {
+                    this.__cachedCurrentDomNode.parentNode.removeChild(this.__cachedCurrentDomNode);
+                }
             }
         }
     }

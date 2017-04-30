@@ -19,7 +19,7 @@ namespace SPECTOR.EmbeddedFrontend {
             <div class="captureMenuActionsComponent">
                 <div commandName="onCaptureRequested">
                 </div>
-                ${!state ?
+                $${!state ?
                     `<div commandName="onPlayRequested">
                     </div>
                     <div commandName="onPlayNextFrameRequested">

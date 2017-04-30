@@ -56,7 +56,8 @@ namespace SPECTOR {
                 return "1";
             }
 
-            return WebGlConstantsByValue[value].name;
+            const webglConstant = WebGlConstantsByValue[value];
+            return webglConstant ? webglConstant.name : value + "";
         }
 
         public static readonly DEPTH_BUFFER_BIT: WebGlConstant = { name: "DEPTH_BUFFER_BIT", value: 256, description: "Passed to clear to clear the current depth buffer." };

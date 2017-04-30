@@ -1,16 +1,16 @@
 namespace SPECTOR.EmbeddedFrontend {
     export abstract class BaseNoneGenericComponent {
-        private readonly dummyElement: Element;
-        
-        constructor(protected readonly eventConstructor: EventConstructor, protected readonly logger: ILogger) {
-            this.dummyElement = document.createElement("div");
-        }
+        private dummyTextGeneratorElement = document.createElement("div");
+
+        constructor(protected readonly eventConstructor: EventConstructor, protected readonly logger: ILogger) { }
 
         public abstract render(state: any, stateId: number): Element;
 
         protected createFromHtml(html: string): Element {
-            this.dummyElement.innerHTML = html;
-            return this.dummyElement.firstElementChild;
+            // IE 11 Compatibility prevents to reuse the div. 
+            const dummyElement = document.createElement("div");
+            dummyElement.innerHTML = html;
+            return dummyElement.firstElementChild;            
         }
 
         // THX to http://2ality.com/2015/01/template-strings-html.html
@@ -34,11 +34,15 @@ namespace SPECTOR.EmbeddedFrontend {
                 }
 
                 // If the substitution is preceded by a dollar sign,
-                // we escape special characters in it
+                // we do not escape special characters in it
                 if (lit && lit.length > 0 && lit[lit.length - 1] === '$') {
-                    subst = this.htmlEscape(subst);
                     lit = lit.slice(0, -1);
                 }
+                // otherwise escape by default by precaution.
+                else {
+                    subst = this.htmlEscape(subst);
+                }
+
                 result += lit;
                 result += subst;
             });
@@ -50,14 +54,23 @@ namespace SPECTOR.EmbeddedFrontend {
             return result;
         }
 
-        // THX to http://2ality.com/2015/01/template-strings-html.html
         private htmlEscape(str: string): string {
-            return str.replace(/&/g, '&amp;') // first!
-                    .replace(/>/g, '&gt;')
-                    .replace(/</g, '&lt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#39;')
-                    .replace(/`/g, '&#96;');
+            if (str === null || str === undefined || str.length === 0) {
+                return str;
+            }
+
+            this.dummyTextGeneratorElement.innerText = str;
+            return this.dummyTextGeneratorElement.innerHTML;
+
+            // Keep as a ref:
+            // http://stackoverflow.com/questions/1219860/html-encoding-lost-when-attribute-read-from-input-field
+            // THX to http://2ality.com/2015/01/template-strings-html.html
+            // return str.replace(/&/g, '&amp;') // first!
+            //         .replace(/>/g, '&gt;')
+            //         .replace(/</g, '&lt;')
+            //         .replace(/"/g, '&quot;')
+            //         .replace(/'/g, '&#39;')
+            //         .replace(/`/g, '&#96;');
         }
     }
 

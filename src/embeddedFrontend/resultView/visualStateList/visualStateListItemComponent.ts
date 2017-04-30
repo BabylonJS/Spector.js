@@ -23,7 +23,7 @@ namespace SPECTOR.EmbeddedFrontend {
             if (state.VisualState.Attachments) {
                 for (const imageState of state.VisualState.Attachments) {
                     const img = document.createElement("img");
-                    img.src = imageState.src;
+                    img.src = encodeURI(imageState.src);
                     liHolder.appendChild(img);
 
                     if (state.VisualState.Attachments.length > 1) { 

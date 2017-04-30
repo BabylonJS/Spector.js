@@ -115,13 +115,13 @@ spector.captureCanvas(canvas);
 Like any simple typescript repository everything start with.
 
 ```
-git clone https://github.com/BabylonJS/SpectorJS.git
+git clone https://github.com/BabylonJS/Spector.js.git
 cd spector
 npm install
 ```
 
 Then you can use the following npm commands to speed your development:
-1. ```npm start``` Will compile and run a local server with a watch command so that you can directly try your changes (TS or scss). Navigate to the the [embedded sample](localhost:1337/sample/index.html) to start playing with the dev tools.
+1. ```npm start``` Will compile and run a local server with a watch command so that you can directly try your changes (TS or scss). Navigate to the the [embedded sample](http://localhost:1337/sample/index.html) to start playing with the dev tools.
 2. ```npm run build``` Will create and build a new version of the dist folder files.
 3. ```npm run clean``` Will clean all the generated files from the repo.
 

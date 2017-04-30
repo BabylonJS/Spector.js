@@ -1560,7 +1560,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
     abstract class BaseNoneGenericComponent {
         protected readonly eventConstructor: EventConstructor;
         protected readonly logger: ILogger;
-        private readonly dummyElement;
+        private dummyTextGeneratorElement;
         constructor(eventConstructor: EventConstructor, logger: ILogger);
         abstract render(state: any, stateId: number): Element;
         protected createFromHtml(html: string): Element;

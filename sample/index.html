@@ -7,12 +7,13 @@
 	
 	<script src="../tools/loader.js"></script>
 	
-	<script src="js/sylvester.js"></script>
-	<script src="js/glUtils.js"></script>
+	<script src="assets/js/sylvester.js"></script>
+	<script src="assets/js/glUtils.js"></script>
+	<script src="assets/js/babylon.js"></script>		
 	
+	<!--Add manually cause not in the bundle -->
 	<script src="../vendors/prism.js"></script>
 	<link href="../vendors/prism.css" rel="stylesheet" />
-
 
 	<style>
 		html, body {
@@ -38,11 +39,10 @@
 		var sampleSearch = /sample=([0-9-zA-z]+)/i;
 		var matches = null;
 		if ((matches = sampleSearch.exec(window.location)) !== null) {			
-			indexjs += '.';
 			indexjs += matches[1];
 		}
 		else {
-			indexjs += 'simple'
+			indexjs += 'lights'
 		}
 		indexjs += '.js';
 
@@ -61,8 +61,5 @@
 			})
 			.load(indexjs);
 	</script>
-	
-	
-	<script src="js/simple.js"></script>
 </body>
 </html>
