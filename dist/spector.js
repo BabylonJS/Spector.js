@@ -230,7 +230,8 @@ var SPECTOR;
                 }
                 return "1";
             }
-            return SPECTOR.WebGlConstantsByValue[value].name;
+            var webglConstant = SPECTOR.WebGlConstantsByValue[value];
+            return webglConstant ? webglConstant.name : value + "";
         };
         return WebGlConstants;
     }());
@@ -4052,7 +4053,12 @@ var SPECTOR;
                 if (indexInContainer >= parentContainer.children.length) {
                     parentContainer.appendChild(element);
                     if (this.__cachedCurrentDomNode && lastOperation === 40 /* Update */) {
-                        this.__cachedCurrentDomNode.remove();
+                        if (this.__cachedCurrentDomNode.remove) {
+                            this.__cachedCurrentDomNode.remove();
+                        }
+                        else if (this.__cachedCurrentDomNode.parentNode) {
+                            this.__cachedCurrentDomNode.parentNode.removeChild(this.__cachedCurrentDomNode);
+                        }
                     }
                 }
                 else {
@@ -4067,10 +4073,20 @@ var SPECTOR;
             };
             ComponentInstance.prototype.removeNode = function () {
                 if (this.domNode && this.domNode.parentElement) {
-                    this.domNode.remove();
+                    if (this.domNode.remove) {
+                        this.domNode.remove();
+                    }
+                    else if (this.domNode.parentNode) {
+                        this.domNode.parentNode.removeChild(this.domNode);
+                    }
                 }
                 if (this.__cachedCurrentDomNode && this.__cachedCurrentDomNode.parentElement) {
-                    this.__cachedCurrentDomNode.remove();
+                    if (this.__cachedCurrentDomNode.remove) {
+                        this.__cachedCurrentDomNode.remove();
+                    }
+                    else if (this.__cachedCurrentDomNode.parentNode) {
+                        this.__cachedCurrentDomNode.parentNode.removeChild(this.__cachedCurrentDomNode);
+                    }
                 }
             };
             return ComponentInstance;

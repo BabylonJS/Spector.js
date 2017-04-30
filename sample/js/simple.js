@@ -23,26 +23,24 @@ var vertexPositionAttribute;
 var vertexColorAttribute;
 var perspectiveMatrix;
 
-var vertexShaderSource = `attribute vec3 aVertexPosition;
-attribute vec4 aVertexColor;
+var vertexShaderSource = "attribute vec3 aVertexPosition;" +
+"attribute vec4 aVertexColor;" +
 
-uniform mat4 uMVMatrix;
-uniform mat4 uPMatrix;
+"uniform mat4 uMVMatrix;" +
+"uniform mat4 uPMatrix;" +
 
-varying lowp vec4 vColor;
+"varying lowp vec4 vColor;" +
 
-void main(void) {
-  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-  vColor = aVertexColor;
-}
-`;
+"void main(void) {" +
+"  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);" +
+"  vColor = aVertexColor;" +
+"}";
 
-var fragmentShaderSource = `varying lowp vec4 vColor;
+var fragmentShaderSource = "varying lowp vec4 vColor;" +
 
-void main(void) {
-  gl_FragColor = vColor;
-}
-`;
+"void main(void) {" +
+"  gl_FragColor = vColor;" +
+"}";
 
 //
 // start

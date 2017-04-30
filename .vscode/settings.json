@@ -2,6 +2,7 @@
 {
     // Configure glob patterns for excluding files and folders.
     "files.exclude": {
+        "npm-debug.log.**": true,
         "**/.git": true,
         "**/.svn": true,
         "**/.hg": true,
@@ -24,6 +25,8 @@
         "*.fx": "glsl"
     },
     "search.exclude": {
+        "npm-debug.log.**": true,
+        "**/spector.bundle.js": true,
         "**/node_modules": true,
         "**/bower_components": true,
         "**/.vs": true,
