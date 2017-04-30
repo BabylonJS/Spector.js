@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400');
 
 $background:#222;
-$background-even:#444;
+$background-even:#2c2c2c; 
 $foreground:#f9f9f9;
 $foreground-light:#d9d9d9;
 $foreground-focus:#c9c9c9;
-$foreground-important:#f29766;
-$foreground-title:#5db0d7;
-$selected: darken($foreground-important, 20%);
-$margin: 5px; 
+$foreground-important:#F0640D;//f29766;
+$foreground-title:#5db0d7; 
+$selected: $foreground-important;//#FF530D;//darken($foreground-important, 20%);
+$margin: 5px;   
 
 $transition-time: 0.3s;
 
@@ -32,7 +32,7 @@ $transition-time: 0.3s;
 }
 
 @mixin on-hover() {
-    color: $foreground-focus;      
+    color: $foreground;      
     cursor: pointer;
     transition: color $transition-time;
     -webkit-transition: color $transition-time;

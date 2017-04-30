@@ -5,10 +5,10 @@
   position:absolute;  
   z-index: 99999; 
   border : 1px solid darken($background, 20%);  
-  top: $margin;
-  left: $margin;  
-  bottom: $margin;
-  right: $margin;
+  top: 0;
+  left: 0;  
+  bottom: 0;
+  right: 0;
   background-color: $background; 
   opacity: 1;
   visibility: hidden;
@@ -104,11 +104,11 @@ $menuHeight: $menuBaseHeight * 2;
       margin-left: -30px;
       margin-right: 20px;
       z-index: 9000;
-      color: $foreground-important;    
+      color: $foreground;    
       
       &:hover {
         background: $background-even;
-        color: $foreground;
+        color: $foreground-important; 
       }
     }
   }
@@ -348,7 +348,8 @@ $visualStateListComponentWidth: 20%;
   position:absolute; 
   top: 0;
   left: 0;  
-  bottom: 0;    
+  bottom: 0;
+  padding:5px;    
   right: 100% - $visualStateListComponentWidth;
   overflow-y: visible;
   overflow-x: hidden;
@@ -358,7 +359,8 @@ $visualStateListComponentWidth: 20%;
     padding: 0px;
     list-style: none;
     li {
-      margin: $margin;
+      margin: 20px 15px 0px 15px; 
+      border : 1px solid darken($foreground, 60%); 
 
       img {
         display: block;
@@ -380,14 +382,16 @@ $visualStateListComponentWidth: 20%;
           display: inline-block;
           width:100%;
           margin:0px;
-          padding:0px;
+          padding:5px; 
       }
 
       &.active {
-        span {
-            border: $margin solid $selected;
-            background: $selected;
-        }
+        // span {
+            border: 2px solid $foreground-important;
+            // box-sizing: border-box;
+            // background: $foreground-important;
+            // color:#333;
+        // }
       }
     }
   }
@@ -400,6 +404,8 @@ $commandDetailComponentWidth: 40%;
   left: $visualStateListComponentWidth; 
   right: $commandDetailComponentWidth;
   bottom: 0;
+  padding:10px;
+  color:darken($foreground, 15%);  
 
   ul {
     margin: 0px;
@@ -410,7 +416,7 @@ $commandDetailComponentWidth: 40%;
     height:100%;
 
     li {
-      padding: $margin;
+      padding: 8px;
 
       &:hover {
         @include on-hover();
@@ -446,7 +452,8 @@ $commandDetailComponentWidth: 40%;
       }
 
       &.active {
-          background: $selected;
+          background: lighten($selected, 6%); 
+          color:#222; 
           
       }
     }
@@ -461,11 +468,13 @@ $commandDetailComponentWidth: 40%;
   bottom: 0;
   overflow-y: visible;
   overflow-x: hidden;
+  padding:10px;
 }
 
 .jsonGroupComponent {
   display: block;
-  margin: $margin;
+  margin: 10px;
+  padding:10px;
   padding-bottom: $margin;
 
   .jsonGroupComponentTitle {
@@ -511,7 +520,8 @@ $commandDetailComponentWidth: 40%;
 
 .jsonVisualStateItemComponent {
   text-align: center;
-  
+  padding:10px;
+
   img {
     margin: $margin;
     @include img-checkboard();
@@ -528,6 +538,7 @@ $commandDetailComponentWidth: 40%;
   left: 0; 
   right: 0;
   bottom: 0;
+  padding:10px; 
   overflow-y: visible;
   overflow-x: hidden;
 }
