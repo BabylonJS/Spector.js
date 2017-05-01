@@ -1,5 +1,5 @@
 namespace SPECTOR {
-    
+
     export interface ISpectorOptions {
         readonly injection?: InjectionType;
     }
@@ -11,7 +11,7 @@ namespace SPECTOR {
 
     export class Spector {
         private static MAXRETRY = 20 * 60; // 30 seconds of capture max.
-        
+
         private readonly logger: ILogger;
         private readonly timeSpy: ITimeSpy;
         private readonly contexts: IAvailableContext[];
@@ -35,24 +35,24 @@ namespace SPECTOR {
 
             this.logger = new this.injection.LoggerCtor();
             this.time = new this.injection.TimeCtor();
-            this.timeSpy = new this.injection.TimeSpyCtor({ 
+            this.timeSpy = new this.injection.TimeSpyCtor({
                 eventConstructor: this.injection.EventCtor,
-                timeConstructor: this.injection.TimeCtor 
+                timeConstructor: this.injection.TimeCtor
             }, this.logger);
             this.onCapture = new this.injection.EventCtor<ICapture>();
-            
+
             this.timeSpy.onFrameStart.add(this.onFrameStart, this);
             this.timeSpy.onFrameEnd.add(this.onFrameEnd, this);
         }
 
         public displayUI() {
             if (!this.captureMenu) {
-                this.getCaptureUI();               
+                this.getCaptureUI();
 
                 this.captureMenu.onPauseRequested.add(this.pause, this);
                 this.captureMenu.onPlayRequested.add(this.play, this);
-                this.captureMenu.onPlayNextFrameRequested.add(this.playNextFrame, this);            
-                this.captureMenu.onCaptureRequested.add(info => { 
+                this.captureMenu.onPlayNextFrameRequested.add(this.playNextFrame, this);
+                this.captureMenu.onCaptureRequested.add(info => {
                     if (info) {
                         this.captureCanvas(info.ref);
                     }
@@ -60,14 +60,14 @@ namespace SPECTOR {
 
                 setInterval(() => { this.captureMenu.setFPS(this.getFps()); }, 1000);
                 this.captureMenu.trackPageCanvases();
-                
+
                 this.captureMenu.display();
             }
 
             if (!this.resultView) {
-                this.getResultUI();                
+                this.getResultUI();
 
-                this.onCapture.add((capture) => { 
+                this.onCapture.add((capture) => {
                     this.resultView.display();
                     this.resultView.addCapture(capture);
                 });
@@ -76,7 +76,7 @@ namespace SPECTOR {
 
         public getResultUI(): IResultView {
             if (!this.resultView) {
-                this.resultView = new this.injection.ResultViewConstructor({ 
+                this.resultView = new this.injection.ResultViewConstructor({
                     eventConstructor: this.injection.EventCtor,
                 }, this.logger);
             }
@@ -85,9 +85,9 @@ namespace SPECTOR {
 
         public getCaptureUI(): ICaptureMenu {
             if (!this.captureMenu) {
-                this.captureMenu = new this.injection.CaptureMenuConstructor({ 
+                this.captureMenu = new this.injection.CaptureMenuConstructor({
                     eventConstructor: this.injection.EventCtor,
-                }, this.logger);                
+                }, this.logger);
             }
             return this.captureMenu;
         }
@@ -112,7 +112,7 @@ namespace SPECTOR {
             return this.timeSpy.getFps();
         }
 
-        public spyCanvases(): void {                 
+        public spyCanvases(): void {
             if (this.canvasSpy) {
                 this.logger.error("Already spying canvas.");
                 return;
@@ -122,13 +122,13 @@ namespace SPECTOR {
             this.canvasSpy.onContextRequested.add(this.spyContext, this);
         }
 
-        public spyCanvas(canvas: HTMLCanvasElement): void {                 
+        public spyCanvas(canvas: HTMLCanvasElement): void {
             if (this.canvasSpy) {
                 this.logger.error("Already spying canvas.");
                 return;
             }
 
-            this.canvasSpy = new this.injection.CanvasSpyCtor({ 
+            this.canvasSpy = new this.injection.CanvasSpyCtor({
                 eventConstructor: this.injection.EventCtor,
                 canvas: canvas
             }, this.logger);
@@ -146,7 +146,7 @@ namespace SPECTOR {
                 try {
                     context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
                 }
-                catch(e) {
+                catch (e) {
                     this.logger.error(e);
                 }
 
@@ -154,7 +154,7 @@ namespace SPECTOR {
                     try {
                         context = canvas.getContext("webgl2") || canvas.getContext("experimental-webgl2");
                     }
-                    catch(e) {
+                    catch (e) {
                         this.logger.error(e);
                     }
                 }
@@ -193,20 +193,20 @@ namespace SPECTOR {
                 }
 
                 this.contexts.push({
-                    canvas: contextSpy.context.canvas, 
+                    canvas: contextSpy.context.canvas,
                     contextSpy: contextSpy
                 });
             }
-            
+
             if (contextSpy) {
                 this.captureContextSpy(contextSpy);
             }
         }
 
-        public captureContextSpy(contextSpy: IContextSpy) {    
+        public captureContextSpy(contextSpy: IContextSpy) {
             if (this.capturingContext) {
                 this.logger.error("Already capturing a context.");
-            }   
+            }
             else {
                 this.retry = 0;
                 this.capturingContext = contextSpy;
@@ -223,13 +223,13 @@ namespace SPECTOR {
             let contextSpy = this.getAvailableContextSpyByCanvas(contextInformation.context.canvas);
             if (!contextSpy) {
                 contextSpy = new this.injection.ContextSpyCtor({
-                        context: contextInformation.context,
-                        version: contextInformation.contextVersion,
-                        recordAlways: true,
-                        injection: this.injection
-                    }, this.time, this.logger);
+                    context: contextInformation.context,
+                    version: contextInformation.contextVersion,
+                    recordAlways: true,
+                    injection: this.injection
+                }, this.time, this.logger);
                 this.contexts.push({
-                    canvas: contextSpy.context.canvas, 
+                    canvas: contextSpy.context.canvas,
                     contextSpy: contextSpy
                 });
             }

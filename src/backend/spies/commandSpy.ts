@@ -2,7 +2,7 @@ namespace SPECTOR {
 
     export interface ICommandSpy {
         readonly spiedCommandName: string;
-        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture;  
+        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture;
         spy(): void;
         unSpy(): void;
     }
@@ -33,18 +33,18 @@ namespace SPECTOR.Spies {
         private readonly spiedCommandRunningContext: any;
         private readonly callback: CommandSpyCallback;
         private readonly commandOptions: ICommandOptions;
-        
+
         private command: ICommand;
         private overloadedCommand: any;
-        
+
         public readonly spiedCommandName: string;
-        
-        constructor(options: ICommandSpyOptions, private readonly time: ITime, private readonly logger: ILogger) {  
+
+        constructor(options: ICommandSpyOptions, private readonly time: ITime, private readonly logger: ILogger) {
             this.stackTrace = new options.stackTraceCtor();
 
-            this.spiedCommandName = options.spiedCommandName;  
-            this.spiedCommandRunningContext = options.spiedCommandRunningContext;            
-            this.spiedCommand = this.spiedCommandRunningContext[this.spiedCommandName];    
+            this.spiedCommandName = options.spiedCommandName;
+            this.spiedCommandRunningContext = options.spiedCommandRunningContext;
+            this.spiedCommand = this.spiedCommandRunningContext[this.spiedCommandName];
             this.callback = options.callback;
 
             this.commandOptions = {
@@ -60,18 +60,18 @@ namespace SPECTOR.Spies {
         }
 
         public spy(): void {
-            this.spiedCommandRunningContext[this.spiedCommandName] = this.overloadedCommand;            
+            this.spiedCommandRunningContext[this.spiedCommandName] = this.overloadedCommand;
         }
 
         public unSpy(): void {
-            this.spiedCommandRunningContext[this.spiedCommandName] = this.spiedCommand;   
+            this.spiedCommandRunningContext[this.spiedCommandName] = this.spiedCommand;
         }
 
         public createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture {
             return this.command.createCapture(functionInformation, commandCaptureId);
         }
 
-        private initCustomCommands(commandNamespace: FunctionIndexer): void { 
+        private initCustomCommands(commandNamespace: FunctionIndexer): void {
             if (CommandSpy.customCommandsConstructors) {
                 return;
             }
@@ -98,8 +98,8 @@ namespace SPECTOR.Spies {
         }
 
         private getSpy(): any {
-            const self = this;  
-            return function() {
+            const self = this;
+            return function () {
                 const before = self.time.now;
                 const result = self.spiedCommand.apply(self.spiedCommandRunningContext, arguments);
                 const after = self.time.now;

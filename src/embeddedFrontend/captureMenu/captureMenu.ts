@@ -4,7 +4,7 @@ namespace SPECTOR {
         width: number;
         height: number;
         ref: any;
-    } 
+    }
 
     export interface ICaptureMenu {
         display(): void;
@@ -45,9 +45,9 @@ namespace SPECTOR.EmbeddedFrontend {
         private readonly canvasListComponent: CanvasListComponent;
         private readonly fpsCounterComponent: FpsCounterComponent;
 
-        private readonly rootStateId: number;        
-        private readonly fpsStateId: number;        
-        private readonly actionsStateId: number;                
+        private readonly rootStateId: number;
+        private readonly fpsStateId: number;
+        private readonly actionsStateId: number;
         private readonly canvasListStateId: number;
 
         private visible: boolean;
@@ -61,7 +61,7 @@ namespace SPECTOR.EmbeddedFrontend {
         constructor(private readonly options: ICaptureMenuOptions, private readonly logger: ILogger) {
             this.rootPlaceHolder = options.rootPlaceHolder || document.body;
             this.mvx = new MVX(this.rootPlaceHolder, logger);
-            
+
             this.visible = true;
 
             this.onCanvasSelected = new options.eventConstructor<ICanvasInformation>();
@@ -77,36 +77,36 @@ namespace SPECTOR.EmbeddedFrontend {
             this.fpsCounterComponent = new FpsCounterComponent(options.eventConstructor, logger);
 
             this.rootStateId = this.mvx.addRootState(null, this.captureMenuComponent);
-            this.canvasListStateId = this.mvx.addChildState(this.rootStateId, { currentCanvasInformation: null, showList: false }, this.canvasListComponent);            
+            this.canvasListStateId = this.mvx.addChildState(this.rootStateId, { currentCanvasInformation: null, showList: false }, this.canvasListComponent);
             this.actionsStateId = this.mvx.addChildState(this.rootStateId, true, this.actionsComponent);
             this.fpsStateId = this.mvx.addChildState(this.rootStateId, 0, this.fpsCounterComponent);
 
             this.actionsComponent.onCaptureRequested.add(_ => {
                 this.onCaptureRequested.trigger(this.getSelectedCanvasInformation());
             });
-            this.actionsComponent.onPauseRequested.add(_ => { 
+            this.actionsComponent.onPauseRequested.add(_ => {
                 this.onPauseRequested.trigger(this.getSelectedCanvasInformation());
                 this.mvx.updateState(this.actionsStateId, false);
             });
-            this.actionsComponent.onPlayRequested.add(_ => { 
-                this.onPlayRequested.trigger(this.getSelectedCanvasInformation());                
-                this.mvx.updateState(this.actionsStateId, true); 
+            this.actionsComponent.onPlayRequested.add(_ => {
+                this.onPlayRequested.trigger(this.getSelectedCanvasInformation());
+                this.mvx.updateState(this.actionsStateId, true);
             });
-            this.actionsComponent.onPlayNextFrameRequested.add(_ => { 
-                this.onPlayNextFrameRequested.trigger(this.getSelectedCanvasInformation()); 
+            this.actionsComponent.onPlayNextFrameRequested.add(_ => {
+                this.onPlayNextFrameRequested.trigger(this.getSelectedCanvasInformation());
             });
 
-            this.canvasListComponent.onCanvasSelection.add((eventArgs) => {         
+            this.canvasListComponent.onCanvasSelection.add((eventArgs) => {
                 this.mvx.updateState(this.canvasListStateId, {
-                    currentCanvasInformation: null, 
+                    currentCanvasInformation: null,
                     showList: !eventArgs.state.showList
                 });
-                this.onCanvasSelected.trigger(null); 
+                this.onCanvasSelected.trigger(null);
             });
 
             this.canvasListItemComponent.onCanvasSelected.add((eventArgs) => {
                 this.mvx.updateState(this.canvasListStateId, {
-                    currentCanvasInformation: eventArgs.state, 
+                    currentCanvasInformation: eventArgs.state,
                     showList: false
                 });
                 this.onCanvasSelected.trigger(eventArgs.state);
@@ -140,7 +140,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 try {
                     context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
                 }
-                catch(e) {
+                catch (e) {
                     // Do Nothing.
                 }
 
@@ -148,7 +148,7 @@ namespace SPECTOR.EmbeddedFrontend {
                     try {
                         context = canvas.getContext("webgl2") || canvas.getContext("experimental-webgl2");
                     }
-                    catch(e) {
+                    catch (e) {
                         // Do Nothing.
                     }
                 }
@@ -164,11 +164,11 @@ namespace SPECTOR.EmbeddedFrontend {
                     this.mvx.addChildState(this.canvasListStateId, canvasToSelect, this.canvasListItemComponent);
                 }
             }
-            
+
             const visible = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId).showList;
             if (canvasesCount === 1 && canvasToSelect && !visible) {
                 this.mvx.updateState(this.canvasListStateId, {
-                    currentCanvasInformation: canvasToSelect, 
+                    currentCanvasInformation: canvasToSelect,
                     showList: visible
                 });
                 this.onCanvasSelected.trigger(canvasToSelect);
@@ -196,9 +196,9 @@ namespace SPECTOR.EmbeddedFrontend {
             const visible = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId).showList;
             if (canvasesCount === 1 && canvasToSelect && !visible) {
                 this.mvx.updateState(this.canvasListStateId, {
-                    currentCanvasInformation: canvasToSelect, 
+                    currentCanvasInformation: canvasToSelect,
                     showList: visible
-                });            
+                });
                 this.onCanvasSelected.trigger(canvasToSelect);
             }
             else {
@@ -210,7 +210,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.visible = true;
             this.updateMenuState();
         }
-        
+
         public hide(): void {
             this.visible = false;
             this.updateMenuState();

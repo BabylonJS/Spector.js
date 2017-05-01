@@ -1,5 +1,5 @@
-namespace SPECTOR {    
-    export type State = { [stateName: string] : any };
+namespace SPECTOR {
+    export type State = { [stateName: string]: any };
 
     export type CommandCapturedCallback = (command: ICommandCapture) => void;
 
@@ -15,13 +15,13 @@ namespace SPECTOR {
     }
 
     export interface ICommandCapture extends State {
-        id:number;
-        startTime: number;        
+        id: number;
+        startTime: number;
         commandEndTime: number;
         endTime: number;
         name: string;
         commandArguments: IArguments;
-        result: any;        
+        result: any;
         stackTrace: string[];
         status: CommandCaptureStatus;
         text: string;

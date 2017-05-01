@@ -3,7 +3,7 @@ namespace SPECTOR {
     export interface IResultView {
         display(): void;
         hide(): void;
-        
+
         addCapture(capture: ICapture): number;
         selectCapture(captureId: number): void;
     }
@@ -23,10 +23,10 @@ namespace SPECTOR.EmbeddedFrontend {
         private readonly rootPlaceHolder: Element;
         private readonly mvx: MVX;
 
-        private readonly captureListComponent: CaptureListComponent;        
-        private readonly captureListItemComponent: CaptureListItemComponent;  
-        private readonly visualStateListComponent: VisualStateListComponent;        
-        private readonly visualStateListItemComponent: VisualStateListItemComponent;        
+        private readonly captureListComponent: CaptureListComponent;
+        private readonly captureListItemComponent: CaptureListItemComponent;
+        private readonly visualStateListComponent: VisualStateListComponent;
+        private readonly visualStateListItemComponent: VisualStateListItemComponent;
         private readonly commandListComponent: CommandListComponent;
         private readonly commandListItemComponent: CommandListItemComponent;
         private readonly commandDetailComponent: CommandDetailComponent;
@@ -44,7 +44,7 @@ namespace SPECTOR.EmbeddedFrontend {
         private readonly menuStateId: number;
         private readonly contentStateId: number;
         private readonly captureListStateId: number;
-        
+
         private commandListStateId: number;
         private commandDetailStateId: number;
         private visualStateListStateId: number;
@@ -60,7 +60,7 @@ namespace SPECTOR.EmbeddedFrontend {
         constructor(private readonly options: IResultViewOptions, private readonly logger: ILogger) {
             this.rootPlaceHolder = options.rootPlaceHolder || document.body;
             this.mvx = new MVX(this.rootPlaceHolder, logger);
-            
+
             this.searchText = "";
             this.currentCommandId = -1;
             this.visible = false;
@@ -83,7 +83,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.jsonContentComponent = new JSONContentComponent(options.eventConstructor, logger);
             this.jsonGroupComponent = new JSONGroupComponent(options.eventConstructor, logger);
             this.jsonItemComponent = new JSONItemComponent(options.eventConstructor, logger);
-            this.jsonSourceItemComponent = new JSONSourceItemComponent(options.eventConstructor, logger);            
+            this.jsonSourceItemComponent = new JSONSourceItemComponent(options.eventConstructor, logger);
             this.jsonVisualStateItemComponent = new JSONVisualStateItemComponent(options.eventConstructor, logger);
             this.resultViewMenuComponent = new ResultViewMenuComponent(options.eventConstructor, logger);
             this.resultViewContentComponent = new ResultViewContentComponent(options.eventConstructor, logger);
@@ -94,7 +94,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.menuStateId = this.mvx.addChildState(this.rootStateId, null, this.resultViewMenuComponent);
             this.contentStateId = this.mvx.addChildState(this.rootStateId, null, this.resultViewContentComponent);
             this.captureListStateId = this.mvx.addChildState(this.rootStateId, false, this.captureListComponent);
-            
+
             this.initMenuComponent();
             this.captureListComponent.onCaptureLoaded.add((capture) => {
                 this.addCapture(capture);
@@ -105,10 +105,10 @@ namespace SPECTOR.EmbeddedFrontend {
             this.captureListItemComponent.onSaveRequested.add((captureEventArgs) => {
                 this.saveCapture(captureEventArgs.state.capture);
             });
-            this.commandListItemComponent.onCommandSelected.add((commandEventArgs) => { 
+            this.commandListItemComponent.onCommandSelected.add((commandEventArgs) => {
                 this.selectCommand(commandEventArgs.stateId);
             });
-            this.visualStateListItemComponent.onVisualStateSelected.add((visualStateEventArgs) => { 
+            this.visualStateListItemComponent.onVisualStateSelected.add((visualStateEventArgs) => {
                 this.selectVisualState(visualStateEventArgs.stateId);
             });
             this.jsonSourceItemComponent.onOpenSourceClicked.add((sourceEventArg) => {
@@ -125,7 +125,7 @@ namespace SPECTOR.EmbeddedFrontend {
         public saveCapture(capture: ICapture): void {
             const a = document.createElement("a");
             const captureInString = JSON.stringify(capture, null, 4);
-            const blob = new Blob([captureInString], {type: "octet/stream"});
+            const blob = new Blob([captureInString], { type: "octet/stream" });
             const url = window.URL.createObjectURL(blob);
             a.setAttribute("href", url);
             a.setAttribute("download", "capture " + new Date(capture.startTime).toTimeString().split(' ')[0] + ".json");
@@ -154,7 +154,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.visible = true;
             this.updateViewState();
         }
-        
+
         public hide(): void {
             this.visible = false;
             this.updateViewState();
@@ -162,9 +162,9 @@ namespace SPECTOR.EmbeddedFrontend {
 
         public addCapture(capture: ICapture): number {
             const captureSateId = this.mvx.insertChildState(this.captureListStateId, {
-                    capture: capture,
-                    active: false
-                }, 
+                capture: capture,
+                active: false
+            },
                 0, this.captureListItemComponent);
             this.selectCapture(captureSateId);
             return captureSateId;
@@ -212,7 +212,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.mvx.updateState(this.menuStateId, {
                 status: menuStatus,
                 searchText: this.searchText
-            });            
+            });
             if (this.mvx.getGenericState<boolean>(this.captureListStateId)) {
                 this.mvx.updateState(this.captureListStateId, false);
             }
@@ -274,27 +274,27 @@ namespace SPECTOR.EmbeddedFrontend {
             if (json === null) {
                 return "null";
             }
-            
+
             if (json === undefined) {
                 return "undefined";
             }
-            
+
             if (typeof json === "number") {
                 return json.toFixed(4);
             }
-            
+
             if (typeof json === "string") {
                 return json;
             }
-            
+
             if (typeof json === "boolean") {
                 return json ? "true" : "false";
             }
-            
+
             if (json.length === 0) {
                 return "Empty Array";
             }
-            
+
             if (json.length) {
                 const arrayResult: any[] = [];
                 for (let i = 0; i < json.length; i++) {
@@ -313,7 +313,7 @@ namespace SPECTOR.EmbeddedFrontend {
             if (json.displayText) {
                 return json.displayText;
             }
-            
+
             if (typeof json === "object") {
                 this.displayJSONGroup(parentGroupId, key, json);
             }
@@ -348,7 +348,7 @@ namespace SPECTOR.EmbeddedFrontend {
         }
 
         private displayCurrentCapture(): void {
-            const capture = this.onCaptureRelatedAction(MenuStatus.Commands); 
+            const capture = this.onCaptureRelatedAction(MenuStatus.Commands);
             this.mvx.updateAllChildrenGenericState<ICaptureListItemState>(this.captureListStateId,
                 (state) => { state.active = false; return state; }
             );
@@ -359,8 +359,8 @@ namespace SPECTOR.EmbeddedFrontend {
 
             this.createVisualStates(capture);
             this.commandListStateId = this.mvx.addChildState(this.contentStateId, null, this.commandListComponent);
-            this.commandDetailStateId = this.mvx.addChildState(this.contentStateId, null, this.commandDetailComponent);          
-            
+            this.commandDetailStateId = this.mvx.addChildState(this.contentStateId, null, this.commandDetailComponent);
+
             this.createCommands(capture);
         }
 
@@ -388,7 +388,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.mvx.addChildState(this.commandDetailStateId, visualState.VisualState, this.jsonVisualStateItemComponent);
 
             let status: string = "Unknown";
-            switch(command.status) {
+            switch (command.status) {
                 case CommandCaptureStatus.Deprecated:
                     status = "Deprecated"
                     break;
@@ -421,7 +421,7 @@ namespace SPECTOR.EmbeddedFrontend {
                     status: status
                 });
             }
-            
+
             for (const key in command) {
                 if (key === "VisualState" || key === "result") {
                     continue;
@@ -446,7 +446,7 @@ namespace SPECTOR.EmbeddedFrontend {
             else if (visualState.commandStateId === Number.MAX_VALUE) {
                 this.displayEndState();
             }
-            
+
             this.mvx.updateAllChildrenGenericState<IVisualStateItem>(this.visualStateListStateId,
                 (state) => { state.active = false; return state; }
             );
@@ -458,7 +458,7 @@ namespace SPECTOR.EmbeddedFrontend {
 
         private createVisualStates(capture: ICapture): void {
             this.visualStateListStateId = this.mvx.addChildState(this.contentStateId, null, this.visualStateListComponent);
-            
+
             this.mvx.removeChildrenStates(this.visualStateListStateId);
 
             this.initVisualStateId = this.mvx.addChildState(this.visualStateListStateId, {
@@ -478,7 +478,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 if (this.toFilter(commandCapture.name) && commandCapture.id !== this.currentCommandId) {
                     continue;
                 }
-            
+
                 const commandStateId = this.mvx.addChildState(this.commandListStateId, {
                     capture: commandCapture,
                     active: false
@@ -507,8 +507,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 });
 
                 if ((this.currentCommandId === -1 && i === 0)
-                    || (this.currentCommandId === commandCapture.id))
-                 {
+                    || (this.currentCommandId === commandCapture.id)) {
                     this.currentCommandStateId = commandStateId;
                     this.displayCurrentCommand();
 
@@ -536,19 +535,19 @@ namespace SPECTOR.EmbeddedFrontend {
             switch (status) {
                 case MenuStatus.Captures:
                     this.displayCurrentCapture();
-                break;
+                    break;
                 case MenuStatus.Commands:
                     this.displayCurrentCapture();
-                break;
+                    break;
                 case MenuStatus.EndState:
                     this.displayEndState();
-                break;
+                    break;
                 case MenuStatus.Information:
                     this.displayInformation();
-                break;
+                    break;
                 case MenuStatus.InitState:
                     this.displayInitState();
-                break;
+                    break;
             }
             this.searchText = "";
         }

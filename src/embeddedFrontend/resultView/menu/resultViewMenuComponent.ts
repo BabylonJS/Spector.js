@@ -19,9 +19,9 @@ namespace SPECTOR.EmbeddedFrontend {
         public onInitStateClicked: IStateEvent<IResultViewMenuState>;
         public onEndStateClicked: IStateEvent<IResultViewMenuState>;
         public onCloseClicked: IStateEvent<IResultViewMenuState>;
-        public onSearchTextChanged: IStateEvent<IResultViewMenuState>;        
+        public onSearchTextChanged: IStateEvent<IResultViewMenuState>;
         public onSearchTextCleared: IStateEvent<IResultViewMenuState>;
-        
+
         constructor(eventConstructor: EventConstructor, logger: ILogger) {
             super(eventConstructor, logger);
             this.onCapturesClicked = this.createEvent("onCapturesClicked");
@@ -30,7 +30,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.onInitStateClicked = this.createEvent("onInitStateClicked");
             this.onEndStateClicked = this.createEvent("onEndStateClicked");
             this.onCloseClicked = this.createEvent("onCloseClicked");
-            this.onSearchTextChanged = this.createEvent("onSearchTextChanged");            
+            this.onSearchTextChanged = this.createEvent("onSearchTextChanged");
             this.onSearchTextCleared = this.createEvent("onSearchTextCleared");
         }
 
@@ -38,7 +38,7 @@ namespace SPECTOR.EmbeddedFrontend {
 
             const htmlString = this.htmlTemplate`<ul class="resultViewMenuComponent">
                 <li class="resultViewMenuOpen resultViewMenuSmall"><a href="#" role="button">Menu</a></li>
-                
+
                 <li class="searchContainer"><input type="text" placeHolder="Search..." value="${state.searchText}" commandName="onSearchTextChanged" commandEventBinding="change"><a class="clearSearch" href="#" CommandName="onSearchTextCleared">X</a></li>
                 <li><a class="${state.status === MenuStatus.Captures ? "active" : ""} href="#" role="button" commandName="onCapturesClicked">Captures</a></li>
                 <li><a class="${state.status === MenuStatus.Information ? "active" : ""} href="#" role="button" commandName="onInformationClicked">Information</a></li>
@@ -55,14 +55,14 @@ namespace SPECTOR.EmbeddedFrontend {
                 if (openButton.getAttribute("open") === "true") {
                     openButton.setAttribute("open", "false");
                     for (let i = 0; i < lis.length; i++) {
-                        (<HTMLElement>lis[i]).style.display = "none";                        
+                        (<HTMLElement>lis[i]).style.display = "none";
                         (<HTMLElement>lis[i]).style.visibility = "hidden";
                     }
                 }
                 else {
                     openButton.setAttribute("open", "true");
                     for (let i = 0; i < lis.length; i++) {
-                        (<HTMLElement>lis[i]).style.display = "block";                        
+                        (<HTMLElement>lis[i]).style.display = "block";
                         (<HTMLElement>lis[i]).style.visibility = "visible";
                     }
                 }

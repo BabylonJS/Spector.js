@@ -4,7 +4,7 @@ namespace SPECTOR.EmbeddedFrontend {
             const htmlString = this.htmlTemplate`
             <div class="jsonGroupComponent">
                 <div class="jsonGroupComponentTitle">${state ? state.replace(/([A-Z])/g, ' $1').trim() : ""}</div>
-                <ul childrenContainer="true"></ul>                
+                <ul childrenContainer="true"></ul>
             </div>`;
 
             return this.renderElementFromTemplate(htmlString, state, stateId);

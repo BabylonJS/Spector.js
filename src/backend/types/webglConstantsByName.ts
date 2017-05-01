@@ -5,7 +5,7 @@ namespace SPECTOR {
 
     export const WebGlConstantsByName: WebGlConstantsByName = {};
 
-    (function init(){
+    (function init() {
         for (const name in WebGlConstants) {
             const constant = (<any>WebGlConstants)[name];
             WebGlConstantsByName[constant.name] = constant;

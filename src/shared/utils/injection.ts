@@ -1,5 +1,5 @@
 namespace SPECTOR {
-    export type InjectionType =  {
+    export type InjectionType = {
         readonly WebGlObjectNamespace: FunctionIndexer;
         readonly RecorderNamespace: FunctionIndexer;
         readonly CommandNamespace: FunctionIndexer;
@@ -10,11 +10,11 @@ namespace SPECTOR {
         readonly EventCtor: EventConstructor;
         readonly TimeCtor: TimeConstructor;
 
-        readonly CanvasSpyCtor: CanvasSpyConstructor;    
+        readonly CanvasSpyCtor: CanvasSpyConstructor;
         readonly CommandSpyCtor: CommandSpyConstructor;
         readonly ContextSpyCtor: ContextSpyConstructor;
-        readonly RecorderSpyCtor: RecorderSpyConstructor;    
-        readonly StateSpyCtor: StateSpyConstructor;    
+        readonly RecorderSpyCtor: RecorderSpyConstructor;
+        readonly StateSpyCtor: StateSpyConstructor;
         readonly TimeSpyCtor: TimeSpyConstructor;
         readonly WebGlObjectSpyCtor: WebGlObjectSpyConstructor;
 
@@ -29,7 +29,7 @@ namespace SPECTOR {
     }
 }
 
-namespace SPECTOR.ProvidedInjection  {
+namespace SPECTOR.ProvidedInjection {
     export const DefaultInjection: InjectionType = {
         WebGlObjectNamespace: WebGlObjects,
         RecorderNamespace: Recorders,
@@ -41,10 +41,10 @@ namespace SPECTOR.ProvidedInjection  {
         EventCtor: Utils.Event,
         TimeCtor: Utils.Time,
 
-        CanvasSpyCtor: Spies.CanvasSpy,    
+        CanvasSpyCtor: Spies.CanvasSpy,
         CommandSpyCtor: Spies.CommandSpy,
         ContextSpyCtor: Spies.ContextSpy,
-        RecorderSpyCtor: Spies.RecorderSpy,    
+        RecorderSpyCtor: Spies.RecorderSpy,
         StateSpyCtor: Spies.StateSpy,
         TimeSpyCtor: Spies.TimeSpy,
         WebGlObjectSpyCtor: Spies.WebGlObjectSpy,

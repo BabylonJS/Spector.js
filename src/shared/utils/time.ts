@@ -2,9 +2,9 @@ namespace SPECTOR {
     export interface ITime {
         readonly now: number;
     }
-    
+
     export type TimeConstructor = {
-        new(): ITime;
+        new (): ITime;
     }
 }
 

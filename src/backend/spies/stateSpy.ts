@@ -11,23 +11,23 @@ namespace SPECTOR {
     export interface IStateSpyOptions {
         readonly contextInformation: IContextInformation;
         readonly stateNamespace: FunctionIndexer;
-    }    
+    }
 
     export type StateSpyConstructor = {
-        new(options: IStateSpyOptions, logger: ILogger): IStateSpy
-    }    
+        new (options: IStateSpyOptions, logger: ILogger): IStateSpy
+    }
 }
 
 namespace SPECTOR.Spies {
     export class StateSpy implements IStateSpy {
 
-        private readonly stateConstructors: { [stateName: string]: StateConstructor; }        
+        private readonly stateConstructors: { [stateName: string]: StateConstructor; }
         private readonly stateTrackers: { [name: string]: IState };
         private readonly onCommandCapturedCallbacks: CommandCapturedCallbacks;
 
         public readonly contextInformation: IContextInformation;
 
-        constructor(private readonly options: IStateSpyOptions, private readonly logger: ILogger) {        
+        constructor(private readonly options: IStateSpyOptions, private readonly logger: ILogger) {
             this.stateTrackers = {}
             this.onCommandCapturedCallbacks = {};
             this.stateConstructors = {};
@@ -36,7 +36,7 @@ namespace SPECTOR.Spies {
             this.initAvailableStateTrackers();
             this.initStateTrackers();
         }
-        
+
         public startCapture(currentCapture: ICapture): void {
             for (const stateTrackerName in this.stateTrackers) {
                 const stateTracker = this.stateTrackers[stateTrackerName];
@@ -47,7 +47,7 @@ namespace SPECTOR.Spies {
             }
         }
 
-        public stopCapture(currentCapture: ICapture): void {            
+        public stopCapture(currentCapture: ICapture): void {
             for (const stateTrackerName in this.stateTrackers) {
                 const stateTracker = this.stateTrackers[stateTrackerName];
                 const state = stateTracker.stopCapture();
@@ -66,7 +66,7 @@ namespace SPECTOR.Spies {
             }
         }
 
-        private initAvailableStateTrackers(): void { 
+        private initAvailableStateTrackers(): void {
             for (const state in this.options.stateNamespace) {
                 const stateCtor = this.options.stateNamespace[state];
                 const stateName = Decorators.getStateName(stateCtor);
@@ -79,7 +79,7 @@ namespace SPECTOR.Spies {
         private initStateTrackers(): void {
             for (const stateName in this.stateConstructors) {
                 const options = merge(
-                    { stateName: stateName},
+                    { stateName: stateName },
                     this.contextInformation
                 );
 

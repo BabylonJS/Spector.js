@@ -4,7 +4,7 @@ namespace SPECTOR.EmbeddedFrontend {
 
         constructor(eventConstructor: EventConstructor, logger: ILogger) {
             super(eventConstructor, logger);
-            this.onCanvasSelected = this.createEvent("onCanvasSelected");    
+            this.onCanvasSelected = this.createEvent("onCanvasSelected");
         }
 
         public render(state: ICanvasInformation, stateId: number): Element {

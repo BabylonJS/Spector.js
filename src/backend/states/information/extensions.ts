@@ -12,7 +12,7 @@ module SPECTOR.States.Information {
     export interface IExtensionDefinition {
         readonly name: string;
         readonly description?: string;
-    } 
+    }
 
     export interface IExtension {
         readonly name: string;
@@ -36,10 +36,10 @@ module SPECTOR.States.Information {
 
                 { name: "EXT_frag_depth", description: "" },
                 { name: "EXT_sRGB", description: "" },
-                { name: "EXT_shader_texture_lod", description: "" }, 
+                { name: "EXT_shader_texture_lod", description: "" },
                 { name: "EXT_texture_filter_anisotropic", description: "" },
                 { name: "OES_element_index_uint", description: "" },
-                { name: "OES_standard_derivatives", description: "" },      
+                { name: "OES_standard_derivatives", description: "" },
                 { name: "OES_texture_float", description: "" },
 
                 { name: "OES_texture_float_linear", description: "" },
@@ -56,10 +56,10 @@ module SPECTOR.States.Information {
                 //{ name: "WEBGL_debug_shaders", description: "" },
                 { name: "WEBGL_depth_texture", description: "" },
                 { name: "WEBGL_draw_buffers", description: "" }]
-                // , 
-                // WebGl2  
+                // ,
+                // WebGl2
                 // []
-            ];          
+            ];
 
             this.currentState = this.startCapture();
         }

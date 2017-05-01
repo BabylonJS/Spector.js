@@ -1,8 +1,8 @@
 namespace SPECTOR {
 
-    export type RecordId = { 
-        readonly version: number, 
-        readonly id: number 
+    export type RecordId = {
+        readonly version: number,
+        readonly id: number
     }
 
     export interface IRecorder {
@@ -20,7 +20,7 @@ namespace SPECTOR {
     }
 }
 
-namespace SPECTOR.Recorders {    
+namespace SPECTOR.Recorders {
     export abstract class BaseRecorder implements IRecorder {
 
         protected readonly createCommandNames: string[];
@@ -32,16 +32,16 @@ namespace SPECTOR.Recorders {
         protected abstract getCreateCommandNames(): string[];
         protected abstract getUpdateCommandNames(): string[];
         protected abstract getDeleteCommandNames(): string[];
-        protected abstract getBoundObject(target: number): object;        
-        
-        constructor(protected options: IRecorderOptions, logger: ILogger) {    
+        protected abstract getBoundObject(target: number): object;
+
+        constructor(protected options: IRecorderOptions, logger: ILogger) {
             this.createCommandNames = this.getCreateCommandNames();
             this.updateCommandNames = this.getUpdateCommandNames();
             this.deleteCommandNames = this.getDeleteCommandNames();
             this.objectName = options.objectName;
         }
 
-        public registerCallbacks(onFunctionCallbacks: FunctionCallbacks): void {    
+        public registerCallbacks(onFunctionCallbacks: FunctionCallbacks): void {
             for (const command of this.createCommandNames) {
                 onFunctionCallbacks[command] = onFunctionCallbacks[command] || [];
                 onFunctionCallbacks[command].push(this.create.bind(this));

@@ -11,7 +11,7 @@ namespace SPECTOR.EmbeddedFrontend {
         constructor(eventConstructor: EventConstructor, logger: ILogger) {
             super(eventConstructor, logger);
             this.onCaptureSelected = this.createEvent("onCaptureSelected");
-            this.onSaveRequested = this.createEvent("onSaveRequested");    
+            this.onSaveRequested = this.createEvent("onSaveRequested");
         }
 
         public render(state: ICaptureListItemState, stateId: number): Element {
@@ -29,10 +29,10 @@ namespace SPECTOR.EmbeddedFrontend {
             }
             else {
                 const status = document.createElement("span");
-                status.innerText = state.capture.endState.VisualState.FrameBufferStatus; 
+                status.innerText = state.capture.endState.VisualState.FrameBufferStatus;
                 liHolder.appendChild(status);
             }
-            
+
             const text = document.createElement("span");
             text.innerText = new Date(state.capture.startTime).toTimeString().split(' ')[0];
             liHolder.appendChild(text);

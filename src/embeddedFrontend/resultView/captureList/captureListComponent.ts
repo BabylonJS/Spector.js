@@ -4,7 +4,7 @@ namespace SPECTOR.EmbeddedFrontend {
 
         constructor(eventConstructor: EventConstructor, logger: ILogger) {
             super(eventConstructor, logger);
-            this.onCaptureLoaded = new this.eventConstructor<ICapture>();   
+            this.onCaptureLoaded = new this.eventConstructor<ICapture>();
         }
 
         public render(state: boolean, stateId: number): Element {
@@ -13,10 +13,10 @@ namespace SPECTOR.EmbeddedFrontend {
                 <div class="openCaptureFile">
                     <Span>Drag files here to open a previously saved capture.</span>
                 </div>
-                <ul childrenContainer="true"></ul>                
+                <ul childrenContainer="true"></ul>
             </div>`;
 
-            const element = this.renderElementFromTemplate(htmlString, state, stateId); 
+            const element = this.renderElementFromTemplate(htmlString, state, stateId);
 
             const openCaptureFileElement = element.querySelector(".openCaptureFile");
             openCaptureFileElement.addEventListener("dragenter", (e: DragEvent) => { this.drag(e); return false; }, false);
@@ -57,7 +57,7 @@ namespace SPECTOR.EmbeddedFrontend {
                     let name = filesToLoad[i].name.toLowerCase();
                     let extension = name.split('.').pop();
                     let type = filesToLoad[i].type;
-                    
+
                     if (extension === "json") {
                         const fileToLoad = filesToLoad[i];
 

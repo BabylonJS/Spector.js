@@ -20,7 +20,7 @@ namespace SPECTOR.WebGlObjects {
 
     @Decorators.webGlObject("WebGLShader")
     export class Shader extends BaseWebGlObject { }
-    
+
     @Decorators.webGlObject("WebGLSync")
     export class Sync extends BaseWebGlObject { }
 

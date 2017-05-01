@@ -6,7 +6,7 @@ namespace SPECTOR.Commands {
             if (!result) {
                 return "null";
             }
-            
+
             const tag = WebGlObjects.getWebGlObjectTag(result);
             if (tag) {
                 return tag.displayText;

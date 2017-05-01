@@ -10,13 +10,13 @@ namespace SPECTOR.EmbeddedFrontend {
 
         constructor(eventConstructor: EventConstructor, logger: ILogger) {
             super(eventConstructor, logger);
-            this.onCommandSelected = this.createEvent("onCommandSelected");    
+            this.onCommandSelected = this.createEvent("onCommandSelected");
         }
 
         public render(state: ICommandListItemState, stateId: number): Element {
             const liHolder = document.createElement("li");
             let status: string = "unknown";
-            switch(state.capture.status) {
+            switch (state.capture.status) {
                 case CommandCaptureStatus.Deprecated:
                     status = "deprecated"
                     break;
@@ -38,12 +38,12 @@ namespace SPECTOR.EmbeddedFrontend {
                 liHolder.className = " active";
                 setTimeout(() => { liHolder.scrollIntoView(); document.body.scrollIntoView(); }, 1);
             }
-            
+
             const textElement = document.createElement("span");
             let text = state.capture.text;
             text = text.replace(state.capture.name, `<span class=" ${status} important">${state.capture.name}</span>`)
 
-            textElement.innerHTML = text;            
+            textElement.innerHTML = text;
             liHolder.appendChild(textElement);
 
             this.mapEventListener(liHolder, "click", "onCommandSelected", state, stateId);

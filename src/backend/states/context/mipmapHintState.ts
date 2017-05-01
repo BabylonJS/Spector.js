@@ -6,9 +6,9 @@ namespace SPECTOR.States {
         protected getWebgl1Parameters(): IParameter[] {
             return [{ constant: WebGlConstants.GENERATE_MIPMAP_HINT, changeCommands: ["hint"] }];
         }
-        
+
         protected getConsumeCommands(): string[] {
-            return [ "generateMipmap" ];
+            return ["generateMipmap"];
         }
     }
 }

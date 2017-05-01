@@ -17,17 +17,17 @@ namespace SPECTOR {
 
 namespace SPECTOR.Commands {
     export abstract class BaseCommand implements ICommand {
-        
+
         public readonly spiedCommandName: string;
-        
-        constructor(protected readonly options: ICommandOptions, 
-                            protected readonly stackTrace: IStackTrace, 
-                            protected readonly logger: ILogger) {    
+
+        constructor(protected readonly options: ICommandOptions,
+            protected readonly stackTrace: IStackTrace,
+            protected readonly logger: ILogger) {
             this.spiedCommandName = options.spiedCommandName;
         }
 
         public createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture {
-            // Removes the spector interna calls to leave only th relevant part. 
+            // Removes the spector interna calls to leave only th relevant part.
             const stackTrace = this.stackTrace.getStackTrace(4, 1);
             const text = this.stringify(functionInformation.arguments, functionInformation.result);
             const commandCapture = {
@@ -55,7 +55,7 @@ namespace SPECTOR.Commands {
             // Nothing by default.
         }
 
-        protected stringify(args: IArguments, result:any): string {
+        protected stringify(args: IArguments, result: any): string {
             let stringified = this.options.spiedCommandName;
             if (args && args.length > 0) {
                 stringified += ": " + this.stringifyArgs(args).join(", ");
@@ -84,41 +84,41 @@ namespace SPECTOR.Commands {
             return this.stringifyValue(result);
         }
 
-        protected stringifyValue(value: any): string {           
+        protected stringifyValue(value: any): string {
             if (value === null) {
                 return "null";
             }
-            
+
             if (value === undefined) {
                 return "undefined";
             }
-            
+
             const tag = WebGlObjects.getWebGlObjectTag(value);
             if (tag) {
                 return tag.displayText;
             }
-            
+
             if (typeof value === "number" && WebGlConstants.isWebGlConstant(value)) {
                 return WebGlConstants.stringifyWebGlConstant(value, this.spiedCommandName);
             }
-            
+
             if (typeof value === "string") {
                 return value;
             }
-            
+
             if (value instanceof HTMLImageElement) {
                 return value.src;
             }
-            
+
             if (value instanceof ArrayBuffer) {
                 return "[--(" + value.byteLength + ")--]";
             }
-            
+
             if (value.length) {
                 return "[..(" + value.length + ")..]";
             }
 
             return value;
-        }        
+        }
     }
 }

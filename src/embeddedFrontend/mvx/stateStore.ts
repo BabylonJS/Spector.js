@@ -16,9 +16,9 @@ namespace SPECTOR.EmbeddedFrontend {
     }
 
     export class StateStore {
-        private readonly store: { [key:number]: IState };     
-        private pendingOperation: { [key:number]: number };
-        
+        private readonly store: { [key: number]: IState };
+        private pendingOperation: { [key: number]: number };
+
         private idGenerator: number;
 
         constructor(private readonly logger: ILogger) {
@@ -40,7 +40,7 @@ namespace SPECTOR.EmbeddedFrontend {
         }
 
         public getParentId(id: number): number {
-            if (this.store[id].parent) {                
+            if (this.store[id].parent) {
                 return this.store[id].parent.id;
             }
             return -1;
@@ -48,7 +48,7 @@ namespace SPECTOR.EmbeddedFrontend {
 
         public getChildrenIds(id: number): number[] {
             const result: number[] = [];
-            for (const child of this.store[id].children) {                
+            for (const child of this.store[id].children) {
                 result.push(child.id);
             }
             return result;
@@ -107,13 +107,13 @@ namespace SPECTOR.EmbeddedFrontend {
             child.parent = parent;
 
             if (index >= parent.children.length) {
-                parent.children.push(child);                
+                parent.children.push(child);
             }
             else if (index >= 0) {
                 parent.children.splice(index, 0, child);
             }
             else {
-                parent.children.unshift(child);   
+                parent.children.unshift(child);
             }
             return id;
         }
@@ -137,12 +137,12 @@ namespace SPECTOR.EmbeddedFrontend {
                 parent.children[parent.children.length - 1].parent = null;
                 parent.children.splice(parent.children.length - 1, 1);
             }
-            else if (index >= 0) {                
+            else if (index >= 0) {
                 child = parent.children[index];
                 parent.children[index].parent = null;
                 parent.children.splice(index, 1);
             }
-            else {                                  
+            else {
                 child = parent.children[0];
                 parent.children[0].parent = null;
                 parent.children.splice(0, 1);
@@ -160,7 +160,7 @@ namespace SPECTOR.EmbeddedFrontend {
             else {
                 this.removeChildren(id);
                 this.store[id].lastOperation = LastOperation.Delete;
-                this.pendingOperation[id] = id;               
+                this.pendingOperation[id] = id;
             }
         }
 
@@ -171,7 +171,7 @@ namespace SPECTOR.EmbeddedFrontend {
             }
         }
 
-        public getStatesToProcess(): { [key:number]: number } {
+        public getStatesToProcess(): { [key: number]: number } {
             return this.pendingOperation;
         }
 

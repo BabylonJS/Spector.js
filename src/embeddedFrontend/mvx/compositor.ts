@@ -41,13 +41,12 @@ namespace SPECTOR.EmbeddedFrontend {
             for (let i = 0; i < children.length; i++) {
                 const childId = children[i];
                 const lastOperation = this.stateStore.getLastOperation(childId);
-                
+
                 // Recurse.
                 this.composeInContainer(container, currentChildIndexInDom, childId, lastOperation);
 
                 // Reindex in case of deleted nodes.
-                if (lastOperation !== LastOperation.Delete)
-                {
+                if (lastOperation !== LastOperation.Delete) {
                     currentChildIndexInDom++;
                 }
             }

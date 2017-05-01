@@ -7,7 +7,7 @@ namespace SPECTOR {
     }
 
     export type EventConstructor = {
-        new<T>(): IEvent<T>
+        new <T>(): IEvent<T>
     }
 }
 

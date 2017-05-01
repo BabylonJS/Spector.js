@@ -1,14 +1,14 @@
 namespace SPECTOR.EmbeddedFrontend {
     export class ComponentInstance {
         private static idGenerator: number = 0;
-        
+
         private readonly component: BaseNoneGenericComponent;
 
         private __cachedCurrentChildrenContainer: Element;
         private __cachedCurrentDomNode: Element;
 
         private domNode: Element;
-        
+
         constructor(component: BaseNoneGenericComponent, private readonly logger: ILogger) {
             this.component = component;
         }
@@ -52,7 +52,7 @@ namespace SPECTOR.EmbeddedFrontend {
             }
             this.__cachedCurrentChildrenContainer = newChildrenContainer;
 
-            if (indexInContainer >= parentContainer.children.length) {                
+            if (indexInContainer >= parentContainer.children.length) {
                 parentContainer.appendChild(element);
                 if (this.__cachedCurrentDomNode && lastOperation === LastOperation.Update) {
                     if (this.__cachedCurrentDomNode.remove) {
@@ -70,7 +70,7 @@ namespace SPECTOR.EmbeddedFrontend {
                     parentContainer.removeChild(currentElement);
                 }
             }
-            
+
             this.__cachedCurrentDomNode = this.domNode;
             return newChildrenContainer;
         }

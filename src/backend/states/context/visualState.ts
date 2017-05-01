@@ -1,10 +1,10 @@
 namespace SPECTOR.States {
-    
+
     @Decorators.state("VisualState")
     export class VisualState extends BaseState {
         public static captureBaseSize = 512;
 
-        private readonly captureFrameBuffer: WebGLFramebuffer;        
+        private readonly captureFrameBuffer: WebGLFramebuffer;
         private readonly workingCanvas: HTMLCanvasElement;
         private readonly captureCanvas: HTMLCanvasElement;
         private readonly workingContext2D: CanvasRenderingContext2D;
@@ -23,7 +23,7 @@ namespace SPECTOR.States {
             this.captureContext2D.webkitImageSmoothingEnabled = true;
             (<any>this.captureContext2D).msImageSmoothingEnabled = true;
         }
- 
+
         protected getConsumeCommands(): string[] {
             return ["clear", "clearBufferfv", "clearBufferiv", "clearBufferuiv", "clearBufferfi", ...drawCommands];
         }
@@ -77,7 +77,7 @@ namespace SPECTOR.States {
             }
         }
 
-        protected readFrameBufferAttachmentFromContext(gl:WebGLRenderingContext | WebGL2RenderingContext, frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant, x:number, y: number, width: number, height: number): void {
+        protected readFrameBufferAttachmentFromContext(gl: WebGLRenderingContext | WebGL2RenderingContext, frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant, x: number, y: number, width: number, height: number): void {
             const target = WebGlConstants.FRAMEBUFFER.value;
             const type = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE.value);
             if (type === WebGlConstants.NONE.value) {
@@ -88,8 +88,8 @@ namespace SPECTOR.States {
             if (type === WebGlConstants.RENDERBUFFER.value) {
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                 gl.framebufferRenderbuffer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value, WebGlConstants.RENDERBUFFER.value, storage);
-                this.getCapture(gl, webglConstant.name, x, y, width, height);            
-                gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, frameBuffer);            
+                this.getCapture(gl, webglConstant.name, x, y, width, height);
+                gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, frameBuffer);
             }
             else if (type === WebGlConstants.TEXTURE.value) {
                 let textureLayer = 0;
@@ -102,14 +102,14 @@ namespace SPECTOR.States {
 
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                 if (textureLayer === 0) {
-                    gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value, 
+                    gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                         textureCubeMapFace ? textureCubeMapFace : WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
                 }
                 else {
                     (<WebGL2RenderingContext>gl).framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
-                           storage, textureLevel, textureLayer);
+                        storage, textureLevel, textureLayer);
                 }
-                
+
                 const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);
                 if (status === WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
                     this.getCapture(gl, webglConstant.name, x, y, width, height);
@@ -119,13 +119,13 @@ namespace SPECTOR.States {
             }
         }
 
-        protected getCapture(gl: WebGLRenderingContext, name:string, x:number, y: number, width: number, height: number) {
+        protected getCapture(gl: WebGLRenderingContext, name: string, x: number, y: number, width: number, height: number) {
             // Read the pixels from the frame buffer.
             const size = width * height * 4;
             const pixels = new Uint8Array(size);
             gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-            // Copy the pixels to a working 2D canvas same size.            
+            // Copy the pixels to a working 2D canvas same size.
             this.workingCanvas.width = width;
             this.workingCanvas.height = height;
             const imageData = this.workingContext2D.createImageData(width, height);
@@ -134,11 +134,11 @@ namespace SPECTOR.States {
 
             // Copy the pixels to a resized capture 2D canvas.
             const imageAspectRatio = width / height;
-            if(imageAspectRatio < 1) {
+            if (imageAspectRatio < 1) {
                 this.captureCanvas.width = VisualState.captureBaseSize * imageAspectRatio;
                 this.captureCanvas.height = VisualState.captureBaseSize;
             }
-            else if(imageAspectRatio > 1) {
+            else if (imageAspectRatio > 1) {
                 this.captureCanvas.width = VisualState.captureBaseSize;
                 this.captureCanvas.height = VisualState.captureBaseSize / imageAspectRatio;
             }
@@ -175,7 +175,7 @@ namespace SPECTOR.States {
             if (!tag) {
                 this.options.tagWebGlObject(object);
             }
-            
+
             return object;
         }
     }

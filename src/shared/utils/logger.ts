@@ -1,4 +1,4 @@
-namespace SPECTOR {    
+namespace SPECTOR {
     export enum LogLevel {
         noLog = 0,
         error = 1,
@@ -14,14 +14,14 @@ namespace SPECTOR {
     }
 
     export type LoggerConstructor = {
-        new(level?: LogLevel): Utils.ConsoleLogger;
+        new (level?: LogLevel): Utils.ConsoleLogger;
     }
 }
 
 namespace SPECTOR.Utils {
     export class ConsoleLogger implements ILogger {
-        
-        constructor (private level = LogLevel.warning) { }
+
+        constructor(private level = LogLevel.warning) { }
 
         public setLevel(level: LogLevel) {
             this.level = level;

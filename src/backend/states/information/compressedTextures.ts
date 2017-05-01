@@ -14,7 +14,7 @@ module SPECTOR.States.Information {
         protected stringifyParameterValue(value: any, parameter: IParameter): any {
             const formats = [];
             for (const format of value) {
-                formats.push(WebGlConstants.stringifyWebGlConstant(<any>format, "getParameter"));                
+                formats.push(WebGlConstants.stringifyWebGlConstant(<any>format, "getParameter"));
             }
             return formats;
         }

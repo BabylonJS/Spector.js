@@ -7,7 +7,7 @@ namespace SPECTOR.Commands {
             const readFrameBuffer = this.options.context.getParameter(WebGlConstants.READ_FRAMEBUFFER_BINDING.value);
             const readFrameBufferTag = this.options.tagWebGlObject(readFrameBuffer);
             stringified.push("READ FROM: " + this.stringifyValue(readFrameBufferTag));
-            
+
             const drawFrameBuffer = this.options.context.getParameter(WebGlConstants.DRAW_FRAMEBUFFER_BINDING.value);
             const drawFrameBufferTag = this.options.tagWebGlObject(drawFrameBuffer);
             stringified.push("WRITE TO: " + this.stringifyValue(drawFrameBufferTag));

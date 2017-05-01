@@ -41,5 +41,13 @@
              "when":"$(basename).ts"
          },
         "**/*.d.ts": true
+    },
+    "[typescript]": {
+        "files.insertFinalNewline": true,
+        "editor.formatOnSave": true,
+        "editor.trimAutoWhitespace": true,
+        "files.trimTrailingWhitespace": true,
+        "editor.tabSize": 4,
+        "editor.insertSpaces": false
     }
 }

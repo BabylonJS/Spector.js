@@ -5,8 +5,8 @@ namespace SPECTOR {
         initState: State;
         commands: ICommandCapture[];
         endState: State;
-        startTime: number;               
-        listenCommandsStartTime: number;        
+        startTime: number;
+        listenCommandsStartTime: number;
         listenCommandsEndTime: number;
         endTime: number;
     }

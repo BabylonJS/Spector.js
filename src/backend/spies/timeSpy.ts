@@ -13,22 +13,22 @@ namespace SPECTOR {
         eventConstructor: EventConstructor;
         timeConstructor: TimeConstructor;
     }
-    
+
     export type TimeSpyConstructor = {
-        new(options: ITimeSpyOptions, logger: ILogger): ITimeSpy;
+        new (options: ITimeSpyOptions, logger: ILogger): ITimeSpy;
     }
 }
 
 namespace SPECTOR.Spies {
     export class TimeSpy implements ITimeSpy {
-        private static readonly requestAnimationFrameFunctions = ['requestAnimationFrame', 
+        private static readonly requestAnimationFrameFunctions = ['requestAnimationFrame',
             'msRequestAnimationFrame',
             'webkitRequestAnimationFrame',
             'mozRequestAnimationFrame',
             'oRequestAnimationFrame'
         ];
 
-        private static readonly setTimerFunctions = ['setTimeout', 
+        private static readonly setTimerFunctions = ['setTimeout',
             'setInterval'
         ];
 
@@ -40,11 +40,11 @@ namespace SPECTOR.Spies {
         private readonly time: ITime;
         private readonly lastSixtyFramesDuration: number[];
 
-        private lastSixtyFramesCurrentIndex: number; 
-        private lastSixtyFramesPreviousStart: number; 
+        private lastSixtyFramesCurrentIndex: number;
+        private lastSixtyFramesPreviousStart: number;
         private lastFrame: number;
         private speedRatio: number;
-        private willPlayNextFrame: boolean; 
+        private willPlayNextFrame: boolean;
 
         public readonly onFrameStart: IEvent<ITimeSpy>;
         public readonly onFrameEnd: IEvent<ITimeSpy>;
@@ -98,27 +98,27 @@ namespace SPECTOR.Spies {
             }
         }
 
-        private spyRequestAnimationFrame(functionName: string) : void {
+        private spyRequestAnimationFrame(functionName: string): void {
             const self = this;
             const oldRequestAnimationFrame = this.spiedWindow[functionName];
             const spiedWindow = this.spiedWindow;
-            spiedWindow[functionName] = function() {
+            spiedWindow[functionName] = function () {
                 const callback = arguments[0];
                 const onCallback = self.getCallback(self, callback, () => { spiedWindow[functionName](callback); });
-                
+
                 return oldRequestAnimationFrame.apply(self.spiedWindow, [onCallback]);
             };
         }
 
-        private spySetTimer(functionName: string) : void {
+        private spySetTimer(functionName: string): void {
             const self = this;
             const oldSetTimer = this.spiedWindow[functionName];
             const needsReplay = (functionName === "setTimeout");
             const spiedWindow = this.spiedWindow;
-            spiedWindow[functionName] = function() {
+            spiedWindow[functionName] = function () {
                 let callback = arguments[0];
                 const time = arguments[1];
-                if (TimeSpy.setTimerCommonValues.indexOf(time) > -1 ) {
+                if (TimeSpy.setTimerCommonValues.indexOf(time) > -1) {
                     callback = self.getCallback(self, callback, needsReplay ? () => { spiedWindow[functionName](callback); } : null);
                 }
 
@@ -127,7 +127,7 @@ namespace SPECTOR.Spies {
         }
 
         private getCallback(self: TimeSpy, callback: any, skippedCalback: () => void = null): Function {
-            return function() {
+            return function () {
                 const now = self.time.now;
 
                 self.lastFrame = ++self.lastFrame % self.speedRatio;
@@ -136,7 +136,7 @@ namespace SPECTOR.Spies {
                     callback.apply(self.spiedWindow, arguments);
                     self.lastSixtyFramesCurrentIndex = (self.lastSixtyFramesCurrentIndex + 1) % TimeSpy.fpsWindowSize;
                     self.lastSixtyFramesDuration[self.lastSixtyFramesCurrentIndex] = now - self.lastSixtyFramesPreviousStart;
-                    self.onFrameEnd.trigger(self);                
+                    self.onFrameEnd.trigger(self);
                     self.willPlayNextFrame = false;
                 }
                 else {

@@ -13,23 +13,23 @@ namespace SPECTOR {
     }
 
     export type WebGlObjectSpyConstructor = {
-        new(options: IWebGlObjectSpyOptions, logger: ILogger): IWebGlObjectSpy
+        new (options: IWebGlObjectSpyOptions, logger: ILogger): IWebGlObjectSpy
     }
 }
 
 namespace SPECTOR.Spies {
-    export class WebGlObjectSpy implements IWebGlObjectSpy {        
-        
+    export class WebGlObjectSpy implements IWebGlObjectSpy {
+
         private readonly webGlObjectConstructors: { [typeName: string]: { ctor: WebGlObjectConstructor, type: Function } }
         private readonly webGlObjects: { [typeName: string]: IWebGlObject }
 
         public readonly contextInformation: IContextInformation;
 
-        constructor(private readonly options: IWebGlObjectSpyOptions, private readonly logger: ILogger) {        
+        constructor(private readonly options: IWebGlObjectSpyOptions, private readonly logger: ILogger) {
             this.webGlObjectConstructors = {};
             this.webGlObjects = {};
-            this.contextInformation = options.contextInformation;          
-            
+            this.contextInformation = options.contextInformation;
+
             this.initAvailableWebglObjects();
             this.initWebglObjects();
         }
@@ -60,7 +60,7 @@ namespace SPECTOR.Spies {
             return undefined;
         }
 
-        private initAvailableWebglObjects(): void { 
+        private initAvailableWebglObjects(): void {
             for (const webGlObject in this.options.webGlObjectNamespace) {
                 const webGlObjectCtor = this.options.webGlObjectNamespace[webGlObject];
                 const typeName = Decorators.getWebGlObjectName(webGlObjectCtor);
@@ -74,15 +74,15 @@ namespace SPECTOR.Spies {
             }
         }
 
-        private initWebglObjects(): void {            
+        private initWebglObjects(): void {
             for (const typeName in this.webGlObjectConstructors) {
-                const options = merge({ 
-                        typeName: typeName,
-                        type: this.webGlObjectConstructors[typeName].type
-                    },
+                const options = merge({
+                    typeName: typeName,
+                    type: this.webGlObjectConstructors[typeName].type
+                },
                     this.contextInformation
                 );
-                
+
                 const webglObject = new this.webGlObjectConstructors[typeName].ctor(options, this.logger);
                 this.webGlObjects[typeName] = webglObject;
             }

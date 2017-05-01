@@ -1,7 +1,7 @@
 namespace SPECTOR.Decorators {
     const COMMANDNAMEKEY = "__CommandName";
     export function command(commandName: string) {
-        return function(target: any) {
+        return function (target: any) {
             target[COMMANDNAMEKEY] = commandName;
         };
     }
@@ -11,20 +11,20 @@ namespace SPECTOR.Decorators {
 
     const STATENAMEKEY = "__StateName";
     export function state(stateName: string) {
-        return function(target: any) {
+        return function (target: any) {
             target[STATENAMEKEY] = stateName;
         };
-    }    
+    }
     export function getStateName(target: any): string {
         return target[STATENAMEKEY];
     }
 
     const RECORDEROBJECTNAMEKEY = "___RecorderObjectName";
     export function recorder(objectName: string) {
-        return function(target: any) {
+        return function (target: any) {
             target[RECORDEROBJECTNAMEKEY] = objectName;
         };
-    }    
+    }
     export function getRecorderName(target: any): string {
         return target[RECORDEROBJECTNAMEKEY];
     }
@@ -32,15 +32,15 @@ namespace SPECTOR.Decorators {
     export const OBJECTNAMEKEY = "___ObjectName";
     export const OBJECTTYPEKEY = "___ObjectType";
     export function webGlObject(objectName: string) {
-        return function(target: any) {
+        return function (target: any) {
             target[OBJECTNAMEKEY] = objectName;
             target[OBJECTTYPEKEY] = (<any>window)[objectName] || null;
         };
-    }    
+    }
     export function getWebGlObjectName(target: any): string {
         return target[OBJECTNAMEKEY];
-    }    
+    }
     export function getWebGlObjectType(target: any): Function {
         return target[OBJECTTYPEKEY];
     }
-} 
+}

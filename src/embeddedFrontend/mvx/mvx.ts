@@ -1,10 +1,10 @@
 namespace SPECTOR.EmbeddedFrontend {
-    
+
     export class MVX {
         private static readonly REFRESHRATEINMILLISECONDS = 100;
 
         private readonly compositor: Compositor;
-        private readonly stateStore: StateStore;        
+        private readonly stateStore: StateStore;
 
         private willRender: boolean;
         private rootStateId: number;
@@ -12,7 +12,7 @@ namespace SPECTOR.EmbeddedFrontend {
         constructor(placeHolder: Element, private readonly logger: ILogger) {
             this.stateStore = new StateStore(logger);
             this.compositor = new Compositor(placeHolder, this.stateStore, logger);
-            
+
             this.willRender = false;
             this.rootStateId = -1;
         }
@@ -40,7 +40,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.setForRender();
             this.stateStore.update(id, data);
         }
-        
+
         public removeState(id: number): void {
             this.setForRender();
             this.stateStore.remove(id);
@@ -84,22 +84,22 @@ namespace SPECTOR.EmbeddedFrontend {
             this.updateAllChildrenState(id, updateCallback);
         }
 
-        private setForRender() {   
-            if (!this.willRender) {         
+        private setForRender() {
+            if (!this.willRender) {
                 this.willRender = true;
                 setTimeout(this.compose.bind(this), MVX.REFRESHRATEINMILLISECONDS);
             }
         }
-        
+
         private compose(): void {
             // Render once.
             this.willRender = false;
 
-            // Render and compose. 
+            // Render and compose.
             this.compositor.compose(this.rootStateId);
 
             // Clean up the pending list of processed states.
             this.stateStore.flushPendingOperations();
-        }   
+        }
     }
 }

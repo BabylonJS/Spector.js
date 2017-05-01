@@ -1,6 +1,6 @@
 namespace SPECTOR {
     export type WebGLRenderingContexts = (WebGLRenderingContext | WebGL2RenderingContext);
-    
+
     export type ExtensionList = { [key: string]: any };
 
     export interface IContextInformation {

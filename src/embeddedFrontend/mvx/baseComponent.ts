@@ -7,14 +7,14 @@ namespace SPECTOR.EmbeddedFrontend {
         public abstract render(state: any, stateId: number): Element;
 
         protected createFromHtml(html: string): Element {
-            // IE 11 Compatibility prevents to reuse the div. 
+            // IE 11 Compatibility prevents to reuse the div.
             const dummyElement = document.createElement("div");
             dummyElement.innerHTML = html;
-            return dummyElement.firstElementChild;            
+            return dummyElement.firstElementChild;
         }
 
         // THX to http://2ality.com/2015/01/template-strings-html.html
-        protected htmlTemplate(literalSections:TemplateStringsArray, ...substs:any[]) {
+        protected htmlTemplate(literalSections: TemplateStringsArray, ...substs: any[]) {
             // Use raw literal sections: we don’t want
             // backslashes (\n etc.) to be interpreted
             let raw = literalSections.raw;
@@ -49,7 +49,7 @@ namespace SPECTOR.EmbeddedFrontend {
             // Take care of last literal section
             // (Never fails, because an empty template string
             // produces one literal section, an empty string)
-            result += raw[raw.length-1]; // (A)
+            result += raw[raw.length - 1]; // (A)
 
             return result;
         }
@@ -82,7 +82,7 @@ namespace SPECTOR.EmbeddedFrontend {
 
     export type IStateEvent<T> = IEvent<IStateEventArgs<T>>;
 
-    export abstract class BaseComponent<T> extends BaseNoneGenericComponent {        
+    export abstract class BaseComponent<T> extends BaseNoneGenericComponent {
         private readonly events: { [eventName: string]: IStateEvent<T> }
 
         constructor(eventConstructor: EventConstructor, logger: ILogger) {
@@ -103,7 +103,7 @@ namespace SPECTOR.EmbeddedFrontend {
             if (commandName) {
                 this.bindCommand(domNode, state, stateId);
             }
-            
+
             const commandContainers = domNode.querySelectorAll("[commandName]");
             for (let i = 0; i < commandContainers.length; i++) {
                 const commandContainer = commandContainers[i];
@@ -126,19 +126,19 @@ namespace SPECTOR.EmbeddedFrontend {
         protected mapEventListener(domElement: Element, domEvent: string, eventName: string, state: T, stateId: number, commandCapture = false, stopPropagation = false) {
             const self = this;
             if (stopPropagation) {
-                domElement.addEventListener(domEvent, 
-                    function(this:Element, e: Event) { 
+                domElement.addEventListener(domEvent,
+                    function (this: Element, e: Event) {
                         e.stopPropagation();
                         e.preventDefault();
-                        self.triggerEvent(eventName, this, state, stateId); 
-                    }, 
+                        self.triggerEvent(eventName, this, state, stateId);
+                    },
                     commandCapture)
             }
             else {
-                domElement.addEventListener(domEvent, 
-                    function(this:Element) {
-                        self.triggerEvent(eventName, this, state, stateId); 
-                    }, 
+                domElement.addEventListener(domEvent,
+                    function (this: Element) {
+                        self.triggerEvent(eventName, this, state, stateId);
+                    },
                     commandCapture)
             }
         }
@@ -146,16 +146,16 @@ namespace SPECTOR.EmbeddedFrontend {
         protected createEvent(commandName: string): IStateEvent<T> {
             if (!this.events[commandName]) {
                 const event = new this.eventConstructor<IStateEventArgs<T>>();
-                this.events[commandName] = event; 
+                this.events[commandName] = event;
             }
-            
+
             return this.events[commandName];
         }
 
         protected triggerEvent(commandName: string, element: Element, state: T, stateId: number) {
             this.events[commandName].trigger({
                 sender: element,
-                stateId: stateId, 
+                stateId: stateId,
                 state: state
             });
         }

@@ -3,7 +3,7 @@ namespace SPECTOR.EmbeddedFrontend {
         public render(state: any, stateId: number): Element {
             const htmlString = this.htmlTemplate`
             <div class="visualStateListComponent">
-                <ul childrenContainer="true"></ul>                
+                <ul childrenContainer="true"></ul>
             </div>`;
 
             return this.renderElementFromTemplate(htmlString, state, stateId);

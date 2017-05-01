@@ -24,7 +24,7 @@ namespace SPECTOR.States {
 
             this.currentState.program = this.getTag(program);
             this.currentState.programStatus = {
-                DELETE_STATUS: this.context.getProgramParameter(program, WebGlConstants.DELETE_STATUS.value),             
+                DELETE_STATUS: this.context.getProgramParameter(program, WebGlConstants.DELETE_STATUS.value),
                 LINK_STATUS: this.context.getProgramParameter(program, WebGlConstants.LINK_STATUS.value),
                 VALIDATE_STATUS: this.context.getProgramParameter(program, WebGlConstants.VALIDATE_STATUS.value)
             };
@@ -55,21 +55,21 @@ namespace SPECTOR.States {
             if (this.contextVersion > 1) {
                 this.readUniformsFromContextIntoState(program, uniformIndices, this.currentState.uniforms);
 
-                const uniformBlocks = this.context.getProgramParameter(program, WebGlConstants.ACTIVE_UNIFORM_BLOCKS.value);                
+                const uniformBlocks = this.context.getProgramParameter(program, WebGlConstants.ACTIVE_UNIFORM_BLOCKS.value);
                 this.currentState.uniformBlocks = [];
-                for (let i = 0; i < uniformBlocks; i ++) {
+                for (let i = 0; i < uniformBlocks; i++) {
                     const uniformBlockState = this.readUniformBlockFromContext(program, i);
                     this.currentState.uniformBlocks.push(uniformBlockState);
                 }
 
-                const transformFeedbackActive = this.context.getParameter(WebGlConstants.TRANSFORM_FEEDBACK_ACTIVE.value);                
+                const transformFeedbackActive = this.context.getParameter(WebGlConstants.TRANSFORM_FEEDBACK_ACTIVE.value);
                 this.currentState.transformFeedbacks = [];
                 if (transformFeedbackActive) {
                     const transformFeedbackModeValue = this.context.getProgramParameter(program, WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_MODE.value);
                     const transformFeedbackMode = this.getWebGlConstant(transformFeedbackModeValue);
 
                     const transformFeedbacks = this.context.getProgramParameter(program, WebGlConstants.TRANSFORM_FEEDBACK_VARYINGS.value);
-                    for (let i = 0; i < transformFeedbacks; i ++) {
+                    for (let i = 0; i < transformFeedbacks; i++) {
                         const transformFeedbackState = this.readTransformFeedbackFromContext(program, i);
                         this.currentState.transformFeedbacks.push(transformFeedbackState);
                     }
@@ -98,7 +98,7 @@ namespace SPECTOR.States {
                 }
             }
             else if (this.contextVersion > 1) {
-                const context2 = <WebGL2RenderingContext>this.context;                
+                const context2 = <WebGL2RenderingContext>this.context;
                 // Already covered ny the introspection of depth and stencil.
                 // frameBufferState.depthStencilAttachment = this.readFrameBufferAttachmentFromContext(WebGlConstants.DEPTH_STENCIL_ATTACHMENT.value);
                 frameBufferState.colorAttachments = [];
@@ -122,7 +122,7 @@ namespace SPECTOR.States {
 
             const storage = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_NAME.value);
             if (type === WebGlConstants.RENDERBUFFER.value) {
-                attachmentState.type = "RENDERBUFFER";                
+                attachmentState.type = "RENDERBUFFER";
                 attachmentState.buffer = this.options.tagWebGlObject(storage);
             }
             else if (type === WebGlConstants.TEXTURE.value) {
@@ -154,7 +154,7 @@ namespace SPECTOR.States {
             return attachmentState;
         }
 
-        protected readShaderFromContext(shader: WebGLShader): {} {            
+        protected readShaderFromContext(shader: WebGLShader): {} {
             return {
                 shader: this.getTag(shader),
                 COMPILE_STATUS: this.context.getShaderParameter(shader, WebGlConstants.COMPILE_STATUS.value),
@@ -171,7 +171,7 @@ namespace SPECTOR.States {
             const attributeState: any = {
                 name: info.name,
                 size: info.size,
-                type: this.getWebGlConstant(info.type),  
+                type: this.getWebGlConstant(info.type),
                 location: location,
                 offsetPointer: this.context.getVertexAttribOffset(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_POINTER.value),
                 bufferBinding: this.getTag(this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING.value)),
@@ -221,7 +221,7 @@ namespace SPECTOR.States {
                     type: this.getWebGlConstant(info.type),
                     location: null,
                     value: null
-                };                
+                };
                 return uniformState;
             }
         }
@@ -236,7 +236,7 @@ namespace SPECTOR.States {
                 wrapS: this.getWebGlConstant(this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_WRAP_S.value)),
                 wrapT: this.getWebGlConstant(this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_WRAP_T.value)),
             }
-            
+
             if (this.extensions[WebGlConstants.TEXTURE_MAX_ANISOTROPY_EXT.extensionName]) {
                 textureState.anisotropy = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_MAX_ANISOTROPY_EXT.value);
             }
@@ -246,14 +246,14 @@ namespace SPECTOR.States {
                 textureState.immutable = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_IMMUTABLE_FORMAT.value);
                 textureState.immutableLevels = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
                 textureState.maxLevel = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
-                    
+
                 const sampler = this.context.getParameter(WebGlConstants.SAMPLER_BINDING.value);
                 if (sampler) {
                     textureState.sampler = this.getTag(sampler);
                     const context2 = <WebGL2RenderingContext>this.context;
 
                     textureState.samplerMaxLod = context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
-                    textureState.samplerMinLod = context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);            
+                    textureState.samplerMinLod = context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
                     textureState.samplerCompareFunc = this.getWebGlConstant(context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_COMPARE_FUNC.value));
                     textureState.samplerCompareMode = this.getWebGlConstant(context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_COMPARE_MODE.value));
                     textureState.samplerWrapS = this.getWebGlConstant(context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_WRAP_S.value));
@@ -270,14 +270,14 @@ namespace SPECTOR.States {
                     textureState.wrapR = this.getWebGlConstant(this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value));
                 }
             }
-            
+
             this.context.activeTexture(activeTexture);
             return textureState;
         }
 
         protected readUniformsFromContextIntoState(program: WebGLProgram, uniformIndices: number[], uniformsState: any[]) {
-            const context2 = <WebGL2RenderingContext>this.context;  
-            
+            const context2 = <WebGL2RenderingContext>this.context;
+
             const typeValues = context2.getActiveUniforms(program, uniformIndices, WebGlConstants.UNIFORM_TYPE.value);
             const sizes = context2.getActiveUniforms(program, uniformIndices, WebGlConstants.UNIFORM_SIZE.value);
             const blockIndices = context2.getActiveUniforms(program, uniformIndices, WebGlConstants.UNIFORM_BLOCK_INDEX.value);
@@ -308,7 +308,7 @@ namespace SPECTOR.States {
             return {
                 name: info.name,
                 size: info.size,
-                type: this.getWebGlConstant(info.type),            
+                type: this.getWebGlConstant(info.type),
                 buffer: this.getTag(context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING.value, index)),
                 bufferSize: context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_SIZE.value, index),
                 bufferStart: context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_START.value, index),
@@ -318,7 +318,7 @@ namespace SPECTOR.States {
         protected readUniformBlockFromContext(program: WebGLProgram, index: number): {} {
             const context2 = <WebGL2RenderingContext>this.context;
             const bindingPoint = context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_BINDING.value);
-            
+
             return {
                 name: context2.getActiveUniformBlockName(program, index),
                 bindingPoint: bindingPoint,
@@ -330,27 +330,27 @@ namespace SPECTOR.States {
                 buffer: this.getTag(context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint)),
                 bufferSize: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_SIZE.value, bindingPoint),
                 bufferStart: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_START.value, bindingPoint),
-            }        
+            }
         }
 
         private static samplerTypes = {
             [WebGlConstants.SAMPLER_2D.value]: WebGlConstants.TEXTURE_2D,
             [WebGlConstants.SAMPLER_CUBE.value]: WebGlConstants.TEXTURE_CUBE_MAP,
 
-            [WebGlConstants.SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,	 
-            [WebGlConstants.SAMPLER_2D_SHADOW.value]: WebGlConstants.TEXTURE_2D,	 
-            [WebGlConstants.SAMPLER_2D_ARRAY.value]: WebGlConstants.TEXTURE_2D_ARRAY,	 
-            [WebGlConstants.SAMPLER_2D_ARRAY_SHADOW.value]: WebGlConstants.TEXTURE_2D_ARRAY,	 
+            [WebGlConstants.SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,
+            [WebGlConstants.SAMPLER_2D_SHADOW.value]: WebGlConstants.TEXTURE_2D,
+            [WebGlConstants.SAMPLER_2D_ARRAY.value]: WebGlConstants.TEXTURE_2D_ARRAY,
+            [WebGlConstants.SAMPLER_2D_ARRAY_SHADOW.value]: WebGlConstants.TEXTURE_2D_ARRAY,
             [WebGlConstants.SAMPLER_CUBE_SHADOW.value]: WebGlConstants.TEXTURE_CUBE_MAP,
 
             [WebGlConstants.INT_SAMPLER_2D.value]: WebGlConstants.TEXTURE_2D,
-            [WebGlConstants.INT_SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,	 
-            [WebGlConstants.INT_SAMPLER_CUBE.value]: WebGlConstants.TEXTURE_CUBE_MAP,	 
-            [WebGlConstants.INT_SAMPLER_2D_ARRAY.value]: WebGlConstants.TEXTURE_2D_ARRAY,	
+            [WebGlConstants.INT_SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,
+            [WebGlConstants.INT_SAMPLER_CUBE.value]: WebGlConstants.TEXTURE_CUBE_MAP,
+            [WebGlConstants.INT_SAMPLER_2D_ARRAY.value]: WebGlConstants.TEXTURE_2D_ARRAY,
 
-            [WebGlConstants.UNSIGNED_INT_SAMPLER_2D.value]: WebGlConstants.TEXTURE_2D,	 
-            [WebGlConstants.UNSIGNED_INT_SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,	 
-            [WebGlConstants.UNSIGNED_INT_SAMPLER_CUBE.value]: WebGlConstants.TEXTURE_CUBE_MAP,	 
+            [WebGlConstants.UNSIGNED_INT_SAMPLER_2D.value]: WebGlConstants.TEXTURE_2D,
+            [WebGlConstants.UNSIGNED_INT_SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,
+            [WebGlConstants.UNSIGNED_INT_SAMPLER_CUBE.value]: WebGlConstants.TEXTURE_CUBE_MAP,
             [WebGlConstants.UNSIGNED_INT_SAMPLER_2D_ARRAY.value]: WebGlConstants.TEXTURE_2D_ARRAY
         };
 
@@ -367,7 +367,7 @@ namespace SPECTOR.States {
             if (!tag) {
                 this.options.tagWebGlObject(object);
             }
-            
+
             return object;
         }
     }

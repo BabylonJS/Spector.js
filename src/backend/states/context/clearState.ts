@@ -5,12 +5,12 @@ namespace SPECTOR.States {
 
         protected getWebgl1Parameters(): IParameter[] {
             return [{ constant: WebGlConstants.COLOR_CLEAR_VALUE, changeCommands: ["clearColor"] },
-                    { constant: WebGlConstants.DEPTH_CLEAR_VALUE, changeCommands: ["clearDepth"] },
-                    { constant: WebGlConstants.STENCIL_CLEAR_VALUE, changeCommands: ["clearStencil"] }]
+            { constant: WebGlConstants.DEPTH_CLEAR_VALUE, changeCommands: ["clearDepth"] },
+            { constant: WebGlConstants.STENCIL_CLEAR_VALUE, changeCommands: ["clearStencil"] }]
         }
 
         protected getConsumeCommands(): string[] {
-            return [ "clear" ];
+            return ["clear"];
         }
 
         protected isStateEnable(stateName: string, args: IArguments): boolean {

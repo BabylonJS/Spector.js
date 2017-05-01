@@ -6,7 +6,7 @@ namespace SPECTOR.Commands {
             if (!result) {
                 return undefined;
             }
-            
+
             return `name: ${result.name}, size: ${result.size}, type: ${result.type}`;
         }
     }

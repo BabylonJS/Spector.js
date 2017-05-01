@@ -7,14 +7,14 @@ namespace SPECTOR {
     }
 
     export interface IWebGlObject {
-        readonly typeName: string;        
+        readonly typeName: string;
         readonly type: Function;
 
         tagWebGlObject(webGlObject: WebGLObject): WebGlObjectTag;
     }
 
     export interface IWebGlObjectOptions extends IContextInformation {
-        readonly typeName: string;        
+        readonly typeName: string;
         readonly type: Function;
     }
 
@@ -37,36 +37,36 @@ namespace SPECTOR.WebGlObjects {
 
     export function stringifyWebGlObjectTag(tag: WebGlObjectTag): string {
         if (!tag) {
-            return 'No tag available.';    
+            return 'No tag available.';
         }
         return `${tag.typeName} - ID: ${tag.id} - Version: ${tag.version}`;
     }
 }
 
-namespace SPECTOR.WebGlObjects {   
+namespace SPECTOR.WebGlObjects {
     export abstract class BaseWebGlObject implements IWebGlObject {
 
         private id: number;
 
         public readonly typeName: string;
         public readonly type: Function;
-        
-        constructor(protected options: IWebGlObjectOptions, logger: ILogger) {    
-           this.typeName = options.typeName;
-           this.type = options.type;
-           this.id = 0;
+
+        constructor(protected options: IWebGlObjectOptions, logger: ILogger) {
+            this.typeName = options.typeName;
+            this.type = options.type;
+            this.id = 0;
         }
 
         public tagWebGlObject(webGlObject: any): WebGlObjectTag {
             if (!this.type) {
                 return undefined;
             }
-            
+
             let tag: WebGlObjectTag;
             if (!webGlObject) {
                 return tag;
             }
-            
+
             tag = getWebGlObjectTag(webGlObject);
             if (tag) {
                 return tag;

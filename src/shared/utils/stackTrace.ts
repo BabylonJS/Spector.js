@@ -2,9 +2,9 @@ namespace SPECTOR {
     export interface IStackTrace {
         getStackTrace(removeFirstNCalls?: number, removeLastNCalls?: number): string[];
     }
-    
+
     export type StackTraceConstructor = {
-        new(): IStackTrace;
+        new (): IStackTrace;
     }
 }
 
@@ -14,13 +14,13 @@ namespace SPECTOR.Utils {
 
         public getStackTrace(removeFirstNCalls = 0, removeLastNCalls = 0): string[] {
             const callstack: string[] = [];
-            
+
             try {
                 throw new Error();
             } catch (err) {
                 if (err.stack) {
                     const lines = err.stack.split('\n');
-                    for (let i = 0, len = lines.length; i<len; i++) {
+                    for (let i = 0, len = lines.length; i < len; i++) {
                         if (lines[i].match(/^\s*[A-Za-z0-9\-_\$]+\(/)) {
                             callstack.push(lines[i]);
                         }
@@ -32,12 +32,12 @@ namespace SPECTOR.Utils {
                 }
                 else if (err.message) {
                     const lines = err.message.split('\n');
-                    for (let i = 0, len = lines.length; i<len; i++) {
+                    for (let i = 0, len = lines.length; i < len; i++) {
                         if (lines[i].match(/^\s*[A-Za-z0-9\-_\$]+\(/)) {
                             let entry = lines[i];
                             //Append next line also since it has the file info
-                            if (lines[i+1]) {
-                                entry += ' at ' + lines[i+1];
+                            if (lines[i + 1]) {
+                                entry += ' at ' + lines[i + 1];
                                 i++;
                             }
                             callstack.push(entry);
@@ -76,7 +76,7 @@ namespace SPECTOR.Utils {
                     }
                 }
             }
-            
+
             return callstack;
         }
     }

@@ -22,15 +22,15 @@ namespace SPECTOR {
     }
 
     export type ContextSpyConstructor = {
-        new(options: IContextSpyOptions, 
+        new (options: IContextSpyOptions,
             time: ITime,
             logger: ILogger): IContextSpy;
-    }    
+    }
 }
 
 namespace SPECTOR.Spies {
     export class ContextSpy implements IContextSpy {
-        
+
         private static readonly unSpyableMembers = ['canvas',
             'drawingBufferWidth',
             'drawingBufferHeight'
@@ -47,15 +47,15 @@ namespace SPECTOR.Spies {
         private globalCapturing: boolean;
         private commandId: number;
         private currentCapture: ICapture;
-        private canvasCapture: ICanvasCapture;    
+        private canvasCapture: ICanvasCapture;
         private contextCapture: IContextCapture;
 
         public readonly context: WebGLRenderingContexts;
         public readonly version: number;
 
-        constructor(private readonly options: IContextSpyOptions, 
-                private readonly time: ITime, 
-                private readonly logger: ILogger) {
+        constructor(private readonly options: IContextSpyOptions,
+            private readonly time: ITime,
+            private readonly logger: ILogger) {
             this.commandId = 0;
             this.context = options.context;
             this.version = options.version;
@@ -74,20 +74,20 @@ namespace SPECTOR.Spies {
 
             this.commandSpies = {};
             this.stateSpy = new this.injection.StateSpyCtor({
-                    contextInformation: this.contextInformation,
-                    stateNamespace: this.injection.StateNamespace
-                }, 
+                contextInformation: this.contextInformation,
+                stateNamespace: this.injection.StateNamespace
+            },
                 logger);
             this.recorderSpy = new this.injection.RecorderSpyCtor({
-                    contextInformation: this.contextInformation,
-                    recorderNamespace: this.injection.RecorderNamespace
-                }, logger);
+                contextInformation: this.contextInformation,
+                recorderNamespace: this.injection.RecorderNamespace
+            }, logger);
             this.webGlObjectSpy = new this.injection.WebGlObjectSpyCtor({
-                    contextInformation: this.contextInformation,
-                    webGlObjectNamespace: this.injection.WebGlObjectNamespace
-                }, logger);
+                contextInformation: this.contextInformation,
+                webGlObjectNamespace: this.injection.WebGlObjectNamespace
+            }, logger);
 
-            this.initStaticCapture(); 
+            this.initStaticCapture();
 
             if (options.recordAlways) {
                 this.spy();
@@ -96,24 +96,24 @@ namespace SPECTOR.Spies {
 
         public spy(): void {
             this.spyContext(this.context);
-            const {extensions} = this.contextInformation;
+            const { extensions } = this.contextInformation;
             for (const extensionName in extensions) {
                 this.spyContext(extensions[extensionName]);
             }
-        }   
+        }
 
         public unSpy(): void {
-            for (const member in this.commandSpies ) {
+            for (const member in this.commandSpies) {
                 this.commandSpies[member].unSpy();
             }
-        } 
-        
+        }
+
         public startCapture(): void {
             const startTime = this.time.now;
             if (!this.options.recordAlways) {
                 this.spy();
             }
-            
+
             this.capturing = true;
             this.commandId = 0;
             this.currentCapture = {
@@ -122,8 +122,8 @@ namespace SPECTOR.Spies {
                 commands: [],
                 initState: {},
                 endState: {},
-                startTime: startTime,          
-                listenCommandsStartTime: 0,        
+                startTime: startTime,
+                listenCommandsStartTime: 0,
                 listenCommandsEndTime: 0,
                 endTime: 0
             };
@@ -159,18 +159,18 @@ namespace SPECTOR.Spies {
             if (!this.globalCapturing) {
                 return;
             }
-            
+
             this.webGlObjectSpy.tagWebGlObjects(functionInformation);
             this.recorderSpy.recordCommand(functionInformation);
-        
+
             if (this.isCapturing()) {
                 const commandCapture = commandSpy.createCapture(functionInformation, this.getNextCommandCaptureId());
                 this.stateSpy.captureState(commandCapture);
                 this.currentCapture.commands.push(commandCapture);
 
                 commandCapture.endTime = this.time.now;
-            }            
-        }        
+            }
+        }
 
         private spyContext(bindingContext: any) {
             for (const member in bindingContext) {
@@ -191,7 +191,7 @@ namespace SPECTOR.Spies {
             }
         }
 
-        private initStaticCapture() : void {            
+        private initStaticCapture(): void {
             const extensionsState = new this.injection.ExtensionsCtor(this.contextInformation, this.logger);
             const extensions = extensionsState.getExtensions();
             for (const extensionName in extensions) {
@@ -204,7 +204,7 @@ namespace SPECTOR.Spies {
             this.contextCapture = {
                 version: this.version,
                 contextAttributes: this.context.getContextAttributes(),
-                capabilities: capabilitiesState.getStateData(),                
+                capabilities: capabilitiesState.getStateData(),
                 extensions: extensionsState.getStateData(),
                 compressedTextures: compressedTextures.getStateData()
             };
@@ -220,7 +220,7 @@ namespace SPECTOR.Spies {
 
         private spyFunction(member: string, bindingContext: any) {
             if (!this.commandSpies[member]) {
-                const options = merge(this.contextInformation, {                                
+                const options = merge(this.contextInformation, {
                     spiedCommandName: member,
                     spiedCommandRunningContext: bindingContext,
                     callback: this.onCommand.bind(this),

@@ -4,12 +4,12 @@ namespace SPECTOR.States {
     export class DepthState extends ParameterState {
 
         protected getWebgl1Parameters(): IParameter[] {
-            return  [{ constant: WebGlConstants.DEPTH_TEST, changeCommands: ["enable", "disable"] },
-                    { constant: WebGlConstants.DEPTH_FUNC, returnType: ParameterReturnType.GlEnum, changeCommands: ["depthFunc"] },
-                    { constant: WebGlConstants.DEPTH_RANGE, changeCommands: ["depthMask"] },
-                    { constant: WebGlConstants.DEPTH_WRITEMASK, changeCommands: ["depthRange"] }];
+            return [{ constant: WebGlConstants.DEPTH_TEST, changeCommands: ["enable", "disable"] },
+            { constant: WebGlConstants.DEPTH_FUNC, returnType: ParameterReturnType.GlEnum, changeCommands: ["depthFunc"] },
+            { constant: WebGlConstants.DEPTH_RANGE, changeCommands: ["depthMask"] },
+            { constant: WebGlConstants.DEPTH_WRITEMASK, changeCommands: ["depthRange"] }];
         }
-        
+
         protected getConsumeCommands(): string[] {
             return drawCommands;
         }
@@ -21,7 +21,7 @@ namespace SPECTOR.States {
             return true;
         }
 
-        protected isStateEnable(stateName: string, args: IArguments): boolean {           
+        protected isStateEnable(stateName: string, args: IArguments): boolean {
             return this.context.isEnabled(WebGlConstants.DEPTH_TEST.value);
         }
     }

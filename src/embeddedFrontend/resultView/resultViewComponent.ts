@@ -3,7 +3,7 @@ namespace SPECTOR.EmbeddedFrontend {
     export class ResultViewComponent extends BaseComponent<boolean> {
 
         constructor(eventConstructor: EventConstructor, logger: ILogger) {
-            super(eventConstructor, logger);  
+            super(eventConstructor, logger);
         }
 
         public render(state: boolean, stateId: number): Element {
