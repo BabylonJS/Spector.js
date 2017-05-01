@@ -6,21 +6,14 @@ engines:
   scss-lint:
     enabled: true
   eslint:
-    enabled: true
+    enabled: false
   csslint:
-    enabled: true
-  duplication:
-    enabled: true
-    config:
-      languages:
-      - javascript
+    enabled: false
 
 ratings:
   paths:
   - "**.scss"
   - "**.ts"
-  - "**.js"
-  - "**.css"
 
 ## other configuration excluded from example...
 exclude_paths:
