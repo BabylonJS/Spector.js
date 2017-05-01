@@ -6,6 +6,8 @@ engines:
     checks:
       no-namespace:
         enabled: false
+      quotemark:
+        [true, "double", "avoid-escape"]
 
   scss-lint:
     enabled: false
