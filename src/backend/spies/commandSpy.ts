@@ -21,12 +21,14 @@ namespace SPECTOR {
 
     export type CommandSpyConstructor = {
         new (options: ICommandSpyOptions, time: ITime, logger: ILogger): ICommandSpy;
-    }
+    };
 }
 
 namespace SPECTOR.Spies {
     export class CommandSpy implements ICommandSpy {
-        private static customCommandsConstructors: { [commandName: string]: CommandConstructor; }
+        private static customCommandsConstructors: { [commandName: string]: CommandConstructor; };
+
+        public readonly spiedCommandName: string;
 
         private readonly stackTrace: IStackTrace;
         private readonly spiedCommand: any;
@@ -36,8 +38,6 @@ namespace SPECTOR.Spies {
 
         private command: ICommand;
         private overloadedCommand: any;
-
-        public readonly spiedCommandName: string;
 
         constructor(options: ICommandSpyOptions, private readonly time: ITime, private readonly logger: ILogger) {
             this.stackTrace = new options.stackTraceCtor();
@@ -52,7 +52,7 @@ namespace SPECTOR.Spies {
                 contextVersion: options.contextVersion,
                 extensions: options.extensions,
                 toggleCapture: options.toggleCapture,
-                spiedCommandName: options.spiedCommandName
+                spiedCommandName: options.spiedCommandName,
             };
 
             this.initCustomCommands(options.commandNamespace);
@@ -77,18 +77,21 @@ namespace SPECTOR.Spies {
             }
 
             CommandSpy.customCommandsConstructors = {};
-            for (const Spy in commandNamespace) {
-                const commandCtor = commandNamespace[Spy];
-                const commandName = Decorators.getCommandName(commandCtor);
-                if (commandName) {
-                    CommandSpy.customCommandsConstructors[commandName] = commandCtor;
+            for (const spy in commandNamespace) {
+                if (commandNamespace.hasOwnProperty(spy)) {
+                    const commandCtor = commandNamespace[spy];
+                    const commandName = Decorators.getCommandName(commandCtor);
+                    if (commandName) {
+                        CommandSpy.customCommandsConstructors[commandName] = commandCtor;
+                    }
                 }
             }
         }
 
         private initCommand(defaultCommandCtor: CommandConstructor): void {
             if (CommandSpy.customCommandsConstructors[this.spiedCommandName]) {
-                this.command = new CommandSpy.customCommandsConstructors[this.spiedCommandName](this.commandOptions, this.stackTrace, this.logger);
+                this.command = new CommandSpy.customCommandsConstructors[this.spiedCommandName](this.commandOptions,
+                    this.stackTrace, this.logger);
             }
             else {
                 this.command = new defaultCommandCtor(this.commandOptions, this.stackTrace, this.logger);
@@ -99,6 +102,8 @@ namespace SPECTOR.Spies {
 
         private getSpy(): any {
             const self = this;
+            // Needs arguments access.
+            // tslint:disable-next-line:only-arrow-functions
             return function () {
                 const before = self.time.now;
                 const result = self.spiedCommand.apply(self.spiedCommandRunningContext, arguments);
@@ -106,16 +111,16 @@ namespace SPECTOR.Spies {
 
                 const functionInformation = {
                     name: self.spiedCommandName,
-                    arguments: arguments,
-                    result: result,
+                    arguments,
+                    result,
                     startTime: before,
-                    endTime: after
+                    endTime: after,
                 };
 
                 self.callback(self, functionInformation);
 
                 return result;
-            }
+            };
         }
     }
 }

@@ -1,3 +1,6 @@
+// tslint:disable:ban-types
+// tslint:disable:only-arrow-functions
+
 namespace SPECTOR {
 
     export interface ITimeSpy {
@@ -9,32 +12,35 @@ namespace SPECTOR {
     }
 
     export interface ITimeSpyOptions {
-        spiedWindow?: { [name: string]: Function }
+        spiedWindow?: { [name: string]: Function };
         eventConstructor: EventConstructor;
         timeConstructor: TimeConstructor;
     }
 
     export type TimeSpyConstructor = {
         new (options: ITimeSpyOptions, logger: ILogger): ITimeSpy;
-    }
+    };
 }
 
 namespace SPECTOR.Spies {
     export class TimeSpy implements ITimeSpy {
-        private static readonly requestAnimationFrameFunctions = ['requestAnimationFrame',
-            'msRequestAnimationFrame',
-            'webkitRequestAnimationFrame',
-            'mozRequestAnimationFrame',
-            'oRequestAnimationFrame'
+        private static readonly requestAnimationFrameFunctions = ["requestAnimationFrame",
+            "msRequestAnimationFrame",
+            "webkitRequestAnimationFrame",
+            "mozRequestAnimationFrame",
+            "oRequestAnimationFrame",
         ];
 
-        private static readonly setTimerFunctions = ['setTimeout',
-            'setInterval'
+        private static readonly setTimerFunctions = ["setTimeout",
+            "setInterval",
         ];
 
         private static readonly setTimerCommonValues = [0, 15, 16, 33, 32, 40];
 
         private static readonly fpsWindowSize = 60;
+
+        public readonly onFrameStart: IEvent<ITimeSpy>;
+        public readonly onFrameEnd: IEvent<ITimeSpy>;
 
         private readonly spiedWindow: { [name: string]: any };
         private readonly time: ITime;
@@ -45,9 +51,6 @@ namespace SPECTOR.Spies {
         private lastFrame: number;
         private speedRatio: number;
         private willPlayNextFrame: boolean;
-
-        public readonly onFrameStart: IEvent<ITimeSpy>;
-        public readonly onFrameEnd: IEvent<ITimeSpy>;
 
         constructor(private readonly options: ITimeSpyOptions, private readonly logger: ILogger) {
             this.spiedWindow = options.spiedWindow || window;
@@ -115,11 +118,14 @@ namespace SPECTOR.Spies {
             const oldSetTimer = this.spiedWindow[functionName];
             const needsReplay = (functionName === "setTimeout");
             const spiedWindow = this.spiedWindow;
+
+            // tslint:disable-next-line:only-arrow-functions
             spiedWindow[functionName] = function () {
                 let callback = arguments[0];
                 const time = arguments[1];
                 if (TimeSpy.setTimerCommonValues.indexOf(time) > -1) {
-                    callback = self.getCallback(self, callback, needsReplay ? () => { spiedWindow[functionName](callback); } : null);
+                    callback = self.getCallback(self, callback, needsReplay ?
+                        () => { spiedWindow[functionName](callback); } : null);
                 }
 
                 return oldSetTimer.apply(self.spiedWindow, [callback, time]);
@@ -135,7 +141,8 @@ namespace SPECTOR.Spies {
                     self.onFrameStart.trigger(self);
                     callback.apply(self.spiedWindow, arguments);
                     self.lastSixtyFramesCurrentIndex = (self.lastSixtyFramesCurrentIndex + 1) % TimeSpy.fpsWindowSize;
-                    self.lastSixtyFramesDuration[self.lastSixtyFramesCurrentIndex] = now - self.lastSixtyFramesPreviousStart;
+                    self.lastSixtyFramesDuration[self.lastSixtyFramesCurrentIndex] =
+                        now - self.lastSixtyFramesPreviousStart;
                     self.onFrameEnd.trigger(self);
                     self.willPlayNextFrame = false;
                 }
@@ -146,7 +153,7 @@ namespace SPECTOR.Spies {
                 }
 
                 self.lastSixtyFramesPreviousStart = now;
-            }
+            };
         }
     }
 }

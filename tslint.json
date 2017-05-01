@@ -29,7 +29,9 @@
     "prefer-for-of": false,
     "no-bitwise": false,
     "no-string-literal": false,
-    "one-line": [false]
+    "one-line": [false],
+    "space-before-function-paren": false,
+    "align": [false]
   },
   "rulesDirectory": []
 }

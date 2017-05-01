@@ -4,22 +4,23 @@ namespace SPECTOR {
     }
 
     export interface ICanvasSpyOptions {
-        readonly canvas?: HTMLCanvasElement
+        readonly canvas?: HTMLCanvasElement;
         readonly eventConstructor: EventConstructor;
     }
 
     export type CanvasSpyConstructor = {
-        new (options: ICanvasSpyOptions, logger: ILogger): ICanvasSpy
-    }
+        new (options: ICanvasSpyOptions, logger: ILogger): ICanvasSpy,
+    };
 }
 
 namespace SPECTOR.Spies {
     export class CanvasSpy implements ICanvasSpy {
+        public readonly onContextRequested: IEvent<IContextInformation>;
+
         private readonly canvas: HTMLCanvasElement;
 
-        private spiedGetContext: (contextId: string, contextAttributes?: {}) => CanvasRenderingContext2D | WebGLRenderingContexts | undefined;
-
-        public readonly onContextRequested: IEvent<IContextInformation>;
+        private spiedGetContext: (contextId: string, contextAttributes?: {}) =>
+            CanvasRenderingContext2D | WebGLRenderingContexts | undefined;
 
         constructor(private readonly options: ICanvasSpyOptions, private readonly logger: ILogger) {
             this.onContextRequested = new options.eventConstructor<IContextInformation>();
@@ -39,13 +40,15 @@ namespace SPECTOR.Spies {
 
                 if (context) {
                     const contextAttributes = Array.prototype.slice.call(arguments);
-                    const isWebgl2 = (contextAttributes[0] === "webgl2" || contextAttributes[0] === "experimental-webgl2");
+                    const isWebgl2 = (contextAttributes[0] === "webgl2" ||
+                        contextAttributes[0] === "experimental-webgl2");
+
                     const version = isWebgl2 ? 2 : 1;
 
                     self.onContextRequested.trigger({
-                        context: context,
-                        contextVersion: version
-                    })
+                        context,
+                        contextVersion: version,
+                    });
                 }
 
                 return context;
@@ -57,7 +60,7 @@ namespace SPECTOR.Spies {
             }
             else {
                 this.spiedGetContext = HTMLCanvasElement.prototype.getContext;
-                (<any>HTMLCanvasElement).prototype.getContext = getContextSpied;
+                (HTMLCanvasElement as any).prototype.getContext = getContextSpied;
             }
         }
     }

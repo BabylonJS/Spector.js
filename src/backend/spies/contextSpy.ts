@@ -22,19 +22,20 @@ namespace SPECTOR {
     }
 
     export type ContextSpyConstructor = {
-        new (options: IContextSpyOptions,
-            time: ITime,
-            logger: ILogger): IContextSpy;
-    }
+        new (options: IContextSpyOptions, time: ITime, logger: ILogger): IContextSpy;
+    };
 }
 
 namespace SPECTOR.Spies {
     export class ContextSpy implements IContextSpy {
 
-        private static readonly unSpyableMembers = ['canvas',
-            'drawingBufferWidth',
-            'drawingBufferHeight'
+        private static readonly unSpyableMembers = ["canvas",
+            "drawingBufferWidth",
+            "drawingBufferHeight",
         ];
+
+        public readonly context: WebGLRenderingContexts;
+        public readonly version: number;
 
         private readonly contextInformation: IContextInformation;
         private readonly commandSpies: { [key: string]: ICommandSpy };
@@ -50,12 +51,10 @@ namespace SPECTOR.Spies {
         private canvasCapture: ICanvasCapture;
         private contextCapture: IContextCapture;
 
-        public readonly context: WebGLRenderingContexts;
-        public readonly version: number;
-
         constructor(private readonly options: IContextSpyOptions,
             private readonly time: ITime,
             private readonly logger: ILogger) {
+
             this.commandId = 0;
             this.context = options.context;
             this.version = options.version;
@@ -69,22 +68,22 @@ namespace SPECTOR.Spies {
                 contextVersion: this.version,
                 toggleCapture: this.toggleGlobalCapturing.bind(this),
                 tagWebGlObject: this.tagWebGlObject.bind(this),
-                extensions: {}
+                extensions: {},
             };
 
             this.commandSpies = {};
             this.stateSpy = new this.injection.StateSpyCtor({
                 contextInformation: this.contextInformation,
-                stateNamespace: this.injection.StateNamespace
+                stateNamespace: this.injection.StateNamespace,
             },
                 logger);
             this.recorderSpy = new this.injection.RecorderSpyCtor({
                 contextInformation: this.contextInformation,
-                recorderNamespace: this.injection.RecorderNamespace
+                recorderNamespace: this.injection.RecorderNamespace,
             }, logger);
             this.webGlObjectSpy = new this.injection.WebGlObjectSpyCtor({
                 contextInformation: this.contextInformation,
-                webGlObjectNamespace: this.injection.WebGlObjectNamespace
+                webGlObjectNamespace: this.injection.WebGlObjectNamespace,
             }, logger);
 
             this.initStaticCapture();
@@ -98,13 +97,17 @@ namespace SPECTOR.Spies {
             this.spyContext(this.context);
             const { extensions } = this.contextInformation;
             for (const extensionName in extensions) {
-                this.spyContext(extensions[extensionName]);
+                if (extensions.hasOwnProperty(extensionName)) {
+                    this.spyContext(extensions[extensionName]);
+                }
             }
         }
 
         public unSpy(): void {
             for (const member in this.commandSpies) {
-                this.commandSpies[member].unSpy();
+                if (this.commandSpies.hasOwnProperty(member)) {
+                    this.commandSpies[member].unSpy();
+                }
             }
         }
 
@@ -122,10 +125,10 @@ namespace SPECTOR.Spies {
                 commands: [],
                 initState: {},
                 endState: {},
-                startTime: startTime,
+                startTime,
                 listenCommandsStartTime: 0,
                 listenCommandsEndTime: 0,
-                endTime: 0
+                endTime: 0,
             };
 
             this.stateSpy.startCapture(this.currentCapture);
@@ -179,13 +182,13 @@ namespace SPECTOR.Spies {
                 }
 
                 try {
-                    const isFunction = typeof bindingContext[member] !== 'number';
+                    const isFunction = typeof bindingContext[member] !== "number";
                     if (isFunction) {
                         this.spyFunction(member, bindingContext);
                     }
                 }
                 catch (e) {
-                    this.logger.error('Cant Spy member: ' + member);
+                    this.logger.error("Cant Spy member: " + member);
                     this.logger.error(e);
                 }
             }
@@ -195,7 +198,9 @@ namespace SPECTOR.Spies {
             const extensionsState = new this.injection.ExtensionsCtor(this.contextInformation, this.logger);
             const extensions = extensionsState.getExtensions();
             for (const extensionName in extensions) {
-                this.contextInformation.extensions[extensionName] = extensions[extensionName];
+                if (extensions.hasOwnProperty(extensionName)) {
+                    this.contextInformation.extensions[extensionName] = extensions[extensionName];
+                }
             }
 
             const capabilitiesState = new this.injection.CapabilitiesCtor(this.contextInformation, this.logger);
@@ -206,7 +211,7 @@ namespace SPECTOR.Spies {
                 contextAttributes: this.context.getContextAttributes(),
                 capabilities: capabilitiesState.getStateData(),
                 extensions: extensionsState.getStateData(),
-                compressedTextures: compressedTextures.getStateData()
+                compressedTextures: compressedTextures.getStateData(),
             };
 
             this.canvasCapture = {
@@ -214,7 +219,7 @@ namespace SPECTOR.Spies {
                 height: this.context.canvas.height,
                 clientWidth: this.context.canvas.clientWidth,
                 clientHeight: this.context.canvas.clientHeight,
-                browserAgent: navigator ? navigator.userAgent : ""
+                browserAgent: navigator ? navigator.userAgent : "",
             };
         }
 
@@ -226,7 +231,7 @@ namespace SPECTOR.Spies {
                     callback: this.onCommand.bind(this),
                     commandNamespace: this.injection.CommandNamespace,
                     stackTraceCtor: this.injection.StackTraceCtor,
-                    defaultCommandCtor: this.injection.DefaultCommandCtor
+                    defaultCommandCtor: this.injection.DefaultCommandCtor,
                 });
                 this.commandSpies[member] = new this.injection.CommandSpyCtor(options, this.time, this.logger);
             }

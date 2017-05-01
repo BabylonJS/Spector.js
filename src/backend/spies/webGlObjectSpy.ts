@@ -1,3 +1,6 @@
+// tslint:disable:ban-types
+// tslint:disable:only-arrow-functions
+
 namespace SPECTOR {
 
     export interface IWebGlObjectSpy {
@@ -13,17 +16,18 @@ namespace SPECTOR {
     }
 
     export type WebGlObjectSpyConstructor = {
-        new (options: IWebGlObjectSpyOptions, logger: ILogger): IWebGlObjectSpy
-    }
+        new (options: IWebGlObjectSpyOptions, logger: ILogger): IWebGlObjectSpy,
+    };
 }
 
 namespace SPECTOR.Spies {
     export class WebGlObjectSpy implements IWebGlObjectSpy {
 
-        private readonly webGlObjectConstructors: { [typeName: string]: { ctor: WebGlObjectConstructor, type: Function } }
-        private readonly webGlObjects: { [typeName: string]: IWebGlObject }
-
         public readonly contextInformation: IContextInformation;
+
+        private readonly webGlObjectConstructors:
+        { [typeName: string]: { ctor: WebGlObjectConstructor, type: Function } };
+        private readonly webGlObjects: { [typeName: string]: IWebGlObject };
 
         constructor(private readonly options: IWebGlObjectSpyOptions, private readonly logger: ILogger) {
             this.webGlObjectConstructors = {};
@@ -36,25 +40,29 @@ namespace SPECTOR.Spies {
 
         public tagWebGlObjects(functionInformation: IFunctionInformation) {
             for (const typeName in this.webGlObjects) {
-                const webGlObject = this.webGlObjects[typeName];
-                for (let i = 0; i < functionInformation.arguments.length; i++) {
-                    const arg = functionInformation.arguments[i];
-                    if (webGlObject.tagWebGlObject(arg)) {
+                if (this.webGlObjects.hasOwnProperty(typeName)) {
+                    const webGlObject = this.webGlObjects[typeName];
+                    for (let i = 0; i < functionInformation.arguments.length; i++) {
+                        const arg = functionInformation.arguments[i];
+                        if (webGlObject.tagWebGlObject(arg)) {
+                            break;
+                        }
+                    }
+                    if (webGlObject.tagWebGlObject(functionInformation.result)) {
                         break;
                     }
-                }
-                if (webGlObject.tagWebGlObject(functionInformation.result)) {
-                    break;
                 }
             }
         }
 
         public tagWebGlObject(object: any): WebGlObjectTag {
             for (const typeName in this.webGlObjects) {
-                const webGlObject = this.webGlObjects[typeName];
-                const tag = webGlObject.tagWebGlObject(object);
-                if (tag) {
-                    return tag;
+                if (this.webGlObjects.hasOwnProperty(typeName)) {
+                    const webGlObject = this.webGlObjects[typeName];
+                    const tag = webGlObject.tagWebGlObject(object);
+                    if (tag) {
+                        return tag;
+                    }
                 }
             }
             return undefined;
@@ -62,29 +70,33 @@ namespace SPECTOR.Spies {
 
         private initAvailableWebglObjects(): void {
             for (const webGlObject in this.options.webGlObjectNamespace) {
-                const webGlObjectCtor = this.options.webGlObjectNamespace[webGlObject];
-                const typeName = Decorators.getWebGlObjectName(webGlObjectCtor);
-                const type = Decorators.getWebGlObjectType(webGlObjectCtor);
-                if (typeName && type) {
-                    this.webGlObjectConstructors[typeName] = {
-                        ctor: webGlObjectCtor,
-                        type: type
-                    };
+                if (this.options.webGlObjectNamespace.hasOwnProperty(webGlObject)) {
+                    const webGlObjectCtor = this.options.webGlObjectNamespace[webGlObject];
+                    const typeName = Decorators.getWebGlObjectName(webGlObjectCtor);
+                    const type = Decorators.getWebGlObjectType(webGlObjectCtor);
+                    if (typeName && type) {
+                        this.webGlObjectConstructors[typeName] = {
+                            ctor: webGlObjectCtor,
+                            type,
+                        };
+                    }
                 }
             }
         }
 
         private initWebglObjects(): void {
             for (const typeName in this.webGlObjectConstructors) {
-                const options = merge({
-                    typeName: typeName,
-                    type: this.webGlObjectConstructors[typeName].type
-                },
-                    this.contextInformation
-                );
+                if (this.webGlObjectConstructors.hasOwnProperty(typeName)) {
+                    const options = merge({
+                        typeName,
+                        type: this.webGlObjectConstructors[typeName].type,
+                    },
+                        this.contextInformation,
+                    );
 
-                const webglObject = new this.webGlObjectConstructors[typeName].ctor(options, this.logger);
-                this.webGlObjects[typeName] = webglObject;
+                    const webglObject = new this.webGlObjectConstructors[typeName].ctor(options, this.logger);
+                    this.webGlObjects[typeName] = webglObject;
+                }
             }
         }
     }

@@ -14,21 +14,21 @@ namespace SPECTOR {
     }
 
     export type StateSpyConstructor = {
-        new (options: IStateSpyOptions, logger: ILogger): IStateSpy
-    }
+        new (options: IStateSpyOptions, logger: ILogger): IStateSpy,
+    };
 }
 
 namespace SPECTOR.Spies {
     export class StateSpy implements IStateSpy {
 
-        private readonly stateConstructors: { [stateName: string]: StateConstructor; }
+        public readonly contextInformation: IContextInformation;
+
+        private readonly stateConstructors: { [stateName: string]: StateConstructor; };
         private readonly stateTrackers: { [name: string]: IState };
         private readonly onCommandCapturedCallbacks: CommandCapturedCallbacks;
 
-        public readonly contextInformation: IContextInformation;
-
         constructor(private readonly options: IStateSpyOptions, private readonly logger: ILogger) {
-            this.stateTrackers = {}
+            this.stateTrackers = {};
             this.onCommandCapturedCallbacks = {};
             this.stateConstructors = {};
             this.contextInformation = options.contextInformation;
@@ -39,20 +39,24 @@ namespace SPECTOR.Spies {
 
         public startCapture(currentCapture: ICapture): void {
             for (const stateTrackerName in this.stateTrackers) {
-                const stateTracker = this.stateTrackers[stateTrackerName];
-                const state = stateTracker.startCapture();
-                if (stateTracker.requireStartAndStopStates) {
-                    currentCapture.initState[stateTrackerName] = state;
+                if (this.stateTrackers.hasOwnProperty(stateTrackerName)) {
+                    const stateTracker = this.stateTrackers[stateTrackerName];
+                    const state = stateTracker.startCapture();
+                    if (stateTracker.requireStartAndStopStates) {
+                        currentCapture.initState[stateTrackerName] = state;
+                    }
                 }
             }
         }
 
         public stopCapture(currentCapture: ICapture): void {
             for (const stateTrackerName in this.stateTrackers) {
-                const stateTracker = this.stateTrackers[stateTrackerName];
-                const state = stateTracker.stopCapture();
-                if (stateTracker.requireStartAndStopStates) {
-                    currentCapture.endState[stateTrackerName] = state;
+                if (this.stateTrackers.hasOwnProperty(stateTrackerName)) {
+                    const stateTracker = this.stateTrackers[stateTrackerName];
+                    const state = stateTracker.stopCapture();
+                    if (stateTracker.requireStartAndStopStates) {
+                        currentCapture.endState[stateTrackerName] = state;
+                    }
                 }
             }
         }
@@ -68,25 +72,29 @@ namespace SPECTOR.Spies {
 
         private initAvailableStateTrackers(): void {
             for (const state in this.options.stateNamespace) {
-                const stateCtor = this.options.stateNamespace[state];
-                const stateName = Decorators.getStateName(stateCtor);
-                if (stateName) {
-                    this.stateConstructors[stateName] = stateCtor;
+                if (this.options.stateNamespace.hasOwnProperty(state)) {
+                    const stateCtor = this.options.stateNamespace[state];
+                    const stateName = Decorators.getStateName(stateCtor);
+                    if (stateName) {
+                        this.stateConstructors[stateName] = stateCtor;
+                    }
                 }
             }
         }
 
         private initStateTrackers(): void {
             for (const stateName in this.stateConstructors) {
-                const options = merge(
-                    { stateName: stateName },
-                    this.contextInformation
-                );
+                if (this.stateConstructors.hasOwnProperty(stateName)) {
+                    const options = merge(
+                        { stateName },
+                        this.contextInformation,
+                    );
 
-                const stateTracker = new this.stateConstructors[stateName](options, this.logger);
-                this.stateTrackers[stateName] = stateTracker;
+                    const stateTracker = new this.stateConstructors[stateName](options, this.logger);
+                    this.stateTrackers[stateName] = stateTracker;
 
-                stateTracker.registerCallbacks(this.onCommandCapturedCallbacks);
+                    stateTracker.registerCallbacks(this.onCommandCapturedCallbacks);
+                }
             }
         }
     }
