@@ -12,7 +12,7 @@ namespace SPECTOR {
 
     export type CommandConstructor = {
         new (options: ICommandOptions, stackTrace: IStackTrace, logger: ILogger): ICommand;
-    }
+    };
 }
 
 namespace SPECTOR.Commands {
@@ -40,10 +40,10 @@ namespace SPECTOR.Commands {
                 commandArguments: functionInformation.arguments,
                 result: functionInformation.result,
 
-                stackTrace: stackTrace,
+                stackTrace,
                 status: CommandCaptureStatus.Unknown,
 
-                text: text,
+                text,
             };
 
             this.transformCapture(commandCapture);
