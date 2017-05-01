@@ -25,6 +25,7 @@
         "*.fx": "glsl"
     },
     "search.exclude": {
+        "npm-debug.log": true,
         "npm-debug.log.*": true,
         "**/spector.bundle.js": true,
         "**/node_modules": true,

@@ -127,6 +127,9 @@ $menuHeight: $menuBaseHeight * 2;
     li {
       background: $background-even;
     }
+    li.searchContainer {
+      background: lighten($background-even, 10%);
+    }
     
     padding: 0px;
     position: absolute;
@@ -193,29 +196,6 @@ $menuHeight: $menuBaseHeight * 2;
     color:  darken(white, 20%); 
   }
 }
-
-// @media all and (max-width: 800px) {
-//   .resultViewMenuComponent {
-//     justify-content: space-around;
-//   }
-// }
-
-// @media all and (max-width: 600px) {
-//   .resultViewMenuComponent {
-//     -webkit-flex-flow: column wrap;
-//     flex-flow: column wrap;
-//     padding: 0;
-//   }
-  
-//   .resultViewMenuComponent a { 
-//     text-align: center; 
-//     padding: 10px;
-//   }
-  
-//   .resultViewMenuComponent li:last-of-type a {
-//     border-bottom: none;
-//   }
-// }
 
 .resultViewContentComponent {
   position:absolute; 
@@ -404,7 +384,6 @@ $commandDetailComponentWidth: 40%;
   left: $visualStateListComponentWidth; 
   right: $commandDetailComponentWidth;
   bottom: 0;
-  padding:10px;
   color:darken($foreground, 15%);  
 
   ul {
@@ -468,7 +447,6 @@ $commandDetailComponentWidth: 40%;
   bottom: 0;
   overflow-y: visible;
   overflow-x: hidden;
-  padding:10px;
 }
 
 .jsonGroupComponent {
@@ -525,6 +503,8 @@ $commandDetailComponentWidth: 40%;
   img {
     margin: $margin;
     @include img-checkboard();
+    width: 100%;
+    max-width: 512px;
   }
 
   span {
@@ -541,6 +521,11 @@ $commandDetailComponentWidth: 40%;
   padding:10px; 
   overflow-y: visible;
   overflow-x: hidden;
+}
+
+.jsonItemComponentValue {
+  word-break: break-all;
+  white-space: normal; 
 }
 
 .sourceCodeComponent {

@@ -3,16 +3,20 @@
 $captureMenuComponentWidth: 400px;
 $captureMenuComponentHeight: 40px;
 
+
+$border: 2px;
+$menuPadding: 7px;
+
 .captureMenuComponent {
   position:absolute;
-  padding:7px;  
+  padding:$menuPadding;  
   z-index: 99999; 
   top: 10px;
   left: 50%;
-  margin-left: -$captureMenuComponentWidth / 2;
+  margin-left: -$captureMenuComponentWidth / 2 - $border - $menuPadding;
   height: $captureMenuComponentHeight;
   width: $captureMenuComponentWidth; 
-  border : 2px solid $background;   
+  border : $border solid $background;   
   background-color: rgba($background, 0.7); 
   border-radius: 5px;
   visibility: hidden;
@@ -60,12 +64,17 @@ $captureMenuComponentHeight: 40px;
 
   ul {
     margin: 0px;
-    padding: 0px;
+    padding:$menuPadding;
     list-style: none;
     position: absolute;
-    top: $captureMenuComponentHeight;
+    top: $captureMenuComponentHeight + $border * 2 + $menuPadding * 2 - $border;
+    left: -$border;
     width: $captureMenuComponentWidth;
-    background-color: $background;    
+    background-color: $background;
+    border : $border solid $background;   
+    background-color: rgba($background, 0.7); 
+    border-radius: 5px;
+
 
     li {
       margin: $margin;
@@ -82,7 +91,6 @@ $captureMenuComponentHeight: 40px;
 }
 
 $size: 25px;
-$border: 2px;
 .captureMenuActionsComponent {
   float:left;
   width: 30%;

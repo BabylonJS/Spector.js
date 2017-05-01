@@ -11,11 +11,12 @@
   "homepage": "https://spector.babylonjs.com",
   "license": "MIT",
   "scripts": {
+    "postinstall": "npm run build:css",
     "html": "node ./tools/devLiveReloadServer.js /../built/",
     "watch:ts": "tsc -w -p ./src",
     "watch:css": "node-sass -r -w --source-map true -o built src",
     "watch": "parallelshell \"npm run watch:ts\" \"npm run watch:css\"",
-    "start": "parallelshell \"npm run html\" \"npm run watch\"",
+    "start": "parallelshell \"npm run html\" \"npm run watch:ts\" \"npm run watch:css\"",
     "build:ts": "tsc -p ./src --outFile \"dist/spector.js\"",
     "build:css": "node-sass -r -o dist src",
     "build:tscss": "parallelshell \"npm run build:ts\" \"npm run build:css\"",

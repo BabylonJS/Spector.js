@@ -165,10 +165,11 @@ namespace SPECTOR.EmbeddedFrontend {
                 }
             }
             
-            if (canvasesCount === 1 && canvasToSelect) {
+            const visible = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId).showList;
+            if (canvasesCount === 1 && canvasToSelect && !visible) {
                 this.mvx.updateState(this.canvasListStateId, {
                     currentCanvasInformation: canvasToSelect, 
-                    showList: false
+                    showList: visible
                 });
                 this.onCanvasSelected.trigger(canvasToSelect);
             }
@@ -192,10 +193,11 @@ namespace SPECTOR.EmbeddedFrontend {
                 this.mvx.addChildState(this.canvasListStateId, canvasToSelect, this.canvasListItemComponent);
             }
 
-            if (canvasesCount === 1 && canvasToSelect) {
+            const visible = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId).showList;
+            if (canvasesCount === 1 && canvasToSelect && !visible) {
                 this.mvx.updateState(this.canvasListStateId, {
                     currentCanvasInformation: canvasToSelect, 
-                    showList: false
+                    showList: visible
                 });            
                 this.onCanvasSelected.trigger(canvasToSelect);
             }
