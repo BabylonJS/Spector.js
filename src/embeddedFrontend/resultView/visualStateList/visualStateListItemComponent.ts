@@ -3,7 +3,7 @@ namespace SPECTOR.EmbeddedFrontend {
         time: number;
         commandStateId: number;
         VisualState: any;
-        active: boolean
+        active: boolean;
     }
     export class VisualStateListItemComponent extends BaseComponent<IVisualStateItem> {
         public onVisualStateSelected: IStateEvent<IVisualStateItem>;

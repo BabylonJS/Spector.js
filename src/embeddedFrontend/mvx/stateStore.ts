@@ -58,19 +58,15 @@ namespace SPECTOR.EmbeddedFrontend {
             return this.store[id].children.length > 0;
         }
 
-        private getNewId(): number {
-            return ++this.idGenerator;
-        }
-
         public add(data: {}, componentInstance: ComponentInstance): number {
             const id = this.getNewId();
             this.pendingOperation[id] = id;
             this.store[id] = {
-                data: data,
-                id: id,
+                data,
+                id,
                 parent: null,
                 children: [],
-                componentInstance: componentInstance,
+                componentInstance,
                 lastOperation: LastOperation.Add,
             };
             return id;
@@ -80,8 +76,8 @@ namespace SPECTOR.EmbeddedFrontend {
             const currentState = this.store[id];
             this.pendingOperation[id] = id;
             this.store[id] = {
-                data: data,
-                id: id,
+                data,
+                id,
                 parent: currentState.parent,
                 children: currentState.children,
                 componentInstance: currentState.componentInstance,
@@ -187,6 +183,10 @@ namespace SPECTOR.EmbeddedFrontend {
                 }
             }
             this.pendingOperation = {};
+        }
+
+        private getNewId(): number {
+            return ++this.idGenerator;
         }
     }
 }

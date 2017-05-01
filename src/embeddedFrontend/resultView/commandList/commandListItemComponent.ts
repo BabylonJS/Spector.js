@@ -1,8 +1,8 @@
 namespace SPECTOR.EmbeddedFrontend {
     export interface ICommandListItemState {
-        capture: ICommandCapture,
-        active: boolean,
-        visualStateId: number,
+        capture: ICommandCapture;
+        active: boolean;
+        visualStateId: number;
     }
 
     export class CommandListItemComponent extends BaseComponent<ICommandListItemState> {
@@ -18,19 +18,19 @@ namespace SPECTOR.EmbeddedFrontend {
             let status: string = "unknown";
             switch (state.capture.status) {
                 case CommandCaptureStatus.Deprecated:
-                    status = "deprecated"
+                    status = "deprecated";
                     break;
                 case CommandCaptureStatus.Unused:
-                    status = "unused"
+                    status = "unused";
                     break;
                 case CommandCaptureStatus.Disabled:
-                    status = "disabled"
+                    status = "disabled";
                     break;
                 case CommandCaptureStatus.Redundant:
-                    status = "redundant"
+                    status = "redundant";
                     break;
                 case CommandCaptureStatus.Valid:
-                    status = "valid"
+                    status = "valid";
                     break;
             }
 
@@ -41,7 +41,7 @@ namespace SPECTOR.EmbeddedFrontend {
 
             const textElement = document.createElement("span");
             let text = state.capture.text;
-            text = text.replace(state.capture.name, `<span class=" ${status} important">${state.capture.name}</span>`)
+            text = text.replace(state.capture.name, `<span class=" ${status} important">${state.capture.name}</span>`);
 
             textElement.innerHTML = text;
             liHolder.appendChild(textElement);

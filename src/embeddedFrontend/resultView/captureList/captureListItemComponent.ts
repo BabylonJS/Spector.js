@@ -1,7 +1,7 @@
 namespace SPECTOR.EmbeddedFrontend {
     export interface ICaptureListItemState {
-        capture: ICapture,
-        active: boolean
+        capture: ICapture;
+        active: boolean;
     }
 
     export class CaptureListItemComponent extends BaseComponent<ICaptureListItemState> {
@@ -34,10 +34,10 @@ namespace SPECTOR.EmbeddedFrontend {
             }
 
             const text = document.createElement("span");
-            text.innerText = new Date(state.capture.startTime).toTimeString().split(' ')[0];
+            text.innerText = new Date(state.capture.startTime).toTimeString().split(" ")[0];
             liHolder.appendChild(text);
 
-            const save = <HTMLAnchorElement>document.createElement("a");
+            const save = document.createElement("a") as HTMLAnchorElement;
             save.href = "#";
             save.className = "captureListItemSave";
             this.mapEventListener(save, "click", "onSaveRequested", state, stateId, false, true);

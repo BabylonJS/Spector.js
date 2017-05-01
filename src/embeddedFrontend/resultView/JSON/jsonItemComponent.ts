@@ -1,7 +1,7 @@
 namespace SPECTOR.EmbeddedFrontend {
     export interface IJSONItemState {
-        key: string,
-        value: string
+        key: string;
+        value: string;
     }
 
     export class JSONItemComponent extends BaseComponent<IJSONItemState> {

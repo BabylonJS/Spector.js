@@ -60,7 +60,7 @@ namespace SPECTOR.EmbeddedFrontend {
 
         public getChildrenState(id: number): any[] {
             return this.stateStore.getChildrenIds(id).map(
-                (childId) => { return this.stateStore.getData(id); }
+                (childId) => this.stateStore.getData(id),
             );
         }
         public getChildrenGenericState<T>(id: number): T[] {
@@ -76,7 +76,7 @@ namespace SPECTOR.EmbeddedFrontend {
             for (const childId of childrenIds) {
                 const state = this.getGenericState(childId);
                 updateCallback(state);
-                this.updateState(childId, state)
+                this.updateState(childId, state);
             }
         }
 

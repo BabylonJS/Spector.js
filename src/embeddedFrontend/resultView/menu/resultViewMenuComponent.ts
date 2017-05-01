@@ -9,7 +9,7 @@ namespace SPECTOR.EmbeddedFrontend {
 
     export interface IResultViewMenuState {
         status: MenuStatus;
-        searchText: String;
+        searchText: string;
     }
 
     export class ResultViewMenuComponent extends BaseComponent<IResultViewMenuState> {
@@ -51,19 +51,19 @@ namespace SPECTOR.EmbeddedFrontend {
             const element = this.renderElementFromTemplate(htmlString, state, stateId);
             const openButton = element.querySelector(".resultViewMenuOpen");
             const lis = element.querySelectorAll("li:not(.resultViewMenuSmall)");
-            openButton.addEventListener("click", _ => {
+            openButton.addEventListener("click", (_) => {
                 if (openButton.getAttribute("open") === "true") {
                     openButton.setAttribute("open", "false");
                     for (let i = 0; i < lis.length; i++) {
-                        (<HTMLElement>lis[i]).style.display = "none";
-                        (<HTMLElement>lis[i]).style.visibility = "hidden";
+                        (lis[i] as HTMLElement).style.display = "none";
+                        (lis[i] as HTMLElement).style.visibility = "hidden";
                     }
                 }
                 else {
                     openButton.setAttribute("open", "true");
                     for (let i = 0; i < lis.length; i++) {
-                        (<HTMLElement>lis[i]).style.display = "block";
-                        (<HTMLElement>lis[i]).style.visibility = "visible";
+                        (lis[i] as HTMLElement).style.display = "block";
+                        (lis[i] as HTMLElement).style.visibility = "visible";
                     }
                 }
             });

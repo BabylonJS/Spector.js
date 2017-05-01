@@ -13,12 +13,14 @@ namespace SPECTOR.EmbeddedFrontend {
             const dirtyStates = this.stateStore.getStatesToProcess();
             let render = false;
             for (const dirtyStateKey in dirtyStates) {
-                const dirtyStateId = dirtyStates[dirtyStateKey];
-                const lastOperation = this.stateStore.getLastOperation(dirtyStateId);
-                const componentInstance = this.stateStore.getComponentInstance(dirtyStateId);
-                const state = this.stateStore.getData(dirtyStateId);
-                componentInstance.render(state, dirtyStateId, lastOperation);
-                render = true;
+                if (dirtyStates.hasOwnProperty(dirtyStateKey)) {
+                    const dirtyStateId = dirtyStates[dirtyStateKey];
+                    const lastOperation = this.stateStore.getLastOperation(dirtyStateId);
+                    const componentInstance = this.stateStore.getComponentInstance(dirtyStateId);
+                    const state = this.stateStore.getData(dirtyStateId);
+                    componentInstance.render(state, dirtyStateId, lastOperation);
+                    render = true;
+                }
             }
 
             // early exist if nothing was touched.

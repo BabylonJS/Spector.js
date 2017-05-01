@@ -1,7 +1,7 @@
 namespace SPECTOR.EmbeddedFrontend {
     export interface ICanvasListComponentState {
-        currentCanvasInformation: ICanvasInformation,
-        showList: boolean
+        currentCanvasInformation: ICanvasInformation;
+        showList: boolean;
     }
     export class CanvasListComponent extends BaseComponent<ICanvasListComponentState> {
         public onCanvasSelection: IStateEvent<ICanvasListComponentState>;

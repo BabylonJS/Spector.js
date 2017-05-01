@@ -30,7 +30,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 return null;
             }
 
-            let currentChildrenContainer = this.__cachedCurrentChildrenContainer;
+            const currentChildrenContainer = this.__cachedCurrentChildrenContainer;
             if (lastOperation === LastOperation.Processed) {
                 return currentChildrenContainer;
             }

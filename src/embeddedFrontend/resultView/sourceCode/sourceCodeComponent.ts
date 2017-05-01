@@ -5,8 +5,8 @@ namespace SPECTOR.EmbeddedFrontend {
     }
 
     // Declare Prism types here.
-    type Prism = { highlightElement(element: HTMLElement): void; }
-    declare var Prism: Prism;
+    type Prism = { highlightElement(element: HTMLElement): void; };
+    declare const Prism: Prism;
 
     export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         public render(state: ISourceCodeState, stateId: number): Element {
@@ -18,7 +18,7 @@ namespace SPECTOR.EmbeddedFrontend {
 
             const element = this.renderElementFromTemplate(htmlString, state, stateId);
 
-            Prism.highlightElement(element.querySelector('pre'));
+            Prism.highlightElement(element.querySelector("pre"));
             return element;
         }
     }

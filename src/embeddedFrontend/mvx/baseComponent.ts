@@ -17,9 +17,9 @@ namespace SPECTOR.EmbeddedFrontend {
         protected htmlTemplate(literalSections: TemplateStringsArray, ...substs: any[]) {
             // Use raw literal sections: we don’t want
             // backslashes (\n etc.) to be interpreted
-            let raw = literalSections.raw;
+            const raw = literalSections.raw;
 
-            let result = '';
+            let result = "";
 
             substs.forEach((subst, i) => {
                 // Retrieve the literal section preceding
@@ -30,12 +30,12 @@ namespace SPECTOR.EmbeddedFrontend {
                 // If substitution is an array (and not a string),
                 // we turn it into a string
                 if (Array.isArray(subst)) {
-                    subst = subst.join('');
+                    subst = subst.join("");
                 }
 
                 // If the substitution is preceded by a dollar sign,
                 // we do not escape special characters in it
-                if (lit && lit.length > 0 && lit[lit.length - 1] === '$') {
+                if (lit && lit.length > 0 && lit[lit.length - 1] === "$") {
                     lit = lit.slice(0, -1);
                 }
                 // otherwise escape by default by precaution.
@@ -75,15 +75,16 @@ namespace SPECTOR.EmbeddedFrontend {
     }
 
     export interface IStateEventArgs<T> {
-        sender: Element,
-        stateId: number,
-        state: T,
+        sender: Element;
+        stateId: number;
+        state: T;
     }
 
     export type IStateEvent<T> = IEvent<IStateEventArgs<T>>;
 
+    // tslint:disable-next-line:max-classes-per-file
     export abstract class BaseComponent<T> extends BaseNoneGenericComponent {
-        private readonly events: { [eventName: string]: IStateEvent<T> }
+        private readonly events: { [eventName: string]: IStateEvent<T> };
 
         constructor(eventConstructor: EventConstructor, logger: ILogger) {
             super(eventConstructor, logger);
@@ -91,6 +92,19 @@ namespace SPECTOR.EmbeddedFrontend {
         }
 
         public abstract render(state: T, stateId: number): Element;
+
+        public addEventListener(command: string, callback: (stateEventArgs: IStateEventArgs<T>) => void, context: any = null): number {
+            if (this.events[command]) {
+                return this.events[command].add(callback, context);
+            }
+            return -1;
+        }
+
+        public removeEventListener(command: string, listenerId: number): void {
+            if (this.events[command]) {
+                this.events[command].remove(listenerId);
+            }
+        }
 
         protected renderElementFromTemplate(template: string, state: T, stateId: number): Element {
             const element = this.createFromHtml(template);
@@ -132,14 +146,14 @@ namespace SPECTOR.EmbeddedFrontend {
                         e.preventDefault();
                         self.triggerEvent(eventName, this, state, stateId);
                     },
-                    commandCapture)
+                    commandCapture);
             }
             else {
                 domElement.addEventListener(domEvent,
                     function (this: Element) {
                         self.triggerEvent(eventName, this, state, stateId);
                     },
-                    commandCapture)
+                    commandCapture);
             }
         }
 
@@ -155,22 +169,9 @@ namespace SPECTOR.EmbeddedFrontend {
         protected triggerEvent(commandName: string, element: Element, state: T, stateId: number) {
             this.events[commandName].trigger({
                 sender: element,
-                stateId: stateId,
-                state: state
+                stateId,
+                state,
             });
-        }
-
-        public addEventListener(command: string, callback: (stateEventArgs: IStateEventArgs<T>) => void, context: any = null): number {
-            if (this.events[command]) {
-                return this.events[command].add(callback, context);
-            }
-            return -1;
-        }
-
-        public removeEventListener(command: string, listenerId: number): void {
-            if (this.events[command]) {
-                this.events[command].remove(listenerId);
-            }
         }
     }
 }

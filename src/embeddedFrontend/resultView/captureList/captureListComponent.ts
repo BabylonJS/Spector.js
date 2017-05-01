@@ -47,28 +47,28 @@ namespace SPECTOR.EmbeddedFrontend {
             }
 
             // Handling files from input files
-            if (event && event.target && (<any>event).target.files) {
-                filesToLoad = (<any>event).target.files;
+            if (event && event.target && (event as any).target.files) {
+                filesToLoad = (event as any).target.files;
             }
 
             // Load the files.
             if (filesToLoad && filesToLoad.length > 0) {
                 for (let i = 0; i < filesToLoad.length; i++) {
-                    let name = filesToLoad[i].name.toLowerCase();
-                    let extension = name.split('.').pop();
-                    let type = filesToLoad[i].type;
+                    const name = filesToLoad[i].name.toLowerCase();
+                    const extension = name.split(".").pop();
+                    const type = filesToLoad[i].type;
 
                     if (extension === "json") {
                         const fileToLoad = filesToLoad[i];
 
                         const reader = new FileReader();
-                        reader.onerror = e => {
+                        reader.onerror = (e) => {
                             this.logger.error("Error while reading file: " + fileToLoad.name + e);
                         };
-                        reader.onload = e => {
-                            //target doesn't have result from ts 1.3
+                        reader.onload = (e) => {
+                            // target doesn't have result from ts 1.3
                             try {
-                                const capture = JSON.parse((<any>e).target['result']);
+                                const capture = JSON.parse((e as any).target["result"]);
                                 this.onCaptureLoaded.trigger(capture);
                             }
                             catch (exception) {
