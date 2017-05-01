@@ -3,6 +3,10 @@ engines:
   tslint:
     enabled: true
     channel: beta
+    checks:
+      no-namespace:
+        enabled: false
+
   scss-lint:
     enabled: false
   eslint:
