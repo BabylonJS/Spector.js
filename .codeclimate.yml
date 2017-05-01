@@ -3,16 +3,6 @@ engines:
   tslint:
     enabled: true
     channel: beta
-    checks:
-      no-namespace:
-        enabled: false
-      quotemark:
-        enabled: true
-        config: 
-          -true 
-          -"double"
-          -"avoid-escape"
-
   scss-lint:
     enabled: false
   eslint:
