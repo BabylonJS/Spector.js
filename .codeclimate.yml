@@ -17,10 +17,12 @@ ratings:
 
 ## other configuration excluded from example...
 exclude_paths:
+- "**.d.ts"
+# exlude cause auto generated.
+- "**/webglConstants.ts"
 - ".vscode/"
+- "dist/"
 - "documentation/"
-- "dist/prism.css"
-- "dist/prism.js"
 - "extensions/"
 - "sample/"
 - "tests/"
