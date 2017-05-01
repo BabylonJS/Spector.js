@@ -1,0 +1,35 @@
+## Main config
+engines:
+  tslint:
+    enabled: true
+    channel: beta
+  scss-lint:
+    enabled: true
+  eslint:
+    enabled: true
+  csslint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+
+ratings:
+  paths:
+  - "**.scss"
+  - "**.ts"
+  - "**.js"
+  - "**.css"
+
+## other configuration excluded from example...
+exclude_paths:
+- ".vscode/"
+- "documentation/"
+- "dist/prism.css"
+- "dist/prism.js"
+- "extensions/"
+- "sample/"
+- "tests/"
+- "tools/"
+- "vendors/"
