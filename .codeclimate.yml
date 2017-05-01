@@ -8,7 +8,10 @@ engines:
         enabled: false
       quotemark:
         enabled: true
-        config: [true, "double", "avoid-escape"]
+        config: 
+          -true 
+          -"double"
+          -"avoid-escape"
 
   scss-lint:
     enabled: false
