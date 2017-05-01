@@ -2,8 +2,8 @@ namespace SPECTOR {
 
     export type RecordId = {
         readonly version: number,
-        readonly id: number
-    }
+        readonly id: number,
+    };
 
     export interface IRecorder {
         readonly objectName: string;
@@ -17,22 +17,17 @@ namespace SPECTOR {
 
     export type RecorderConstructor = {
         new (options: IRecorderOptions, logger: ILogger): IRecorder;
-    }
+    };
 }
 
 namespace SPECTOR.Recorders {
     export abstract class BaseRecorder implements IRecorder {
 
+        public readonly objectName: string;
+
         protected readonly createCommandNames: string[];
         protected readonly updateCommandNames: string[];
         protected readonly deleteCommandNames: string[];
-
-        public readonly objectName: string;
-
-        protected abstract getCreateCommandNames(): string[];
-        protected abstract getUpdateCommandNames(): string[];
-        protected abstract getDeleteCommandNames(): string[];
-        protected abstract getBoundObject(target: number): object;
 
         constructor(protected options: IRecorderOptions, logger: ILogger) {
             this.createCommandNames = this.getCreateCommandNames();
@@ -45,17 +40,17 @@ namespace SPECTOR.Recorders {
             for (const command of this.createCommandNames) {
                 onFunctionCallbacks[command] = onFunctionCallbacks[command] || [];
                 onFunctionCallbacks[command].push(this.create.bind(this));
-            };
+            }
 
             for (const command of this.updateCommandNames) {
                 onFunctionCallbacks[command] = onFunctionCallbacks[command] || [];
                 onFunctionCallbacks[command].push(this.update.bind(this));
-            };
+            }
 
             for (const command of this.deleteCommandNames) {
                 onFunctionCallbacks[command] = onFunctionCallbacks[command] || [];
                 onFunctionCallbacks[command].push(this.delete.bind(this));
-            };
+            }
         }
 
         public create(functionInformation: IFunctionInformation): RecordId {
@@ -69,6 +64,11 @@ namespace SPECTOR.Recorders {
         public delete(functionInformation: IFunctionInformation): RecordId {
             return undefined;
         }
+
+        protected abstract getCreateCommandNames(): string[];
+        protected abstract getUpdateCommandNames(): string[];
+        protected abstract getDeleteCommandNames(): string[];
+        protected abstract getBoundObject(target: number): object;
 
         protected createWithoutSideEffects(functionInformation: IFunctionInformation): RecordId {
             this.options.toggleCapture(false);

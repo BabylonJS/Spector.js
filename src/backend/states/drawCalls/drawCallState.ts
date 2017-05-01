@@ -1,6 +1,31 @@
+// This file is mad...
+// tslint:disable:max-line-length
+
 namespace SPECTOR.States {
+
     @Decorators.state("DrawCall")
     export class DrawCallState extends BaseState {
+
+        private static samplerTypes = {
+            [WebGlConstants.SAMPLER_2D.value]: WebGlConstants.TEXTURE_2D,
+            [WebGlConstants.SAMPLER_CUBE.value]: WebGlConstants.TEXTURE_CUBE_MAP,
+
+            [WebGlConstants.SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,
+            [WebGlConstants.SAMPLER_2D_SHADOW.value]: WebGlConstants.TEXTURE_2D,
+            [WebGlConstants.SAMPLER_2D_ARRAY.value]: WebGlConstants.TEXTURE_2D_ARRAY,
+            [WebGlConstants.SAMPLER_2D_ARRAY_SHADOW.value]: WebGlConstants.TEXTURE_2D_ARRAY,
+            [WebGlConstants.SAMPLER_CUBE_SHADOW.value]: WebGlConstants.TEXTURE_CUBE_MAP,
+
+            [WebGlConstants.INT_SAMPLER_2D.value]: WebGlConstants.TEXTURE_2D,
+            [WebGlConstants.INT_SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,
+            [WebGlConstants.INT_SAMPLER_CUBE.value]: WebGlConstants.TEXTURE_CUBE_MAP,
+            [WebGlConstants.INT_SAMPLER_2D_ARRAY.value]: WebGlConstants.TEXTURE_2D_ARRAY,
+
+            [WebGlConstants.UNSIGNED_INT_SAMPLER_2D.value]: WebGlConstants.TEXTURE_2D,
+            [WebGlConstants.UNSIGNED_INT_SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,
+            [WebGlConstants.UNSIGNED_INT_SAMPLER_CUBE.value]: WebGlConstants.TEXTURE_CUBE_MAP,
+            [WebGlConstants.UNSIGNED_INT_SAMPLER_2D_ARRAY.value]: WebGlConstants.TEXTURE_2D_ARRAY,
+        };
 
         public get requireStartAndStopStates(): boolean {
             return false;
@@ -26,7 +51,7 @@ namespace SPECTOR.States {
             this.currentState.programStatus = {
                 DELETE_STATUS: this.context.getProgramParameter(program, WebGlConstants.DELETE_STATUS.value),
                 LINK_STATUS: this.context.getProgramParameter(program, WebGlConstants.LINK_STATUS.value),
-                VALIDATE_STATUS: this.context.getProgramParameter(program, WebGlConstants.VALIDATE_STATUS.value)
+                VALIDATE_STATUS: this.context.getProgramParameter(program, WebGlConstants.VALIDATE_STATUS.value),
             };
 
             const shaders = this.context.getAttachedShaders(program);
@@ -94,17 +119,17 @@ namespace SPECTOR.States {
                 frameBufferState.colorAttachments = [];
                 const maxDrawBuffers = this.context.getParameter(WebGlConstants.MAX_DRAW_BUFFERS_WEBGL.value);
                 for (let i = 0; i < maxDrawBuffers; i++) {
-                    frameBufferState.colorAttachments.push(this.readFrameBufferAttachmentFromContext(WebGlConstantsByName["COLOR_ATTACHMENT" + i + "_WEBGL"].value))
+                    frameBufferState.colorAttachments.push(this.readFrameBufferAttachmentFromContext(WebGlConstantsByName["COLOR_ATTACHMENT" + i + "_WEBGL"].value));
                 }
             }
             else if (this.contextVersion > 1) {
-                const context2 = <WebGL2RenderingContext>this.context;
+                const context2 = this.context as WebGL2RenderingContext;
                 // Already covered ny the introspection of depth and stencil.
                 // frameBufferState.depthStencilAttachment = this.readFrameBufferAttachmentFromContext(WebGlConstants.DEPTH_STENCIL_ATTACHMENT.value);
                 frameBufferState.colorAttachments = [];
                 const maxDrawBuffers = context2.getParameter(WebGlConstants.MAX_DRAW_BUFFERS.value);
                 for (let i = 0; i < maxDrawBuffers; i++) {
-                    frameBufferState.colorAttachments.push(this.readFrameBufferAttachmentFromContext(WebGlConstantsByName["COLOR_ATTACHMENT" + i].value))
+                    frameBufferState.colorAttachments.push(this.readFrameBufferAttachmentFromContext(WebGlConstantsByName["COLOR_ATTACHMENT" + i].value));
                 }
             }
 
@@ -160,7 +185,7 @@ namespace SPECTOR.States {
                 COMPILE_STATUS: this.context.getShaderParameter(shader, WebGlConstants.COMPILE_STATUS.value),
                 DELETE_STATUS: this.context.getShaderParameter(shader, WebGlConstants.DELETE_STATUS.value),
                 SHADER_TYPE: this.getWebGlConstant(this.context.getShaderParameter(shader, WebGlConstants.SHADER_TYPE.value)),
-                source: this.context.getShaderSource(shader)
+                source: this.context.getShaderSource(shader),
             };
         }
 
@@ -172,7 +197,7 @@ namespace SPECTOR.States {
                 name: info.name,
                 size: info.size,
                 type: this.getWebGlConstant(info.type),
-                location: location,
+                location,
                 offsetPointer: this.context.getVertexAttribOffset(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_POINTER.value),
                 bufferBinding: this.getTag(this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING.value)),
                 enabled: this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_ENABLED.value),
@@ -205,7 +230,7 @@ namespace SPECTOR.States {
                     size: info.size,
                     type: this.getWebGlConstant(info.type),
                     location: this.getTag(location),
-                    value: value
+                    value,
                 };
 
                 const textureTarget = DrawCallState.samplerTypes[info.type];
@@ -220,7 +245,7 @@ namespace SPECTOR.States {
                     size: info.size,
                     type: this.getWebGlConstant(info.type),
                     location: null,
-                    value: null
+                    value: null,
                 };
                 return uniformState;
             }
@@ -235,7 +260,7 @@ namespace SPECTOR.States {
                 minFilter: this.getWebGlConstant(this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_MIN_FILTER.value)),
                 wrapS: this.getWebGlConstant(this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_WRAP_S.value)),
                 wrapT: this.getWebGlConstant(this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_WRAP_T.value)),
-            }
+            };
 
             if (this.extensions[WebGlConstants.TEXTURE_MAX_ANISOTROPY_EXT.extensionName]) {
                 textureState.anisotropy = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_MAX_ANISOTROPY_EXT.value);
@@ -250,7 +275,7 @@ namespace SPECTOR.States {
                 const sampler = this.context.getParameter(WebGlConstants.SAMPLER_BINDING.value);
                 if (sampler) {
                     textureState.sampler = this.getTag(sampler);
-                    const context2 = <WebGL2RenderingContext>this.context;
+                    const context2 = this.context as WebGL2RenderingContext;
 
                     textureState.samplerMaxLod = context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
                     textureState.samplerMinLod = context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
@@ -276,7 +301,7 @@ namespace SPECTOR.States {
         }
 
         protected readUniformsFromContextIntoState(program: WebGLProgram, uniformIndices: number[], uniformsState: any[]) {
-            const context2 = <WebGL2RenderingContext>this.context;
+            const context2 = this.context as WebGL2RenderingContext;
 
             const typeValues = context2.getActiveUniforms(program, uniformIndices, WebGlConstants.UNIFORM_TYPE.value);
             const sizes = context2.getActiveUniforms(program, uniformIndices, WebGlConstants.UNIFORM_SIZE.value);
@@ -302,7 +327,7 @@ namespace SPECTOR.States {
         }
 
         protected readTransformFeedbackFromContext(program: WebGLProgram, index: number): {} {
-            const context2 = <WebGL2RenderingContext>this.context;
+            const context2 = this.context as WebGL2RenderingContext;
             const info = context2.getTransformFeedbackVarying(program, index);
 
             return {
@@ -312,16 +337,16 @@ namespace SPECTOR.States {
                 buffer: this.getTag(context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING.value, index)),
                 bufferSize: context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_SIZE.value, index),
                 bufferStart: context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_START.value, index),
-            }
+            };
         }
 
         protected readUniformBlockFromContext(program: WebGLProgram, index: number): {} {
-            const context2 = <WebGL2RenderingContext>this.context;
+            const context2 = this.context as WebGL2RenderingContext;
             const bindingPoint = context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_BINDING.value);
 
             return {
                 name: context2.getActiveUniformBlockName(program, index),
-                bindingPoint: bindingPoint,
+                bindingPoint,
                 size: context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_DATA_SIZE.value),
                 activeUniformCount: context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_ACTIVE_UNIFORMS.value),
                 vertex: context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER.value),
@@ -330,29 +355,8 @@ namespace SPECTOR.States {
                 buffer: this.getTag(context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint)),
                 bufferSize: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_SIZE.value, bindingPoint),
                 bufferStart: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_START.value, bindingPoint),
-            }
+            };
         }
-
-        private static samplerTypes = {
-            [WebGlConstants.SAMPLER_2D.value]: WebGlConstants.TEXTURE_2D,
-            [WebGlConstants.SAMPLER_CUBE.value]: WebGlConstants.TEXTURE_CUBE_MAP,
-
-            [WebGlConstants.SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,
-            [WebGlConstants.SAMPLER_2D_SHADOW.value]: WebGlConstants.TEXTURE_2D,
-            [WebGlConstants.SAMPLER_2D_ARRAY.value]: WebGlConstants.TEXTURE_2D_ARRAY,
-            [WebGlConstants.SAMPLER_2D_ARRAY_SHADOW.value]: WebGlConstants.TEXTURE_2D_ARRAY,
-            [WebGlConstants.SAMPLER_CUBE_SHADOW.value]: WebGlConstants.TEXTURE_CUBE_MAP,
-
-            [WebGlConstants.INT_SAMPLER_2D.value]: WebGlConstants.TEXTURE_2D,
-            [WebGlConstants.INT_SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,
-            [WebGlConstants.INT_SAMPLER_CUBE.value]: WebGlConstants.TEXTURE_CUBE_MAP,
-            [WebGlConstants.INT_SAMPLER_2D_ARRAY.value]: WebGlConstants.TEXTURE_2D_ARRAY,
-
-            [WebGlConstants.UNSIGNED_INT_SAMPLER_2D.value]: WebGlConstants.TEXTURE_2D,
-            [WebGlConstants.UNSIGNED_INT_SAMPLER_3D.value]: WebGlConstants.TEXTURE_3D,
-            [WebGlConstants.UNSIGNED_INT_SAMPLER_CUBE.value]: WebGlConstants.TEXTURE_CUBE_MAP,
-            [WebGlConstants.UNSIGNED_INT_SAMPLER_2D_ARRAY.value]: WebGlConstants.TEXTURE_2D_ARRAY
-        };
 
         private getWebGlConstant(value: number) {
             return WebGlConstantsByValue[value].name;
