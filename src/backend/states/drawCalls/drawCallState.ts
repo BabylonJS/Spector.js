@@ -1,6 +1,3 @@
-// This file is mad...
-// tslint:disable:max-line-length
-
 namespace SPECTOR.States {
 
     @Decorators.state("DrawCall")

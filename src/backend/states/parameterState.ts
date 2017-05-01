@@ -1,15 +1,15 @@
-module SPECTOR.States {
+namespace SPECTOR.States {
     export const enum ParameterReturnType {
         Unknown = 0,
         GlInt = 10,
         GlEnum = 20,
-        GlUint = 30
+        GlUint = 30,
     }
 
     export interface IParameter {
         readonly constant: WebGlConstant;
         readonly returnType?: ParameterReturnType;
-        readonly changeCommands?: string[]
+        readonly changeCommands?: string[];
     }
 
     export abstract class ParameterState extends BaseState {
@@ -18,11 +18,11 @@ module SPECTOR.States {
 
         protected getWebgl1Parameters(): IParameter[] {
             return [];
-        };
+        }
 
         protected getWebgl2Parameters(): IParameter[] {
             return [];
-        };
+        }
 
         protected getChangeCommandsByState(): { [key: string]: string[] } {
             this.parameters = [];
@@ -97,7 +97,7 @@ module SPECTOR.States {
                 return value;
             }
 
-            if (typeof value === 'number' && WebGlConstants.isWebGlConstant(value)) {
+            if (typeof value === "number" && WebGlConstants.isWebGlConstant(value)) {
                 if (parameter.returnType === ParameterReturnType.GlEnum) {
                     const commandName = parameter.changeCommands ? parameter.changeCommands[0] || "" : "";
                     value = WebGlConstants.stringifyWebGlConstant(value, commandName);

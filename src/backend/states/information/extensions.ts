@@ -1,14 +1,14 @@
-module SPECTOR {
+namespace SPECTOR {
     export interface IExtensions extends IState {
         getExtensions(): ExtensionList;
     }
 
     export type ExtensionsConstructor = {
         new (options: IStateOptions, logger: ILogger): IExtensions;
-    }
+    };
 }
 
-module SPECTOR.States.Information {
+namespace SPECTOR.States.Information {
     export interface IExtensionDefinition {
         readonly name: string;
         readonly description?: string;
@@ -52,16 +52,20 @@ module SPECTOR.States.Information {
                 { name: "WEBGL_compressed_texture_etc", description: "" },
                 { name: "WEBGL_compressed_texture_etc1", description: "" },
                 { name: "WEBGL_compressed_texture_s3tc", description: "" },
-                //{ name: "WEBGL_debug_renderer_info", description: "" },
-                //{ name: "WEBGL_debug_shaders", description: "" },
+                // { name: "WEBGL_debug_renderer_info", description: "" },
+                // { name: "WEBGL_debug_shaders", description: "" },
                 { name: "WEBGL_depth_texture", description: "" },
-                { name: "WEBGL_draw_buffers", description: "" }]
+                { name: "WEBGL_draw_buffers", description: "" }],
                 // ,
                 // WebGl2
                 // []
             ];
 
             this.currentState = this.startCapture();
+        }
+
+        public getExtensions(): ExtensionList {
+            return this.extensions;
         }
 
         protected readFromContext(): void {
@@ -81,10 +85,6 @@ module SPECTOR.States.Information {
                     }
                 }
             }
-        };
-
-        public getExtensions(): ExtensionList {
-            return this.extensions;
-        };
+        }
     }
 }

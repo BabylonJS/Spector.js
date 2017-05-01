@@ -1,3 +1,5 @@
+// tslint:disable:max-line-length
+
 namespace SPECTOR.States {
 
     @Decorators.state("CullState")
@@ -14,7 +16,7 @@ namespace SPECTOR.States {
 
         protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean {
             if (command.name === "enable" || command.name === "disable") {
-                return command.commandArguments[0] == WebGlConstants.CULL_FACE.value;
+                return command.commandArguments[0] === WebGlConstants.CULL_FACE.value;
             }
             return true;
         }

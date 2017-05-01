@@ -5,7 +5,7 @@ namespace SPECTOR {
 
     export type StackTraceConstructor = {
         new (): IStackTrace;
-    }
+    };
 }
 
 namespace SPECTOR.Utils {
@@ -19,25 +19,25 @@ namespace SPECTOR.Utils {
                 throw new Error();
             } catch (err) {
                 if (err.stack) {
-                    const lines = err.stack.split('\n');
+                    const lines = err.stack.split("\n");
                     for (let i = 0, len = lines.length; i < len; i++) {
                         if (lines[i].match(/^\s*[A-Za-z0-9\-_\$]+\(/)) {
                             callstack.push(lines[i]);
                         }
-                        else if (lines[i].indexOf('    at ') === 0) {
-                            lines[i] = lines[i].replace('    at ', '');
+                        else if (lines[i].indexOf("    at ") === 0) {
+                            lines[i] = lines[i].replace("    at ", "");
                             callstack.push(lines[i]);
                         }
                     }
                 }
                 else if (err.message) {
-                    const lines = err.message.split('\n');
+                    const lines = err.message.split("\n");
                     for (let i = 0, len = lines.length; i < len; i++) {
                         if (lines[i].match(/^\s*[A-Za-z0-9\-_\$]+\(/)) {
                             let entry = lines[i];
-                            //Append next line also since it has the file info
+                            // Append next line also since it has the file info
                             if (lines[i + 1]) {
-                                entry += ' at ' + lines[i + 1];
+                                entry += " at " + lines[i + 1];
                                 i++;
                             }
                             callstack.push(entry);
@@ -47,10 +47,11 @@ namespace SPECTOR.Utils {
             }
 
             if (!callstack) {
+                // tslint:disable-next-line:no-arg
                 let currentFunction = arguments.callee.caller;
                 while (currentFunction) {
                     const fn = currentFunction.toString();
-                    const fname = fn.substring(fn.indexOf("function") + 8, fn.indexOf('')) || 'anonymous';
+                    const fname = fn.substring(fn.indexOf("function") + 8, fn.indexOf("")) || "anonymous";
                     callstack.push(fname);
                     currentFunction = currentFunction.caller;
                 }

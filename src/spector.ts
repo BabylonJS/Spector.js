@@ -12,6 +12,8 @@ namespace SPECTOR {
     export class Spector {
         private static MAXRETRY = 20 * 60; // 30 seconds of capture max.
 
+        public readonly onCapture: IEvent<ICapture>;
+
         private readonly logger: ILogger;
         private readonly timeSpy: ITimeSpy;
         private readonly contexts: IAvailableContext[];
@@ -25,8 +27,6 @@ namespace SPECTOR {
         private resultView: IResultView;
         private retry: number;
 
-        public readonly onCapture: IEvent<ICapture>;
-
         constructor(private options: ISpectorOptions = {}) {
             this.injection = options.injection || ProvidedInjection.DefaultInjection;
             this.captureNextFrames = 0;
@@ -37,7 +37,7 @@ namespace SPECTOR {
             this.time = new this.injection.TimeCtor();
             this.timeSpy = new this.injection.TimeSpyCtor({
                 eventConstructor: this.injection.EventCtor,
-                timeConstructor: this.injection.TimeCtor
+                timeConstructor: this.injection.TimeCtor,
             }, this.logger);
             this.onCapture = new this.injection.EventCtor<ICapture>();
 
@@ -52,7 +52,7 @@ namespace SPECTOR {
                 this.captureMenu.onPauseRequested.add(this.pause, this);
                 this.captureMenu.onPlayRequested.add(this.play, this);
                 this.captureMenu.onPlayNextFrameRequested.add(this.playNextFrame, this);
-                this.captureMenu.onCaptureRequested.add(info => {
+                this.captureMenu.onCaptureRequested.add((info) => {
                     if (info) {
                         this.captureCanvas(info.ref);
                     }
@@ -130,7 +130,7 @@ namespace SPECTOR {
 
             this.canvasSpy = new this.injection.CanvasSpyCtor({
                 eventConstructor: this.injection.EventCtor,
-                canvas: canvas
+                canvas,
             }, this.logger);
             this.canvasSpy.onContextRequested.add(this.spyContext, this);
         }
@@ -140,7 +140,7 @@ namespace SPECTOR {
         }
 
         public captureCanvas(canvas: HTMLCanvasElement) {
-            let contextSpy = this.getAvailableContextSpyByCanvas(canvas);
+            const contextSpy = this.getAvailableContextSpyByCanvas(canvas);
             if (!contextSpy) {
                 let context: WebGLRenderingContexts;
                 try {
@@ -175,26 +175,26 @@ namespace SPECTOR {
             let contextSpy = this.getAvailableContextSpyByCanvas(context.canvas);
 
             if (!contextSpy) {
-                if ((<WebGL2RenderingContext>context).getIndexedParameter) {
+                if ((context as WebGL2RenderingContext).getIndexedParameter) {
                     contextSpy = new this.injection.ContextSpyCtor({
-                        context: context,
+                        context,
                         version: 2,
                         recordAlways: false,
-                        injection: this.injection
+                        injection: this.injection,
                     }, this.time, this.logger);
                 }
                 else {
                     contextSpy = new this.injection.ContextSpyCtor({
-                        context: context,
+                        context,
                         version: 1,
                         recordAlways: false,
-                        injection: this.injection
+                        injection: this.injection,
                     }, this.time, this.logger);
                 }
 
                 this.contexts.push({
                     canvas: contextSpy.context.canvas,
-                    contextSpy: contextSpy
+                    contextSpy,
                 });
             }
 
@@ -226,11 +226,11 @@ namespace SPECTOR {
                     context: contextInformation.context,
                     version: contextInformation.contextVersion,
                     recordAlways: true,
-                    injection: this.injection
+                    injection: this.injection,
                 }, this.time, this.logger);
                 this.contexts.push({
                     canvas: contextSpy.context.canvas,
-                    contextSpy: contextSpy
+                    contextSpy,
                 });
             }
 

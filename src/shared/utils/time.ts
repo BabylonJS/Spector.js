@@ -5,7 +5,7 @@ namespace SPECTOR {
 
     export type TimeConstructor = {
         new (): ITime;
-    }
+    };
 }
 
 namespace SPECTOR.Utils {

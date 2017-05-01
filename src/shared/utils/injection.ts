@@ -26,7 +26,7 @@ namespace SPECTOR {
 
         readonly CaptureMenuConstructor: CaptureMenuConstructor;
         readonly ResultViewConstructor: ResultViewConstructor;
-    }
+    };
 }
 
 namespace SPECTOR.ProvidedInjection {
@@ -57,5 +57,5 @@ namespace SPECTOR.ProvidedInjection {
 
         CaptureMenuConstructor: EmbeddedFrontend.CaptureMenu,
         ResultViewConstructor: EmbeddedFrontend.ResultView,
-    }
+    };
 }

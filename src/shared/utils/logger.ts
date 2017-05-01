@@ -3,7 +3,7 @@ namespace SPECTOR {
         noLog = 0,
         error = 1,
         warning = 2,
-        info = 3
+        info = 3,
     }
 
     export interface ILogger {
@@ -15,7 +15,7 @@ namespace SPECTOR {
 
     export type LoggerConstructor = {
         new (level?: LogLevel): Utils.ConsoleLogger;
-    }
+    };
 }
 
 namespace SPECTOR.Utils {
@@ -41,6 +41,7 @@ namespace SPECTOR.Utils {
 
         public info(msg: string, ...restOfMsg: string[]) {
             if (this.level > 2) {
+                // tslint:disable-next-line:no-console
                 console.log(msg, restOfMsg);
             }
         }

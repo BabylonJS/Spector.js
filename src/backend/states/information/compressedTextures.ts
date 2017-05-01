@@ -1,4 +1,4 @@
-module SPECTOR.States.Information {
+namespace SPECTOR.States.Information {
     export class CompressedTextures extends ParameterState {
 
         constructor(options: IStateOptions, logger: ILogger) {
@@ -14,7 +14,7 @@ module SPECTOR.States.Information {
         protected stringifyParameterValue(value: any, parameter: IParameter): any {
             const formats = [];
             for (const format of value) {
-                formats.push(WebGlConstants.stringifyWebGlConstant(<any>format, "getParameter"));
+                formats.push(WebGlConstants.stringifyWebGlConstant(format as any, "getParameter"));
             }
             return formats;
         }

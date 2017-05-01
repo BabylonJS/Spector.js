@@ -7,8 +7,8 @@ namespace SPECTOR {
     }
 
     export type EventConstructor = {
-        new <T>(): IEvent<T>
-    }
+        new <T>(): IEvent<T>,
+    };
 }
 
 namespace SPECTOR.Utils {
@@ -37,7 +37,9 @@ namespace SPECTOR.Utils {
 
         public trigger(value: T): void {
             for (const key in this.callbacks) {
-                this.callbacks[key](value);
+                if (this.callbacks.hasOwnProperty(key)) {
+                    this.callbacks[key](value);
+                }
             }
         }
     }

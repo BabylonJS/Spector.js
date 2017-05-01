@@ -1,3 +1,5 @@
+// tslint:disable:max-line-length
+
 namespace SPECTOR.States {
 
     @Decorators.state("AlignmentState")
@@ -26,7 +28,7 @@ namespace SPECTOR.States {
         }
 
         protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean {
-            return WebGlConstantsByName[stateName].value == command.commandArguments[0];
+            return WebGlConstantsByName[stateName].value === command.commandArguments[0];
         }
     }
 }

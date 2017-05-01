@@ -1,14 +1,16 @@
 namespace SPECTOR {
     export function merge<T, U>(first: T, second: U): T & U {
-        let result: any = {};
-        for (let id in first) {
-            result[id] = first[id];
+        const result: any = {};
+        for (const id in first) {
+            if (first.hasOwnProperty(id)) {
+                result[id] = first[id];
+            }
         }
-        for (let id in second) {
+        for (const id in second) {
             if (!result.hasOwnProperty(id)) {
                 result[id] = second[id];
             }
         }
-        return <T & U>result;
+        return result as T & U;
     }
 }

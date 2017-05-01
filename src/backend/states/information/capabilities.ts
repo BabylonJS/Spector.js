@@ -1,5 +1,11 @@
-module SPECTOR.States.Information {
+namespace SPECTOR.States.Information {
     export class Capabilities extends ParameterState {
+
+        constructor(options: IStateOptions, logger: ILogger) {
+            super(options, logger);
+
+            this.currentState = this.startCapture();
+        }
 
         protected getWebgl1Parameters(): IParameter[] {
             return [{ constant: WebGlConstants.RENDERER },
@@ -20,7 +26,7 @@ module SPECTOR.States.Information {
             { constant: WebGlConstants.ALIASED_POINT_SIZE_RANGE },
             { constant: WebGlConstants.IMPLEMENTATION_COLOR_READ_FORMAT },
             { constant: WebGlConstants.IMPLEMENTATION_COLOR_READ_TYPE },
-            //{ constant: WebGlConstants.UNIFORM_BUFFER_OFFSET_ALIGNMENT },
+            // { constant: WebGlConstants.UNIFORM_BUFFER_OFFSET_ALIGNMENT },
 
             { constant: WebGlConstants.MAX_COMBINED_TEXTURE_IMAGE_UNITS },
             { constant: WebGlConstants.MAX_CUBE_MAP_TEXTURE_SIZE },
@@ -67,12 +73,6 @@ module SPECTOR.States.Information {
             { constant: WebGlConstants.MAX_VERTEX_UNIFORM_BLOCKS },
             { constant: WebGlConstants.MAX_VERTEX_UNIFORM_COMPONENTS },
             { constant: WebGlConstants.MIN_PROGRAM_TEXEL_OFFSET }];
-        }
-
-        constructor(options: IStateOptions, logger: ILogger) {
-            super(options, logger);
-
-            this.currentState = this.startCapture();
         }
     }
 }

@@ -1,4 +1,5 @@
 namespace SPECTOR {
+    // tslint:disable-next-line:interface-name
     export interface WebGlConstant {
         readonly name: string;
         readonly value: number;
@@ -7,59 +8,6 @@ namespace SPECTOR {
     }
 
     export class WebGlConstants {
-        protected static readonly zeroMeaningByCommand: { [commandName: string]: string } = {
-            "getError": "NO_ERROR",
-            "blendFunc": "ZERO",
-            "blendFuncSeparate": "ZERO",
-            "readBuffer": "NONE",
-            "getFramebufferAttachmentParameter": "NONE",
-            "texParameterf": "NONE",
-            "texParameteri": "NONE",
-            "drawArrays": "POINTS",
-            "drawElements": "POINTS",
-            "drawArraysInstanced": "POINTS",
-            "drawBuffers": "POINTS",
-            "drawElementsInstanced": "POINTS",
-            "drawRangeElements": "POINTS"
-        };
-
-        protected static readonly oneMeaningByCommand: { [commandName: string]: string } = {
-            "blendFunc": "ONE",
-            "blendFuncSeparate": "ONE",
-            "drawArrays": "LINES",
-            "drawElements": "LINES",
-            "drawArraysInstanced": "LINES",
-            "drawBuffers": "LINES",
-            "drawElementsInstanced": "LINES",
-            "drawRangeElements": "LINES"
-        };
-
-        public static isWebGlConstant(value: number): boolean {
-            return WebGlConstantsByValue[value] !== null && WebGlConstantsByValue[value] !== undefined;
-        }
-
-        public static stringifyWebGlConstant(value: number, command: string): string {
-            if (value === 0) {
-                const meaning = this.zeroMeaningByCommand[command];
-                if (meaning) {
-                    return meaning;
-                }
-
-                return "0";
-            }
-            else if (value === 1) {
-                const meaning = this.oneMeaningByCommand[command];
-                if (meaning) {
-                    return meaning;
-                }
-
-                return "1";
-            }
-
-            const webglConstant = WebGlConstantsByValue[value];
-            return webglConstant ? webglConstant.name : value + "";
-        }
-
         public static readonly DEPTH_BUFFER_BIT: WebGlConstant = { name: "DEPTH_BUFFER_BIT", value: 256, description: "Passed to clear to clear the current depth buffer." };
         public static readonly STENCIL_BUFFER_BIT: WebGlConstant = { name: "STENCIL_BUFFER_BIT", value: 1024, description: "Passed to clear to clear the current stencil buffer." };
         public static readonly COLOR_BUFFER_BIT: WebGlConstant = { name: "COLOR_BUFFER_BIT", value: 16384, description: "Passed to clear to clear the current color buffer." };
@@ -703,5 +651,58 @@ namespace SPECTOR {
         public static readonly TIME_ELAPSED_EXT: WebGlConstant = { name: "TIME_ELAPSED_EXT", value: 35007, description: "Elapsed time (in nanoseconds).", extensionName: "EXT_disjoint_timer_query" };
         public static readonly TIMESTAMP_EXT: WebGlConstant = { name: "TIMESTAMP_EXT", value: 36392, description: "The current time.", extensionName: "EXT_disjoint_timer_query" };
         public static readonly GPU_DISJOINT_EXT: WebGlConstant = { name: "GPU_DISJOINT_EXT", value: 36795, description: "A Boolean indicating whether or not the GPU performed any disjoint operation.", extensionName: "EXT_disjoint_timer_query" };
+
+        public static isWebGlConstant(value: number): boolean {
+            return WebGlConstantsByValue[value] !== null && WebGlConstantsByValue[value] !== undefined;
+        }
+
+        public static stringifyWebGlConstant(value: number, command: string): string {
+            if (value === 0) {
+                const meaning = this.zeroMeaningByCommand[command];
+                if (meaning) {
+                    return meaning;
+                }
+
+                return "0";
+            }
+            else if (value === 1) {
+                const meaning = this.oneMeaningByCommand[command];
+                if (meaning) {
+                    return meaning;
+                }
+
+                return "1";
+            }
+
+            const webglConstant = WebGlConstantsByValue[value];
+            return webglConstant ? webglConstant.name : value + "";
+        }
+
+        protected static readonly zeroMeaningByCommand: { [commandName: string]: string } = {
+            getError: "NO_ERROR",
+            blendFunc: "ZERO",
+            blendFuncSeparate: "ZERO",
+            readBuffer: "NONE",
+            getFramebufferAttachmentParameter: "NONE",
+            texParameterf: "NONE",
+            texParameteri: "NONE",
+            drawArrays: "POINTS",
+            drawElements: "POINTS",
+            drawArraysInstanced: "POINTS",
+            drawBuffers: "POINTS",
+            drawElementsInstanced: "POINTS",
+            drawRangeElements: "POINTS",
+        };
+
+        protected static readonly oneMeaningByCommand: { [commandName: string]: string } = {
+            blendFunc: "ONE",
+            blendFuncSeparate: "ONE",
+            drawArrays: "LINES",
+            drawElements: "LINES",
+            drawArraysInstanced: "LINES",
+            drawBuffers: "LINES",
+            drawElementsInstanced: "LINES",
+            drawRangeElements: "LINES",
+        };
     }
 }

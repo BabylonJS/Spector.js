@@ -1,3 +1,5 @@
+// tslint:disable:max-line-length
+
 namespace SPECTOR.States {
 
     @Decorators.state("BlendState")
@@ -12,12 +14,12 @@ namespace SPECTOR.States {
             { constant: WebGlConstants.BLEND_EQUATION_ALPHA, returnType: ParameterReturnType.GlEnum, changeCommands: ["blendEquation", "blendEquationSeparate"] },
             { constant: WebGlConstants.BLEND_EQUATION_RGB, returnType: ParameterReturnType.GlEnum, changeCommands: ["blendEquation", "blendEquationSeparate"] },
             { constant: WebGlConstants.BLEND_SRC_ALPHA, returnType: ParameterReturnType.GlEnum, changeCommands: ["blendFunc", "blendFuncSeparate"] },
-            { constant: WebGlConstants.BLEND_SRC_RGB, returnType: ParameterReturnType.GlEnum, changeCommands: ["blendFunc", "blendFuncSeparate"] }]
+            { constant: WebGlConstants.BLEND_SRC_RGB, returnType: ParameterReturnType.GlEnum, changeCommands: ["blendFunc", "blendFuncSeparate"] }];
         }
 
         protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean {
             if (command.name === "enable" || command.name === "disable") {
-                return command.commandArguments[0] == WebGlConstants.BLEND.value;
+                return command.commandArguments[0] === WebGlConstants.BLEND.value;
             }
             return true;
         }

@@ -1,3 +1,4 @@
+// tslint:disable:max-classes-per-file
 namespace SPECTOR.WebGlObjects {
 
     @Decorators.webGlObject("WebGLBuffer")

@@ -6,7 +6,7 @@ namespace SPECTOR.States {
         protected getWebgl1Parameters(): IParameter[] {
             return [{ constant: WebGlConstants.COLOR_CLEAR_VALUE, changeCommands: ["clearColor"] },
             { constant: WebGlConstants.DEPTH_CLEAR_VALUE, changeCommands: ["clearDepth"] },
-            { constant: WebGlConstants.STENCIL_CLEAR_VALUE, changeCommands: ["clearStencil"] }]
+            { constant: WebGlConstants.STENCIL_CLEAR_VALUE, changeCommands: ["clearStencil"] }];
         }
 
         protected getConsumeCommands(): string[] {
@@ -22,7 +22,8 @@ namespace SPECTOR.States {
                     return WebGlConstants.DEPTH_BUFFER_BIT.value === (args[0] & WebGlConstants.DEPTH_BUFFER_BIT.value);
 
                 case WebGlConstants.STENCIL_CLEAR_VALUE.name:
-                    return WebGlConstants.STENCIL_BUFFER_BIT.value === (args[0] & WebGlConstants.STENCIL_BUFFER_BIT.value);
+                    return WebGlConstants.STENCIL_BUFFER_BIT.value ===
+                        (args[0] & WebGlConstants.STENCIL_BUFFER_BIT.value);
             }
             return false;
         }

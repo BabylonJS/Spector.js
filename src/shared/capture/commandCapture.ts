@@ -11,7 +11,7 @@ namespace SPECTOR {
         Disabled = 20,
         Redundant = 30,
         Valid = 40,
-        Deprecated = 50
+        Deprecated = 50,
     }
 
     export interface ICommandCapture extends State {

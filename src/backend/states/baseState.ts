@@ -1,13 +1,13 @@
-module SPECTOR {
+namespace SPECTOR {
     export type StateData = { [key: string]: any };
 
     export interface IState {
         readonly stateName: string;
+        readonly requireStartAndStopStates: boolean;
         registerCallbacks(callbacks: CommandCapturedCallbacks): void;
         startCapture(): State;
         stopCapture(): State;
         getStateData(): StateData;
-        readonly requireStartAndStopStates: boolean;
     }
 
     export interface IStateOptions extends IContextInformation {
@@ -16,7 +16,7 @@ module SPECTOR {
 
     export type StateConstructor = {
         new (options: IStateOptions, logger: ILogger): IState;
-    }
+    };
 }
 
 namespace SPECTOR.States {
@@ -27,32 +27,26 @@ namespace SPECTOR.States {
         "drawBuffers",
         "drawElementsInstanced",
         "drawElementsInstancedANGLE",
-        "drawRangeElements"
+        "drawRangeElements",
     ];
 
     export abstract class BaseState implements IState {
-        private readonly changeCommandsByState: { [key: string]: string[] };
-        private readonly consumeCommands: string[];
-        private readonly commandNameToStates: { [commandName: string]: string[] };
-        private readonly requireInitAndEndState: boolean;
+        public readonly stateName: string;
 
         protected readonly context: WebGLRenderingContexts;
         protected readonly contextVersion: number;
         protected readonly extensions: ExtensionList;
         protected readonly toggleCapture: (capture: boolean) => void;
 
-        private capturedCommandsByState: { [key: string]: ICommandCapture[] };
-
         protected previousState: State;
         protected currentState: State;
 
-        public readonly stateName: string;
+        private readonly changeCommandsByState: { [key: string]: string[] };
+        private readonly consumeCommands: string[];
+        private readonly commandNameToStates: { [commandName: string]: string[] };
+        private readonly requireInitAndEndState: boolean;
 
-        public get requireStartAndStopStates(): boolean {
-            return true;
-        }
-
-        protected abstract readFromContext(): void;
+        private capturedCommandsByState: { [key: string]: ICommandCapture[] };
 
         constructor(protected readonly options: IStateOptions, protected readonly logger: ILogger) {
             this.context = options.context;
@@ -64,6 +58,10 @@ namespace SPECTOR.States {
             this.consumeCommands = this.getConsumeCommands();
             this.changeCommandsByState = this.getChangeCommandsByState();
             this.commandNameToStates = this.getCommandNameToStates();
+        }
+
+        public get requireStartAndStopStates(): boolean {
+            return true;
         }
 
         public startCapture(loadFromContext = true): State {
@@ -89,9 +87,13 @@ namespace SPECTOR.States {
 
         public registerCallbacks(callbacks: CommandCapturedCallbacks): void {
             for (const stateName in this.changeCommandsByState) {
-                for (const changeCommand of this.changeCommandsByState[stateName]) {
-                    callbacks[changeCommand] = callbacks[changeCommand] || [];
-                    callbacks[changeCommand].push(this.onChangeCommand.bind(this));
+                if (this.changeCommandsByState.hasOwnProperty(stateName)) {
+                    for (const changeCommand of this.changeCommandsByState[stateName]) {
+                        if (this.changeCommandsByState[stateName].hasOwnProperty(changeCommand)) {
+                            callbacks[changeCommand] = callbacks[changeCommand] || [];
+                            callbacks[changeCommand].push(this.onChangeCommand.bind(this));
+                        }
+                    }
                 }
             }
 
@@ -104,6 +106,8 @@ namespace SPECTOR.States {
         public getStateData(): StateData {
             return this.currentState;
         }
+
+        protected abstract readFromContext(): void;
 
         protected getConsumeCommands(): string[] {
             return [];
@@ -156,36 +160,38 @@ namespace SPECTOR.States {
 
         protected analyse(consumeCommand: ICommandCapture): void {
             for (const stateName in this.capturedCommandsByState) {
-                const commands = this.capturedCommandsByState[stateName];
-                const lengthM1 = commands.length - 1;
-                if (lengthM1 >= 0) {
-                    if (consumeCommand) {
-                        for (let i = 0; i < lengthM1; i++) {
-                            const command = commands[i];
+                if (this.capturedCommandsByState.hasOwnProperty(stateName)) {
+                    const commands = this.capturedCommandsByState[stateName];
+                    const lengthM1 = commands.length - 1;
+                    if (lengthM1 >= 0) {
+                        if (consumeCommand) {
+                            for (let i = 0; i < lengthM1; i++) {
+                                const command = commands[i];
+                                command.consumeCommandId = consumeCommand.id;
+                                this.changeCommandCaptureStatus(command, CommandCaptureStatus.Redundant);
+                            }
+
+                            const isStateEnabled = this.isStateEnableNoSideEffects(stateName, consumeCommand.commandArguments);
+                            const command = commands[lengthM1];
                             command.consumeCommandId = consumeCommand.id;
-                            this.changeCommandCaptureStatus(command, CommandCaptureStatus.Redundant);
-                        }
 
-                        const isStateEnabled = this.isStateEnableNoSideEffects(stateName, consumeCommand.commandArguments);
-                        const command = commands[lengthM1];
-                        command.consumeCommandId = consumeCommand.id;
-
-                        if (!this.areStatesEquals(this.currentState[stateName], this.previousState[stateName])) {
-                            if (isStateEnabled) {
-                                this.changeCommandCaptureStatus(command, CommandCaptureStatus.Valid);
+                            if (!this.areStatesEquals(this.currentState[stateName], this.previousState[stateName])) {
+                                if (isStateEnabled) {
+                                    this.changeCommandCaptureStatus(command, CommandCaptureStatus.Valid);
+                                }
+                                else {
+                                    this.changeCommandCaptureStatus(command, CommandCaptureStatus.Disabled);
+                                }
                             }
                             else {
-                                this.changeCommandCaptureStatus(command, CommandCaptureStatus.Disabled);
+                                this.changeCommandCaptureStatus(command, CommandCaptureStatus.Redundant);
                             }
                         }
                         else {
-                            this.changeCommandCaptureStatus(command, CommandCaptureStatus.Redundant);
-                        }
-                    }
-                    else {
-                        for (let i = 0; i < commands.length; i++) {
-                            const command = commands[i];
-                            this.changeCommandCaptureStatus(command, CommandCaptureStatus.Unused);
+                            for (let i = 0; i < commands.length; i++) {
+                                const command = commands[i];
+                                this.changeCommandCaptureStatus(command, CommandCaptureStatus.Unused);
+                            }
                         }
                     }
                 }
@@ -195,25 +201,27 @@ namespace SPECTOR.States {
         protected storeCommandIds(): void {
             const commandIdsStates = ["unusedCommandIds", "disabledCommandIds", "redundantCommandIds", "validCommandIds"];
             for (const commandIdsStatus of commandIdsStates) {
-                this.currentState[commandIdsStatus] = <any>[];
+                this.currentState[commandIdsStatus] = [] as any;
             }
 
             for (const stateName in this.capturedCommandsByState) {
-                const commands = this.capturedCommandsByState[stateName];
-                for (const command of commands) {
-                    switch (command.status) {
-                        case CommandCaptureStatus.Unused:
-                            this.currentState["unusedCommandIds"].push(command.id);
-                            break;
-                        case CommandCaptureStatus.Disabled:
-                            this.currentState["disabledCommandIds"].push(command.id);
-                            break;
-                        case CommandCaptureStatus.Redundant:
-                            this.currentState["redundantCommandIds"].push(command.id);
-                            break;
-                        case CommandCaptureStatus.Valid:
-                            this.currentState["validCommandIds"].push(command.id);
-                            break;
+                if (this.capturedCommandsByState.hasOwnProperty(stateName)) {
+                    const commands = this.capturedCommandsByState[stateName];
+                    for (const command of commands) {
+                        switch (command.status) {
+                            case CommandCaptureStatus.Unused:
+                                this.currentState["unusedCommandIds"].push(command.id);
+                                break;
+                            case CommandCaptureStatus.Disabled:
+                                this.currentState["disabledCommandIds"].push(command.id);
+                                break;
+                            case CommandCaptureStatus.Redundant:
+                                this.currentState["redundantCommandIds"].push(command.id);
+                                break;
+                            case CommandCaptureStatus.Valid:
+                                this.currentState["validCommandIds"].push(command.id);
+                                break;
+                        }
                     }
                 }
             }
@@ -286,11 +294,13 @@ namespace SPECTOR.States {
         }
 
         private getCommandNameToStates(): { [key: string]: string[] } {
-            let result: { [key: string]: string[] } = {};
+            const result: { [key: string]: string[] } = {};
             for (const stateName in this.changeCommandsByState) {
-                for (const changeCommand of this.changeCommandsByState[stateName]) {
-                    result[changeCommand] = result[changeCommand] || [];
-                    result[changeCommand].push(stateName);
+                if (this.changeCommandsByState.hasOwnProperty(stateName)) {
+                    for (const changeCommand of this.changeCommandsByState[stateName]) {
+                        result[changeCommand] = result[changeCommand] || [];
+                        result[changeCommand].push(stateName);
+                    }
                 }
             }
             return result;

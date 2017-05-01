@@ -13,15 +13,15 @@ namespace SPECTOR.States {
         constructor(options: IStateOptions, logger: ILogger) {
             super(options, logger);
             this.captureFrameBuffer = options.context.createFramebuffer();
-            this.workingCanvas = document.createElement('canvas');
-            this.workingContext2D = this.workingCanvas.getContext('2d');
-            this.captureCanvas = document.createElement('canvas');
-            this.captureContext2D = this.captureCanvas.getContext('2d');
+            this.workingCanvas = document.createElement("canvas");
+            this.workingContext2D = this.workingCanvas.getContext("2d");
+            this.captureCanvas = document.createElement("canvas");
+            this.captureContext2D = this.captureCanvas.getContext("2d");
             this.captureContext2D.imageSmoothingEnabled = true;
             this.captureContext2D.mozImageSmoothingEnabled = true;
             this.captureContext2D.oImageSmoothingEnabled = true;
             this.captureContext2D.webkitImageSmoothingEnabled = true;
-            (<any>this.captureContext2D).msImageSmoothingEnabled = true;
+            (this.captureContext2D as any).msImageSmoothingEnabled = true;
         }
 
         protected getConsumeCommands(): string[] {
@@ -62,14 +62,16 @@ namespace SPECTOR.States {
             if (drawBuffersExtension) {
                 const maxDrawBuffers = this.context.getParameter(WebGlConstants.MAX_DRAW_BUFFERS_WEBGL.value);
                 for (let i = 0; i < maxDrawBuffers; i++) {
-                    this.readFrameBufferAttachmentFromContext(this.context, frameBuffer, WebGlConstantsByName["COLOR_ATTACHMENT" + i + "_WEBGL"], x, y, width, height);
+                    this.readFrameBufferAttachmentFromContext(this.context, frameBuffer,
+                        WebGlConstantsByName["COLOR_ATTACHMENT" + i + "_WEBGL"], x, y, width, height);
                 }
             }
             else if (this.contextVersion > 1) {
-                const context2 = <WebGL2RenderingContext>this.context;
+                const context2 = this.context as WebGL2RenderingContext;
                 const maxDrawBuffers = context2.getParameter(WebGlConstants.MAX_DRAW_BUFFERS.value);
                 for (let i = 0; i < maxDrawBuffers; i++) {
-                    this.readFrameBufferAttachmentFromContext(this.context, frameBuffer, WebGlConstantsByName["COLOR_ATTACHMENT" + i], x, y, width, height);
+                    this.readFrameBufferAttachmentFromContext(this.context, frameBuffer,
+                        WebGlConstantsByName["COLOR_ATTACHMENT" + i], x, y, width, height);
                 }
             }
             else {
@@ -106,7 +108,7 @@ namespace SPECTOR.States {
                         textureCubeMapFace ? textureCubeMapFace : WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
                 }
                 else {
-                    (<WebGL2RenderingContext>gl).framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
+                    (gl as WebGL2RenderingContext).framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                         storage, textureLevel, textureLayer);
                 }
 
@@ -148,22 +150,22 @@ namespace SPECTOR.States {
             }
 
             // Scale and draw to flip Y to reorient readPixels.
-            this.captureContext2D.globalCompositeOperation = 'copy';
+            this.captureContext2D.globalCompositeOperation = "copy";
             this.captureContext2D.scale(1, -1); // Y flip
             this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
             this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
             this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
-            this.captureContext2D.globalCompositeOperation = 'source-over';
+            this.captureContext2D.globalCompositeOperation = "source-over";
 
             // get the screen capture
             this.currentState["Attachments"].push({
                 attachmentName: name,
-                src: this.captureCanvas.toDataURL()
+                src: this.captureCanvas.toDataURL(),
             });
         }
 
         protected analyse(consumeCommand: ICommandCapture): void {
-
+            // Nothing to analyse on visual state.
         }
 
         private getTag(object: any): any {

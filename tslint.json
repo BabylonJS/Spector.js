@@ -31,7 +31,8 @@
     "no-string-literal": false,
     "one-line": [false],
     "space-before-function-paren": false,
-    "align": [false]
+    "align": [false],
+    "max-line-length": [true, 500]
   },
   "rulesDirectory": []
 }

@@ -1,4 +1,6 @@
 namespace SPECTOR.Decorators {
+    // tslint:disable:only-arrow-functions
+
     const COMMANDNAMEKEY = "__CommandName";
     export function command(commandName: string) {
         return function (target: any) {
@@ -34,12 +36,14 @@ namespace SPECTOR.Decorators {
     export function webGlObject(objectName: string) {
         return function (target: any) {
             target[OBJECTNAMEKEY] = objectName;
-            target[OBJECTTYPEKEY] = (<any>window)[objectName] || null;
+            target[OBJECTTYPEKEY] = (window as any)[objectName] || null;
         };
     }
     export function getWebGlObjectName(target: any): string {
         return target[OBJECTNAMEKEY];
     }
+
+    // tslint:disable-next-line:ban-types
     export function getWebGlObjectType(target: any): Function {
         return target[OBJECTTYPEKEY];
     }

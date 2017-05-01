@@ -2,6 +2,22 @@ namespace SPECTOR.States {
 
     @Decorators.state("StencilState")
     export class StencilState extends ParameterState {
+        private static stencilOpStates = [WebGlConstants.STENCIL_BACK_FAIL.value,
+        WebGlConstants.STENCIL_BACK_PASS_DEPTH_FAIL.value,
+        WebGlConstants.STENCIL_BACK_PASS_DEPTH_PASS.value,
+        WebGlConstants.STENCIL_FAIL.value,
+        WebGlConstants.STENCIL_PASS_DEPTH_FAIL.value,
+        WebGlConstants.STENCIL_PASS_DEPTH_PASS.value];
+
+        private static stencilFuncStates = [WebGlConstants.STENCIL_BACK_FUNC.value,
+        WebGlConstants.STENCIL_BACK_REF.value,
+        WebGlConstants.STENCIL_BACK_VALUE_MASK.value,
+        WebGlConstants.STENCIL_FUNC.value,
+        WebGlConstants.STENCIL_REF.value,
+        WebGlConstants.STENCIL_VALUE_MASK.value];
+
+        private static stencilMaskStates = [WebGlConstants.STENCIL_BACK_WRITEMASK.value,
+        WebGlConstants.STENCIL_WRITEMASK.value];
 
         protected getWebgl1Parameters(): IParameter[] {
             return [{ constant: WebGlConstants.STENCIL_TEST, changeCommands: ["enable", "disable"] },
@@ -21,26 +37,9 @@ namespace SPECTOR.States {
             { constant: WebGlConstants.STENCIL_WRITEMASK, returnType: ParameterReturnType.GlUint, changeCommands: ["stencilMask", "stencilMaskSeparate"] }];
         }
 
-        static stencilOpStates = [WebGlConstants.STENCIL_BACK_FAIL.value,
-        WebGlConstants.STENCIL_BACK_PASS_DEPTH_FAIL.value,
-        WebGlConstants.STENCIL_BACK_PASS_DEPTH_PASS.value,
-        WebGlConstants.STENCIL_FAIL.value,
-        WebGlConstants.STENCIL_PASS_DEPTH_FAIL.value,
-        WebGlConstants.STENCIL_PASS_DEPTH_PASS.value,];
-
-        static stencilFuncStates = [WebGlConstants.STENCIL_BACK_FUNC.value,
-        WebGlConstants.STENCIL_BACK_REF.value,
-        WebGlConstants.STENCIL_BACK_VALUE_MASK.value,
-        WebGlConstants.STENCIL_FUNC.value,
-        WebGlConstants.STENCIL_REF.value,
-        WebGlConstants.STENCIL_VALUE_MASK.value];
-
-        static stencilMaskStates = [WebGlConstants.STENCIL_BACK_WRITEMASK.value,
-        WebGlConstants.STENCIL_WRITEMASK.value,];
-
         protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean {
             if (command.name === "enable" || command.name === "disable") {
-                return command.commandArguments[0] == WebGlConstants.STENCIL_TEST.value;
+                return command.commandArguments[0] === WebGlConstants.STENCIL_TEST.value;
             }
             if (command.name === "stencilOp" || command.name === "stencilOpSeparate") {
                 return StencilState.stencilOpStates.indexOf(command.commandArguments[0]) > 0;

@@ -1,3 +1,5 @@
+// tslint:disable:max-line-length
+
 namespace SPECTOR.States {
 
     @Decorators.state("DrawState")
@@ -12,16 +14,16 @@ namespace SPECTOR.States {
 
         protected getWebgl2Parameters(): IParameter[] {
             return [{ constant: WebGlConstants.RASTERIZER_DISCARD, changeCommands: ["enable", "disable"] },
-            { constant: WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT, changeCommands: ["hint"] }]
+            { constant: WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT, changeCommands: ["hint"] }];
         }
 
         protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean {
             if (command.name === "enable" || command.name === "disable") {
-                if (command.commandArguments[0] == WebGlConstants.DITHER.value) {
+                if (command.commandArguments[0] === WebGlConstants.DITHER.value) {
                     return stateName === WebGlConstants.DITHER.name;
                 }
 
-                if (command.commandArguments[0] == WebGlConstants.RASTERIZER_DISCARD.value) {
+                if (command.commandArguments[0] === WebGlConstants.RASTERIZER_DISCARD.value) {
                     return stateName === WebGlConstants.RASTERIZER_DISCARD.name;
                 }
 
@@ -29,11 +31,11 @@ namespace SPECTOR.States {
             }
 
             if (command.name === "hint") {
-                if (command.commandArguments[0] == WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT_OES.value) {
+                if (command.commandArguments[0] === WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT_OES.value) {
                     return stateName === WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT_OES.name;
                 }
 
-                if (command.commandArguments[0] == WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT.value) {
+                if (command.commandArguments[0] === WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT.value) {
                     return stateName === WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT.name;
                 }
 

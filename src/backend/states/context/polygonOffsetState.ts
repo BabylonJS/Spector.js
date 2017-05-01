@@ -11,7 +11,7 @@ namespace SPECTOR.States {
 
         protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean {
             if (command.name === "enable" || command.name === "disable") {
-                return command.commandArguments[0] == WebGlConstants.POLYGON_OFFSET_FILL.value;
+                return command.commandArguments[0] === WebGlConstants.POLYGON_OFFSET_FILL.value;
             }
             return true;
         }
