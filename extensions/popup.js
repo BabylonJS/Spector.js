@@ -106,7 +106,7 @@ var initUI = function() {
     ui = new SPECTOR.EmbeddedFrontend.CaptureMenu({ eventConstructor: SPECTOR.Utils.Event }, new SPECTOR.Utils.ConsoleLogger());
     ui.onCanvasSelected.add(this.canvasSelected, this);
     ui.onPlayRequested.add(this.play, this);
-    ui.onPlayNextFrameRequested.add(this.playNextFrame, this);            
+    ui.onPlayNextFrameRequested.add(this.playNextFrame, this);
     ui.onPauseRequested.add(this.pause, this);
     ui.onCaptureRequested.add(this.captureCanvas, this);
     ui.display();

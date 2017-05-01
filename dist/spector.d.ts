@@ -183,14 +183,6 @@ declare namespace SPECTOR {
         readonly extensionName?: string;
     }
     class WebGlConstants {
-        protected static readonly zeroMeaningByCommand: {
-            [commandName: string]: string;
-        };
-        protected static readonly oneMeaningByCommand: {
-            [commandName: string]: string;
-        };
-        static isWebGlConstant(value: number): boolean;
-        static stringifyWebGlConstant(value: number, command: string): string;
         static readonly DEPTH_BUFFER_BIT: WebGlConstant;
         static readonly STENCIL_BUFFER_BIT: WebGlConstant;
         static readonly COLOR_BUFFER_BIT: WebGlConstant;
@@ -833,6 +825,14 @@ declare namespace SPECTOR {
         static readonly TIME_ELAPSED_EXT: WebGlConstant;
         static readonly TIMESTAMP_EXT: WebGlConstant;
         static readonly GPU_DISJOINT_EXT: WebGlConstant;
+        static isWebGlConstant(value: number): boolean;
+        static stringifyWebGlConstant(value: number, command: string): string;
+        protected static readonly zeroMeaningByCommand: {
+            [commandName: string]: string;
+        };
+        protected static readonly oneMeaningByCommand: {
+            [commandName: string]: string;
+        };
     }
 }
 declare namespace SPECTOR {
@@ -887,6 +887,8 @@ declare namespace SPECTOR.Spies {
         private static readonly setTimerFunctions;
         private static readonly setTimerCommonValues;
         private static readonly fpsWindowSize;
+        readonly onFrameStart: IEvent<ITimeSpy>;
+        readonly onFrameEnd: IEvent<ITimeSpy>;
         private readonly spiedWindow;
         private readonly time;
         private readonly lastSixtyFramesDuration;
@@ -895,8 +897,6 @@ declare namespace SPECTOR.Spies {
         private lastFrame;
         private speedRatio;
         private willPlayNextFrame;
-        readonly onFrameStart: IEvent<ITimeSpy>;
-        readonly onFrameEnd: IEvent<ITimeSpy>;
         constructor(options: ITimeSpyOptions, logger: ILogger);
         playNextFrame(): void;
         changeSpeedRatio(ratio: number): void;
@@ -923,9 +923,9 @@ declare namespace SPECTOR.Spies {
     class CanvasSpy implements ICanvasSpy {
         private readonly options;
         private readonly logger;
+        readonly onContextRequested: IEvent<IContextInformation>;
         private readonly canvas;
         private spiedGetContext;
-        readonly onContextRequested: IEvent<IContextInformation>;
         constructor(options: ICanvasSpyOptions, logger: ILogger);
         private init();
     }
@@ -957,6 +957,8 @@ declare namespace SPECTOR.Spies {
         private readonly time;
         private readonly logger;
         private static readonly unSpyableMembers;
+        readonly context: WebGLRenderingContexts;
+        readonly version: number;
         private readonly contextInformation;
         private readonly commandSpies;
         private readonly stateSpy;
@@ -969,8 +971,6 @@ declare namespace SPECTOR.Spies {
         private currentCapture;
         private canvasCapture;
         private contextCapture;
-        readonly context: WebGLRenderingContexts;
-        readonly version: number;
         constructor(options: IContextSpyOptions, time: ITime, logger: ILogger);
         spy(): void;
         unSpy(): void;
@@ -1011,6 +1011,7 @@ declare namespace SPECTOR.Spies {
         private readonly time;
         private readonly logger;
         private static customCommandsConstructors;
+        readonly spiedCommandName: string;
         private readonly stackTrace;
         private readonly spiedCommand;
         private readonly spiedCommandRunningContext;
@@ -1018,7 +1019,6 @@ declare namespace SPECTOR.Spies {
         private readonly commandOptions;
         private command;
         private overloadedCommand;
-        readonly spiedCommandName: string;
         constructor(options: ICommandSpyOptions, time: ITime, logger: ILogger);
         spy(): void;
         unSpy(): void;
@@ -1131,19 +1131,19 @@ declare namespace SPECTOR {
 declare namespace SPECTOR.Recorders {
     abstract class BaseRecorder implements IRecorder {
         protected options: IRecorderOptions;
+        readonly objectName: string;
         protected readonly createCommandNames: string[];
         protected readonly updateCommandNames: string[];
         protected readonly deleteCommandNames: string[];
-        readonly objectName: string;
-        protected abstract getCreateCommandNames(): string[];
-        protected abstract getUpdateCommandNames(): string[];
-        protected abstract getDeleteCommandNames(): string[];
-        protected abstract getBoundObject(target: number): object;
         constructor(options: IRecorderOptions, logger: ILogger);
         registerCallbacks(onFunctionCallbacks: FunctionCallbacks): void;
         create(functionInformation: IFunctionInformation): RecordId;
         update(functionInformation: IFunctionInformation): RecordId;
         delete(functionInformation: IFunctionInformation): RecordId;
+        protected abstract getCreateCommandNames(): string[];
+        protected abstract getUpdateCommandNames(): string[];
+        protected abstract getDeleteCommandNames(): string[];
+        protected abstract getBoundObject(target: number): object;
         protected createWithoutSideEffects(functionInformation: IFunctionInformation): RecordId;
         protected updateWithoutSideEffects(functionInformation: IFunctionInformation): RecordId;
         protected deleteWithoutSideEffects(functionInformation: IFunctionInformation): RecordId;
@@ -1166,10 +1166,10 @@ declare namespace SPECTOR.Spies {
     class RecorderSpy implements IRecorderSpy {
         readonly options: IRecorderSpyOptions;
         private readonly logger;
+        readonly contextInformation: IContextInformation;
         private readonly recorderConstructors;
         private readonly recorders;
         private readonly onCommandCallbacks;
-        readonly contextInformation: IContextInformation;
         constructor(options: IRecorderSpyOptions, logger: ILogger);
         recordCommand(functionInformation: IFunctionInformation): void;
         private initAvailableRecorders();
@@ -1195,10 +1195,10 @@ declare namespace SPECTOR.Spies {
     class StateSpy implements IStateSpy {
         private readonly options;
         private readonly logger;
+        readonly contextInformation: IContextInformation;
         private readonly stateConstructors;
         private readonly stateTrackers;
         private readonly onCommandCapturedCallbacks;
-        readonly contextInformation: IContextInformation;
         constructor(options: IStateSpyOptions, logger: ILogger);
         startCapture(currentCapture: ICapture): void;
         stopCapture(currentCapture: ICapture): void;
@@ -1225,9 +1225,9 @@ declare namespace SPECTOR.Spies {
     class WebGlObjectSpy implements IWebGlObjectSpy {
         private readonly options;
         private readonly logger;
+        readonly contextInformation: IContextInformation;
         private readonly webGlObjectConstructors;
         private readonly webGlObjects;
-        readonly contextInformation: IContextInformation;
         constructor(options: IWebGlObjectSpyOptions, logger: ILogger);
         tagWebGlObjects(functionInformation: IFunctionInformation): void;
         tagWebGlObject(object: any): WebGlObjectTag;
@@ -1235,17 +1235,17 @@ declare namespace SPECTOR.Spies {
         private initWebglObjects();
     }
 }
-declare module SPECTOR {
+declare namespace SPECTOR {
     type StateData = {
         [key: string]: any;
     };
     interface IState {
         readonly stateName: string;
+        readonly requireStartAndStopStates: boolean;
         registerCallbacks(callbacks: CommandCapturedCallbacks): void;
         startCapture(): State;
         stopCapture(): State;
         getStateData(): StateData;
-        readonly requireStartAndStopStates: boolean;
     }
     interface IStateOptions extends IContextInformation {
         readonly stateName?: string;
@@ -1259,25 +1259,25 @@ declare namespace SPECTOR.States {
     abstract class BaseState implements IState {
         protected readonly options: IStateOptions;
         protected readonly logger: ILogger;
-        private readonly changeCommandsByState;
-        private readonly consumeCommands;
-        private readonly commandNameToStates;
-        private readonly requireInitAndEndState;
+        readonly stateName: string;
         protected readonly context: WebGLRenderingContexts;
         protected readonly contextVersion: number;
         protected readonly extensions: ExtensionList;
         protected readonly toggleCapture: (capture: boolean) => void;
-        private capturedCommandsByState;
         protected previousState: State;
         protected currentState: State;
-        readonly stateName: string;
-        readonly requireStartAndStopStates: boolean;
-        protected abstract readFromContext(): void;
+        private readonly changeCommandsByState;
+        private readonly consumeCommands;
+        private readonly commandNameToStates;
+        private readonly requireInitAndEndState;
+        private capturedCommandsByState;
         constructor(options: IStateOptions, logger: ILogger);
+        readonly requireStartAndStopStates: boolean;
         startCapture(loadFromContext?: boolean): State;
         stopCapture(): State;
         registerCallbacks(callbacks: CommandCapturedCallbacks): void;
         getStateData(): StateData;
+        protected abstract readFromContext(): void;
         protected getConsumeCommands(): string[];
         protected getChangeCommandsByState(): {
             [key: string]: string[];
@@ -1297,7 +1297,7 @@ declare namespace SPECTOR.States {
         private getCommandNameToStates();
     }
 }
-declare module SPECTOR.States {
+declare namespace SPECTOR.States {
     const enum ParameterReturnType {
         Unknown = 0,
         GlInt = 10,
@@ -1321,21 +1321,21 @@ declare module SPECTOR.States {
         protected stringifyParameterValue(value: any, parameter: IParameter): any;
     }
 }
-declare module SPECTOR.States.Information {
+declare namespace SPECTOR.States.Information {
     class Capabilities extends ParameterState {
+        constructor(options: IStateOptions, logger: ILogger);
         protected getWebgl1Parameters(): IParameter[];
         protected getWebgl2Parameters(): IParameter[];
-        constructor(options: IStateOptions, logger: ILogger);
     }
 }
-declare module SPECTOR.States.Information {
+declare namespace SPECTOR.States.Information {
     class CompressedTextures extends ParameterState {
         constructor(options: IStateOptions, logger: ILogger);
         protected getWebgl1Parameters(): IParameter[];
         protected stringifyParameterValue(value: any, parameter: IParameter): any;
     }
 }
-declare module SPECTOR {
+declare namespace SPECTOR {
     interface IExtensions extends IState {
         getExtensions(): ExtensionList;
     }
@@ -1343,7 +1343,7 @@ declare module SPECTOR {
         new (options: IStateOptions, logger: ILogger): IExtensions;
     };
 }
-declare module SPECTOR.States.Information {
+declare namespace SPECTOR.States.Information {
     interface IExtensionDefinition {
         readonly name: string;
         readonly description?: string;
@@ -1355,8 +1355,8 @@ declare module SPECTOR.States.Information {
     class Extensions extends BaseState implements IExtensions {
         private readonly extensionDefinition;
         constructor(options: IStateOptions, logger: ILogger);
-        protected readFromContext(): void;
         getExtensions(): ExtensionList;
+        protected readFromContext(): void;
     }
 }
 declare namespace SPECTOR.States {
@@ -1446,10 +1446,10 @@ declare namespace SPECTOR.States {
 }
 declare namespace SPECTOR.States {
     class StencilState extends ParameterState {
+        private static stencilOpStates;
+        private static stencilFuncStates;
+        private static stencilMaskStates;
         protected getWebgl1Parameters(): IParameter[];
-        static stencilOpStates: number[];
-        static stencilFuncStates: number[];
-        static stencilMaskStates: number[];
         protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean;
         protected getConsumeCommands(): string[];
         protected isStateEnable(stateName: string, args: IArguments): boolean;
@@ -1474,6 +1474,7 @@ declare namespace SPECTOR.States {
 }
 declare namespace SPECTOR.States {
     class DrawCallState extends BaseState {
+        private static samplerTypes;
         readonly requireStartAndStopStates: boolean;
         protected getConsumeCommands(): string[];
         protected getChangeCommandsByState(): {
@@ -1489,7 +1490,6 @@ declare namespace SPECTOR.States {
         protected readUniformsFromContextIntoState(program: WebGLProgram, uniformIndices: number[], uniformsState: any[]): void;
         protected readTransformFeedbackFromContext(program: WebGLProgram, index: number): {};
         protected readUniformBlockFromContext(program: WebGLProgram, index: number): {};
-        private static samplerTypes;
         private getWebGlConstant(value);
         private getTag(object);
     }
@@ -1522,9 +1522,9 @@ declare namespace SPECTOR.WebGlObjects {
 declare namespace SPECTOR.WebGlObjects {
     abstract class BaseWebGlObject implements IWebGlObject {
         protected options: IWebGlObjectOptions;
-        private id;
         readonly typeName: string;
         readonly type: Function;
+        private id;
         constructor(options: IWebGlObjectOptions, logger: ILogger);
         tagWebGlObject(webGlObject: any): WebGlObjectTag;
         protected getNextId(): number;
@@ -1577,14 +1577,14 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private readonly events;
         constructor(eventConstructor: EventConstructor, logger: ILogger);
         abstract render(state: T, stateId: number): Element;
+        addEventListener(command: string, callback: (stateEventArgs: IStateEventArgs<T>) => void, context?: any): number;
+        removeEventListener(command: string, listenerId: number): void;
         protected renderElementFromTemplate(template: string, state: T, stateId: number): Element;
         protected bindCommands(domNode: Element, state: T, stateId: number): void;
         protected bindCommand(commandContainer: Element, state: T, stateId: number): void;
         protected mapEventListener(domElement: Element, domEvent: string, eventName: string, state: T, stateId: number, commandCapture?: boolean, stopPropagation?: boolean): void;
         protected createEvent(commandName: string): IStateEvent<T>;
         protected triggerEvent(commandName: string, element: Element, state: T, stateId: number): void;
-        addEventListener(command: string, callback: (stateEventArgs: IStateEventArgs<T>) => void, context?: any): number;
-        removeEventListener(command: string, listenerId: number): void;
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
@@ -1657,7 +1657,6 @@ declare namespace SPECTOR.EmbeddedFrontend {
         getParentId(id: number): number;
         getChildrenIds(id: number): number[];
         hasChildren(id: number): boolean;
-        private getNewId();
         add(data: {}, componentInstance: ComponentInstance): number;
         update(id: number, data: {}): void;
         addChild(parentId: number, data: {}, componentInstance: ComponentInstance): number;
@@ -1670,6 +1669,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
             [key: number]: number;
         };
         flushPendingOperations(): void;
+        private getNewId();
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
@@ -1721,6 +1721,11 @@ declare namespace SPECTOR {
         ref: any;
     }
     interface ICaptureMenu {
+        readonly onCanvasSelected: IEvent<ICanvasInformation>;
+        readonly onCaptureRequested: IEvent<ICanvasInformation>;
+        readonly onPauseRequested: IEvent<ICanvasInformation>;
+        readonly onPlayRequested: IEvent<ICanvasInformation>;
+        readonly onPlayNextFrameRequested: IEvent<ICanvasInformation>;
         display(): void;
         trackPageCanvases(): void;
         updateCanvasesList(canvases: NodeListOf<HTMLCanvasElement>): void;
@@ -1728,11 +1733,6 @@ declare namespace SPECTOR {
         getSelectedCanvasInformation(): ICanvasInformation;
         hide(): void;
         setFPS(fps: number): void;
-        readonly onCanvasSelected: IEvent<ICanvasInformation>;
-        readonly onCaptureRequested: IEvent<ICanvasInformation>;
-        readonly onPauseRequested: IEvent<ICanvasInformation>;
-        readonly onPlayRequested: IEvent<ICanvasInformation>;
-        readonly onPlayNextFrameRequested: IEvent<ICanvasInformation>;
     }
     interface ICaptureMenuOptions {
         readonly eventConstructor: EventConstructor;
@@ -1747,6 +1747,11 @@ declare namespace SPECTOR.EmbeddedFrontend {
     class CaptureMenu implements ICaptureMenu {
         private readonly options;
         private readonly logger;
+        readonly onCanvasSelected: IEvent<ICanvasInformation>;
+        readonly onCaptureRequested: IEvent<ICanvasInformation>;
+        readonly onPauseRequested: IEvent<ICanvasInformation>;
+        readonly onPlayRequested: IEvent<ICanvasInformation>;
+        readonly onPlayNextFrameRequested: IEvent<ICanvasInformation>;
         private readonly rootPlaceHolder;
         private readonly mvx;
         private readonly captureMenuComponent;
@@ -1759,11 +1764,6 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private readonly actionsStateId;
         private readonly canvasListStateId;
         private visible;
-        readonly onCanvasSelected: IEvent<ICanvasInformation>;
-        readonly onCaptureRequested: IEvent<ICanvasInformation>;
-        readonly onPauseRequested: IEvent<ICanvasInformation>;
-        readonly onPlayRequested: IEvent<ICanvasInformation>;
-        readonly onPlayNextFrameRequested: IEvent<ICanvasInformation>;
         constructor(options: ICaptureMenuOptions, logger: ILogger);
         getSelectedCanvasInformation(): ICanvasInformation;
         trackPageCanvases(): void;
@@ -1878,7 +1878,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
     }
     interface IResultViewMenuState {
         status: MenuStatus;
-        searchText: String;
+        searchText: string;
     }
     class ResultViewMenuComponent extends BaseComponent<IResultViewMenuState> {
         onCapturesClicked: IStateEvent<IResultViewMenuState>;
@@ -2031,6 +2031,7 @@ declare namespace SPECTOR {
     class Spector {
         private options;
         private static MAXRETRY;
+        readonly onCapture: IEvent<ICapture>;
         private readonly logger;
         private readonly timeSpy;
         private readonly contexts;
@@ -2042,7 +2043,6 @@ declare namespace SPECTOR {
         private captureMenu;
         private resultView;
         private retry;
-        readonly onCapture: IEvent<ICapture>;
         constructor(options?: ISpectorOptions);
         displayUI(): void;
         getResultUI(): IResultView;

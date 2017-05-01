@@ -16,7 +16,10 @@ function getExtensionURL() {
     return window.browser.extension.getURL("");
 };
 
+var uniqueId = new Date().getTime() + Math.abs(Math.random() * 1000000);
 function sendMessage(message, cb) {
+    message["uniqueId"] = uniqueId;
+
     if (window["safari"]) {
         safari.self.tab.dispatchMessage("message", message);
         return;
@@ -154,10 +157,11 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
 }
 
 var frameId = null;
-var trackCanvases = function () {
+
+var getCanvases = function() {
     if (document.body) {
         var canvasElements = document.body.querySelectorAll("canvas");
-        if (canvasElements.length > 0) {           
+        if (canvasElements.length > 0) {
             
             var canvasesInformation = [];
             for (var i = 0; i < canvasElements.length; i++) {
@@ -189,20 +193,41 @@ var trackCanvases = function () {
                 }
             }
 
-            if (canvasesInformation.length > 0) {                
-                // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
-                sendMessage({ canvases: canvasesInformation, present: sessionStorage.getItem(spectorLoadedKey) ? 2 : 1 }, function (response) {
-                    frameId = response.frameId;
-                });
-            }
+            return canvasesInformation;
         }
+    }
+    return [];
+}
+
+var sendPresenceIfCanvases = function() {
+    if (getCanvases().length > 0) {
+        // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
+        sendMessage({ present: 1 }, function (response) {
+            frameId = response.frameId;
+        });
     }
 }
 
+var sendCanvases = function() {
+    var canvases = getCanvases();
+    // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
+    sendMessage({ canvases: canvases }, function (response) {
+        frameId = response.frameId;
+    });
+}
+
 // Check for existing canvas a bit after the end of the loading.
-document.addEventListener("DOMContentLoaded", function () {    
-    setTimeout(trackCanvases, 1500);
-    setTimeout(trackCanvases, 5000);
+document.addEventListener("DOMContentLoaded", function () {
+    if (!sessionStorage.getItem(spectorLoadedKey)) {
+        setTimeout(sendPresenceIfCanvases, 1500);
+        setTimeout(sendPresenceIfCanvases, 5000);
+    }
+    else {
+        // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
+        sendMessage({ present: 2 }, function (response) {
+            frameId = response.frameId;
+        });
+    }
 });
 
 listenForMessage(function (message) {
@@ -226,6 +251,13 @@ listenForMessage(function (message) {
     if (action === "playAll") {
         var myEvent = new CustomEvent("SpectorRequestPlayEvent");
         document.dispatchEvent(myEvent);
+        return;
+    }
+
+    // Let s refresh the canvases list. 
+    if (action === "requestCanvases") {
+        setTimeout(function() { sendCanvases(); }, 0);
+        setTimeout(function() { sendCanvases(); }, 1000);
         return;
     }
 

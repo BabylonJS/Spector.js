@@ -166,16 +166,19 @@ namespace SPECTOR.EmbeddedFrontend {
                 }
             }
 
-            const visible = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId).showList;
-            if (canvasesCount === 1 && canvasToSelect && !visible) {
-                this.mvx.updateState(this.canvasListStateId, {
-                    currentCanvasInformation: canvasToSelect,
-                    showList: visible,
-                });
-                this.onCanvasSelected.trigger(canvasToSelect);
-            }
-            else {
-                this.onCanvasSelected.trigger(null);
+            const canvasListState = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId);
+            const visible = canvasListState.showList;
+            if (!visible) {
+                if (canvasesCount === 1 && canvasToSelect) {
+                    this.mvx.updateState(this.canvasListStateId, {
+                        currentCanvasInformation: canvasToSelect,
+                        showList: visible,
+                    });
+                    this.onCanvasSelected.trigger(canvasToSelect);
+                }
+                else {
+                    this.onCanvasSelected.trigger(null);
+                }
             }
         }
 
@@ -194,16 +197,19 @@ namespace SPECTOR.EmbeddedFrontend {
                 this.mvx.addChildState(this.canvasListStateId, canvasToSelect, this.canvasListItemComponent);
             }
 
-            const visible = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId).showList;
-            if (canvasesCount === 1 && canvasToSelect && !visible) {
-                this.mvx.updateState(this.canvasListStateId, {
-                    currentCanvasInformation: canvasToSelect,
-                    showList: visible,
-                });
-                this.onCanvasSelected.trigger(canvasToSelect);
-            }
-            else {
-                this.onCanvasSelected.trigger(null);
+            const canvasListState = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId);
+            const visible = canvasListState.showList;
+            if (!visible) {
+                if (canvasesCount === 1 && canvasToSelect) {
+                    this.mvx.updateState(this.canvasListStateId, {
+                        currentCanvasInformation: canvasToSelect,
+                        showList: visible,
+                    });
+                    this.onCanvasSelected.trigger(canvasToSelect);
+                }
+                else {
+                    this.onCanvasSelected.trigger(null);
+                }
             }
         }
 

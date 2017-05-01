@@ -62,12 +62,40 @@ window.browser.pageAction.onClicked.addListener(function (tab) {
 });
 
 listenForMessage(function(request, sender, sendResponse) {
-    var frameId = sender.id;
+    var frameId;
+    if (sender.frameId) {
+        frameId = sender.frameId;
+    } 
+    else if (request.uniqueId) {
+        frameId = request.uniqueId;
+    }
+    else {
+        frameId = sender.id;
+    }
+    frameId += "";
 
     if (request.action) {
     }
+    else if (request.present === 1) {
+        window.browser.pageAction.show(sender.tab.id);
+    }
+    // In case we are enabled, change the icon to green andd enable the popup.
+    else if (request.present === 2) {
+        window.browser.pageAction.setIcon({tabId: sender.tab.id, path: {
+            "19": "spectorjs-green-19.png",
+            "38": "spectorjs-green-38.png"
+        }});
+        window.browser.pageAction.setPopup({tabId: sender.tab.id, popup: "popup.html"});
+        window.browser.pageAction.show(sender.tab.id);
+    }
     else if (request.refreshCanvases) {
-        refreshCanvases();
+        window.browser.tabs.query({ active: true }, function(tabs) { 
+            tabInfo = {}
+            sendMessage({ action: "requestCanvases" });
+
+            setTimeout(function() { refreshCanvases(); }, 500);
+            setTimeout(function() { refreshCanvases(); }, 2000);
+        });
     }
     else if (request.fps) {
         // Display the fps of the selected frame.
@@ -77,18 +105,6 @@ listenForMessage(function(request, sender, sendResponse) {
         }
     }
     else if (request.canvases) {
-        // In case we are enabled, change the icon to green andd enable the popup.
-        if (request.present === 2) {
-            window.browser.pageAction.setIcon({tabId: sender.tab.id, path: {
-                "19": "spectorjs-green-19.png",
-                "38": "spectorjs-green-38.png"
-            }});
-            window.browser.pageAction.setPopup({tabId: sender.tab.id, popup: "popup.html"});
-        }
-
-        // Show the page action for the tab that the sender (content script) was on.
-        window.browser.pageAction.show(sender.tab.id);  
-        
         // Store the list of found canvases for the caller frame.
         var tabId = sender.tab.id + "";
         if (!tabInfo[tabId]) {
@@ -96,11 +112,6 @@ listenForMessage(function(request, sender, sendResponse) {
         }
 
         tabInfo[tabId][frameId] = request.canvases;
-        window.browser.tabs.query({ active: true }, function(tabs) { 
-            if (tabs.length > 0 && tabs[0].id == sender.tab.id) {
-                refreshCanvases(); 
-            }
-        });
     }
     else if (request.captureString) {
         // If a capture has been received,
