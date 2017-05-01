@@ -18,7 +18,6 @@ ratings:
 exclude_paths:
 - "**.d.ts"
 # exlude cause auto generated.
-- "**/webglConstants.ts"
 - ".vscode/"
 - "dist/"
 - "documentation/"
