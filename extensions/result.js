@@ -12,7 +12,7 @@ function sendMessage(message) {
         return;
     }
 
-    window.browser.tabs.query({ active: true }, function(tabs) { 
+    window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
         window.browser.tabs.sendMessage(tabs[0].id, message, function(response) { }); 
     });
 };

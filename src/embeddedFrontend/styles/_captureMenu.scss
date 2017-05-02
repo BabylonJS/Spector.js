@@ -3,26 +3,26 @@
 $captureMenuComponentWidth: 400px;
 $captureMenuComponentHeight: 40px;
 
-
 $border: 2px;
+$borderColor: $background;
 $menuPadding: 7px;
+$menuTop: 10px;
 
 .captureMenuComponent {
   position:absolute;
   padding:$menuPadding;  
   z-index: 99999; 
-  top: 10px;
+  top: $menuTop;
   left: 50%;
   margin-left: -$captureMenuComponentWidth / 2 - $border - $menuPadding;
   height: $captureMenuComponentHeight;
   width: $captureMenuComponentWidth; 
-  border : $border solid $background;   
-  background-color: rgba($background, 0.7); 
-  border-radius: 5px;
+  border : $border solid $borderColor;
+  background-color: $background-even; 
+  // border-radius: 5px;
   visibility: hidden;
   display: none;
   color: $foreground;
-  box-sizing: border-box;
   
   font-family: Consolas, monaco, monospace;
 	font-size: 14px;
@@ -35,6 +35,40 @@ $menuPadding: 7px;
 
   &, &:after, &:before {
     box-sizing: content-box;
+  }
+}
+
+.captureMenuLogComponent {
+  position:absolute;
+  padding:$menuPadding;  
+  z-index: 80000; 
+  top: $menuTop + $captureMenuComponentHeight + $menuPadding * 2 + $border;
+  left: 50%;
+  margin-left: -$captureMenuComponentWidth / 2 - $border - $menuPadding;
+  height: $captureMenuComponentHeight;
+  width: $captureMenuComponentWidth; 
+  border : $border solid $borderColor;   
+  background-color: $background-even; 
+  //border-radius: 5px;
+  visibility: hidden;
+  display: none;
+  color: $foreground;
+  
+  font-family: Consolas, monaco, monospace;
+	font-size: 14px;
+  font-weight: 500;
+  
+  &.active {
+    visibility: visible;
+    display: block;
+  }
+
+  &, &:after, &:before {
+    box-sizing: content-box;
+  }
+
+  span.error {
+    color: red;
   }
 }
 
@@ -67,20 +101,18 @@ $menuPadding: 7px;
     padding:$menuPadding;
     list-style: none;
     position: absolute;
-    top: $captureMenuComponentHeight + $border * 2 + $menuPadding * 2 - $border;
+    top: $captureMenuComponentHeight + $menuPadding * 2;
     left: -$border;
     width: $captureMenuComponentWidth;
-    background-color: $background;
-    border : $border solid $background;   
-    background-color: rgba($background, 0.7); 
-    border-radius: 5px;
-
+    border : $border solid $borderColor;
+    background-color: $background-even;
+    //border-radius: 5px;
 
     li {
       margin: $margin;
 
       &:hover {
-        color: $foreground-focus;      
+        color: $foreground-focus;
         cursor: pointer;
         transition: color $transition-time;
         -webkit-transition: color $transition-time;
@@ -103,13 +135,13 @@ $size: 25px;
 
   [commandName=onCaptureRequested] {
     border-radius: 50%;
-    background: $background;
+    background: $background-even;
     border: $border solid red; 
     width: $size - $border * 2;
     height: $size - $border * 2;
 
-    &:hover {      
-      background: red;     
+    &:hover {
+      background: red;
       cursor: pointer; 
       transition: background $transition-time;
       -webkit-transition: background $transition-time;
@@ -147,7 +179,7 @@ $size: 25px;
       display: inline-block;
       width: 8px;
       height: 20px;
-      background-color: $background;
+      background-color: $background-even;
       z-index: -10;
     }
 
@@ -201,7 +233,7 @@ $size: 25px;
     @extend [commandName=onPlayRequested];
 
     &:before {      
-      background-color: $background;
+      background-color: $background-even;
     }
   }
 }

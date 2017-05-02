@@ -6,6 +6,7 @@ namespace SPECTOR {
     export interface ITimeSpy {
         onFrameStart: IEvent<ITimeSpy>;
         onFrameEnd: IEvent<ITimeSpy>;
+        onError: IEvent<string>;
         playNextFrame(): void;
         changeSpeedRatio(ratio: number): void;
         getFps(): number;
@@ -41,6 +42,7 @@ namespace SPECTOR.Spies {
 
         public readonly onFrameStart: IEvent<ITimeSpy>;
         public readonly onFrameEnd: IEvent<ITimeSpy>;
+        public readonly onError: IEvent<string>;
 
         private readonly spiedWindow: { [name: string]: any };
         private readonly time: ITime;
@@ -60,6 +62,7 @@ namespace SPECTOR.Spies {
             this.willPlayNextFrame = false;
             this.onFrameStart = new options.eventConstructor<ITimeSpy>();
             this.onFrameEnd = new options.eventConstructor<ITimeSpy>();
+            this.onError = new options.eventConstructor<string>();
             this.time = new this.options.timeConstructor();
 
             this.lastSixtyFramesDuration = [];
@@ -139,7 +142,12 @@ namespace SPECTOR.Spies {
                 self.lastFrame = ++self.lastFrame % self.speedRatio;
                 if (self.willPlayNextFrame || (self.speedRatio && !self.lastFrame)) {
                     self.onFrameStart.trigger(self);
-                    callback.apply(self.spiedWindow, arguments);
+                    try {
+                        callback.apply(self.spiedWindow, arguments);
+                    }
+                    catch (e) {
+                        self.onError.trigger(e);
+                    }
                     self.lastSixtyFramesCurrentIndex = (self.lastSixtyFramesCurrentIndex + 1) % TimeSpy.fpsWindowSize;
                     self.lastSixtyFramesDuration[self.lastSixtyFramesCurrentIndex] =
                         now - self.lastSixtyFramesPreviousStart;

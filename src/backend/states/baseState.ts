@@ -89,10 +89,8 @@ namespace SPECTOR.States {
             for (const stateName in this.changeCommandsByState) {
                 if (this.changeCommandsByState.hasOwnProperty(stateName)) {
                     for (const changeCommand of this.changeCommandsByState[stateName]) {
-                        if (this.changeCommandsByState[stateName].hasOwnProperty(changeCommand)) {
-                            callbacks[changeCommand] = callbacks[changeCommand] || [];
-                            callbacks[changeCommand].push(this.onChangeCommand.bind(this));
-                        }
+                        callbacks[changeCommand] = callbacks[changeCommand] || [];
+                        callbacks[changeCommand].push(this.onChangeCommand.bind(this));
                     }
                 }
             }

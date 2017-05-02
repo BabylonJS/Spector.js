@@ -13,7 +13,7 @@ function sendMessage(message) {
     }
 
     try {
-        window.browser.tabs.query({ active: true }, function(tabs) { 
+        window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
             window.browser.tabs.sendMessage(tabs[0].id, message, function(response) { }); 
         });
     }
@@ -24,21 +24,9 @@ function sendMessage(message) {
 //_____________________________________________________________________________________
 
 var ui = null;
-var help = null;
-var wait = null;
 
 // Display the capture UI.
 window.addEventListener("DOMContentLoaded", function() {
-    help = document.getElementById("help");
-
-    helpSelected = document.getElementById("helpSelected");
-    helpSelected.style.visibility = "hidden";
-    helpSelected.style.display = "none";
-
-    wait = document.getElementById("wait");
-    wait.style.visibility = "hidden";
-    wait.style.display = "none";
-
     var openCaptureFileElement = document.getElementById("openCaptureFile");
     openCaptureFileElement.addEventListener("dragenter", (e) => { this.drag(e); return false; }, false);
     openCaptureFileElement.addEventListener("dragover", (e) => { this.drag(e); return false; }, false);
@@ -104,7 +92,6 @@ var loadFiles = function(event) {
 
 var initUI = function() {
     ui = new SPECTOR.EmbeddedFrontend.CaptureMenu({ eventConstructor: SPECTOR.Utils.Event }, new SPECTOR.Utils.ConsoleLogger());
-    ui.onCanvasSelected.add(this.canvasSelected, this);
     ui.onPlayRequested.add(this.play, this);
     ui.onPlayNextFrameRequested.add(this.playNextFrame, this);
     ui.onPauseRequested.add(this.pause, this);
@@ -127,19 +114,8 @@ var refreshFps = function(fps, frameId, tabId) {
     }
 }
 
-var canvasSelected = function(info) {
-    if (info) {
-        help.style.visibility = "hidden";
-        help.style.display = "none";
-        helpSelected.style.visibility = "visible";
-        helpSelected.style.display = "block";
-    }
-    else {
-        help.style.visibility = "visible";
-        help.style.display = "block";
-        helpSelected.style.visibility = "hidden";
-        helpSelected.style.display = "none";
-    }
+var captureComplete = function(errorMessage) {
+    ui.captureComplete(errorMessage);
 }
 
 var playAll = function() {
@@ -165,14 +141,7 @@ var pause = function(e) {
 }
 
 var captureCanvas = function(e) {
-    if (e) {    
-        help.style.visibility = "hidden";
-        help.style.display = "none";
-        helpSelected.style.visibility = "hidden";
-        helpSelected.style.display = "none";
-        wait.style.visibility = "visible";
-        wait.style.display = "block";
-
+    if (e) {
         sendMessage({ action: "capture", canvasRef: e.ref });
     }
 }

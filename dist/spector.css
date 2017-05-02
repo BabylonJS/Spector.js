@@ -280,7 +280,8 @@
         display: inline-block;
         width: 100%;
         margin: 0px;
-        padding: 5px; }
+        padding: 5px;
+        word-wrap: break-word; }
       .visualStateListComponent ul li.active {
         border: 2px solid #F0640D; }
 
@@ -300,6 +301,8 @@
     height: 100%; }
     .commandListComponent ul li {
       padding: 8px; }
+      .commandListComponent ul li span {
+        word-wrap: break-word; }
       .commandListComponent ul li:hover {
         color: #f9f9f9;
         cursor: pointer;
@@ -429,12 +432,10 @@
   height: 40px;
   width: 400px;
   border: 2px solid #222;
-  background-color: rgba(34, 34, 34, 0.7);
-  border-radius: 5px;
+  background-color: #2c2c2c;
   visibility: hidden;
   display: none;
   color: #f9f9f9;
-  box-sizing: border-box;
   font-family: Consolas, monaco, monospace;
   font-size: 14px;
   font-weight: 500; }
@@ -443,6 +444,31 @@
     display: block; }
   .captureMenuComponent, .captureMenuComponent:after, .captureMenuComponent:before {
     box-sizing: content-box; }
+
+.captureMenuLogComponent {
+  position: absolute;
+  padding: 7px;
+  z-index: 80000;
+  top: 66px;
+  left: 50%;
+  margin-left: -209px;
+  height: 40px;
+  width: 400px;
+  border: 2px solid #222;
+  background-color: #2c2c2c;
+  visibility: hidden;
+  display: none;
+  color: #f9f9f9;
+  font-family: Consolas, monaco, monospace;
+  font-size: 14px;
+  font-weight: 500; }
+  .captureMenuLogComponent.active {
+    visibility: visible;
+    display: block; }
+  .captureMenuLogComponent, .captureMenuLogComponent:after, .captureMenuLogComponent:before {
+    box-sizing: content-box; }
+  .captureMenuLogComponent span.error {
+    color: red; }
 
 .canvasListComponent {
   float: left;
@@ -468,13 +494,11 @@
     padding: 7px;
     list-style: none;
     position: absolute;
-    top: 56px;
+    top: 54px;
     left: -2px;
     width: 400px;
-    background-color: #222;
     border: 2px solid #222;
-    background-color: rgba(34, 34, 34, 0.7);
-    border-radius: 5px; }
+    background-color: #2c2c2c; }
     .canvasListComponent ul li {
       margin: 5px; }
       .canvasListComponent ul li:hover {
@@ -493,7 +517,7 @@
     float: left; }
   .captureMenuActionsComponent [commandName=onCaptureRequested] {
     border-radius: 50%;
-    background: #222;
+    background: #2c2c2c;
     border: 2px solid red;
     width: 21px;
     height: 21px; }
@@ -530,7 +554,7 @@
       display: inline-block;
       width: 8px;
       height: 20px;
-      background-color: #222;
+      background-color: #2c2c2c;
       z-index: -10; }
     .captureMenuActionsComponent [commandName=onPlayRequested]:hover, .captureMenuActionsComponent [commandName=onPlayNextFrameRequested]:hover {
       cursor: pointer;
@@ -569,7 +593,7 @@
       -webkit-transition: border 0.3s;
       -moz-transition: border 0.3s; }
   .captureMenuActionsComponent [commandName=onPlayNextFrameRequested]:before {
-    background-color: #222; }
+    background-color: #2c2c2c; }
 
 .fpsCounterComponent {
   float: left;

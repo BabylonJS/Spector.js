@@ -10,9 +10,9 @@ namespace SPECTOR {
     }
 
     export class Spector {
-        private static MAXRETRY = 20 * 60; // 30 seconds of capture max.
-
+        public readonly onCaptureStarted: IEvent<any>;
         public readonly onCapture: IEvent<ICapture>;
+        public readonly onError: IEvent<string>;
 
         private readonly logger: ILogger;
         private readonly timeSpy: ITimeSpy;
@@ -26,6 +26,7 @@ namespace SPECTOR {
         private captureMenu: ICaptureMenu;
         private resultView: IResultView;
         private retry: number;
+        private noFrameTimeout = -1;
 
         constructor(private options: ISpectorOptions = {}) {
             this.injection = options.injection || ProvidedInjection.DefaultInjection;
@@ -39,10 +40,13 @@ namespace SPECTOR {
                 eventConstructor: this.injection.EventCtor,
                 timeConstructor: this.injection.TimeCtor,
             }, this.logger);
+            this.onCaptureStarted = new this.injection.EventCtor<ICapture>();
             this.onCapture = new this.injection.EventCtor<ICapture>();
+            this.onError = new this.injection.EventCtor<string>();
 
             this.timeSpy.onFrameStart.add(this.onFrameStart, this);
             this.timeSpy.onFrameEnd.add(this.onFrameEnd, this);
+            this.timeSpy.onError.add(this.onErrorInternal, this);
         }
 
         public displayUI() {
@@ -114,7 +118,7 @@ namespace SPECTOR {
 
         public spyCanvases(): void {
             if (this.canvasSpy) {
-                this.logger.error("Already spying canvas.");
+                this.onErrorInternal("Already spying canvas.");
                 return;
             }
 
@@ -124,7 +128,7 @@ namespace SPECTOR {
 
         public spyCanvas(canvas: HTMLCanvasElement): void {
             if (this.canvasSpy) {
-                this.logger.error("Already spying canvas.");
+                this.onErrorInternal("Already spying canvas.");
                 return;
             }
 
@@ -205,12 +209,21 @@ namespace SPECTOR {
 
         public captureContextSpy(contextSpy: IContextSpy) {
             if (this.capturingContext) {
-                this.logger.error("Already capturing a context.");
+                this.onErrorInternal("Already capturing a context.");
             }
             else {
                 this.retry = 0;
                 this.capturingContext = contextSpy;
                 this.capture();
+
+                this.noFrameTimeout = setTimeout(() => {
+                    if (this.capturingContext && this.retry > 1) {
+                        this.onErrorInternal("No frames with gl commands detected. Try moving the camera.");
+                    }
+                    else {
+                        this.onErrorInternal("No frames detected. Try moving the camera or implementing animationRequestFrame.");
+                    }
+                }, 10 * 1000);
             }
         }
 
@@ -249,6 +262,7 @@ namespace SPECTOR {
         private onFrameStart(): void {
             if (this.captureNextFrames > 0) {
                 if (this.capturingContext) {
+                    this.onCaptureStarted.trigger(undefined);
                     this.capturingContext.startCapture();
                 }
                 this.captureNextFrames--;
@@ -262,17 +276,43 @@ namespace SPECTOR {
             if (this.capturingContext && this.captureNextFrames === 0) {
                 const capture = this.capturingContext.stopCapture();
                 if (capture.commands.length > 0) {
-                    this.onCapture.trigger(capture);
+                    if (this.noFrameTimeout > -1) {
+                        clearTimeout(this.noFrameTimeout);
+                    }
+                    this.triggerCapture(capture);
                 }
                 else {
                     this.retry++;
-                    if (this.retry > Spector.MAXRETRY) {
-                        this.onCapture.trigger(capture);
-                    }
-                    else {
-                        this.capture(1);
-                    }
+                    this.capture(1);
                 }
+            }
+        }
+
+        private triggerCapture(capture: ICapture) {
+            if (this.captureMenu) {
+                this.captureMenu.captureComplete(null);
+            }
+            this.onCapture.trigger(capture);
+        }
+
+        private onErrorInternal(error: string) {
+            this.logger.error(error);
+            if (this.noFrameTimeout > -1) {
+                clearTimeout(this.noFrameTimeout);
+            }
+
+            if (this.capturingContext) {
+                this.capturingContext = undefined;
+                this.captureNextFrames = 0;
+                this.retry = 0;
+
+                if (this.captureMenu) {
+                    this.captureMenu.captureComplete(error);
+                }
+                this.onError.trigger(error);
+            }
+            else {
+                throw error;
             }
         }
     }

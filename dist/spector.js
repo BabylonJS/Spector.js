@@ -1009,6 +1009,7 @@ var SPECTOR;
                 this.willPlayNextFrame = false;
                 this.onFrameStart = new options.eventConstructor();
                 this.onFrameEnd = new options.eventConstructor();
+                this.onError = new options.eventConstructor();
                 this.time = new this.options.timeConstructor();
                 this.lastSixtyFramesDuration = [];
                 this.lastSixtyFramesCurrentIndex = 0;
@@ -1077,7 +1078,12 @@ var SPECTOR;
                     self.lastFrame = ++self.lastFrame % self.speedRatio;
                     if (self.willPlayNextFrame || (self.speedRatio && !self.lastFrame)) {
                         self.onFrameStart.trigger(self);
-                        callback.apply(self.spiedWindow, arguments);
+                        try {
+                            callback.apply(self.spiedWindow, arguments);
+                        }
+                        catch (e) {
+                            self.onError.trigger(e);
+                        }
                         self.lastSixtyFramesCurrentIndex = (self.lastSixtyFramesCurrentIndex + 1) % TimeSpy.fpsWindowSize;
                         self.lastSixtyFramesDuration[self.lastSixtyFramesCurrentIndex] =
                             now - self.lastSixtyFramesPreviousStart;
@@ -2117,10 +2123,8 @@ var SPECTOR;
                     if (this.changeCommandsByState.hasOwnProperty(stateName)) {
                         for (var _i = 0, _a = this.changeCommandsByState[stateName]; _i < _a.length; _i++) {
                             var changeCommand = _a[_i];
-                            if (this.changeCommandsByState[stateName].hasOwnProperty(changeCommand)) {
-                                callbacks[changeCommand] = callbacks[changeCommand] || [];
-                                callbacks[changeCommand].push(this.onChangeCommand.bind(this));
-                            }
+                            callbacks[changeCommand] = callbacks[changeCommand] || [];
+                            callbacks[changeCommand].push(this.onChangeCommand.bind(this));
                         }
                     }
                 }
@@ -4003,33 +4007,41 @@ var SPECTOR;
                 this.willRender = false;
                 this.rootStateId = -1;
             }
-            MVX.prototype.addRootState = function (data, component) {
-                this.setForRender();
+            MVX.prototype.addRootState = function (data, component, immediate) {
+                if (immediate === void 0) { immediate = false; }
                 var componentInstance = new EmbeddedFrontend.ComponentInstance(component, this.logger);
                 var stateId = this.stateStore.add(data, componentInstance);
                 this.rootStateId = stateId;
+                this.setForRender(immediate);
                 return stateId;
             };
-            MVX.prototype.addChildState = function (parentId, data, component) {
-                this.setForRender();
-                return this.insertChildState(parentId, data, Number.MAX_VALUE, component);
+            MVX.prototype.addChildState = function (parentId, data, component, immediate) {
+                if (immediate === void 0) { immediate = false; }
+                var id = this.insertChildState(parentId, data, Number.MAX_VALUE, component);
+                this.setForRender(immediate);
+                return id;
             };
-            MVX.prototype.insertChildState = function (parentId, data, index, component) {
-                this.setForRender();
+            MVX.prototype.insertChildState = function (parentId, data, index, component, immediate) {
+                if (immediate === void 0) { immediate = false; }
                 var componentInstance = new EmbeddedFrontend.ComponentInstance(component, this.logger);
-                return this.stateStore.insertChildAt(parentId, index, data, componentInstance);
+                var id = this.stateStore.insertChildAt(parentId, index, data, componentInstance);
+                this.setForRender(immediate);
+                return id;
             };
-            MVX.prototype.updateState = function (id, data) {
-                this.setForRender();
+            MVX.prototype.updateState = function (id, data, immediate) {
+                if (immediate === void 0) { immediate = false; }
                 this.stateStore.update(id, data);
+                this.setForRender(immediate);
             };
-            MVX.prototype.removeState = function (id) {
-                this.setForRender();
+            MVX.prototype.removeState = function (id, immediate) {
+                if (immediate === void 0) { immediate = false; }
                 this.stateStore.remove(id);
+                this.setForRender(immediate);
             };
-            MVX.prototype.removeChildrenStates = function (id) {
-                this.setForRender();
+            MVX.prototype.removeChildrenStates = function (id, immediate) {
+                if (immediate === void 0) { immediate = false; }
                 this.stateStore.removeChildren(id);
+                this.setForRender(immediate);
             };
             MVX.prototype.getState = function (id) {
                 return this.stateStore.getData(id);
@@ -4059,10 +4071,15 @@ var SPECTOR;
             MVX.prototype.updateAllChildrenGenericState = function (id, updateCallback) {
                 this.updateAllChildrenState(id, updateCallback);
             };
-            MVX.prototype.setForRender = function () {
+            MVX.prototype.setForRender = function (immediate) {
                 if (!this.willRender) {
                     this.willRender = true;
-                    setTimeout(this.compose.bind(this), MVX.REFRESHRATEINMILLISECONDS);
+                    if (immediate) {
+                        this.compose();
+                    }
+                    else {
+                        setTimeout(this.compose.bind(this), MVX.REFRESHRATEINMILLISECONDS);
+                    }
                 }
             };
             MVX.prototype.compose = function () {
@@ -4338,7 +4355,7 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             CaptureMenuComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["<div childrenContainer=\"true\" class=\"captureMenuComponent ", "\">\n            </div>"], _a.raw = ["<div childrenContainer=\"true\" class=\"captureMenuComponent ", "\">\n            </div>"], this.htmlTemplate(_a, state ? "active" : ""));
+                var htmlString = (_a = ["<div>\n                <div childrenContainer=\"true\" class=\"captureMenuComponent ", "\">\n                </div>\n                <div class=\"captureMenuLogComponent ", "\">\n                    <span class=\"", "\">", "<span>\n                </div>\n            </div>"], _a.raw = ["<div>\n                <div childrenContainer=\"true\" class=\"captureMenuComponent ", "\">\n                </div>\n                <div class=\"captureMenuLogComponent ", "\">\n                    <span class=\"", "\">", "<span>\n                </div>\n            </div>"], this.htmlTemplate(_a, state ? "active" : "", state.logVisible ? "active" : "", state.logLevel === SPECTOR.LogLevel.error ? "error" : "", state.logText));
                 return this.renderElementFromTemplate(htmlString, state, stateId);
                 var _a;
             };
@@ -4451,7 +4468,7 @@ var SPECTOR;
                 this.logger = logger;
                 this.rootPlaceHolder = options.rootPlaceHolder || document.body;
                 this.mvx = new EmbeddedFrontend.MVX(this.rootPlaceHolder, logger);
-                this.visible = true;
+                this.isTrackingCanvas = false;
                 this.onCanvasSelected = new options.eventConstructor();
                 this.onCaptureRequested = new options.eventConstructor();
                 this.onPauseRequested = new options.eventConstructor();
@@ -4462,22 +4479,34 @@ var SPECTOR;
                 this.canvasListItemComponent = new EmbeddedFrontend.CanvasListItemComponent(this.options.eventConstructor, this.logger);
                 this.actionsComponent = new EmbeddedFrontend.CaptureMenuActionsComponent(options.eventConstructor, logger);
                 this.fpsCounterComponent = new EmbeddedFrontend.FpsCounterComponent(options.eventConstructor, logger);
-                this.rootStateId = this.mvx.addRootState(null, this.captureMenuComponent);
+                this.rootStateId = this.mvx.addRootState({
+                    visible: true,
+                    logLevel: SPECTOR.LogLevel.info,
+                    logText: CaptureMenu.SelectCanvasHelpText,
+                    logVisible: !this.options.hideLog,
+                }, this.captureMenuComponent);
                 this.canvasListStateId = this.mvx.addChildState(this.rootStateId, { currentCanvasInformation: null, showList: false }, this.canvasListComponent);
                 this.actionsStateId = this.mvx.addChildState(this.rootStateId, true, this.actionsComponent);
                 this.fpsStateId = this.mvx.addChildState(this.rootStateId, 0, this.fpsCounterComponent);
-                this.actionsComponent.onCaptureRequested.add(function (_) {
-                    _this.onCaptureRequested.trigger(_this.getSelectedCanvasInformation());
+                this.actionsComponent.onCaptureRequested.add(function () {
+                    var currentCanvasInformation = _this.getSelectedCanvasInformation();
+                    if (currentCanvasInformation) {
+                        _this.updateMenuStateLog(SPECTOR.LogLevel.info, CaptureMenu.PleaseWaitHelpText, true);
+                    }
+                    // Defer to ensure the log displays.
+                    setTimeout(function () {
+                        _this.onCaptureRequested.trigger(currentCanvasInformation);
+                    }, 10);
                 });
-                this.actionsComponent.onPauseRequested.add(function (_) {
+                this.actionsComponent.onPauseRequested.add(function () {
                     _this.onPauseRequested.trigger(_this.getSelectedCanvasInformation());
                     _this.mvx.updateState(_this.actionsStateId, false);
                 });
-                this.actionsComponent.onPlayRequested.add(function (_) {
+                this.actionsComponent.onPlayRequested.add(function () {
                     _this.onPlayRequested.trigger(_this.getSelectedCanvasInformation());
                     _this.mvx.updateState(_this.actionsStateId, true);
                 });
-                this.actionsComponent.onPlayNextFrameRequested.add(function (_) {
+                this.actionsComponent.onPlayNextFrameRequested.add(function () {
                     _this.onPlayNextFrameRequested.trigger(_this.getSelectedCanvasInformation());
                 });
                 this.canvasListComponent.onCanvasSelection.add(function (eventArgs) {
@@ -4485,7 +4514,17 @@ var SPECTOR;
                         currentCanvasInformation: null,
                         showList: !eventArgs.state.showList,
                     });
+                    _this.updateMenuStateLog(SPECTOR.LogLevel.info, CaptureMenu.SelectCanvasHelpText);
                     _this.onCanvasSelected.trigger(null);
+                    if (_this.isTrackingCanvas) {
+                        _this.trackPageCanvases();
+                    }
+                    if (eventArgs.state.showList) {
+                        _this.showMenuStateLog();
+                    }
+                    else {
+                        _this.hideMenuStateLog();
+                    }
                 });
                 this.canvasListItemComponent.onCanvasSelected.add(function (eventArgs) {
                     _this.mvx.updateState(_this.canvasListStateId, {
@@ -4493,24 +4532,24 @@ var SPECTOR;
                         showList: false,
                     });
                     _this.onCanvasSelected.trigger(eventArgs.state);
+                    _this.updateMenuStateLog(SPECTOR.LogLevel.info, CaptureMenu.ActionsHelpText);
+                    _this.showMenuStateLog();
                 });
-                this.updateMenuState();
             }
             CaptureMenu.prototype.getSelectedCanvasInformation = function () {
                 var canvasListState = this.mvx.getGenericState(this.canvasListStateId);
                 return canvasListState.currentCanvasInformation;
             };
             CaptureMenu.prototype.trackPageCanvases = function () {
+                this.isTrackingCanvas = true;
                 if (document.body) {
                     var canvases = document.body.querySelectorAll("canvas");
                     this.updateCanvasesList(canvases);
                 }
-                setTimeout(this.trackPageCanvases.bind(this), 5000);
             };
             CaptureMenu.prototype.updateCanvasesList = function (canvases) {
                 this.mvx.removeChildrenStates(this.canvasListStateId);
-                var canvasToSelect = null;
-                var canvasesCount = 0;
+                var canvasesInformation = [];
                 for (var i = 0; i < canvases.length; i++) {
                     var canvas = canvases[i];
                     var context = null;
@@ -4529,76 +4568,113 @@ var SPECTOR;
                         }
                     }
                     if (context) {
-                        canvasToSelect = {
+                        var canvasInformation = {
                             id: canvas.id,
                             width: canvas.width,
                             height: canvas.height,
                             ref: canvas,
                         };
-                        canvasesCount++;
-                        this.mvx.addChildState(this.canvasListStateId, canvasToSelect, this.canvasListItemComponent);
+                        canvasesInformation.push(canvasInformation);
+                        this.mvx.addChildState(this.canvasListStateId, canvasInformation, this.canvasListItemComponent);
                     }
                 }
-                var canvasListState = this.mvx.getGenericState(this.canvasListStateId);
-                var visible = canvasListState.showList;
-                if (!visible) {
-                    if (canvasesCount === 1 && canvasToSelect) {
-                        this.mvx.updateState(this.canvasListStateId, {
-                            currentCanvasInformation: canvasToSelect,
-                            showList: visible,
-                        });
-                        this.onCanvasSelected.trigger(canvasToSelect);
-                    }
-                    else {
-                        this.onCanvasSelected.trigger(null);
-                    }
-                }
+                this.updateCanvasesListInformationCurrentState(canvasesInformation);
             };
             CaptureMenu.prototype.updateCanvasesListInformation = function (canvasesInformation) {
                 this.mvx.removeChildrenStates(this.canvasListStateId);
-                var canvasToSelect = null;
-                var canvasesCount = canvasesInformation.length;
+                var canvasesInformationClone = [];
                 for (var i = 0; i < canvasesInformation.length; i++) {
                     var canvas = canvasesInformation[i];
-                    canvasToSelect = {
+                    var canvasInformationClone = {
                         id: canvas.id,
                         width: canvas.width,
                         height: canvas.height,
                         ref: canvas.ref,
                     };
-                    this.mvx.addChildState(this.canvasListStateId, canvasToSelect, this.canvasListItemComponent);
+                    canvasesInformationClone.push(canvasInformationClone);
+                    this.mvx.addChildState(this.canvasListStateId, canvasInformationClone, this.canvasListItemComponent);
                 }
-                var canvasListState = this.mvx.getGenericState(this.canvasListStateId);
-                var visible = canvasListState.showList;
-                if (!visible) {
-                    if (canvasesCount === 1 && canvasToSelect) {
-                        this.mvx.updateState(this.canvasListStateId, {
-                            currentCanvasInformation: canvasToSelect,
-                            showList: visible,
-                        });
-                        this.onCanvasSelected.trigger(canvasToSelect);
-                    }
-                    else {
-                        this.onCanvasSelected.trigger(null);
-                    }
-                }
+                this.updateCanvasesListInformationCurrentState(canvasesInformationClone);
             };
             CaptureMenu.prototype.display = function () {
-                this.visible = true;
-                this.updateMenuState();
+                this.updateMenuStateVisibility(true);
             };
             CaptureMenu.prototype.hide = function () {
-                this.visible = false;
-                this.updateMenuState();
+                this.updateMenuStateVisibility(false);
+            };
+            CaptureMenu.prototype.captureComplete = function (errorText) {
+                if (errorText) {
+                    this.updateMenuStateLog(SPECTOR.LogLevel.error, errorText);
+                }
+                else {
+                    this.updateMenuStateLog(SPECTOR.LogLevel.info, CaptureMenu.ActionsHelpText);
+                }
             };
             CaptureMenu.prototype.setFPS = function (fps) {
                 this.mvx.updateState(this.fpsStateId, fps);
             };
-            CaptureMenu.prototype.updateMenuState = function () {
-                this.mvx.updateState(this.rootStateId, this.visible);
+            CaptureMenu.prototype.updateCanvasesListInformationCurrentState = function (canvasesInformation) {
+                var canvasesCount = canvasesInformation.length;
+                var canvasListState = this.mvx.getGenericState(this.canvasListStateId);
+                var visible = canvasListState.showList;
+                if (!visible) {
+                    if (canvasesCount === 1) {
+                        var canvasToSelect = canvasesInformation[0];
+                        this.mvx.updateState(this.canvasListStateId, {
+                            currentCanvasInformation: canvasToSelect,
+                            showList: visible,
+                        });
+                        this.updateMenuStateLog(SPECTOR.LogLevel.info, CaptureMenu.ActionsHelpText);
+                        this.onCanvasSelected.trigger(canvasToSelect);
+                    }
+                    else {
+                        this.updateMenuStateLog(SPECTOR.LogLevel.info, CaptureMenu.SelectCanvasHelpText);
+                        this.onCanvasSelected.trigger(null);
+                    }
+                }
+            };
+            CaptureMenu.prototype.hideMenuStateLog = function () {
+                var menuState = this.mvx.getGenericState(this.rootStateId);
+                this.mvx.updateState(this.rootStateId, {
+                    visible: menuState.visible,
+                    logLevel: menuState.logLevel,
+                    logText: menuState.logText,
+                    logVisible: false,
+                });
+            };
+            CaptureMenu.prototype.showMenuStateLog = function () {
+                var menuState = this.mvx.getGenericState(this.rootStateId);
+                this.mvx.updateState(this.rootStateId, {
+                    visible: menuState.visible,
+                    logLevel: menuState.logLevel,
+                    logText: menuState.logText,
+                    logVisible: !this.options.hideLog,
+                });
+            };
+            CaptureMenu.prototype.updateMenuStateLog = function (logLevel, logText, immediate) {
+                if (immediate === void 0) { immediate = false; }
+                var menuState = this.mvx.getGenericState(this.rootStateId);
+                this.mvx.updateState(this.rootStateId, {
+                    visible: menuState.visible,
+                    logLevel: logLevel,
+                    logText: logText,
+                    logVisible: !this.options.hideLog,
+                }, immediate);
+            };
+            CaptureMenu.prototype.updateMenuStateVisibility = function (visible) {
+                var menuState = this.mvx.getGenericState(this.rootStateId);
+                this.mvx.updateState(this.rootStateId, {
+                    visible: visible,
+                    logLevel: menuState.logLevel,
+                    logText: menuState.logText,
+                    logVisible: menuState.logVisible,
+                });
             };
             return CaptureMenu;
         }());
+        CaptureMenu.SelectCanvasHelpText = "Please, select a canvas in the list above.";
+        CaptureMenu.ActionsHelpText = "Record with the red button, you can also pause or continue playing the current scene.";
+        CaptureMenu.PleaseWaitHelpText = "Capturing, be patient (this can take up to 3 minutes)...";
         EmbeddedFrontend.CaptureMenu = CaptureMenu;
     })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -5568,6 +5644,7 @@ var SPECTOR;
         function Spector(options) {
             if (options === void 0) { options = {}; }
             this.options = options;
+            this.noFrameTimeout = -1;
             this.injection = options.injection || SPECTOR.ProvidedInjection.DefaultInjection;
             this.captureNextFrames = 0;
             this.retry = 0;
@@ -5578,9 +5655,12 @@ var SPECTOR;
                 eventConstructor: this.injection.EventCtor,
                 timeConstructor: this.injection.TimeCtor,
             }, this.logger);
+            this.onCaptureStarted = new this.injection.EventCtor();
             this.onCapture = new this.injection.EventCtor();
+            this.onError = new this.injection.EventCtor();
             this.timeSpy.onFrameStart.add(this.onFrameStart, this);
             this.timeSpy.onFrameEnd.add(this.onFrameEnd, this);
+            this.timeSpy.onError.add(this.onErrorInternal, this);
         }
         Spector.prototype.displayUI = function () {
             var _this = this;
@@ -5639,7 +5719,7 @@ var SPECTOR;
         };
         Spector.prototype.spyCanvases = function () {
             if (this.canvasSpy) {
-                this.logger.error("Already spying canvas.");
+                this.onErrorInternal("Already spying canvas.");
                 return;
             }
             this.canvasSpy = new this.injection.CanvasSpyCtor({ eventConstructor: this.injection.EventCtor }, this.logger);
@@ -5647,7 +5727,7 @@ var SPECTOR;
         };
         Spector.prototype.spyCanvas = function (canvas) {
             if (this.canvasSpy) {
-                this.logger.error("Already spying canvas.");
+                this.onErrorInternal("Already spying canvas.");
                 return;
             }
             this.canvasSpy = new this.injection.CanvasSpyCtor({
@@ -5717,13 +5797,22 @@ var SPECTOR;
             }
         };
         Spector.prototype.captureContextSpy = function (contextSpy) {
+            var _this = this;
             if (this.capturingContext) {
-                this.logger.error("Already capturing a context.");
+                this.onErrorInternal("Already capturing a context.");
             }
             else {
                 this.retry = 0;
                 this.capturingContext = contextSpy;
                 this.capture();
+                this.noFrameTimeout = setTimeout(function () {
+                    if (_this.capturingContext && _this.retry > 1) {
+                        _this.onErrorInternal("No frames with gl commands detected. Try moving the camera.");
+                    }
+                    else {
+                        _this.onErrorInternal("No frames detected. Try moving the camera or implementing animationRequestFrame.");
+                    }
+                }, 10 * 1000);
             }
         };
         Spector.prototype.capture = function (frameCount) {
@@ -5759,6 +5848,7 @@ var SPECTOR;
         Spector.prototype.onFrameStart = function () {
             if (this.captureNextFrames > 0) {
                 if (this.capturingContext) {
+                    this.onCaptureStarted.trigger(undefined);
                     this.capturingContext.startCapture();
                 }
                 this.captureNextFrames--;
@@ -5771,22 +5861,43 @@ var SPECTOR;
             if (this.capturingContext && this.captureNextFrames === 0) {
                 var capture = this.capturingContext.stopCapture();
                 if (capture.commands.length > 0) {
-                    this.onCapture.trigger(capture);
+                    if (this.noFrameTimeout > -1) {
+                        clearTimeout(this.noFrameTimeout);
+                    }
+                    this.triggerCapture(capture);
                 }
                 else {
                     this.retry++;
-                    if (this.retry > Spector.MAXRETRY) {
-                        this.onCapture.trigger(capture);
-                    }
-                    else {
-                        this.capture(1);
-                    }
+                    this.capture(1);
                 }
+            }
+        };
+        Spector.prototype.triggerCapture = function (capture) {
+            if (this.captureMenu) {
+                this.captureMenu.captureComplete(null);
+            }
+            this.onCapture.trigger(capture);
+        };
+        Spector.prototype.onErrorInternal = function (error) {
+            this.logger.error(error);
+            if (this.noFrameTimeout > -1) {
+                clearTimeout(this.noFrameTimeout);
+            }
+            if (this.capturingContext) {
+                this.capturingContext = undefined;
+                this.captureNextFrames = 0;
+                this.retry = 0;
+                if (this.captureMenu) {
+                    this.captureMenu.captureComplete(error);
+                }
+                this.onError.trigger(error);
+            }
+            else {
+                throw error;
             }
         };
         return Spector;
     }());
-    Spector.MAXRETRY = 20 * 60; // 30 seconds of capture max.
     SPECTOR.Spector = Spector;
 })(SPECTOR || (SPECTOR = {}));
 //# sourceMappingURL=spector.js.map

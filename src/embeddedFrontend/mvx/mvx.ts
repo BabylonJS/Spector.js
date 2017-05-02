@@ -17,38 +17,41 @@ namespace SPECTOR.EmbeddedFrontend {
             this.rootStateId = -1;
         }
 
-        public addRootState(data: {}, component: BaseNoneGenericComponent): number {
-            this.setForRender();
+        public addRootState(data: {}, component: BaseNoneGenericComponent, immediate = false): number {
             const componentInstance = new ComponentInstance(component, this.logger);
             const stateId = this.stateStore.add(data, componentInstance);
             this.rootStateId = stateId;
+            this.setForRender(immediate);
             return stateId;
         }
 
-        public addChildState(parentId: number, data: {}, component: BaseNoneGenericComponent): number {
-            this.setForRender();
-            return this.insertChildState(parentId, data, Number.MAX_VALUE, component);
+        public addChildState(parentId: number, data: {}, component: BaseNoneGenericComponent, immediate = false): number {
+            const id = this.insertChildState(parentId, data, Number.MAX_VALUE, component);
+            this.setForRender(immediate);
+            return id;
         }
 
-        public insertChildState(parentId: number, data: {}, index: number, component: BaseNoneGenericComponent): number {
-            this.setForRender();
+        public insertChildState(parentId: number, data: {}, index: number,
+            component: BaseNoneGenericComponent, immediate = false): number {
             const componentInstance = new ComponentInstance(component, this.logger);
-            return this.stateStore.insertChildAt(parentId, index, data, componentInstance);
+            const id = this.stateStore.insertChildAt(parentId, index, data, componentInstance);
+            this.setForRender(immediate);
+            return id;
         }
 
-        public updateState(id: number, data: {}): void {
-            this.setForRender();
+        public updateState(id: number, data: {}, immediate = false): void {
             this.stateStore.update(id, data);
+            this.setForRender(immediate);
         }
 
-        public removeState(id: number): void {
-            this.setForRender();
+        public removeState(id: number, immediate = false): void {
             this.stateStore.remove(id);
+            this.setForRender(immediate);
         }
 
-        public removeChildrenStates(id: number): void {
-            this.setForRender();
+        public removeChildrenStates(id: number, immediate = false): void {
             this.stateStore.removeChildren(id);
+            this.setForRender(immediate);
         }
 
         public getState(id: number): {} {
@@ -84,10 +87,15 @@ namespace SPECTOR.EmbeddedFrontend {
             this.updateAllChildrenState(id, updateCallback);
         }
 
-        private setForRender() {
+        private setForRender(immediate: boolean) {
             if (!this.willRender) {
                 this.willRender = true;
-                setTimeout(this.compose.bind(this), MVX.REFRESHRATEINMILLISECONDS);
+                if (immediate) {
+                    this.compose();
+                }
+                else {
+                    setTimeout(this.compose.bind(this), MVX.REFRESHRATEINMILLISECONDS);
+                }
             }
         }
 

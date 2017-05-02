@@ -25,7 +25,7 @@
     "build:copy:vendor:prismjs": "node ./tools/copy.js /../vendors/prism.js /../dist/prism.js",
     "build:copy:vendor:prismcss": "node ./tools/copy.js /../vendors/prism.css /../dist/prism.css",
     "build:copy:vendor": "npm run build:copy:vendor:prismjs & npm run build:copy:vendor:prismcss",
-    "build": "npm run build:tscss & npm run build:copy:vendor & npm run build:bundle & npm run build:copybuild:copy:bundle",
+    "build": "npm run build:tscss & tslint -c ./tslint.json -p ./src/tsconfig.json & npm run build:copy:vendor & npm run build:bundle & npm run build:copybuild:copy:bundle",
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -r built/* & rm -r /dist/* & rm -r /extensions/spector.bundle.js"
   },

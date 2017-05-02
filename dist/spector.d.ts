@@ -864,6 +864,7 @@ declare namespace SPECTOR {
     interface ITimeSpy {
         onFrameStart: IEvent<ITimeSpy>;
         onFrameEnd: IEvent<ITimeSpy>;
+        onError: IEvent<string>;
         playNextFrame(): void;
         changeSpeedRatio(ratio: number): void;
         getFps(): number;
@@ -889,6 +890,7 @@ declare namespace SPECTOR.Spies {
         private static readonly fpsWindowSize;
         readonly onFrameStart: IEvent<ITimeSpy>;
         readonly onFrameEnd: IEvent<ITimeSpy>;
+        readonly onError: IEvent<string>;
         private readonly spiedWindow;
         private readonly time;
         private readonly lastSixtyFramesDuration;
@@ -1607,12 +1609,12 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private willRender;
         private rootStateId;
         constructor(placeHolder: Element, logger: ILogger);
-        addRootState(data: {}, component: BaseNoneGenericComponent): number;
-        addChildState(parentId: number, data: {}, component: BaseNoneGenericComponent): number;
-        insertChildState(parentId: number, data: {}, index: number, component: BaseNoneGenericComponent): number;
-        updateState(id: number, data: {}): void;
-        removeState(id: number): void;
-        removeChildrenStates(id: number): void;
+        addRootState(data: {}, component: BaseNoneGenericComponent, immediate?: boolean): number;
+        addChildState(parentId: number, data: {}, component: BaseNoneGenericComponent, immediate?: boolean): number;
+        insertChildState(parentId: number, data: {}, index: number, component: BaseNoneGenericComponent, immediate?: boolean): number;
+        updateState(id: number, data: {}, immediate?: boolean): void;
+        removeState(id: number, immediate?: boolean): void;
+        removeChildrenStates(id: number, immediate?: boolean): void;
         getState(id: number): {};
         getGenericState<T>(id: number): T;
         getChildrenState(id: number): any[];
@@ -1620,7 +1622,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         hasChildren(id: number): boolean;
         updateAllChildrenState(id: number, updateCallback: (state: any) => any): void;
         updateAllChildrenGenericState<T>(id: number, updateCallback: (state: T) => T): void;
-        private setForRender();
+        private setForRender(immediate);
         private compose();
     }
 }
@@ -1675,9 +1677,12 @@ declare namespace SPECTOR.EmbeddedFrontend {
 declare namespace SPECTOR.EmbeddedFrontend {
     interface ICaptureMenuComponentState {
         readonly visible: boolean;
+        readonly logText: string;
+        readonly logLevel: LogLevel;
+        readonly logVisible: boolean;
     }
-    class CaptureMenuComponent extends BaseComponent<boolean> {
-        render(state: boolean, stateId: number): Element;
+    class CaptureMenuComponent extends BaseComponent<ICaptureMenuComponentState> {
+        render(state: ICaptureMenuComponentState, stateId: number): Element;
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
@@ -1732,12 +1737,14 @@ declare namespace SPECTOR {
         updateCanvasesListInformation(canvasesInformation: ICanvasInformation[]): void;
         getSelectedCanvasInformation(): ICanvasInformation;
         hide(): void;
+        captureComplete(errorText: string): void;
         setFPS(fps: number): void;
     }
     interface ICaptureMenuOptions {
         readonly eventConstructor: EventConstructor;
         readonly rootPlaceHolder?: Element;
         readonly canvas?: HTMLCanvasElement;
+        readonly hideLog?: boolean;
     }
     type CaptureMenuConstructor = {
         new (options: ICaptureMenuOptions, logger: ILogger): ICaptureMenu;
@@ -1747,6 +1754,9 @@ declare namespace SPECTOR.EmbeddedFrontend {
     class CaptureMenu implements ICaptureMenu {
         private readonly options;
         private readonly logger;
+        static SelectCanvasHelpText: string;
+        static ActionsHelpText: string;
+        static PleaseWaitHelpText: string;
         readonly onCanvasSelected: IEvent<ICanvasInformation>;
         readonly onCaptureRequested: IEvent<ICanvasInformation>;
         readonly onPauseRequested: IEvent<ICanvasInformation>;
@@ -1763,7 +1773,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private readonly fpsStateId;
         private readonly actionsStateId;
         private readonly canvasListStateId;
-        private visible;
+        private isTrackingCanvas;
         constructor(options: ICaptureMenuOptions, logger: ILogger);
         getSelectedCanvasInformation(): ICanvasInformation;
         trackPageCanvases(): void;
@@ -1771,8 +1781,13 @@ declare namespace SPECTOR.EmbeddedFrontend {
         updateCanvasesListInformation(canvasesInformation: ICanvasInformation[]): void;
         display(): void;
         hide(): void;
+        captureComplete(errorText: string): void;
         setFPS(fps: number): void;
-        private updateMenuState();
+        private updateCanvasesListInformationCurrentState(canvasesInformation);
+        private hideMenuStateLog();
+        private showMenuStateLog();
+        private updateMenuStateLog(logLevel, logText, immediate?);
+        private updateMenuStateVisibility(visible);
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
@@ -2030,8 +2045,9 @@ declare namespace SPECTOR {
     }
     class Spector {
         private options;
-        private static MAXRETRY;
+        readonly onCaptureStarted: IEvent<any>;
         readonly onCapture: IEvent<ICapture>;
+        readonly onError: IEvent<string>;
         private readonly logger;
         private readonly timeSpy;
         private readonly contexts;
@@ -2043,6 +2059,7 @@ declare namespace SPECTOR {
         private captureMenu;
         private resultView;
         private retry;
+        private noFrameTimeout;
         constructor(options?: ISpectorOptions);
         displayUI(): void;
         getResultUI(): IResultView;
@@ -2063,5 +2080,7 @@ declare namespace SPECTOR {
         private getAvailableContextSpyByCanvas(canvas);
         private onFrameStart();
         private onFrameEnd();
+        private triggerCapture(capture);
+        private onErrorInternal(error);
     }
 }

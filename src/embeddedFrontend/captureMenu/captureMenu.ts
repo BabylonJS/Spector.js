@@ -20,6 +20,8 @@ namespace SPECTOR {
         getSelectedCanvasInformation(): ICanvasInformation;
         hide(): void;
 
+        captureComplete(errorText: string): void;
+
         setFPS(fps: number): void;
     }
 
@@ -27,6 +29,7 @@ namespace SPECTOR {
         readonly eventConstructor: EventConstructor;
         readonly rootPlaceHolder?: Element;
         readonly canvas?: HTMLCanvasElement;
+        readonly hideLog?: boolean;
     }
 
     export type CaptureMenuConstructor = {
@@ -36,6 +39,9 @@ namespace SPECTOR {
 
 namespace SPECTOR.EmbeddedFrontend {
     export class CaptureMenu implements ICaptureMenu {
+        public static SelectCanvasHelpText = "Please, select a canvas in the list above.";
+        public static ActionsHelpText = "Record with the red button, you can also pause or continue playing the current scene.";
+        public static PleaseWaitHelpText = "Capturing, be patient (this can take up to 3 minutes)...";
 
         public readonly onCanvasSelected: IEvent<ICanvasInformation>;
         public readonly onCaptureRequested: IEvent<ICanvasInformation>;
@@ -57,13 +63,13 @@ namespace SPECTOR.EmbeddedFrontend {
         private readonly actionsStateId: number;
         private readonly canvasListStateId: number;
 
-        private visible: boolean;
+        private isTrackingCanvas: boolean;
 
         constructor(private readonly options: ICaptureMenuOptions, private readonly logger: ILogger) {
             this.rootPlaceHolder = options.rootPlaceHolder || document.body;
             this.mvx = new MVX(this.rootPlaceHolder, logger);
 
-            this.visible = true;
+            this.isTrackingCanvas = false;
 
             this.onCanvasSelected = new options.eventConstructor<ICanvasInformation>();
             this.onCaptureRequested = new options.eventConstructor<ICanvasInformation>();
@@ -77,23 +83,36 @@ namespace SPECTOR.EmbeddedFrontend {
             this.actionsComponent = new CaptureMenuActionsComponent(options.eventConstructor, logger);
             this.fpsCounterComponent = new FpsCounterComponent(options.eventConstructor, logger);
 
-            this.rootStateId = this.mvx.addRootState(null, this.captureMenuComponent);
+            this.rootStateId = this.mvx.addRootState({
+                visible: true,
+                logLevel: LogLevel.info,
+                logText: CaptureMenu.SelectCanvasHelpText,
+                logVisible: !this.options.hideLog,
+            }, this.captureMenuComponent);
             this.canvasListStateId = this.mvx.addChildState(this.rootStateId, { currentCanvasInformation: null, showList: false }, this.canvasListComponent);
             this.actionsStateId = this.mvx.addChildState(this.rootStateId, true, this.actionsComponent);
             this.fpsStateId = this.mvx.addChildState(this.rootStateId, 0, this.fpsCounterComponent);
 
-            this.actionsComponent.onCaptureRequested.add((_) => {
-                this.onCaptureRequested.trigger(this.getSelectedCanvasInformation());
+            this.actionsComponent.onCaptureRequested.add(() => {
+                const currentCanvasInformation = this.getSelectedCanvasInformation();
+                if (currentCanvasInformation) {
+                    this.updateMenuStateLog(LogLevel.info, CaptureMenu.PleaseWaitHelpText, true);
+                }
+
+                // Defer to ensure the log displays.
+                setTimeout(() => {
+                    this.onCaptureRequested.trigger(currentCanvasInformation);
+                }, 10);
             });
-            this.actionsComponent.onPauseRequested.add((_) => {
+            this.actionsComponent.onPauseRequested.add(() => {
                 this.onPauseRequested.trigger(this.getSelectedCanvasInformation());
                 this.mvx.updateState(this.actionsStateId, false);
             });
-            this.actionsComponent.onPlayRequested.add((_) => {
+            this.actionsComponent.onPlayRequested.add(() => {
                 this.onPlayRequested.trigger(this.getSelectedCanvasInformation());
                 this.mvx.updateState(this.actionsStateId, true);
             });
-            this.actionsComponent.onPlayNextFrameRequested.add((_) => {
+            this.actionsComponent.onPlayNextFrameRequested.add(() => {
                 this.onPlayNextFrameRequested.trigger(this.getSelectedCanvasInformation());
             });
 
@@ -102,7 +121,19 @@ namespace SPECTOR.EmbeddedFrontend {
                     currentCanvasInformation: null,
                     showList: !eventArgs.state.showList,
                 });
+                this.updateMenuStateLog(LogLevel.info, CaptureMenu.SelectCanvasHelpText);
+
                 this.onCanvasSelected.trigger(null);
+                if (this.isTrackingCanvas) {
+                    this.trackPageCanvases();
+                }
+
+                if (eventArgs.state.showList) {
+                    this.showMenuStateLog();
+                }
+                else {
+                    this.hideMenuStateLog();
+                }
             });
 
             this.canvasListItemComponent.onCanvasSelected.add((eventArgs) => {
@@ -111,9 +142,9 @@ namespace SPECTOR.EmbeddedFrontend {
                     showList: false,
                 });
                 this.onCanvasSelected.trigger(eventArgs.state);
+                this.updateMenuStateLog(LogLevel.info, CaptureMenu.ActionsHelpText);
+                this.showMenuStateLog();
             });
-
-            this.updateMenuState();
         }
 
         public getSelectedCanvasInformation(): ICanvasInformation {
@@ -122,17 +153,16 @@ namespace SPECTOR.EmbeddedFrontend {
         }
 
         public trackPageCanvases(): void {
+            this.isTrackingCanvas = true;
             if (document.body) {
                 const canvases = document.body.querySelectorAll("canvas");
                 this.updateCanvasesList(canvases);
             }
-            setTimeout(this.trackPageCanvases.bind(this), 5000);
         }
 
         public updateCanvasesList(canvases: NodeListOf<HTMLCanvasElement>): void {
             this.mvx.removeChildrenStates(this.canvasListStateId);
-            let canvasToSelect: ICanvasInformation = null;
-            let canvasesCount = 0;
+            const canvasesInformation: ICanvasInformation[] = [];
 
             for (let i = 0; i < canvases.length; i++) {
                 const canvas = canvases[i];
@@ -155,80 +185,116 @@ namespace SPECTOR.EmbeddedFrontend {
                 }
 
                 if (context) {
-                    canvasToSelect = {
+                    const canvasInformation = {
                         id: canvas.id,
                         width: canvas.width,
                         height: canvas.height,
                         ref: canvas,
                     };
-                    canvasesCount++;
-                    this.mvx.addChildState(this.canvasListStateId, canvasToSelect, this.canvasListItemComponent);
+                    canvasesInformation.push(canvasInformation);
+                    this.mvx.addChildState(this.canvasListStateId, canvasInformation, this.canvasListItemComponent);
                 }
             }
-
-            const canvasListState = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId);
-            const visible = canvasListState.showList;
-            if (!visible) {
-                if (canvasesCount === 1 && canvasToSelect) {
-                    this.mvx.updateState(this.canvasListStateId, {
-                        currentCanvasInformation: canvasToSelect,
-                        showList: visible,
-                    });
-                    this.onCanvasSelected.trigger(canvasToSelect);
-                }
-                else {
-                    this.onCanvasSelected.trigger(null);
-                }
-            }
+            this.updateCanvasesListInformationCurrentState(canvasesInformation);
         }
 
         public updateCanvasesListInformation(canvasesInformation: ICanvasInformation[]): void {
             this.mvx.removeChildrenStates(this.canvasListStateId);
-            let canvasToSelect: ICanvasInformation = null;
-            const canvasesCount = canvasesInformation.length;
+            const canvasesInformationClone: ICanvasInformation[] = [];
             for (let i = 0; i < canvasesInformation.length; i++) {
                 const canvas = canvasesInformation[i];
-                canvasToSelect = {
+                const canvasInformationClone = {
                     id: canvas.id,
                     width: canvas.width,
                     height: canvas.height,
                     ref: canvas.ref,
                 };
-                this.mvx.addChildState(this.canvasListStateId, canvasToSelect, this.canvasListItemComponent);
+                canvasesInformationClone.push(canvasInformationClone);
+                this.mvx.addChildState(this.canvasListStateId, canvasInformationClone, this.canvasListItemComponent);
             }
-
-            const canvasListState = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId);
-            const visible = canvasListState.showList;
-            if (!visible) {
-                if (canvasesCount === 1 && canvasToSelect) {
-                    this.mvx.updateState(this.canvasListStateId, {
-                        currentCanvasInformation: canvasToSelect,
-                        showList: visible,
-                    });
-                    this.onCanvasSelected.trigger(canvasToSelect);
-                }
-                else {
-                    this.onCanvasSelected.trigger(null);
-                }
-            }
+            this.updateCanvasesListInformationCurrentState(canvasesInformationClone);
         }
 
         public display(): void {
-            this.visible = true;
-            this.updateMenuState();
+            this.updateMenuStateVisibility(true);
         }
 
         public hide(): void {
-            this.visible = false;
-            this.updateMenuState();
+            this.updateMenuStateVisibility(false);
+        }
+
+        public captureComplete(errorText: string): void {
+            if (errorText) {
+                this.updateMenuStateLog(LogLevel.error, errorText);
+            }
+            else {
+                this.updateMenuStateLog(LogLevel.info, CaptureMenu.ActionsHelpText);
+            }
         }
 
         public setFPS(fps: number): void {
             this.mvx.updateState(this.fpsStateId, fps);
         }
 
-        private updateMenuState() {
-            this.mvx.updateState(this.rootStateId, this.visible);
+        private updateCanvasesListInformationCurrentState(canvasesInformation: ICanvasInformation[]) {
+            const canvasesCount = canvasesInformation.length;
+            const canvasListState = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId);
+            const visible = canvasListState.showList;
+            if (!visible) {
+                if (canvasesCount === 1) {
+                    const canvasToSelect = canvasesInformation[0];
+                    this.mvx.updateState(this.canvasListStateId, {
+                        currentCanvasInformation: canvasToSelect,
+                        showList: visible,
+                    });
+                    this.updateMenuStateLog(LogLevel.info, CaptureMenu.ActionsHelpText);
+                    this.onCanvasSelected.trigger(canvasToSelect);
+                }
+                else {
+                    this.updateMenuStateLog(LogLevel.info, CaptureMenu.SelectCanvasHelpText);
+                    this.onCanvasSelected.trigger(null);
+                }
+            }
+        }
+
+        private hideMenuStateLog() {
+            const menuState = this.mvx.getGenericState<ICaptureMenuComponentState>(this.rootStateId);
+            this.mvx.updateState(this.rootStateId, {
+                visible: menuState.visible,
+                logLevel: menuState.logLevel,
+                logText: menuState.logText,
+                logVisible: false,
+            });
+        }
+
+        private showMenuStateLog() {
+            const menuState = this.mvx.getGenericState<ICaptureMenuComponentState>(this.rootStateId);
+            this.mvx.updateState(this.rootStateId, {
+                visible: menuState.visible,
+                logLevel: menuState.logLevel,
+                logText: menuState.logText,
+                logVisible: !this.options.hideLog,
+            });
+        }
+
+        private updateMenuStateLog(logLevel: LogLevel, logText: string, immediate = false) {
+            const menuState = this.mvx.getGenericState<ICaptureMenuComponentState>(this.rootStateId);
+            this.mvx.updateState(this.rootStateId, {
+                visible: menuState.visible,
+                logLevel,
+                logText,
+                logVisible: !this.options.hideLog,
+            }, immediate);
+        }
+
+        private updateMenuStateVisibility(visible: boolean) {
+            const menuState = this.mvx.getGenericState<ICaptureMenuComponentState>(this.rootStateId);
+            this.mvx.updateState(this.rootStateId, {
+                visible,
+                logLevel: menuState.logLevel,
+                logText: menuState.logText,
+                logVisible: menuState.logVisible,
+            });
         }
     }
 }

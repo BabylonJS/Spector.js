@@ -12,7 +12,7 @@ function sendMessage(message) {
         return;
     }
 
-    window.browser.tabs.query({ active: true }, function(tabs) { 
+    window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
         window.browser.tabs.sendMessage(tabs[0].id, message, function(response) { }); 
     });
 };
@@ -34,7 +34,7 @@ var refreshCanvases = function() {
     var popup = window.browser.extension.getViews({ type: "popup" })[0];
     if (popup != null) {
         var canvasesToSend = [];
-        window.browser.tabs.query({ active: true }, function(tabs) { 
+        window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
             for (var tabId in tabInfo) {
                 if (tabId == tabs[0].id) {
                     for (var frameId in tabInfo[tabId]) {
@@ -89,7 +89,7 @@ listenForMessage(function(request, sender, sendResponse) {
         window.browser.pageAction.show(sender.tab.id);
     }
     else if (request.refreshCanvases) {
-        window.browser.tabs.query({ active: true }, function(tabs) { 
+        window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
             tabInfo = {}
             sendMessage({ action: "requestCanvases" });
 
@@ -113,6 +113,13 @@ listenForMessage(function(request, sender, sendResponse) {
 
         tabInfo[tabId][frameId] = request.canvases;
     }
+    else if (request.errorString) {
+        // Close the wait message and may display an error.
+        var popup = window.browser.extension.getViews({ type: "popup" })[0];
+        if (popup != null && popup.captureComplete) {
+            popup.captureComplete(request.errorString);
+        }
+    }
     else if (request.captureString) {
         // If a capture has been received,
         var tabWindows = browser.extension.getViews({type: "tab"});
@@ -127,6 +134,18 @@ listenForMessage(function(request, sender, sendResponse) {
         else {
             tabWindows[0].addCaptureFromString(request.captureString);
             window.browser.tabs.update(resultTab.id, { active: true });
+            try  {
+                browser.windows.update(resultTab.windowId, { focused: true });
+            }
+            catch (e) {
+                // Bad browser support.
+            }
+        }
+
+        // Close the wait message and may display an error.
+        var popup = window.browser.extension.getViews({ type: "popup" })[0];
+        if (popup != null && popup.captureComplete) {
+            popup.captureComplete();
         }
     }
 

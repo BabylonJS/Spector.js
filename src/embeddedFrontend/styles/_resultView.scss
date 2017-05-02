@@ -362,7 +362,8 @@ $visualStateListComponentWidth: 20%;
           display: inline-block;
           width:100%;
           margin:0px;
-          padding:5px; 
+          padding:5px;
+          word-wrap: break-word;
       }
 
       &.active {
@@ -396,6 +397,10 @@ $commandDetailComponentWidth: 40%;
 
     li {
       padding: 8px;
+
+      span {
+        word-wrap: break-word;
+      }
 
       &:hover {
         @include on-hover();

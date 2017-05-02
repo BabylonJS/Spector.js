@@ -117,6 +117,10 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                 var canvas = document.body.querySelectorAll("canvas")[canvasIndex];
                 spector.captureCanvas(canvas);
             });
+            spector.onError.add((error) => {
+                var myEvent = new CustomEvent("SpectorOnErrorEvent", { detail: { errorString: error } });
+                document.dispatchEvent(myEvent);
+            });
             spector.onCapture.add((capture) => {
                 var myEvent = new CustomEvent("SpectorOnCaptureEvent", { detail: { captureString: JSON.stringify(capture) } });
                 document.dispatchEvent(myEvent);
@@ -149,6 +153,10 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
 
     document.addEventListener('SpectorOnCaptureEvent', function (e) {
         sendMessage({ captureString: e.detail.captureString });
+    }, false);
+
+    document.addEventListener('SpectorOnErrorEvent', function (e) {
+        sendMessage({ errorString: e.detail.errorString });
     }, false);
 
     document.addEventListener('SpectorFPSEvent', function (e) {
