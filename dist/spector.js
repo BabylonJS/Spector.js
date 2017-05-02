@@ -4496,7 +4496,7 @@ var SPECTOR;
                     // Defer to ensure the log displays.
                     setTimeout(function () {
                         _this.onCaptureRequested.trigger(currentCanvasInformation);
-                    }, 10);
+                    }, 200);
                 });
                 this.actionsComponent.onPauseRequested.add(function () {
                     _this.onPauseRequested.trigger(_this.getSelectedCanvasInformation());
