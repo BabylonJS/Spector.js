@@ -44,7 +44,7 @@
         "backend/commands/vertexAttribPointer.ts",
         "backend/commands/getActiveAttrib.ts",
         "backend/commands/getActiveUniform.ts",
-        "backend/commands/getTransformFeedBackVarying.ts",
+        "backend/commands/getTransformFeedbackVarying.ts",
         "backend/commands/getExtension.ts",
         "backend/commands/getShaderPrecisionFormat.ts",
         "backend/commands/getParameter.ts",
