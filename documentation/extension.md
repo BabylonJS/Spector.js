@@ -9,6 +9,10 @@ Spector is a tool aim to *WebGl* developers willing to know what happens on thei
 [![Build Status](https://travis-ci.org/BabylonJS/Spector.js.svg?branch=master)](https://travis-ci.org/BabylonJS/Spector.js)
 [![Code Climate](https://codeclimate.com/github/BabylonJS/Spector.js.png)](https://codeclimate.com/github/BabylonJS/Spector.js)
 
+<p align="center">
+    <img src="https://spectordoc.babylonjs.com/pictures/captureMenu.png" style="width:256px" width="256px">
+</p>
+
 ## How to use the extension
 The extension has been designed to be cross browser. As it is not currently deployed to the browser extension marketplace, you can easily sideload it in your browser of choice. 
 
