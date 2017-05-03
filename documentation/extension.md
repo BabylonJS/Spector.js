@@ -13,8 +13,12 @@ Spector is a tool aim to *WebGl* developers willing to know what happens on thei
   <img src="https://spectordoc.babylonjs.com/pictures/title.png" style="width:512px">
 </p>
 
-## How to use the extension
-The extension has been designed to be cross browser. As it is not currently deployed to the browser extension marketplace, you can easily sideload it in your browser of choice. 
+## How to Install the extension
+Please find below the link to the browser market places.
+- [Chrome](https://chrome.google.com/webstore/detail/spectorjs/denbgaamihkadbghdceggmchnflmhpmk)
+- Firefox: Under Review so coming soon
+
+As it is not currently deployed to all the browser extension store, you can easily sideload it in your browser of choice. This is also the recommended approach to contribute to the extension code.
 
 ### Install in Chrome
 1. Navigate to [Chrome Extensions](chrome://extensions/)
@@ -24,7 +28,7 @@ The extension has been designed to be cross browser. As it is not currently depl
         <img src="https://spectordoc.babylonjs.com/pictures/chromeExtension.png" style="width:512px" width="512px">
     </p>
 4. Select the folder *extensions* from the cloned repository.
-5. You are all set. 
+5. You are all set.
 
 ### Install in Firefox
 1. Navigate to [Firefox Add Ons](about:addons)

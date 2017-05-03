@@ -22,6 +22,11 @@ You can use the library inside of your own application easily. As it is transpil
 
 ## Browser extension
 If you are willing to use the browser extension instead, you can refer to the following documentation: [Browser Extension](https://github.com/BabylonJS/Spector.js/tree/master/documentation/extension.md).
+
+Or you can direclty install it from the store:
+- [Chrome](https://chrome.google.com/webstore/detail/spectorjs/denbgaamihkadbghdceggmchnflmhpmk)
+- Firefox: Under Review so coming soon
+
 <p align="center">
     <img src="https://spectordoc.babylonjs.com/pictures/extensionPopup.png" style="width:256px" width="256px">
 </p>
