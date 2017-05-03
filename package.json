@@ -1,8 +1,25 @@
 {
   "name": "spectorjs",
-  "version": "0.0.1",
-  "description": "Explore and Troubleshoot your WebGL scenes with ease.",
-  "main": "./dist/spector.bundle.js",
+  "version": "0.0.10",
+  "description": "Explore and Troubleshoot your WebGL scenes easily.",
+  "keywords": [
+    "webgl",
+    "webgl2",
+    "debug",
+    "debugger",
+    "inspector"
+  ],
+  "readme": "documentation/standaloneVersion.md",
+  "main": "dist/spector.bundle.js",
+  "files": [
+    "dist/spector.bundle.js",
+    "dist/prism.css",
+    "dist/prism.js",
+    "dist/spector.css",
+    "dist/spector.js",
+    "dist/spector.d.ts",
+    "documentation/standaloneVersion.md"
+  ],
   "author": "@SpectorJS",
   "repository": {
     "type": "git",
@@ -11,12 +28,11 @@
   "homepage": "https://spector.babylonjs.com",
   "license": "MIT",
   "scripts": {
-    "postinstall": "npm run build:css",
     "html": "node ./tools/devLiveReloadServer.js /../built/",
     "watch:ts": "tsc -w -p ./src",
     "watch:css": "node-sass -r -w --source-map true -o built src",
     "watch": "parallelshell \"npm run watch:ts\" \"npm run watch:css\"",
-    "start": "parallelshell \"npm run html\" \"npm run watch:ts\" \"npm run watch:css\"",
+    "start": "npm run build:css & parallelshell \"npm run html\" \"npm run watch:ts\" \"npm run watch:css\"",
     "build:ts": "tsc -p ./src --outFile \"dist/spector.js\"",
     "build:css": "node-sass -r -o dist src",
     "build:tscss": "parallelshell \"npm run build:ts\" \"npm run build:css\"",

@@ -7,7 +7,7 @@ module.exports = {
     ],
     output: {
         filename: './dist/spector.bundle.js',
-        libraryTarget: "var",
+        libraryTarget: "umd",
         library: "SPECTOR",
         umdNamedDefine: true
     },  

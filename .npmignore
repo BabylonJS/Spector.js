@@ -1,0 +1,15 @@
+/.vscode
+/extensions
+/sample
+/src
+/tests
+/tools
+/vendors
+/built
+/.tempChromeProfileForDebug
+/node_modules
+.codeclimate.yml
+/travis.yml
+tslint.json
+npm-debug.log.**
+npm-debug.log

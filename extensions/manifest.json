@@ -2,10 +2,10 @@
   "manifest_version": 2,
   "minimum_chrome_version": "20",
   "name" : "Spector.js",
-  "version" : "0.0.1",
-  "homepage_url": "http://spector.github.com/spector/",
-  "description" : "Explore and Troubleshoot your WebGL scenes with ease.",
-  "author": "Sebavan",
+  "version" : "0.0.10",
+  "homepage_url": "http://spector.babylonjs.com/",
+  "description" : "Explore and Troubleshoot your WebGL scenes easily.",
+  "author": "@SpectorJS",
   
   "permissions": [
     "tabs", "http://*/*", "https://*/*"
