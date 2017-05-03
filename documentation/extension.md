@@ -10,7 +10,7 @@ Spector is a tool aim to *WebGl* developers willing to know what happens on thei
 [![Code Climate](https://codeclimate.com/github/BabylonJS/Spector.js.png)](https://codeclimate.com/github/BabylonJS/Spector.js)
 
 <p align="center">
-    <img src="https://spectordoc.babylonjs.com/pictures/captureMenu.png" style="width:256px" width="256px">
+  <img src="https://spectordoc.babylonjs.com/pictures/title.png" style="width:512px">
 </p>
 
 ## How to use the extension
