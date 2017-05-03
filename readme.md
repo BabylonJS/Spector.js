@@ -25,7 +25,6 @@ If you are willing to use the browser extension instead, you can refer to the fo
 
 Or you can direclty install it from the store:
 - [Chrome](https://chrome.google.com/webstore/detail/spectorjs/denbgaamihkadbghdceggmchnflmhpmk)
-- [Firefox Preview](https://addons.mozilla.org/en-US/firefox/addon/spector-js/)
 
 <p align="center">
     <img src="https://spectordoc.babylonjs.com/pictures/extensionPopup.png" style="width:256px" width="256px">
