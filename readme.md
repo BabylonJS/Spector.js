@@ -18,7 +18,7 @@ This can be used either as a *browser extension* or directly from your page a a 
 ## Table of Content
 * [Why](#why)
 * [Browser extension](#browser-extension)
-* [Use as a Module](#use as a module)
+* [Use as a Module](#use-as-a-module)
   * [Webpack sample](#webpack-sample)
 * [Use as a Script Reference](#use-as-a-script-eference)
   * [CDN](#cdn)

@@ -328,6 +328,9 @@
       .commandListComponent ul li.active {
         background: #f37628;
         color: #222; }
+      .commandListComponent ul li.drawCall {
+        background: #5db0d7;
+        color: #222; }
 
 .commandDetailComponent {
   position: absolute;

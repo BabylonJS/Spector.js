@@ -34,8 +34,12 @@ namespace SPECTOR.EmbeddedFrontend {
                     break;
             }
 
+            if ((state.capture as any).VisualState) {
+                liHolder.className = " drawCall";
+            }
             if (state.active) {
                 liHolder.className = " active";
+
                 setTimeout(() => {
                     ScrollIntoViewHelper.scrollIntoView(liHolder);
                 }, 1);

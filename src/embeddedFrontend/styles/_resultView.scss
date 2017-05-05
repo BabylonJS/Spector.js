@@ -427,18 +427,22 @@ $commandDetailComponentWidth: 40%;
         &.disabled {
             color: gray;
         }
-        &.redundant {          
+        &.redundant {
             color: orange;
         }
-        &.valid {          
+        &.valid {
             color: greenyellow;
         }
       }
 
       &.active {
-          background: lighten($selected, 6%); 
-          color:#222; 
-          
+        background: lighten($selected, 6%); 
+        color:#222;
+      }
+
+      &.drawCall {
+        background: $foreground-title;
+        color:#222;
       }
     }
   }

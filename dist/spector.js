@@ -4950,6 +4950,9 @@ var SPECTOR;
                         status = "valid";
                         break;
                 }
+                if (state.capture.VisualState) {
+                    liHolder.className = " drawCall";
+                }
                 if (state.active) {
                     liHolder.className = " active";
                     setTimeout(function () {
