@@ -5128,7 +5128,7 @@ var SPECTOR;
                 return _this;
             }
             ResultViewMenuComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\"><input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\"><a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">Commands</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"], _a.raw = ["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\"><input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\"><a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">Commands</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"], this.htmlTemplate(_a, state.searchText, state.status === 0 /* Captures */ ? "active" : "", state.status === 10 /* Information */ ? "active" : "", state.status === 20 /* InitState */ ? "active" : "", state.status === 40 /* Commands */ ? "active" : "", state.status === 30 /* EndState */ ? "active" : ""));
+                var htmlString = (_a = ["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\"><input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\"><a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">Commands", "</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"], _a.raw = ["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\"><input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\"><a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">Commands", "</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"], this.htmlTemplate(_a, state.searchText, state.status === 0 /* Captures */ ? "active" : "", state.status === 10 /* Information */ ? "active" : "", state.status === 20 /* InitState */ ? "active" : "", state.status === 40 /* Commands */ ? "active" : "", state.commandCount > 0 ? " (" + state.commandCount + ")" : "", state.status === 30 /* EndState */ ? "active" : ""));
                 var element = this.renderElementFromTemplate(htmlString, state, stateId);
                 var openButton = element.querySelector(".resultViewMenuOpen");
                 var lis = element.querySelectorAll("li:not(.resultViewMenuSmall)");
@@ -5228,6 +5228,7 @@ var SPECTOR;
                 this.searchText = "";
                 this.currentCommandId = -1;
                 this.visible = false;
+                this.commandCount = 0;
                 this.commandListStateId = -1;
                 this.commandDetailStateId = -1;
                 this.currentCaptureStateId = -1;
@@ -5325,6 +5326,7 @@ var SPECTOR;
                 this.mvx.updateState(this.menuStateId, {
                     status: 0 /* Captures */,
                     searchText: this.searchText,
+                    commandCount: 0,
                 });
                 this.resultViewMenuComponent.onCloseClicked.add(function (_) {
                     _this.hide();
@@ -5351,26 +5353,30 @@ var SPECTOR;
                     _this.mvx.updateState(_this.menuStateId, {
                         status: menu.state.status,
                         searchText: "",
+                        commandCount: menu.state.commandCount,
                     });
                     _this.search("");
                 });
             };
             ResultView.prototype.onCaptureRelatedAction = function (menuStatus) {
+                var captureState = this.mvx.getGenericState(this.currentCaptureStateId);
+                this.commandCount = captureState.capture.commands.length;
                 this.mvx.removeChildrenStates(this.contentStateId);
                 this.mvx.updateState(this.menuStateId, {
                     status: menuStatus,
                     searchText: this.searchText,
+                    commandCount: this.commandCount,
                 });
                 if (this.mvx.getGenericState(this.captureListStateId)) {
                     this.mvx.updateState(this.captureListStateId, false);
                 }
-                var captureState = this.mvx.getGenericState(this.currentCaptureStateId);
                 return captureState.capture;
             };
             ResultView.prototype.displayCaptures = function () {
                 this.mvx.updateState(this.menuStateId, {
                     status: 0 /* Captures */,
                     searchText: this.searchText,
+                    commandCount: this.commandCount,
                 });
                 this.mvx.updateState(this.captureListStateId, true);
             };

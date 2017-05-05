@@ -1899,6 +1899,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
     interface IResultViewMenuState {
         status: MenuStatus;
         searchText: string;
+        commandCount: number;
     }
     class ResultViewMenuComponent extends BaseComponent<IResultViewMenuState> {
         onCapturesClicked: IStateEvent<IResultViewMenuState>;
@@ -1985,6 +1986,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private searchText;
         private currentCommandId;
         private visible;
+        private commandCount;
         constructor(options: IResultViewOptions, logger: ILogger);
         saveCapture(capture: ICapture): void;
         selectCapture(captureStateId: number): void;

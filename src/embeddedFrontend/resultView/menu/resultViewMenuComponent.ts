@@ -10,6 +10,7 @@ namespace SPECTOR.EmbeddedFrontend {
     export interface IResultViewMenuState {
         status: MenuStatus;
         searchText: string;
+        commandCount: number;
     }
 
     export class ResultViewMenuComponent extends BaseComponent<IResultViewMenuState> {
@@ -43,7 +44,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 <li><a class="${state.status === MenuStatus.Captures ? "active" : ""} href="#" role="button" commandName="onCapturesClicked">Captures</a></li>
                 <li><a class="${state.status === MenuStatus.Information ? "active" : ""} href="#" role="button" commandName="onInformationClicked">Information</a></li>
                 <li><a class="${state.status === MenuStatus.InitState ? "active" : ""} href="#" role="button" commandName="onInitStateClicked">Init State</a></li>
-                <li><a class="${state.status === MenuStatus.Commands ? "active" : ""} href="#" role="button" commandName="onCommandsClicked">Commands</a></li>
+                <li><a class="${state.status === MenuStatus.Commands ? "active" : ""} href="#" role="button" commandName="onCommandsClicked">Commands${state.commandCount > 0 ? " (" + state.commandCount + ")" : ""}</a></li>
                 <li><a class="${state.status === MenuStatus.EndState ? "active" : ""} href="#" role="button" commandName="onEndStateClicked">End State</a></li>
                 <li><a href="#" role="button" commandName="onCloseClicked">Close</a></li>
             </ul>`;
