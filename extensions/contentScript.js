@@ -86,7 +86,25 @@ function insertHeaderNode(node) {
 //_____________________________________________________________________________________
 
 var spectorLoadedKey = "SPECTOR_LOADED";
-var spectorCommunicationElementId = "SPECTOR_COMMUNICATION"
+var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
+var spectorContextTypeKey = "__spector_context_type";
+
+var canvasGetContextDetection = `
+    var OLDGetContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function () {
+        var context = OLDGetContext.apply(this, arguments);
+        if (context === null) {
+            return null;
+        }
+
+        var contextNames = ["webgl", "experimental-webgl", "webgl2", "experimental-webgl2"];
+        if (contextNames.indexOf(arguments[0]) !== -1) {
+            context.canvas.setAttribute("${spectorContextTypeKey}", arguments[0]);
+        }
+
+        return context;
+    }`;
+insertTextScript(canvasGetContextDetection);
 
 // In case the spector injection has been requested, inject the library in the page.
 if (sessionStorage.getItem(spectorLoadedKey)) {
@@ -127,7 +145,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
             });
             setInterval(() => {
                 var myEvent = new CustomEvent("SpectorFPSEvent", { detail: { fps: spector.getFps() } });
-                document.dispatchEvent(myEvent);         
+                document.dispatchEvent(myEvent);
             }, 1500);`;
 
         if (debug) {
@@ -166,6 +184,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
 
 var frameId = null;
 
+
 var getCanvases = function() {
     if (document.body) {
         var canvasElements = document.body.querySelectorAll("canvas");
@@ -176,19 +195,10 @@ var getCanvases = function() {
                 var canvas = canvasElements[i];
                 var context = null;
                 try {
-                    context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+                    context = canvas.getContext(canvas.getAttribute(spectorContextTypeKey));
                 }
                 catch (e) {
                     // Do Nothing.
-                }
-
-                if (!context) {
-                    try {
-                        context = canvas.getContext("webgl2") || canvas.getContext("experimental-webgl2");
-                    }
-                    catch (e) {
-                        // Do Nothing.
-                    }
                 }
 
                 if (context) {
@@ -207,7 +217,7 @@ var getCanvases = function() {
     return [];
 }
 
-var sendPresenceIfCanvases = function() {
+var sendPresenceIfCanvases = function () {
     if (getCanvases().length > 0) {
         // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
         sendMessage({ present: 1 }, function (response) {
@@ -216,7 +226,7 @@ var sendPresenceIfCanvases = function() {
     }
 }
 
-var sendCanvases = function() {
+var sendCanvases = function () {
     var canvases = getCanvases();
     // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
     sendMessage({ canvases: canvases }, function (response) {
@@ -244,13 +254,13 @@ listenForMessage(function (message) {
     if (!action) {
         return;
     }
-    
+
     // We need to reload to inject the scripts.
     if (action === "pageAction") {
         if (!sessionStorage.getItem(spectorLoadedKey)) {
             sessionStorage.setItem(spectorLoadedKey, "true");
             // Delay for all frames.
-            setTimeout(function() { window.location.reload(); }, 50);
+            setTimeout(function () { window.location.reload(); }, 50);
             return;
         }
     }
@@ -264,8 +274,8 @@ listenForMessage(function (message) {
 
     // Let s refresh the canvases list. 
     if (action === "requestCanvases") {
-        setTimeout(function() { sendCanvases(); }, 0);
-        setTimeout(function() { sendCanvases(); }, 1000);
+        setTimeout(function () { sendCanvases(); }, 0);
+        setTimeout(function () { sendCanvases(); }, 1000);
         return;
     }
 

@@ -146,12 +146,25 @@ namespace SPECTOR {
         public captureCanvas(canvas: HTMLCanvasElement) {
             const contextSpy = this.getAvailableContextSpyByCanvas(canvas);
             if (!contextSpy) {
+                // Custom detection to run in the extension.
                 let context: WebGLRenderingContexts;
                 try {
-                    context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+                    const contextType = canvas.getAttribute("__spector_context_type");
+                    if (contextType) {
+                        context = canvas.getContext(contextType) as any;
+                    }
                 }
                 catch (e) {
-                    this.logger.error(e);
+                    // Do Nothing.
+                }
+
+                if (!context) {
+                    try {
+                        context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+                    }
+                    catch (e) {
+                        this.logger.error(e);
+                    }
                 }
 
                 if (!context) {

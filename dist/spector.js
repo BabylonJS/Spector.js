@@ -5742,12 +5742,24 @@ var SPECTOR;
         Spector.prototype.captureCanvas = function (canvas) {
             var contextSpy = this.getAvailableContextSpyByCanvas(canvas);
             if (!contextSpy) {
+                // Custom detection to run in the extension.
                 var context = void 0;
                 try {
-                    context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+                    var contextType = canvas.getAttribute("__spector_context_type");
+                    if (contextType) {
+                        context = canvas.getContext(contextType);
+                    }
                 }
                 catch (e) {
-                    this.logger.error(e);
+                    // Do Nothing.
+                }
+                if (!context) {
+                    try {
+                        context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+                    }
+                    catch (e) {
+                        this.logger.error(e);
+                    }
                 }
                 if (!context) {
                     try {

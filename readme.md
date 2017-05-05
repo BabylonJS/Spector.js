@@ -192,6 +192,9 @@ If you are looking for the temporary generated .js or .map files, they are all a
 
 I would recommend developping on [VsCode](https://code.visualstudio.com/) as the entire setup is present so that if you install the chrome debugger extension you can directly debug from your typescript files by pressing f5.
 
+## ChangeLogs
+You can find the list of changes in our [ChangeLog](documentation/changeLogs.md)
+
 ## Contribute
 Any bugs are welcomed as Github issues. And if you are willing to help, do not hesitate to make a Pull Request.
 
