@@ -36,7 +36,9 @@ namespace SPECTOR.EmbeddedFrontend {
 
             if (state.active) {
                 liHolder.className = " active";
-                setTimeout(() => { liHolder.scrollIntoView(); document.body.scrollIntoView(); }, 1);
+                setTimeout(() => {
+                    ScrollIntoViewHelper.scrollIntoView(liHolder);
+                }, 1);
             }
 
             const textElement = document.createElement("span");

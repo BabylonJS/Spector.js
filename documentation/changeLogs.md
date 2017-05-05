@@ -8,8 +8,9 @@ Please, find below the per release summary of the contribution added to the proj
 This release is aimed to address a few of the first created bugs:
 
 - [Sketchfab WebGL2 Crash](https://github.com/BabylonJS/Spector.js/issues/13)
+- UX improvments
 
-[View More...](v0.0.11.md)
+[View More...](changeLogs/v0.0.11.md)
 
 ## v0.0.10 Initial Release
 This is the first public release available. It conatains all the basic structure of the project and browser extension.
@@ -20,4 +21,4 @@ This is the first public release available. It conatains all the basic structure
 - WebGL 1/2 Supports.
 - NPM package.
 - Chrome, Firefox, and Edge Extension.
-[View More...](v0.0.10.md)
+[View More...](changeLogs/v0.0.10.md)

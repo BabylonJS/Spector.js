@@ -1559,6 +1559,11 @@ declare namespace SPECTOR.WebGlObjects {
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
+    class ScrollIntoViewHelper {
+        static scrollIntoView(element: HTMLElement): void;
+    }
+}
+declare namespace SPECTOR.EmbeddedFrontend {
     abstract class BaseNoneGenericComponent {
         protected readonly eventConstructor: EventConstructor;
         protected readonly logger: ILogger;

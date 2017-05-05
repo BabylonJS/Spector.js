@@ -3784,6 +3784,35 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
+        var ScrollIntoViewHelper = (function () {
+            function ScrollIntoViewHelper() {
+            }
+            ScrollIntoViewHelper.scrollIntoView = function (element) {
+                var elementRect = element.getBoundingClientRect();
+                var parentElement = element.parentElement;
+                while (parentElement) {
+                    if (parentElement.clientHeight !== parentElement.offsetHeight) {
+                        break;
+                    }
+                    parentElement = parentElement.parentElement;
+                }
+                var parentRect = parentElement.getBoundingClientRect();
+                if (elementRect.top < parentRect.top) {
+                    element.scrollIntoView(true);
+                }
+                else if (elementRect.bottom > parentRect.bottom) {
+                    element.scrollIntoView(false);
+                }
+            };
+            return ScrollIntoViewHelper;
+        }());
+        EmbeddedFrontend.ScrollIntoViewHelper = ScrollIntoViewHelper;
+    })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var EmbeddedFrontend;
+    (function (EmbeddedFrontend) {
         var BaseNoneGenericComponent = (function () {
             function BaseNoneGenericComponent(eventConstructor, logger) {
                 this.eventConstructor = eventConstructor;
@@ -4835,7 +4864,9 @@ var SPECTOR;
                 var liHolder = document.createElement("li");
                 if (state.active) {
                     liHolder.className = "active";
-                    setTimeout(function () { liHolder.scrollIntoView(); document.body.scrollIntoView(); }, 1);
+                    setTimeout(function () {
+                        EmbeddedFrontend.ScrollIntoViewHelper.scrollIntoView(liHolder);
+                    }, 1);
                 }
                 if (state.VisualState.Attachments) {
                     for (var _i = 0, _a = state.VisualState.Attachments; _i < _a.length; _i++) {
@@ -4919,7 +4950,9 @@ var SPECTOR;
                 }
                 if (state.active) {
                     liHolder.className = " active";
-                    setTimeout(function () { liHolder.scrollIntoView(); document.body.scrollIntoView(); }, 1);
+                    setTimeout(function () {
+                        EmbeddedFrontend.ScrollIntoViewHelper.scrollIntoView(liHolder);
+                    }, 1);
                 }
                 var textElement = document.createElement("span");
                 var text = state.capture.text;

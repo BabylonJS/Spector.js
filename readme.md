@@ -15,6 +15,23 @@ This can be used either as a *browser extension* or directly from your page a a 
   <img src="https://spectordoc.babylonjs.com/pictures/title.png" style="width:512px">
 </p>
 
+## Table of Content
+* [Why](#why)
+* [Browser extension](#browser-extension)
+* [Use as a Module](#use as a module)
+  * [Webpack sample](#webpack-sample)
+* [Use as a Script Reference](#use-as-a-script-eference)
+  * [CDN](#cdn)
+  * [From the repository](#repo)
+  * [Node_Modules](#node_modules)
+  * [How To Reference](#how-to-reference)
+* [Basic usage](#basic-usage)
+* [Available APIs](documentation/apis.md)
+* [Build Locally](documentation/build.md)
+* [Contribute](documentation/contribute.md)
+* [ChangeLog](documentation/changeLogs.md)
+* [Learn WebGl](#learn-about-webgl)
+
 ## Why
 As a core member of the BabylonJS team I often found the need of debugging what is happening to my webgl context. I was a huge fan of webgl inspector until we introduced WebGl2 in Babylon. As the WebGL community as a whole is our focus, I thought it would be great to share an extension compatible with all the Webgl/Webgl2 engines available.
 
@@ -101,7 +118,7 @@ Simply add the following tag in your html page header:
 <script type="text/javascript" src="spector.bundle.js"></script>
 ```
 
-## Simple usage
+## Basic Usage
 Once available in your app, you can instantiate an inspector by inserting the following command in your script:
 
 ```javascript
@@ -127,78 +144,7 @@ var canvas = document.getElementById("renderCanvas");
 spector.captureCanvas(canvas);
 ```
 
-## Available APIs
-As the project is pretty new, the exhaustive list of APIs will not be detailed, only the most usefull and less subject to changes will.
-
-### Namespace
-The first thing to notice is the fact that the entire availables classes are living in a namespace called SPECTOR which is helpfull with the script referenced version.
-
-### Events
-All the the events discussed below can be attached to with the following code (example on an event named onEvent using a string event argument):
-
-```
-foo.onEvent.add(function(s) { console.log(s); };
-// or for a context specific version to ensure console.log(s) will have "this" set to context; 
-foo.onEvent.add(function(s) { console.log(s); }, context);
-```
-
-### SPECTOR.Spector
-This is the main entry point of the library and contains the following methods:
-- ```constructor()``` : creates a new instance.
-- ```displayUI()``` : displays the embedded ui and begins to track the pages available canvas elements.
-- ```getFps()``` : to get the current fps of the selected canvas.
-- ```captureCanvas(canvas: HTMLCanvasElement)``` : to start a capture on a specific canvas.
-
-And the following list of events:
-- ```onCaptureStarted: IEvent<any>``` : triggered when a capture starts.
-- ```onCapture: IEvent<ICapture>```: triggered when a new capture is available (this is a JSON only object containing alll the information).
-- ```onError: IEvent<string>```: triggered when an error occured and return the error message.
-
-As you notice you could usse the capture without displying the UI (this is the orientation we chosed in the browser extension).
-
-### SPECTOR.CaptureMenu
-This is the embedded capture menu you can see in the page helping selecting a canvas, capturing or playing/pausing the rendering. This can be use as a standalone component as it is done in the browser extension.
-
-The prototype is subject to change but feel free to take a look at the available entry points here: [Spector.CaptureMenu](https://github.com/BabylonJS/Spector.js/blob/master/src/embeddedFrontend/captureMenu/captureMenu.ts)
-
-<p align="center">
-    <img src="https://spectordoc.babylonjs.com/pictures/captureMenu.png" style="width:256px" width="256px">
-</p>
-
-### SPECTOR.ResultView
-This is the embedded result view panel which displays the result of the different captured scenes.  This can be use as a standalone component as it is done in the browser extension.
-
-The prototype is subject to change but feel free to take a look at the available entry points here: [Spector.ResultView](https://github.com/BabylonJS/Spector.js/blob/master/src/embeddedFrontend/resultView/resultView.ts)
-
-<p align="center">
-    <img src="https://spectordoc.babylonjs.com/pictures/extensionResult.png" style="width:512px" width="512px">
-</p>
-
-## How to build and use locally
-Like any simple typescript repository everything start with.
-
-```
-git clone https://github.com/BabylonJS/Spector.js.git
-cd spector
-npm install
-```
-
-Then you can use the following npm commands to speed your development:
-1. ```npm start``` Will compile and run a local server with a watch command so that you can directly try your changes (TS or scss). Navigate to the the [embedded sample](http://localhost:1337/sample/index.html) to start playing with the dev tools.
-2. ```npm run build``` Will create and build a new version of the dist folder files.
-3. ```npm run clean``` Will clean all the generated files from the repo.
-
-If you are looking for the temporary generated .js or .map files, they are all available in the built folder which is not under source control.
-
-I would recommend developping on [VsCode](https://code.visualstudio.com/) as the entire setup is present so that if you install the chrome debugger extension you can directly debug from your typescript files by pressing f5.
-
-## ChangeLogs
-You can find the list of changes in our [ChangeLog](documentation/changeLogs.md)
-
-## Contribute
-Any bugs are welcomed as Github issues. And if you are willing to help, do not hesitate to make a Pull Request.
-
-## If you do not understand Spector or WebGL
+## Learn About WebGL
 I would advise you to check out and start with the Awesome [BabylonJS](http://www.babylonjs.com/) the community there will be more than happy to welcome anybody willing to learn Web 3d.
 
 <p align="center">
