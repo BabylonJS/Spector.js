@@ -60,6 +60,7 @@ var SPECTOR;
                     restOfMsg[_i - 1] = arguments[_i];
                 }
                 if (this.level > 0) {
+                    // tslint:disable-next-line:no-console
                     console.error(msg, restOfMsg);
                 }
             };
@@ -69,6 +70,7 @@ var SPECTOR;
                     restOfMsg[_i - 1] = arguments[_i];
                 }
                 if (this.level > 1) {
+                    // tslint:disable-next-line:no-console
                     console.warn(msg, restOfMsg);
                 }
             };

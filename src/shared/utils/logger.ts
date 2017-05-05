@@ -29,12 +29,14 @@ namespace SPECTOR.Utils {
 
         public error(msg: string, ...restOfMsg: string[]) {
             if (this.level > 0) {
+                // tslint:disable-next-line:no-console
                 console.error(msg, restOfMsg);
             }
         }
 
         public warn(msg: string, ...restOfMsg: string[]) {
             if (this.level > 1) {
+                // tslint:disable-next-line:no-console
                 console.warn(msg, restOfMsg);
             }
         }
