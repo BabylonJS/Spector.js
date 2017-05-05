@@ -32,20 +32,22 @@ namespace SPECTOR.States {
             const gl = this.context;
             this.currentState["Attachments"] = [];
 
+            // Check the framebuffer status.
+            const frameBuffer = this.context.getParameter(WebGlConstants.FRAMEBUFFER_BINDING.value);
+            if (!frameBuffer) {
+                this.currentState["FrameBuffer"] = null;
+                // In case of the main canvas, we draw the entire screen instead of the viewport only.
+                // This will help for instance in VR use cases.
+                this.getCapture(gl, "Canvas COLOR_ATTACHMENT", 0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+                return;
+            }
+
             // Get FrameBuffer Viewport size to adapt the created screenshot.
             const viewport = gl.getParameter(gl.VIEWPORT);
             const x = viewport[0];
             const y = viewport[1];
             const width = viewport[2];
             const height = viewport[3];
-
-            // Check the framebuffer status.
-            const frameBuffer = this.context.getParameter(WebGlConstants.FRAMEBUFFER_BINDING.value);
-            if (!frameBuffer) {
-                this.currentState["FrameBuffer"] = null;
-                this.getCapture(gl, "Canvas COLOR_ATTACHMENT", x, y, width, height);
-                return;
-            }
 
             this.getTag(frameBuffer);
             this.currentState["FrameBuffer"] = frameBuffer;
