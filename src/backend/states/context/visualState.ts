@@ -124,46 +124,61 @@ namespace SPECTOR.States {
         }
 
         protected getCapture(gl: WebGLRenderingContext, name: string, x: number, y: number, width: number, height: number) {
-            // Read the pixels from the frame buffer.
-            const size = width * height * 4;
-            const pixels = new Uint8Array(size);
-            gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+            try {
+                // Empty error list.
+                gl.getError();
 
-            // Copy the pixels to a working 2D canvas same size.
-            this.workingCanvas.width = width;
-            this.workingCanvas.height = height;
-            const imageData = this.workingContext2D.createImageData(width, height);
-            imageData.data.set(pixels);
-            this.workingContext2D.putImageData(imageData, 0, 0);
+                // Read the pixels from the frame buffer.
+                const size = width * height * 4;
+                const pixels = new Uint8Array(size);
+                gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+                if (gl.getError()) {
+                    return;
+                }
 
-            // Copy the pixels to a resized capture 2D canvas.
-            const imageAspectRatio = width / height;
-            if (imageAspectRatio < 1) {
-                this.captureCanvas.width = VisualState.captureBaseSize * imageAspectRatio;
-                this.captureCanvas.height = VisualState.captureBaseSize;
+                // Copy the pixels to a working 2D canvas same size.
+                this.workingCanvas.width = width;
+                this.workingCanvas.height = height;
+                const imageData = this.workingContext2D.createImageData(width, height);
+                imageData.data.set(pixels);
+                this.workingContext2D.putImageData(imageData, 0, 0);
+
+                // Copy the pixels to a resized capture 2D canvas.
+                const imageAspectRatio = width / height;
+                if (imageAspectRatio < 1) {
+                    this.captureCanvas.width = VisualState.captureBaseSize * imageAspectRatio;
+                    this.captureCanvas.height = VisualState.captureBaseSize;
+                }
+                else if (imageAspectRatio > 1) {
+                    this.captureCanvas.width = VisualState.captureBaseSize;
+                    this.captureCanvas.height = VisualState.captureBaseSize / imageAspectRatio;
+                }
+                else {
+                    this.captureCanvas.width = VisualState.captureBaseSize;
+                    this.captureCanvas.height = VisualState.captureBaseSize;
+                }
+
+                // Scale and draw to flip Y to reorient readPixels.
+                this.captureContext2D.globalCompositeOperation = "copy";
+                this.captureContext2D.scale(1, -1); // Y flip
+                this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
+                this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
+                this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
+                this.captureContext2D.globalCompositeOperation = "source-over";
+
+                // get the screen capture
+                this.currentState["Attachments"].push({
+                    attachmentName: name,
+                    src: this.captureCanvas.toDataURL(),
+                });
             }
-            else if (imageAspectRatio > 1) {
-                this.captureCanvas.width = VisualState.captureBaseSize;
-                this.captureCanvas.height = VisualState.captureBaseSize / imageAspectRatio;
+            catch (e) {
+                // get the screen capture
+                this.currentState["Attachments"].push({
+                    attachmentName: name,
+                    src: null,
+                });
             }
-            else {
-                this.captureCanvas.width = VisualState.captureBaseSize;
-                this.captureCanvas.height = VisualState.captureBaseSize;
-            }
-
-            // Scale and draw to flip Y to reorient readPixels.
-            this.captureContext2D.globalCompositeOperation = "copy";
-            this.captureContext2D.scale(1, -1); // Y flip
-            this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
-            this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
-            this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
-            this.captureContext2D.globalCompositeOperation = "source-over";
-
-            // get the screen capture
-            this.currentState["Attachments"].push({
-                attachmentName: name,
-                src: this.captureCanvas.toDataURL(),
-            });
         }
 
         protected analyse(consumeCommand: ICommandCapture): void {

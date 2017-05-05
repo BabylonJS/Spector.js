@@ -24,8 +24,8 @@ namespace SPECTOR.States.Information {
             { constant: WebGlConstants.LINE_WIDTH },
             { constant: WebGlConstants.ALIASED_LINE_WIDTH_RANGE },
             { constant: WebGlConstants.ALIASED_POINT_SIZE_RANGE },
-            { constant: WebGlConstants.IMPLEMENTATION_COLOR_READ_FORMAT },
-            { constant: WebGlConstants.IMPLEMENTATION_COLOR_READ_TYPE },
+            { constant: WebGlConstants.IMPLEMENTATION_COLOR_READ_FORMAT, returnType: ParameterReturnType.GlEnum },
+            { constant: WebGlConstants.IMPLEMENTATION_COLOR_READ_TYPE, returnType: ParameterReturnType.GlEnum },
             // { constant: WebGlConstants.UNIFORM_BUFFER_OFFSET_ALIGNMENT },
 
             { constant: WebGlConstants.MAX_COMBINED_TEXTURE_IMAGE_UNITS },

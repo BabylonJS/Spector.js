@@ -2449,8 +2449,8 @@ var SPECTOR;
                         { constant: SPECTOR.WebGlConstants.LINE_WIDTH },
                         { constant: SPECTOR.WebGlConstants.ALIASED_LINE_WIDTH_RANGE },
                         { constant: SPECTOR.WebGlConstants.ALIASED_POINT_SIZE_RANGE },
-                        { constant: SPECTOR.WebGlConstants.IMPLEMENTATION_COLOR_READ_FORMAT },
-                        { constant: SPECTOR.WebGlConstants.IMPLEMENTATION_COLOR_READ_TYPE },
+                        { constant: SPECTOR.WebGlConstants.IMPLEMENTATION_COLOR_READ_FORMAT, returnType: 20 /* GlEnum */ },
+                        { constant: SPECTOR.WebGlConstants.IMPLEMENTATION_COLOR_READ_TYPE, returnType: 20 /* GlEnum */ },
                         // { constant: WebGlConstants.UNIFORM_BUFFER_OFFSET_ALIGNMENT },
                         { constant: SPECTOR.WebGlConstants.MAX_COMBINED_TEXTURE_IMAGE_UNITS },
                         { constant: SPECTOR.WebGlConstants.MAX_CUBE_MAP_TEXTURE_SIZE },
@@ -3182,42 +3182,56 @@ var SPECTOR;
                 }
             };
             VisualState.prototype.getCapture = function (gl, name, x, y, width, height) {
-                // Read the pixels from the frame buffer.
-                var size = width * height * 4;
-                var pixels = new Uint8Array(size);
-                gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-                // Copy the pixels to a working 2D canvas same size.
-                this.workingCanvas.width = width;
-                this.workingCanvas.height = height;
-                var imageData = this.workingContext2D.createImageData(width, height);
-                imageData.data.set(pixels);
-                this.workingContext2D.putImageData(imageData, 0, 0);
-                // Copy the pixels to a resized capture 2D canvas.
-                var imageAspectRatio = width / height;
-                if (imageAspectRatio < 1) {
-                    this.captureCanvas.width = VisualState_1.captureBaseSize * imageAspectRatio;
-                    this.captureCanvas.height = VisualState_1.captureBaseSize;
+                try {
+                    // Empty error list.
+                    gl.getError();
+                    // Read the pixels from the frame buffer.
+                    var size = width * height * 4;
+                    var pixels = new Uint8Array(size);
+                    gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+                    if (gl.getError()) {
+                        return;
+                    }
+                    // Copy the pixels to a working 2D canvas same size.
+                    this.workingCanvas.width = width;
+                    this.workingCanvas.height = height;
+                    var imageData = this.workingContext2D.createImageData(width, height);
+                    imageData.data.set(pixels);
+                    this.workingContext2D.putImageData(imageData, 0, 0);
+                    // Copy the pixels to a resized capture 2D canvas.
+                    var imageAspectRatio = width / height;
+                    if (imageAspectRatio < 1) {
+                        this.captureCanvas.width = VisualState_1.captureBaseSize * imageAspectRatio;
+                        this.captureCanvas.height = VisualState_1.captureBaseSize;
+                    }
+                    else if (imageAspectRatio > 1) {
+                        this.captureCanvas.width = VisualState_1.captureBaseSize;
+                        this.captureCanvas.height = VisualState_1.captureBaseSize / imageAspectRatio;
+                    }
+                    else {
+                        this.captureCanvas.width = VisualState_1.captureBaseSize;
+                        this.captureCanvas.height = VisualState_1.captureBaseSize;
+                    }
+                    // Scale and draw to flip Y to reorient readPixels.
+                    this.captureContext2D.globalCompositeOperation = "copy";
+                    this.captureContext2D.scale(1, -1); // Y flip
+                    this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
+                    this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
+                    this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
+                    this.captureContext2D.globalCompositeOperation = "source-over";
+                    // get the screen capture
+                    this.currentState["Attachments"].push({
+                        attachmentName: name,
+                        src: this.captureCanvas.toDataURL(),
+                    });
                 }
-                else if (imageAspectRatio > 1) {
-                    this.captureCanvas.width = VisualState_1.captureBaseSize;
-                    this.captureCanvas.height = VisualState_1.captureBaseSize / imageAspectRatio;
+                catch (e) {
+                    // get the screen capture
+                    this.currentState["Attachments"].push({
+                        attachmentName: name,
+                        src: null,
+                    });
                 }
-                else {
-                    this.captureCanvas.width = VisualState_1.captureBaseSize;
-                    this.captureCanvas.height = VisualState_1.captureBaseSize;
-                }
-                // Scale and draw to flip Y to reorient readPixels.
-                this.captureContext2D.globalCompositeOperation = "copy";
-                this.captureContext2D.scale(1, -1); // Y flip
-                this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
-                this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
-                this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
-                this.captureContext2D.globalCompositeOperation = "source-over";
-                // get the screen capture
-                this.currentState["Attachments"].push({
-                    attachmentName: name,
-                    src: this.captureCanvas.toDataURL(),
-                });
             };
             VisualState.prototype.analyse = function (consumeCommand) {
                 // Nothing to analyse on visual state.
@@ -4875,6 +4889,9 @@ var SPECTOR;
                 if (state.VisualState.Attachments) {
                     for (var _i = 0, _a = state.VisualState.Attachments; _i < _a.length; _i++) {
                         var imageState = _a[_i];
+                        if (!imageState.src) {
+                            continue;
+                        }
                         var img = document.createElement("img");
                         img.src = encodeURI(imageState.src);
                         liHolder.appendChild(img);
@@ -5086,6 +5103,9 @@ var SPECTOR;
                 if (state.Attachments) {
                     for (var _i = 0, _a = state.Attachments; _i < _a.length; _i++) {
                         var imageState = _a[_i];
+                        if (!imageState.src) {
+                            continue;
+                        }
                         var img = document.createElement("img");
                         img.src = encodeURI(imageState.src);
                         divHolder.appendChild(img);

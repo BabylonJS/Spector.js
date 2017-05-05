@@ -5,6 +5,10 @@ namespace SPECTOR.EmbeddedFrontend {
             divHolder.className = "jsonVisualStateItemComponent";
             if (state.Attachments) {
                 for (const imageState of state.Attachments) {
+                    if (!imageState.src) {
+                        continue;
+                    }
+
                     const img = document.createElement("img");
                     img.src = encodeURI(imageState.src);
                     divHolder.appendChild(img);

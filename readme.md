@@ -103,7 +103,7 @@ You are all set, you can open your index.html file and see the inspector running
 ## Use as a Script Reference
 
 ### CDN
-Feel free to leverage the CDN to use the library from your own projets: [https://spectorcdn.babylonjs.com/2-5/spector.bundle.js](https://spectorcdn.babylonjs.com/2-5/spector.bundle.js)
+Feel free to leverage the CDN to use the library from your own projets: [https://spectorcdn.babylonjs.com/spector.bundle.js](https://spectorcdn.babylonjs.com/spector.bundle.js)
 
 ### Repo
 If you prefer to host your own version, the library is available in the [dist](https://github.com/BabylonJS/Spector.js/blob/master/dist/spector.bundle.js) folder of the repo.
