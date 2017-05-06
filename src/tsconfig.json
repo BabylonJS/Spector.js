@@ -83,7 +83,7 @@
         "backend/webGlObjects/baseWebGlObject.ts",
         "backend/webGlObjects/webGlObjects.ts",
 
-        "embeddedFrontEnd/ux/scrollIntoViewHelper.ts",
+        "embeddedFrontend/ux/scrollIntoViewHelper.ts",
 
         "embeddedFrontend/mvx/baseComponent.ts",
         "embeddedFrontend/mvx/compositor.ts",
