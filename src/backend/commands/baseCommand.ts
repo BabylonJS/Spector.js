@@ -27,7 +27,7 @@ namespace SPECTOR.Commands {
         }
 
         public createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture {
-            // Removes the spector interna calls to leave only th relevant part.
+            // Removes the spector internal calls to leave only th relevant part.
             const stackTrace = this.stackTrace.getStackTrace(4, 1);
             const text = this.stringify(functionInformation.arguments, functionInformation.result);
             const commandCapture = {
@@ -48,6 +48,12 @@ namespace SPECTOR.Commands {
 
             this.transformCapture(commandCapture);
 
+            for (let i = 0; i < commandCapture.commandArguments.length; i++) {
+                const argument = commandCapture.commandArguments[i];
+                if (argument && argument.length && argument.length > 50) {
+                    commandCapture.commandArguments[i] = "Array Legnth: " + argument.length;
+                }
+            }
             return commandCapture;
         }
 

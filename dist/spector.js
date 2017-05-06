@@ -1431,7 +1431,7 @@ var SPECTOR;
                 this.spiedCommandName = options.spiedCommandName;
             }
             BaseCommand.prototype.createCapture = function (functionInformation, commandCaptureId) {
-                // Removes the spector interna calls to leave only th relevant part.
+                // Removes the spector internal calls to leave only th relevant part.
                 var stackTrace = this.stackTrace.getStackTrace(4, 1);
                 var text = this.stringify(functionInformation.arguments, functionInformation.result);
                 var commandCapture = {
@@ -1447,6 +1447,12 @@ var SPECTOR;
                     text: text,
                 };
                 this.transformCapture(commandCapture);
+                for (var i = 0; i < commandCapture.commandArguments.length; i++) {
+                    var argument = commandCapture.commandArguments[i];
+                    if (argument && argument.length && argument.length > 50) {
+                        commandCapture.commandArguments[i] = "Array Legnth: " + argument.length;
+                    }
+                }
                 return commandCapture;
             };
             BaseCommand.prototype.transformCapture = function (commandCapture) {
