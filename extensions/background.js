@@ -7,21 +7,12 @@ window.browser = (function () {
 })();
 
 function sendMessage(message) {
-    if (window["safari"]) {
-        safari.self.tab.dispatchMessage("message", message);
-        return;
-    }
-
     window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
         window.browser.tabs.sendMessage(tabs[0].id, message, function(response) { }); 
     });
 };
 
 function listenForMessage(callback) {
-    if (window["safari"]) {
-        safari.self.addEventListener("message", callback);
-    }
-
     window.browser.runtime.onMessage.addListener(callback);
 };
 //_____________________________________________________________________________________

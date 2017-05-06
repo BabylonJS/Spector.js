@@ -9,22 +9,12 @@ window.browser = (function () {
 })();
 
 function getExtensionURL() {
-    if (window["safari"]) {
-        return safari.extension.baseURI;
-    }
-
     return window.browser.extension.getURL("");
 };
 
 var uniqueId = new Date().getTime() + Math.abs(Math.random() * 1000000);
 function sendMessage(message, cb) {
     message["uniqueId"] = uniqueId;
-
-    if (window["safari"]) {
-        safari.self.tab.dispatchMessage("message", message);
-        return;
-    }
-
     window.browser.runtime.sendMessage(message, function (response) {
         if (cb) {
             cb(response);
@@ -33,10 +23,6 @@ function sendMessage(message, cb) {
 };
 
 function listenForMessage(callback) {
-    if (window["safari"]) {
-        safari.self.addEventListener("message", callback);
-    }
-
     window.browser.runtime.onMessage.addListener(callback);
 };
 //_____________________________________________________________________________________
