@@ -32,12 +32,14 @@ This can be used either as a *browser extension* or directly from your page a a 
 * [ChangeLog](documentation/changeLogs.md)
 * [Learn WebGl](#learn-about-webgl)
 
-## Why [Top](#table-of-content)
+## Why
+###### [Back to top](#table-of-content)
 As a core member of the BabylonJS team I often found the need of debugging what is happening to my webgl context. I was a huge fan of webgl inspector until we introduced WebGl2 in Babylon. As the WebGL community as a whole is our focus, I thought it would be great to share an extension compatible with all the Webgl/Webgl2 engines available.
 
 You can use the library inside of your own application easily. As it is transpiled as a UMD module, this will either work as a script reference or relying on you favorite bundling tools like webpack.
 
-## Browser extension [Top](#table-of-content)
+## Browser extension
+###### [Back to top](#table-of-content)
 If you are willing to use the browser extension instead, you can refer to the following documentation: [Browser Extension](https://github.com/BabylonJS/Spector.js/tree/master/documentation/extension.md).
 
 Or you can direclty install it from the store:
@@ -47,7 +49,8 @@ Or you can direclty install it from the store:
     <img src="https://spectordoc.babylonjs.com/pictures/extensionPopup.png" style="width:256px" width="256px">
 </p>
 
-## Use as a Module [Top](#table-of-content)
+## Use as a Module
+###### [Back to top](#table-of-content)
 In order to install the library in your application directory, please type the following commands on a command line prompt open on the application directory:
 
 ```
@@ -56,7 +59,8 @@ npm install spectorjs
 
 From this point you are all set to use it in your app.
 
-### Webpack sample [Top](#table-of-content)
+### Webpack sample
+###### [Back to top](#table-of-content)
 As a quick demo, here is a simple way to use the spector module with webpack.
 
 Please follow the instrctions below which are creating a new directory and installing the required tools:
@@ -100,7 +104,8 @@ webpack entry.js bundle.js
 
 You are all set, you can open your index.html file and see the inspector running. It will obviously won't be that usefull on an empty page but at least you get the integration idea.
 
-## Use as a Script Reference [Top](#table-of-content)
+## Use as a Script Reference
+###### [Back to top](#table-of-content)
 
 ### CDN
 Feel free to leverage the CDN to use the library from your own projets: [https://spectorcdn.babylonjs.com/spector.bundle.js](https://spectorcdn.babylonjs.com/spector.bundle.js)
@@ -118,7 +123,8 @@ Simply add the following tag in your html page header:
 <script type="text/javascript" src="spector.bundle.js"></script>
 ```
 
-## Basic Usage [Top](#table-of-content)
+## Basic Usage
+###### [Back to top](#table-of-content)
 Once available in your app, you can instantiate an inspector by inserting the following command in your script:
 
 ```javascript
@@ -144,7 +150,8 @@ var canvas = document.getElementById("renderCanvas");
 spector.captureCanvas(canvas);
 ```
 
-## Learn About WebGL [Top](#table-of-content)
+## Learn About WebGL
+###### [Back to top](#table-of-content)
 I would advise you to check out and start with the Awesome [BabylonJS](http://www.babylonjs.com/) the community there will be more than happy to welcome anybody willing to learn Web 3d.
 
 <p align="center">
