@@ -1,4 +1,4 @@
-SpectorJS 
+[SpectorJS](readme.md) 
 =========
 
 ## Summary

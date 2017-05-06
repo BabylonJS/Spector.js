@@ -1,7 +1,7 @@
-SpectorJS ChangeLog
-===================
+[SpectorJS](../readme.md)
+=========
 
-## Summary
+## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
 ## v0.0.11 Fix Release
