@@ -29,10 +29,11 @@
   "license": "MIT",
   "scripts": {
     "html": "node ./tools/devLiveReloadServer.js /../built/",
+    "watch:bootstrapcss": "node-sass -r -o built src",
     "watch:ts": "tsc -w -p ./src",
     "watch:css": "node-sass -r -w --source-map true -o built src",
     "watch": "run-p watch:ts watch:css -l",
-    "start": "npm-run-all build:css -p html watch:ts watch:css -l",
+    "start": "npm-run-all watch:bootstrapcss -p html watch:ts watch:css -l",
     "build:ts": "tsc -p ./src --outFile \"dist/spector.js\"",
     "build:css": "node-sass -r -o dist src",
     "build:tscss": "run-p build:ts build:css -l",
