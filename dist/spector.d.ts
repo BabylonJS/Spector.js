@@ -2046,11 +2046,11 @@ declare namespace SPECTOR.EmbeddedFrontend {
          * Returns the position of the first "{" and the corresponding "}"
          * @param str the Shader source code as a string
          */
-        private getBracket(str);
+        private _getBracket(str);
         /**
          * Beautify the given string : correct indentation according to brackets
          */
-        private beautify(glsl, level?);
+        private _beautify(glsl, level?);
         private initMenuComponent();
         private onCaptureRelatedAction(menuStatus);
         private displayCaptures();

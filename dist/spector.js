@@ -5547,7 +5547,7 @@ var SPECTOR;
                 });
                 this.jsonSourceItemComponent.onOpenSourceClicked.add(function (sourceEventArg) {
                     _this.mvx.removeChildrenStates(_this.contentStateId);
-                    var formattedShader = _this.beautify(sourceEventArg.state.value);
+                    var formattedShader = _this._beautify(sourceEventArg.state.value);
                     var jsonContentStateId = _this.mvx.addChildState(_this.contentStateId, {
                         description: "WebGl Shader Source Code:",
                         source: formattedShader,
@@ -5599,7 +5599,7 @@ var SPECTOR;
              * Returns the position of the first "{" and the corresponding "}"
              * @param str the Shader source code as a string
              */
-            ResultView.prototype.getBracket = function (str) {
+            ResultView.prototype._getBracket = function (str) {
                 var fb = str.indexOf("{");
                 var arr = str.substr(fb + 1).split("");
                 var counter = 1;
@@ -5624,10 +5624,11 @@ var SPECTOR;
             /**
              * Beautify the given string : correct indentation according to brackets
              */
-            ResultView.prototype.beautify = function (glsl, level) {
+            ResultView.prototype._beautify = function (glsl, level) {
                 if (level === void 0) { level = 0; }
                 // return condition : no brackets at all
-                var brackets = this.getBracket(glsl);
+                glsl = glsl.trim();
+                var brackets = this._getBracket(glsl);
                 var firstBracket = brackets.firstIteration;
                 var lastBracket = brackets.lastIteration;
                 var spaces = "";
@@ -5637,9 +5638,8 @@ var SPECTOR;
                 // If no brackets, return the indented string
                 if (firstBracket === -1) {
                     glsl = spaces + glsl; // indent first line
-                    glsl = glsl
-                        .replace(/;./g, function (x) { return "\n" + x.substr(1); }); // new line after ;  except the last one
-                    glsl = glsl.replace(/\s*(=)\s*/g, function (x) { return " " + x.trim() + " "; }); // space around =
+                    glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
+                    glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, function (x) { return " " + x.trim() + " "; }); // space around =, *=, +=, -=, /=, ==, >=, <=
                     glsl = glsl.replace(/\s*(,)\s*/g, function (x) { return x.trim() + " "; }); // space after ,
                     glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
                     return glsl;
@@ -5649,9 +5649,9 @@ var SPECTOR;
                     // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
                     var left = glsl.substr(0, firstBracket);
                     var right = glsl.substr(lastBracket + 1, glsl.length);
-                    var inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1);
-                    inside = this.beautify(inside, level + 1);
-                    return this.beautify(left, level) + "{" + inside + "\n" + spaces + "}" + this.beautify(right, level);
+                    var inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
+                    inside = this._beautify(inside, level + 1);
+                    return this._beautify(left, level) + "{\n" + inside + "\n" + spaces + "}\n" + this._beautify(right, level);
                 }
             };
             ResultView.prototype.initMenuComponent = function () {
