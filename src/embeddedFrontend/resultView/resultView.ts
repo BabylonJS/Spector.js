@@ -115,13 +115,76 @@ namespace SPECTOR.EmbeddedFrontend {
             });
             this.jsonSourceItemComponent.onOpenSourceClicked.add((sourceEventArg) => {
                 this.mvx.removeChildrenStates(this.contentStateId);
+                let formattedShader = this._beautify(sourceEventArg.state.value);
                 const jsonContentStateId = this.mvx.addChildState(this.contentStateId, {
                     description: "WebGl Shader Source Code:",
-                    source: sourceEventArg.state.value,
+                    source: formattedShader,
                 }, this.sourceCodeComponent);
             });
 
             this.updateViewState();
+        }
+
+        /**
+         * Returns the position of the first "{" and the corresponding "}"
+         * @param str the Shader source code as a string
+         */
+        private _getBracket(str: string): { firstIteration: number, lastIteration: number } {
+            let fb = str.indexOf('{');
+            let arr = str.substr(fb + 1).split('');
+            let counter = 1;
+            let currentPosInString = fb;
+            let lastBracketIndex = 0;
+            for (let char of arr) {
+                currentPosInString++;
+                if (char === '{') {
+                    counter++
+                }
+                if (char === '}') {
+                    counter--
+                }
+                if (counter == 0) {
+                    lastBracketIndex = currentPosInString;
+                    break;
+                }
+            }
+
+            return { firstIteration: fb, lastIteration: lastBracketIndex };
+        }
+
+        /**
+         * Beautify the given string : correct indentation according to brackets
+         */
+        private _beautify(glsl: string, level: number = 0): string {
+
+            // return condition : no brackets at all
+            let brackets = this._getBracket(glsl);
+            let firstBracket = brackets.firstIteration;
+            let lastBracket = brackets.lastIteration;
+
+            let spaces = "";
+            for (let i = 0; i < level; i++) {
+                spaces += "    "; // 4 spaces
+            }
+            // If no brackets, return the indented string
+            if (firstBracket == -1) {
+                glsl = spaces + glsl; // indent first line
+                glsl = glsl
+                    .replace(/;./g, x => '\n' + x.substr(1)) // new line after ;  except the last one
+                glsl = glsl.replace(/\s*(=)\s*/g, x => " " + x.trim() + " ") // space around =
+                glsl = glsl.replace(/\s*(,)\s*/g, x => x.trim() + " ") // space after ,
+                glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
+                return glsl;
+            } else {
+                // if brackets, beautify the inside
+                // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
+                let left = glsl.substr(0, firstBracket);
+                let right = glsl.substr(lastBracket + 1, glsl.length);
+                let inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1);
+                inside = this._beautify(inside, level + 1);
+                return this._beautify(left, level) + '{' + inside + '\n' + spaces + '}' + this._beautify(right, level);
+
+            }
         }
 
         public saveCapture(capture: ICapture): void {
