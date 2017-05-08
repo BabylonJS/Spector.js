@@ -55,11 +55,11 @@ var SPECTORTOOLS;
 
         Loader.prototype.dequeue = function () {
             if (queue.length == 0) {
-                if (callback) {                    
+                if (callback) {
                     callback();
                 }
                 console.log('Scripts loaded');
-                return;                
+                return;
             }
 
             var url = queue.shift();
@@ -133,7 +133,7 @@ var SPECTORTOOLS;
             return this;
         }
 
-        Loader.prototype.load = function (scriptPath) {
+        Loader.prototype.load = function (scriptPaths) {
             var self = this;
             self.config = {
                 "dist": {
@@ -156,8 +156,11 @@ var SPECTORTOOLS;
                     
                     self.loadSPECTORScripts();
 
-                    if (scriptPath) {
-                        self.loadScript(scriptPath);
+                    if (scriptPaths) {
+                        for (var i = 0; i < scriptPaths.length; i++) {
+                            var scriptPath = scriptPaths[i];
+                            self.loadScript(scriptPath);
+                        }
                     }
                     
                     self.dequeue();

@@ -1,65 +1,63 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
-	<title>Local Development</title>
-    
-	<script src="http://localhost:35729/livereload.js?snipver=1"></script>
-	
-	<script src="../tools/loader.js"></script>
-	
-	<script src="assets/js/sylvester.js"></script>
-	<script src="assets/js/glUtils.js"></script>
-	<script src="assets/js/babylon.js"></script>		
-	
-	<!--Add manually cause not in the bundle -->
-	<script src="../vendors/prism.js"></script>
-	<link href="../vendors/prism.css" rel="stylesheet" />
+    <title>Local Development</title>
 
-	<style>
-		html, body {
-			width: 100%;
-			height: 100%;
-			padding: 0;
-			margin: 0;
-			overflow: hidden;
-		}
+    <script src="http://localhost:35729/livereload.js?snipver=1"></script>
 
-		#renderCanvas {
-			width: 100%;
-			height: 100%;
-		}
-	</style>
+    <script src="../tools/loader.js"></script>
+
+    <script src="assets/js/sylvester.js"></script>
+    <script src="assets/js/glUtils.js"></script>
+    <script src="assets/js/babylon.js"></script>
+
+    <!--Add manually cause not in the bundle -->
+    <script src="../vendors/prism.js"></script>
+    <link href="../vendors/prism.css" rel="stylesheet" />
+
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
+
 <body>
-	<canvas id="renderCanvas"></canvas>
-	
-	<script>
-		// Allow querystring to navigate easily in debug in local samples.
-		var indexjs = 'js/';
-		var sampleSearch = /sample=([0-9-zA-z]+)/i;
-		var matches = null;
-		if ((matches = sampleSearch.exec(window.location)) !== null) {			
-			indexjs += matches[1];
-		}
-		else {
-			indexjs += 'lights'
-		}
-		indexjs += '.js';
+    <canvas id="renderCanvas"></canvas>
 
-		spector = null;
+    <script>
+        // Allow querystring to navigate easily in debug in local samples.
+        var indexjs = 'js/';
+        var sampleSearch = /sample=([0-9-zA-z]+)/i;
+        var matches = null;
+        if ((matches = sampleSearch.exec(window.location)) !== null) {
+            indexjs += matches[1];
+        }
+        else {
+            indexjs += 'lights'
+        }
+        indexjs += '.js';
 
-		// Load the scripts + map file to allow vscode debug.
-		SPECTORTOOLS.Loader
-			.onReady(function() {
-				// Create an inspector.
-				spector = new SPECTOR.Spector();
-				spector.displayUI();
-				// spector.onCapture.add(function(c) { console.log(c); });
-				// setTimeout(function() {
-				// 	spector.captureCanvas(document.getElementById('renderCanvas'));
-				// }, 1000);
-			})
-			.load(indexjs);
-	</script>
+        spector = null;
+
+        // Load the scripts + map file to allow vscode debug.
+        SPECTORTOOLS.Loader
+            .onReady(function () {
+                console.log('All loaded.');
+            })
+            .load(['js/injectSpector.js', indexjs]);
+    </script>
 </body>
+
 </html>

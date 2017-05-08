@@ -294,8 +294,29 @@ namespace SPECTOR.States {
                 }
             }
 
+            this.readTextureCustomDataFromTag(textureState, target);
+
             this.context.activeTexture(activeTexture);
             return textureState;
+        }
+
+        protected readTextureCustomDataFromTag(textureState: any, target: WebGlConstant): void {
+            // Add texture visual.
+            let customData: any;
+            if (target === WebGlConstants.TEXTURE_2D) {
+                const texture2D = this.context.getParameter(WebGlConstants.TEXTURE_BINDING_2D.value);
+                const tag = this.getTag(texture2D);
+                if (tag && tag.customData) {
+                    customData = tag.customData;
+                }
+            }
+            if (customData) {
+                for (const visualProperty in customData) {
+                    if (customData.hasOwnProperty(visualProperty)) {
+                        textureState[visualProperty] = customData[visualProperty];
+                    }
+                }
+            }
         }
 
         protected readUniformsFromContextIntoState(program: WebGLProgram, uniformIndices: number[], uniformsState: any[]) {
@@ -357,20 +378,19 @@ namespace SPECTOR.States {
         }
 
         private getWebGlConstant(value: number) {
-            return WebGlConstantsByValue[value].name;
+            const constant = WebGlConstantsByValue[value];
+            return constant ? constant.name : value;
         }
 
-        private getTag(object: any): any {
+        private getTag(object: any): WebGlObjectTag {
             if (!object) {
                 return undefined;
             }
 
-            const tag = WebGlObjects.getWebGlObjectTag(object);
-            if (!tag) {
+            const tag = WebGlObjects.getWebGlObjectTag(object) ||
                 this.options.tagWebGlObject(object);
-            }
 
-            return object;
+            return tag;
         }
     }
 }

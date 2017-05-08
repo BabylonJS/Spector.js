@@ -1115,10 +1115,6 @@ declare namespace SPECTOR.Commands {
     }
 }
 declare namespace SPECTOR {
-    type RecordId = {
-        readonly version: number;
-        readonly id: number;
-    };
     interface IRecorder {
         readonly objectName: string;
         registerCallbacks(onFunctionCallbacks: FunctionCallbacks): void;
@@ -1131,24 +1127,67 @@ declare namespace SPECTOR {
     };
 }
 declare namespace SPECTOR.Recorders {
-    abstract class BaseRecorder implements IRecorder {
-        protected options: IRecorderOptions;
+    abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
+        protected readonly options: IRecorderOptions;
+        protected readonly logger: ILogger;
         readonly objectName: string;
         protected readonly createCommandNames: string[];
         protected readonly updateCommandNames: string[];
         protected readonly deleteCommandNames: string[];
         constructor(options: IRecorderOptions, logger: ILogger);
         registerCallbacks(onFunctionCallbacks: FunctionCallbacks): void;
-        create(functionInformation: IFunctionInformation): RecordId;
-        update(functionInformation: IFunctionInformation): RecordId;
-        delete(functionInformation: IFunctionInformation): RecordId;
         protected abstract getCreateCommandNames(): string[];
         protected abstract getUpdateCommandNames(): string[];
         protected abstract getDeleteCommandNames(): string[];
-        protected abstract getBoundObject(target: number): object;
-        protected createWithoutSideEffects(functionInformation: IFunctionInformation): RecordId;
-        protected updateWithoutSideEffects(functionInformation: IFunctionInformation): RecordId;
-        protected deleteWithoutSideEffects(functionInformation: IFunctionInformation): RecordId;
+        protected abstract getBoundInstance(target: number): T;
+        protected abstract update(functionInformation: IFunctionInformation, instance: T): void;
+        protected create(functionInformation: IFunctionInformation): void;
+        protected delete(functionInformation: IFunctionInformation): void;
+        protected createWithoutSideEffects(functionInformation: IFunctionInformation): void;
+        protected updateWithoutSideEffects(functionInformation: IFunctionInformation): void;
+        protected deleteWithoutSideEffects(functionInformation: IFunctionInformation): void;
+        protected getWebGlConstant(value: number): string;
+    }
+}
+declare namespace SPECTOR {
+    interface ITextureRecorderData {
+        level: number;
+        internalFormat: number;
+        width: number;
+        height: number;
+        border?: number;
+        format: number;
+        type: number;
+        visual: any;
+    }
+}
+declare namespace SPECTOR.Recorders {
+    class TextureRecorder extends BaseRecorder<WebGLTexture> {
+        private readonly visualState;
+        constructor(options: IRecorderOptions, logger: ILogger);
+        protected getCreateCommandNames(): string[];
+        protected getUpdateCommandNames(): string[];
+        protected getDeleteCommandNames(): string[];
+        protected getBoundInstance(target: number): WebGLTexture;
+        protected update(functionInformation: IFunctionInformation, instance: WebGLTexture): void;
+    }
+}
+declare namespace SPECTOR.Recorders {
+    class TextureRecorderVisualState {
+        protected readonly logger: ILogger;
+        static captureBaseSize: number;
+        private readonly context;
+        private readonly workingCanvas;
+        private readonly captureCanvas;
+        private readonly workingContext2D;
+        private readonly captureContext2D;
+        constructor(options: IRecorderOptions, logger: ILogger);
+        getBase64Visual(info: ITextureRecorderData): string;
+        protected getBase64VisualFromImageData(info: ITextureRecorderData): string;
+        protected getBase64VisualFromArrayBufferView(info: ITextureRecorderData): string;
+        protected getBase64VisualFromCanvasImageSource(info: ITextureRecorderData): string;
+        protected getBase64RescaledImage(info: ITextureRecorderData): string;
+        private isArrayBufferView(value);
     }
 }
 declare namespace SPECTOR {
@@ -1489,6 +1528,7 @@ declare namespace SPECTOR.States {
         protected readAttributeFromContext(program: WebGLProgram, activeAttributeIndex: number): {};
         protected readUniformFromContext(program: WebGLProgram, activeUniformIndex: number): {};
         protected readTextureFromContext(textureUnit: number, target: WebGlConstant): {};
+        protected readTextureCustomDataFromTag(textureState: any, target: WebGlConstant): void;
         protected readUniformsFromContextIntoState(program: WebGLProgram, uniformIndices: number[], uniformsState: any[]): void;
         protected readTransformFeedbackFromContext(program: WebGLProgram, index: number): {};
         protected readUniformBlockFromContext(program: WebGLProgram, index: number): {};
@@ -1502,6 +1542,7 @@ declare namespace SPECTOR {
         readonly id: number;
         version: number;
         displayText?: string;
+        customData?: {};
     };
     interface IWebGlObject {
         readonly typeName: string;
@@ -1868,6 +1909,11 @@ declare namespace SPECTOR.EmbeddedFrontend {
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
+    class JSONItemImageComponent extends BaseComponent<IJSONItemState> {
+        render(state: IJSONItemState, stateId: number): Element;
+    }
+}
+declare namespace SPECTOR.EmbeddedFrontend {
     interface IJSONItemState {
         key: string;
         value: string;
@@ -1966,6 +2012,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private readonly jsonContentComponent;
         private readonly jsonGroupComponent;
         private readonly jsonItemComponent;
+        private readonly jsonItemImageComponent;
         private readonly jsonSourceItemComponent;
         private readonly jsonVisualStateItemComponent;
         private readonly resultViewMenuComponent;

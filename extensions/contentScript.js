@@ -107,6 +107,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
     // Defer exec to next slot to ensure proper loading of the lib.
     setTimeout(function () {
         var captureLib = `var spector = new SPECTOR.Spector();
+            spector.spyCanvases();
             document.addEventListener("SpectorRequestPauseEvent", function() {
                 spector.pause();
             });
