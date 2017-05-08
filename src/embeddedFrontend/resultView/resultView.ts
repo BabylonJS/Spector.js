@@ -116,6 +116,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.jsonSourceItemComponent.onOpenSourceClicked.add((sourceEventArg) => {
                 this.mvx.removeChildrenStates(this.contentStateId);
                 let formattedShader = this._beautify(sourceEventArg.state.value);
+                // let formattedShader = sourceEventArg.state.value;
                 const jsonContentStateId = this.mvx.addChildState(this.contentStateId, {
                     description: "WebGl Shader Source Code:",
                     source: formattedShader,
@@ -158,6 +159,7 @@ namespace SPECTOR.EmbeddedFrontend {
         private _beautify(glsl: string, level: number = 0): string {
 
             // return condition : no brackets at all
+            glsl = glsl.trim();
             let brackets = this._getBracket(glsl);
             let firstBracket = brackets.firstIteration;
             let lastBracket = brackets.lastIteration;
@@ -169,9 +171,8 @@ namespace SPECTOR.EmbeddedFrontend {
             // If no brackets, return the indented string
             if (firstBracket == -1) {
                 glsl = spaces + glsl; // indent first line
-                glsl = glsl
-                    .replace(/;./g, x => '\n' + x.substr(1)) // new line after ;  except the last one
-                glsl = glsl.replace(/\s*(=)\s*/g, x => " " + x.trim() + " ") // space around =
+                glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ';\n');
+                glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, x => " " + x.trim() + " ") // space around =, *=, +=, -=, /=, ==, >=, <=
                 glsl = glsl.replace(/\s*(,)\s*/g, x => x.trim() + " ") // space after ,
                 glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
                 return glsl;
@@ -180,9 +181,9 @@ namespace SPECTOR.EmbeddedFrontend {
                 // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
                 let left = glsl.substr(0, firstBracket);
                 let right = glsl.substr(lastBracket + 1, glsl.length);
-                let inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1);
+                let inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
                 inside = this._beautify(inside, level + 1);
-                return this._beautify(left, level) + '{' + inside + '\n' + spaces + '}' + this._beautify(right, level);
+                return this._beautify(left, level) + '{\n' + inside + '\n' + spaces + '}\n' + this._beautify(right, level);
 
             }
         }
