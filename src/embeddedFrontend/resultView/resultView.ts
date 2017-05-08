@@ -115,7 +115,7 @@ namespace SPECTOR.EmbeddedFrontend {
             });
             this.jsonSourceItemComponent.onOpenSourceClicked.add((sourceEventArg) => {
                 this.mvx.removeChildrenStates(this.contentStateId);
-                const formattedShader = this.beautify(sourceEventArg.state.value);
+                const formattedShader = this._beautify(sourceEventArg.state.value);
                 const jsonContentStateId = this.mvx.addChildState(this.contentStateId, {
                     description: "WebGl Shader Source Code:",
                     source: formattedShader,
@@ -124,7 +124,6 @@ namespace SPECTOR.EmbeddedFrontend {
 
             this.updateViewState();
         }
-
         public saveCapture(capture: ICapture): void {
             const a = document.createElement("a");
             const captureInString = JSON.stringify(capture, null, 4);
@@ -177,7 +176,7 @@ namespace SPECTOR.EmbeddedFrontend {
          * Returns the position of the first "{" and the corresponding "}"
          * @param str the Shader source code as a string
          */
-        private getBracket(str: string): { firstIteration: number, lastIteration: number } {
+        private _getBracket(str: string): { firstIteration: number, lastIteration: number } {
             const fb = str.indexOf("{");
             const arr = str.substr(fb + 1).split("");
             let counter = 1;
@@ -203,10 +202,11 @@ namespace SPECTOR.EmbeddedFrontend {
         /**
          * Beautify the given string : correct indentation according to brackets
          */
-        private beautify(glsl: string, level: number = 0): string {
+        private _beautify(glsl: string, level: number = 0): string {
 
             // return condition : no brackets at all
-            const brackets = this.getBracket(glsl);
+            glsl = glsl.trim();
+            const brackets = this._getBracket(glsl);
             const firstBracket = brackets.firstIteration;
             const lastBracket = brackets.lastIteration;
 
@@ -217,9 +217,8 @@ namespace SPECTOR.EmbeddedFrontend {
             // If no brackets, return the indented string
             if (firstBracket === -1) {
                 glsl = spaces + glsl; // indent first line
-                glsl = glsl
-                    .replace(/;./g, (x) => "\n" + x.substr(1)); // new line after ;  except the last one
-                glsl = glsl.replace(/\s*(=)\s*/g, (x) => " " + x.trim() + " "); // space around =
+                glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
+                glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, (x) => " " + x.trim() + " "); // space around =, *=, +=, -=, /=, ==, >=, <=
                 glsl = glsl.replace(/\s*(,)\s*/g, (x) => x.trim() + " "); // space after ,
                 glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
                 return glsl;
@@ -228,9 +227,9 @@ namespace SPECTOR.EmbeddedFrontend {
                 // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
                 const left = glsl.substr(0, firstBracket);
                 const right = glsl.substr(lastBracket + 1, glsl.length);
-                let inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1);
-                inside = this.beautify(inside, level + 1);
-                return this.beautify(left, level) + "{" + inside + "\n" + spaces + "}" + this.beautify(right, level);
+                let inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
+                inside = this._beautify(inside, level + 1);
+                return this._beautify(left, level) + "{\n" + inside + "\n" + spaces + "}\n" + this._beautify(right, level);
 
             }
         }
