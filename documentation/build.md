@@ -18,3 +18,6 @@ Then you can use the following npm commands to speed your development:
 If you are looking for the temporary generated .js or .map files, they are all available in the built folder which is not under source control.
 
 I would recommend developping on [VsCode](https://code.visualstudio.com/) as the entire setup is present so that if you install the chrome debugger extension you can directly debug from your typescript files by pressing F5.
+
+As Tslint is part of the build checks, please run it locally before any PR. The easiest is to install the TsLint plugin in VsCode.
+```npm run build:tslint```

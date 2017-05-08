@@ -1995,6 +1995,15 @@ declare namespace SPECTOR.EmbeddedFrontend {
         display(): void;
         hide(): void;
         addCapture(capture: ICapture): number;
+        /**
+         * Returns the position of the first "{" and the corresponding "}"
+         * @param str the Shader source code as a string
+         */
+        private _getBracket(str);
+        /**
+         * Beautify the given string : correct indentation according to brackets
+         */
+        private _beautify(glsl, level?);
         private initMenuComponent();
         private onCaptureRelatedAction(menuStatus);
         private displayCaptures();
