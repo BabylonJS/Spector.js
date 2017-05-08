@@ -172,26 +172,25 @@ namespace SPECTOR.EmbeddedFrontend {
             return captureSateId;
         }
 
-
         /**
          * Returns the position of the first "{" and the corresponding "}"
          * @param str the Shader source code as a string
          */
         private _getBracket(str: string): { firstIteration: number, lastIteration: number } {
-            let fb = str.indexOf('{');
-            let arr = str.substr(fb + 1).split('');
+            const fb = str.indexOf("{");
+            const arr = str.substr(fb + 1).split("");
             let counter = 1;
             let currentPosInString = fb;
             let lastBracketIndex = 0;
-            for (let char of arr) {
+            for (const char of arr) {
                 currentPosInString++;
-                if (char === '{') {
-                    counter++
+                if (char === "{") {
+                    counter++;
                 }
-                if (char === '}') {
-                    counter--
+                if (char === "}") {
+                    counter--;
                 }
-                if (counter == 0) {
+                if (counter === 0) {
                     lastBracketIndex = currentPosInString;
                     break;
                 }
@@ -207,30 +206,30 @@ namespace SPECTOR.EmbeddedFrontend {
 
             // return condition : no brackets at all
             glsl = glsl.trim();
-            let brackets = this._getBracket(glsl);
-            let firstBracket = brackets.firstIteration;
-            let lastBracket = brackets.lastIteration;
+            const brackets = this._getBracket(glsl);
+            const firstBracket = brackets.firstIteration;
+            const lastBracket = brackets.lastIteration;
 
             let spaces = "";
             for (let i = 0; i < level; i++) {
                 spaces += "    "; // 4 spaces
             }
             // If no brackets, return the indented string
-            if (firstBracket == -1) {
+            if (firstBracket === -1) {
                 glsl = spaces + glsl; // indent first line
-                glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ';\n');
-                glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, x => " " + x.trim() + " ") // space around =, *=, +=, -=, /=, ==, >=, <=
-                glsl = glsl.replace(/\s*(,)\s*/g, x => x.trim() + " ") // space after ,
+                glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
+                glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, (x) => " " + x.trim() + " "); // space around =, *=, +=, -=, /=, ==, >=, <=
+                glsl = glsl.replace(/\s*(,)\s*/g, (x) => x.trim() + " "); // space after ,
                 glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
                 return glsl;
             } else {
                 // if brackets, beautify the inside
                 // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
-                let left = glsl.substr(0, firstBracket);
-                let right = glsl.substr(lastBracket + 1, glsl.length);
+                const left = glsl.substr(0, firstBracket);
+                const right = glsl.substr(lastBracket + 1, glsl.length);
                 let inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
                 inside = this._beautify(inside, level + 1);
-                return this._beautify(left, level) + '{\n' + inside + '\n' + spaces + '}\n' + this._beautify(right, level);
+                return this._beautify(left, level) + "{\n" + inside + "\n" + spaces + "}\n" + this._beautify(right, level);
 
             }
         }
