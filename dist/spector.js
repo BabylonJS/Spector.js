@@ -218,6 +218,7 @@ var SPECTOR;
 // tslint:disable:max-file-line-count
 // tslint:disable:interface-name
 // tslint:disable:max-line-length
+// tslint:disable:variable-name
 // Generated file disable rules.
 var SPECTOR;
 (function (SPECTOR) {
@@ -4220,7 +4221,7 @@ var SPECTOR;
                     this.removeNode();
                     return null;
                 }
-                var currentChildrenContainer = this.__cachedCurrentChildrenContainer;
+                var currentChildrenContainer = this.cachedCurrentChildrenContainer;
                 if (lastOperation === 0 /* Processed */) {
                     return currentChildrenContainer;
                 }
@@ -4238,15 +4239,15 @@ var SPECTOR;
                         newChildrenContainer.appendChild(children[0]);
                     }
                 }
-                this.__cachedCurrentChildrenContainer = newChildrenContainer;
+                this.cachedCurrentChildrenContainer = newChildrenContainer;
                 if (indexInContainer >= parentContainer.children.length) {
                     parentContainer.appendChild(element);
-                    if (this.__cachedCurrentDomNode && lastOperation === 40 /* Update */) {
-                        if (this.__cachedCurrentDomNode.remove) {
-                            this.__cachedCurrentDomNode.remove();
+                    if (this.cachedCurrentDomNode && lastOperation === 40 /* Update */) {
+                        if (this.cachedCurrentDomNode.remove) {
+                            this.cachedCurrentDomNode.remove();
                         }
-                        else if (this.__cachedCurrentDomNode.parentNode) {
-                            this.__cachedCurrentDomNode.parentNode.removeChild(this.__cachedCurrentDomNode);
+                        else if (this.cachedCurrentDomNode.parentNode) {
+                            this.cachedCurrentDomNode.parentNode.removeChild(this.cachedCurrentDomNode);
                         }
                     }
                 }
@@ -4257,7 +4258,7 @@ var SPECTOR;
                         parentContainer.removeChild(currentElement);
                     }
                 }
-                this.__cachedCurrentDomNode = this.domNode;
+                this.cachedCurrentDomNode = this.domNode;
                 return newChildrenContainer;
             };
             ComponentInstance.prototype.removeNode = function () {
@@ -4269,12 +4270,12 @@ var SPECTOR;
                         this.domNode.parentNode.removeChild(this.domNode);
                     }
                 }
-                if (this.__cachedCurrentDomNode && this.__cachedCurrentDomNode.parentElement) {
-                    if (this.__cachedCurrentDomNode.remove) {
-                        this.__cachedCurrentDomNode.remove();
+                if (this.cachedCurrentDomNode && this.cachedCurrentDomNode.parentElement) {
+                    if (this.cachedCurrentDomNode.remove) {
+                        this.cachedCurrentDomNode.remove();
                     }
-                    else if (this.__cachedCurrentDomNode.parentNode) {
-                        this.__cachedCurrentDomNode.parentNode.removeChild(this.__cachedCurrentDomNode);
+                    else if (this.cachedCurrentDomNode.parentNode) {
+                        this.cachedCurrentDomNode.parentNode.removeChild(this.cachedCurrentDomNode);
                     }
                 }
             };
@@ -5330,7 +5331,7 @@ var SPECTOR;
                 });
                 this.jsonSourceItemComponent.onOpenSourceClicked.add(function (sourceEventArg) {
                     _this.mvx.removeChildrenStates(_this.contentStateId);
-                    var formattedShader = _this._beautify(sourceEventArg.state.value);
+                    var formattedShader = _this.beautify(sourceEventArg.state.value);
                     var jsonContentStateId = _this.mvx.addChildState(_this.contentStateId, {
                         description: "WebGl Shader Source Code:",
                         source: formattedShader,
@@ -5382,7 +5383,7 @@ var SPECTOR;
              * Returns the position of the first "{" and the corresponding "}"
              * @param str the Shader source code as a string
              */
-            ResultView.prototype._getBracket = function (str) {
+            ResultView.prototype.getBracket = function (str) {
                 var fb = str.indexOf("{");
                 var arr = str.substr(fb + 1).split("");
                 var counter = 1;
@@ -5407,10 +5408,10 @@ var SPECTOR;
             /**
              * Beautify the given string : correct indentation according to brackets
              */
-            ResultView.prototype._beautify = function (glsl, level) {
+            ResultView.prototype.beautify = function (glsl, level) {
                 if (level === void 0) { level = 0; }
                 // return condition : no brackets at all
-                var brackets = this._getBracket(glsl);
+                var brackets = this.getBracket(glsl);
                 var firstBracket = brackets.firstIteration;
                 var lastBracket = brackets.lastIteration;
                 var spaces = "";
@@ -5433,8 +5434,8 @@ var SPECTOR;
                     var left = glsl.substr(0, firstBracket);
                     var right = glsl.substr(lastBracket + 1, glsl.length);
                     var inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1);
-                    inside = this._beautify(inside, level + 1);
-                    return this._beautify(left, level) + "{" + inside + "\n" + spaces + "}" + this._beautify(right, level);
+                    inside = this.beautify(inside, level + 1);
+                    return this.beautify(left, level) + "{" + inside + "\n" + spaces + "}" + this.beautify(right, level);
                 }
             };
             ResultView.prototype.initMenuComponent = function () {

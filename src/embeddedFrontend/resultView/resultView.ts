@@ -115,7 +115,7 @@ namespace SPECTOR.EmbeddedFrontend {
             });
             this.jsonSourceItemComponent.onOpenSourceClicked.add((sourceEventArg) => {
                 this.mvx.removeChildrenStates(this.contentStateId);
-                const formattedShader = this._beautify(sourceEventArg.state.value);
+                const formattedShader = this.beautify(sourceEventArg.state.value);
                 const jsonContentStateId = this.mvx.addChildState(this.contentStateId, {
                     description: "WebGl Shader Source Code:",
                     source: formattedShader,
@@ -177,7 +177,7 @@ namespace SPECTOR.EmbeddedFrontend {
          * Returns the position of the first "{" and the corresponding "}"
          * @param str the Shader source code as a string
          */
-        private _getBracket(str: string): { firstIteration: number, lastIteration: number } {
+        private getBracket(str: string): { firstIteration: number, lastIteration: number } {
             const fb = str.indexOf("{");
             const arr = str.substr(fb + 1).split("");
             let counter = 1;
@@ -203,10 +203,10 @@ namespace SPECTOR.EmbeddedFrontend {
         /**
          * Beautify the given string : correct indentation according to brackets
          */
-        private _beautify(glsl: string, level: number = 0): string {
+        private beautify(glsl: string, level: number = 0): string {
 
             // return condition : no brackets at all
-            const brackets = this._getBracket(glsl);
+            const brackets = this.getBracket(glsl);
             const firstBracket = brackets.firstIteration;
             const lastBracket = brackets.lastIteration;
 
@@ -229,8 +229,8 @@ namespace SPECTOR.EmbeddedFrontend {
                 const left = glsl.substr(0, firstBracket);
                 const right = glsl.substr(lastBracket + 1, glsl.length);
                 let inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1);
-                inside = this._beautify(inside, level + 1);
-                return this._beautify(left, level) + "{" + inside + "\n" + spaces + "}" + this._beautify(right, level);
+                inside = this.beautify(inside, level + 1);
+                return this.beautify(left, level) + "{" + inside + "\n" + spaces + "}" + this.beautify(right, level);
 
             }
         }

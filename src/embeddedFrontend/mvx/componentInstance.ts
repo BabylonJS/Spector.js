@@ -4,8 +4,8 @@ namespace SPECTOR.EmbeddedFrontend {
 
         private readonly component: BaseNoneGenericComponent;
 
-        private __cachedCurrentChildrenContainer: Element;
-        private __cachedCurrentDomNode: Element;
+        private cachedCurrentChildrenContainer: Element;
+        private cachedCurrentDomNode: Element;
 
         private domNode: Element;
 
@@ -30,7 +30,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 return null;
             }
 
-            const currentChildrenContainer = this.__cachedCurrentChildrenContainer;
+            const currentChildrenContainer = this.cachedCurrentChildrenContainer;
             if (lastOperation === LastOperation.Processed) {
                 return currentChildrenContainer;
             }
@@ -50,16 +50,16 @@ namespace SPECTOR.EmbeddedFrontend {
                     newChildrenContainer.appendChild(children[0]);
                 }
             }
-            this.__cachedCurrentChildrenContainer = newChildrenContainer;
+            this.cachedCurrentChildrenContainer = newChildrenContainer;
 
             if (indexInContainer >= parentContainer.children.length) {
                 parentContainer.appendChild(element);
-                if (this.__cachedCurrentDomNode && lastOperation === LastOperation.Update) {
-                    if (this.__cachedCurrentDomNode.remove) {
-                        this.__cachedCurrentDomNode.remove();
+                if (this.cachedCurrentDomNode && lastOperation === LastOperation.Update) {
+                    if (this.cachedCurrentDomNode.remove) {
+                        this.cachedCurrentDomNode.remove();
                     }
-                    else if (this.__cachedCurrentDomNode.parentNode) {
-                        this.__cachedCurrentDomNode.parentNode.removeChild(this.__cachedCurrentDomNode);
+                    else if (this.cachedCurrentDomNode.parentNode) {
+                        this.cachedCurrentDomNode.parentNode.removeChild(this.cachedCurrentDomNode);
                     }
                 }
             }
@@ -71,7 +71,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 }
             }
 
-            this.__cachedCurrentDomNode = this.domNode;
+            this.cachedCurrentDomNode = this.domNode;
             return newChildrenContainer;
         }
 
@@ -84,12 +84,12 @@ namespace SPECTOR.EmbeddedFrontend {
                     this.domNode.parentNode.removeChild(this.domNode);
                 }
             }
-            if (this.__cachedCurrentDomNode && this.__cachedCurrentDomNode.parentElement) {
-                if (this.__cachedCurrentDomNode.remove) {
-                    this.__cachedCurrentDomNode.remove();
+            if (this.cachedCurrentDomNode && this.cachedCurrentDomNode.parentElement) {
+                if (this.cachedCurrentDomNode.remove) {
+                    this.cachedCurrentDomNode.remove();
                 }
-                else if (this.__cachedCurrentDomNode.parentNode) {
-                    this.__cachedCurrentDomNode.parentNode.removeChild(this.__cachedCurrentDomNode);
+                else if (this.cachedCurrentDomNode.parentNode) {
+                    this.cachedCurrentDomNode.parentNode.removeChild(this.cachedCurrentDomNode);
                 }
             }
         }

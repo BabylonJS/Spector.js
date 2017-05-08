@@ -1636,8 +1636,8 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private readonly logger;
         private static idGenerator;
         private readonly component;
-        private __cachedCurrentChildrenContainer;
-        private __cachedCurrentDomNode;
+        private cachedCurrentChildrenContainer;
+        private cachedCurrentDomNode;
         private domNode;
         constructor(component: BaseNoneGenericComponent, logger: ILogger);
         render(state: {}, stateId: number, lastOperation: LastOperation): void;
@@ -1999,11 +1999,11 @@ declare namespace SPECTOR.EmbeddedFrontend {
          * Returns the position of the first "{" and the corresponding "}"
          * @param str the Shader source code as a string
          */
-        private _getBracket(str);
+        private getBracket(str);
         /**
          * Beautify the given string : correct indentation according to brackets
          */
-        private _beautify(glsl, level?);
+        private beautify(glsl, level?);
         private initMenuComponent();
         private onCaptureRelatedAction(menuStatus);
         private displayCaptures();
