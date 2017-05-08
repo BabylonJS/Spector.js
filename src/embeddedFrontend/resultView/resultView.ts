@@ -33,6 +33,7 @@ namespace SPECTOR.EmbeddedFrontend {
         private readonly jsonContentComponent: JSONContentComponent;
         private readonly jsonGroupComponent: JSONGroupComponent;
         private readonly jsonItemComponent: JSONItemComponent;
+        private readonly jsonItemImageComponent: JSONItemImageComponent;
         private readonly jsonSourceItemComponent: JSONSourceItemComponent;
         private readonly jsonVisualStateItemComponent: JSONVisualStateItemComponent;
         private readonly resultViewMenuComponent: ResultViewMenuComponent;
@@ -85,6 +86,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.jsonContentComponent = new JSONContentComponent(options.eventConstructor, logger);
             this.jsonGroupComponent = new JSONGroupComponent(options.eventConstructor, logger);
             this.jsonItemComponent = new JSONItemComponent(options.eventConstructor, logger);
+            this.jsonItemImageComponent = new JSONItemImageComponent(options.eventConstructor, logger);
             this.jsonSourceItemComponent = new JSONSourceItemComponent(options.eventConstructor, logger);
             this.jsonVisualStateItemComponent = new JSONVisualStateItemComponent(options.eventConstructor, logger);
             this.resultViewMenuComponent = new ResultViewMenuComponent(options.eventConstructor, logger);
@@ -355,10 +357,11 @@ namespace SPECTOR.EmbeddedFrontend {
                     else if (this.toFilter(key) && this.toFilter(value)) {
                         continue;
                     }
+
                     this.mvx.addChildState(parentGroupId, {
                         key,
                         value: result,
-                    }, this.jsonItemComponent);
+                    }, key === "visual" ? this.jsonItemImageComponent : this.jsonItemComponent);
                 }
             }
         }

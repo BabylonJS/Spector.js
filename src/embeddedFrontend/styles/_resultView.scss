@@ -99,7 +99,7 @@ $menuHeight: $menuBaseHeight * 2;
     }
 
     &.clearSearch {
-      display: inline;
+      display: inline-block;
       padding: 0px; 
       margin-left: -30px;
       margin-right: 20px;
@@ -497,6 +497,11 @@ $commandDetailComponentWidth: 40%;
 
 .jsonItemComponentValue {
   white-space: pre-wrap;
+}
+
+.jsonItemImage {
+  width: 100%;
+  max-width: 256;
 }
 
 [commandName=onOpenSourceClicked] {

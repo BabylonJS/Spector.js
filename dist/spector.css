@@ -76,7 +76,7 @@
         -webkit-transition: color 0;
         -moz-transition: color 0; }
     .resultViewMenuComponent a.clearSearch {
-      display: inline;
+      display: inline-block;
       padding: 0px;
       margin-left: -30px;
       margin-right: 20px;
@@ -368,6 +368,10 @@
 
 .jsonItemComponentValue {
   white-space: pre-wrap; }
+
+.jsonItemImage {
+  width: 100%;
+  max-width: 256; }
 
 [commandName=onOpenSourceClicked]:hover {
   color: #f9f9f9;

@@ -1828,6 +1828,7 @@ var SPECTOR;
         var BaseRecorder = (function () {
             function BaseRecorder(options, logger) {
                 this.options = options;
+                this.logger = logger;
                 this.createCommandNames = this.getCreateCommandNames();
                 this.updateCommandNames = this.getUpdateCommandNames();
                 this.deleteCommandNames = this.getDeleteCommandNames();
@@ -1837,23 +1838,20 @@ var SPECTOR;
                 for (var _i = 0, _a = this.createCommandNames; _i < _a.length; _i++) {
                     var command = _a[_i];
                     onFunctionCallbacks[command] = onFunctionCallbacks[command] || [];
-                    onFunctionCallbacks[command].push(this.create.bind(this));
+                    onFunctionCallbacks[command].push(this.createWithoutSideEffects.bind(this));
                 }
                 for (var _b = 0, _c = this.updateCommandNames; _b < _c.length; _b++) {
                     var command = _c[_b];
                     onFunctionCallbacks[command] = onFunctionCallbacks[command] || [];
-                    onFunctionCallbacks[command].push(this.update.bind(this));
+                    onFunctionCallbacks[command].push(this.updateWithoutSideEffects.bind(this));
                 }
                 for (var _d = 0, _e = this.deleteCommandNames; _d < _e.length; _d++) {
                     var command = _e[_d];
                     onFunctionCallbacks[command] = onFunctionCallbacks[command] || [];
-                    onFunctionCallbacks[command].push(this.delete.bind(this));
+                    onFunctionCallbacks[command].push(this.deleteWithoutSideEffects.bind(this));
                 }
             };
             BaseRecorder.prototype.create = function (functionInformation) {
-                return undefined;
-            };
-            BaseRecorder.prototype.update = function (functionInformation) {
                 return undefined;
             };
             BaseRecorder.prototype.delete = function (functionInformation) {
@@ -1861,69 +1859,249 @@ var SPECTOR;
             };
             BaseRecorder.prototype.createWithoutSideEffects = function (functionInformation) {
                 this.options.toggleCapture(false);
-                var result = this.create(functionInformation);
+                this.create(functionInformation);
                 this.options.toggleCapture(true);
-                return result;
             };
             BaseRecorder.prototype.updateWithoutSideEffects = function (functionInformation) {
+                if (!functionInformation || functionInformation.arguments.length === 0) {
+                    return;
+                }
                 this.options.toggleCapture(false);
-                var result = this.update(functionInformation);
+                var instance = this.getBoundInstance(functionInformation.arguments[0]);
+                this.update(functionInformation, instance);
                 this.options.toggleCapture(true);
-                return result;
             };
             BaseRecorder.prototype.deleteWithoutSideEffects = function (functionInformation) {
                 this.options.toggleCapture(false);
-                var result = this.delete(functionInformation);
+                this.delete(functionInformation);
                 this.options.toggleCapture(true);
-                return result;
+            };
+            BaseRecorder.prototype.getWebGlConstant = function (value) {
+                var constant = SPECTOR.WebGlConstantsByValue[value];
+                return constant ? constant.name : value + "";
             };
             return BaseRecorder;
         }());
         Recorders.BaseRecorder = BaseRecorder;
     })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
 })(SPECTOR || (SPECTOR = {}));
-// namespace SPECTOR.Recorders {
-//     namespace SPECTOR.Recorders {
-//         @Decorators.recorder("Texture")
-//         export class TextureRecorder extends BaseRecorder {
-//             private currentTarget: number = null;
-//             public create(functionInformation: IFunctionInformation): RecordId {
-//                 return undefined;
-//             }
-//             public update(functionInformation: IFunctionInformation): RecordId {
-//                 return undefined;
-//             }
-//             public delete(functionInformation: IFunctionInformation): RecordId {
-//                 return undefined;
-//             }
-//             protected getCreateCommandNames(): string[] {
-//                 return ["createTexture"];
-//             }
-//             protected getBindCommandNames(): string[] {
-//                 return ["bindTexture"];
-//             }
-//             protected getUpdateCommandNames(): string[] {
-//                 return ["texImage2D"];
-//             }
-//             protected getDeleteCommandNames(): string[] {
-//                 return ["deleteTexture"];
-//             }
-//             protected create(functionInformation: IFunctionInformation): object {
-//                 return undefined;
-//             }
-//             protected update(functionInformation: IFunctionInformation): object {
-//                 getParameter(finctionInformation.argiuments[0] ? "2d" : "cube")...
-//                 this.currentTexture.tag.version++;
-//                 this.records[tag] = data;
-//                 ... ioter clientInformation.
-//                 // add memory.
-//             }
-//             protected delete(functionInformation: IFunctionInformation): object {
-//                 delete this.records[tag];
-//                 //remove memory/
-//             }
-//         }
-//     }
+var SPECTOR;
+(function (SPECTOR) {
+    var Recorders;
+    (function (Recorders) {
+        var TextureRecorder = (function (_super) {
+            __extends(TextureRecorder, _super);
+            function TextureRecorder(options, logger) {
+                var _this = _super.call(this, options, logger) || this;
+                _this.visualState = new Recorders.TextureRecorderVisualState(options, logger);
+                return _this;
+            }
+            TextureRecorder.prototype.getCreateCommandNames = function () {
+                return ["createTexture"];
+            };
+            TextureRecorder.prototype.getUpdateCommandNames = function () {
+                return ["texImage2D"];
+            };
+            TextureRecorder.prototype.getDeleteCommandNames = function () {
+                return ["deleteTexture"];
+            };
+            TextureRecorder.prototype.getBoundInstance = function (target) {
+                var gl = this.options.context;
+                if (target === SPECTOR.WebGlConstants.TEXTURE_2D.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.TEXTURE_BINDING_2D.value);
+                }
+                else if (target === SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_X.value ||
+                    target === SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Y.value ||
+                    target === SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Z.value ||
+                    target === SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_X.value ||
+                    target === SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Y.value ||
+                    target === SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Z.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.TEXTURE_BINDING_CUBE_MAP.value);
+                }
+                else if (target === SPECTOR.WebGlConstants.TEXTURE_2D_ARRAY.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.TEXTURE_BINDING_2D_ARRAY.value);
+                }
+                else if (target === SPECTOR.WebGlConstants.TEXTURE_3D.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.TEXTURE_BINDING_3D.value);
+                }
+                return undefined;
+            };
+            TextureRecorder.prototype.update = function (functionInformation, instance) {
+                if (!instance) {
+                    return;
+                }
+                var tag = SPECTOR.WebGlObjects.getWebGlObjectTag(instance);
+                if (!tag) {
+                    return;
+                }
+                var customData = null;
+                if (functionInformation.name === "texImage2D") {
+                    if (functionInformation.arguments.length >= 9) {
+                        var data = functionInformation.arguments[8];
+                        if (!data || !data.width) {
+                            // Discard wegl2 offests... so far.
+                            return;
+                        }
+                        if (functionInformation.arguments[1] !== 0) {
+                            // Only manage main lod... so far.
+                            return;
+                        }
+                        // Custom data required to display the texture.
+                        customData = {
+                            level: functionInformation.arguments[1],
+                            internalFormat: functionInformation.arguments[2],
+                            width: functionInformation.arguments[3],
+                            height: functionInformation.arguments[4],
+                            border: functionInformation.arguments[5],
+                            format: functionInformation.arguments[6],
+                            type: functionInformation.arguments[7],
+                            visual: functionInformation.arguments[8],
+                        };
+                    }
+                    else if (functionInformation.arguments.length === 6) {
+                        var data = functionInformation.arguments[5];
+                        if (!data || !data.width) {
+                            // Discard wegl2 offests... so far.
+                            return;
+                        }
+                        if (functionInformation.arguments[1] !== 0) {
+                            // Only manage main lod... so far.
+                            return;
+                        }
+                        // Custom data required to display the texture.
+                        customData = {
+                            level: functionInformation.arguments[1],
+                            internalFormat: functionInformation.arguments[2],
+                            width: functionInformation.arguments[5].width,
+                            height: functionInformation.arguments[5].height,
+                            format: functionInformation.arguments[3],
+                            type: functionInformation.arguments[4],
+                            visual: functionInformation.arguments[5],
+                        };
+                    }
+                    // else NO DATA.
+                }
+                if (customData) {
+                    tag.customData = {
+                        visual: this.visualState.getBase64Visual(customData),
+                        level: customData.level,
+                        width: customData.width,
+                        height: customData.height,
+                        internalFormat: this.getWebGlConstant(customData.internalFormat),
+                        format: this.getWebGlConstant(customData.format),
+                        type: this.getWebGlConstant(customData.type),
+                    };
+                }
+            };
+            return TextureRecorder;
+        }(Recorders.BaseRecorder));
+        TextureRecorder = __decorate([
+            SPECTOR.Decorators.recorder("WebGLTexture")
+        ], TextureRecorder);
+        Recorders.TextureRecorder = TextureRecorder;
+    })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Recorders;
+    (function (Recorders) {
+        var TextureRecorderVisualState = (function () {
+            function TextureRecorderVisualState(options, logger) {
+                this.logger = logger;
+                this.context = options.context;
+                this.workingCanvas = document.createElement("canvas");
+                this.workingContext2D = this.workingCanvas.getContext("2d");
+                this.captureCanvas = document.createElement("canvas");
+                this.captureContext2D = this.captureCanvas.getContext("2d");
+                this.captureContext2D.imageSmoothingEnabled = true;
+                this.captureContext2D.mozImageSmoothingEnabled = true;
+                this.captureContext2D.oImageSmoothingEnabled = true;
+                this.captureContext2D.webkitImageSmoothingEnabled = true;
+                this.captureContext2D.msImageSmoothingEnabled = true;
+            }
+            TextureRecorderVisualState.prototype.getBase64Visual = function (info) {
+                try {
+                    var textureData = info.visual;
+                    if (!textureData) {
+                        return undefined;
+                    }
+                    // Deals with ImageData.
+                    if (textureData.data) {
+                        return this.getBase64VisualFromImageData(info);
+                    }
+                    // Deals with ABV.
+                    if (this.isArrayBufferView(textureData)) {
+                        return this.getBase64VisualFromArrayBufferView(info);
+                    }
+                    // Deals with HtmlCanvasSource.
+                    if (textureData.width && textureData.height) {
+                        return this.getBase64VisualFromCanvasImageSource(info);
+                    }
+                }
+                catch (e) {
+                    // Do nothing, probably an incompatible format, should add combinaison check upfront.
+                }
+                return undefined;
+            };
+            TextureRecorderVisualState.prototype.getBase64VisualFromImageData = function (info) {
+                this.workingCanvas.width = info.width;
+                this.workingCanvas.height = info.height;
+                this.workingContext2D.putImageData(info.visual, 0, 0);
+                return this.getBase64RescaledImage(info);
+            };
+            TextureRecorderVisualState.prototype.getBase64VisualFromArrayBufferView = function (info) {
+                this.workingCanvas.width = info.width;
+                this.workingCanvas.height = info.height;
+                var imageData = this.workingContext2D.createImageData(info.width, info.width);
+                imageData.data.set(info.visual);
+                this.workingContext2D.putImageData(imageData, 0, 0);
+                return this.getBase64RescaledImage(info);
+            };
+            TextureRecorderVisualState.prototype.getBase64VisualFromCanvasImageSource = function (info) {
+                this.workingCanvas.width = info.width;
+                this.workingCanvas.height = info.height;
+                this.workingContext2D.drawImage(info.visual, 0, 0, info.width, info.height, 0, 0, info.width, info.height);
+                return this.getBase64RescaledImage(info);
+            };
+            TextureRecorderVisualState.prototype.getBase64RescaledImage = function (info) {
+                var x = 0;
+                var y = 0;
+                var width = info.width;
+                var height = info.height;
+                // Copy the pixels to a resized capture 2D canvas.
+                var imageAspectRatio = width / height;
+                if (imageAspectRatio < 1) {
+                    this.captureCanvas.width = TextureRecorderVisualState.captureBaseSize * imageAspectRatio;
+                    this.captureCanvas.height = TextureRecorderVisualState.captureBaseSize;
+                }
+                else if (imageAspectRatio > 1) {
+                    this.captureCanvas.width = TextureRecorderVisualState.captureBaseSize;
+                    this.captureCanvas.height = TextureRecorderVisualState.captureBaseSize / imageAspectRatio;
+                }
+                else {
+                    this.captureCanvas.width = TextureRecorderVisualState.captureBaseSize;
+                    this.captureCanvas.height = TextureRecorderVisualState.captureBaseSize;
+                }
+                // Scale and draw to flip Y to reorient readPixels.
+                this.captureContext2D.globalCompositeOperation = "copy";
+                // Do not flip for textures.
+                // this.captureContext2D.scale(1, -1); // Y flip
+                // this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
+                this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
+                this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
+                this.captureContext2D.globalCompositeOperation = "source-over";
+                // get the screen capture
+                return this.captureCanvas.toDataURL();
+            };
+            TextureRecorderVisualState.prototype.isArrayBufferView = function (value) {
+                return value && value.buffer instanceof ArrayBuffer && value.byteLength !== undefined;
+            };
+            return TextureRecorderVisualState;
+        }());
+        TextureRecorderVisualState.captureBaseSize = 256;
+        Recorders.TextureRecorderVisualState = TextureRecorderVisualState;
+    })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
+})(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
 (function (SPECTOR) {
     var Spies;
@@ -3555,8 +3733,27 @@ var SPECTOR;
                         textureState.wrapR = this.getWebGlConstant(this.context.getTexParameter(target.value, SPECTOR.WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value));
                     }
                 }
+                this.readTextureCustomDataFromTag(textureState, target);
                 this.context.activeTexture(activeTexture);
                 return textureState;
+            };
+            DrawCallState.prototype.readTextureCustomDataFromTag = function (textureState, target) {
+                // Add texture visual.
+                var customData;
+                if (target === SPECTOR.WebGlConstants.TEXTURE_2D) {
+                    var texture2D = this.context.getParameter(SPECTOR.WebGlConstants.TEXTURE_BINDING_2D.value);
+                    var tag = this.getTag(texture2D);
+                    if (tag && tag.customData) {
+                        customData = tag.customData;
+                    }
+                }
+                if (customData) {
+                    for (var visualProperty in customData) {
+                        if (customData.hasOwnProperty(visualProperty)) {
+                            textureState[visualProperty] = customData[visualProperty];
+                        }
+                    }
+                }
             };
             DrawCallState.prototype.readUniformsFromContextIntoState = function (program, uniformIndices, uniformsState) {
                 var context2 = this.context;
@@ -3609,17 +3806,16 @@ var SPECTOR;
                 };
             };
             DrawCallState.prototype.getWebGlConstant = function (value) {
-                return SPECTOR.WebGlConstantsByValue[value].name;
+                var constant = SPECTOR.WebGlConstantsByValue[value];
+                return constant ? constant.name : value;
             };
             DrawCallState.prototype.getTag = function (object) {
                 if (!object) {
                     return undefined;
                 }
-                var tag = SPECTOR.WebGlObjects.getWebGlObjectTag(object);
-                if (!tag) {
+                var tag = SPECTOR.WebGlObjects.getWebGlObjectTag(object) ||
                     this.options.tagWebGlObject(object);
-                }
-                return object;
+                return tag;
             };
             return DrawCallState;
         }(States.BaseState));
@@ -5087,6 +5283,25 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
+        var JSONItemImageComponent = (function (_super) {
+            __extends(JSONItemImageComponent, _super);
+            function JSONItemImageComponent() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            JSONItemImageComponent.prototype.render = function (state, stateId) {
+                var htmlString = (_a = ["\n            <li><img class=\"jsonItemImage\" src=\"", "\"/><li>"], _a.raw = ["\n            <li><img class=\"jsonItemImage\" src=\"", "\"/><li>"], this.htmlTemplate(_a, state.value));
+                return this.renderElementFromTemplate(htmlString, state, stateId);
+                var _a;
+            };
+            return JSONItemImageComponent;
+        }(EmbeddedFrontend.BaseComponent));
+        EmbeddedFrontend.JSONItemImageComponent = JSONItemImageComponent;
+    })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var EmbeddedFrontend;
+    (function (EmbeddedFrontend) {
         var JSONItemComponent = (function (_super) {
             __extends(JSONItemComponent, _super);
             function JSONItemComponent() {
@@ -5303,6 +5518,7 @@ var SPECTOR;
                 this.jsonContentComponent = new EmbeddedFrontend.JSONContentComponent(options.eventConstructor, logger);
                 this.jsonGroupComponent = new EmbeddedFrontend.JSONGroupComponent(options.eventConstructor, logger);
                 this.jsonItemComponent = new EmbeddedFrontend.JSONItemComponent(options.eventConstructor, logger);
+                this.jsonItemImageComponent = new EmbeddedFrontend.JSONItemImageComponent(options.eventConstructor, logger);
                 this.jsonSourceItemComponent = new EmbeddedFrontend.JSONSourceItemComponent(options.eventConstructor, logger);
                 this.jsonVisualStateItemComponent = new EmbeddedFrontend.JSONVisualStateItemComponent(options.eventConstructor, logger);
                 this.resultViewMenuComponent = new EmbeddedFrontend.ResultViewMenuComponent(options.eventConstructor, logger);
@@ -5331,7 +5547,7 @@ var SPECTOR;
                 });
                 this.jsonSourceItemComponent.onOpenSourceClicked.add(function (sourceEventArg) {
                     _this.mvx.removeChildrenStates(_this.contentStateId);
-                    var formattedShader = _this.beautify(sourceEventArg.state.value);
+                    var formattedShader = _this._beautify(sourceEventArg.state.value);
                     var jsonContentStateId = _this.mvx.addChildState(_this.contentStateId, {
                         description: "WebGl Shader Source Code:",
                         source: formattedShader,
@@ -5383,7 +5599,7 @@ var SPECTOR;
              * Returns the position of the first "{" and the corresponding "}"
              * @param str the Shader source code as a string
              */
-            ResultView.prototype.getBracket = function (str) {
+            ResultView.prototype._getBracket = function (str) {
                 var fb = str.indexOf("{");
                 var arr = str.substr(fb + 1).split("");
                 var counter = 1;
@@ -5408,10 +5624,11 @@ var SPECTOR;
             /**
              * Beautify the given string : correct indentation according to brackets
              */
-            ResultView.prototype.beautify = function (glsl, level) {
+            ResultView.prototype._beautify = function (glsl, level) {
                 if (level === void 0) { level = 0; }
                 // return condition : no brackets at all
-                var brackets = this.getBracket(glsl);
+                glsl = glsl.trim();
+                var brackets = this._getBracket(glsl);
                 var firstBracket = brackets.firstIteration;
                 var lastBracket = brackets.lastIteration;
                 var spaces = "";
@@ -5421,9 +5638,8 @@ var SPECTOR;
                 // If no brackets, return the indented string
                 if (firstBracket === -1) {
                     glsl = spaces + glsl; // indent first line
-                    glsl = glsl
-                        .replace(/;./g, function (x) { return "\n" + x.substr(1); }); // new line after ;  except the last one
-                    glsl = glsl.replace(/\s*(=)\s*/g, function (x) { return " " + x.trim() + " "; }); // space around =
+                    glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
+                    glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, function (x) { return " " + x.trim() + " "; }); // space around =, *=, +=, -=, /=, ==, >=, <=
                     glsl = glsl.replace(/\s*(,)\s*/g, function (x) { return x.trim() + " "; }); // space after ,
                     glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
                     return glsl;
@@ -5433,9 +5649,9 @@ var SPECTOR;
                     // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
                     var left = glsl.substr(0, firstBracket);
                     var right = glsl.substr(lastBracket + 1, glsl.length);
-                    var inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1);
-                    inside = this.beautify(inside, level + 1);
-                    return this.beautify(left, level) + "{" + inside + "\n" + spaces + "}" + this.beautify(right, level);
+                    var inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
+                    inside = this._beautify(inside, level + 1);
+                    return this._beautify(left, level) + "{\n" + inside + "\n" + spaces + "}\n" + this._beautify(right, level);
                 }
             };
             ResultView.prototype.initMenuComponent = function () {
@@ -5530,7 +5746,7 @@ var SPECTOR;
                         this.mvx.addChildState(parentGroupId, {
                             key: key,
                             value: result,
-                        }, this.jsonItemComponent);
+                        }, key === "visual" ? this.jsonItemImageComponent : this.jsonItemComponent);
                     }
                 }
             };

@@ -4,6 +4,7 @@ namespace SPECTOR {
         readonly id: number;
         version: number;
         displayText?: string;
+        customData?: {};
     };
 
     export interface IWebGlObject {
