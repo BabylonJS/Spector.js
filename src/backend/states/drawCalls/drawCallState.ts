@@ -151,7 +151,8 @@ namespace SPECTOR.States {
                 attachmentState.type = "TEXTURE";
                 attachmentState.texture = this.options.tagWebGlObject(storage);
                 attachmentState.textureLevel = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
-                attachmentState.textureCubeMapFace = this.getWebGlConstant(this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value));
+                const cubeMapFace = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
+                attachmentState.textureCubeMapFace = this.getWebGlConstant(cubeMapFace);
             }
 
             if (this.extensions["EXT_sRGB"]) {

@@ -215,6 +215,11 @@ var SPECTOR;
     }
     SPECTOR.merge = merge;
 })(SPECTOR || (SPECTOR = {}));
+// tslint:disable:max-file-line-count
+// tslint:disable:interface-name
+// tslint:disable:max-line-length
+// tslint:disable:variable-name
+// Generated file disable rules.
 var SPECTOR;
 (function (SPECTOR) {
     var WebGlConstants = (function () {
@@ -1877,6 +1882,48 @@ var SPECTOR;
         Recorders.BaseRecorder = BaseRecorder;
     })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
 })(SPECTOR || (SPECTOR = {}));
+// namespace SPECTOR.Recorders {
+//     namespace SPECTOR.Recorders {
+//         @Decorators.recorder("Texture")
+//         export class TextureRecorder extends BaseRecorder {
+//             private currentTarget: number = null;
+//             public create(functionInformation: IFunctionInformation): RecordId {
+//                 return undefined;
+//             }
+//             public update(functionInformation: IFunctionInformation): RecordId {
+//                 return undefined;
+//             }
+//             public delete(functionInformation: IFunctionInformation): RecordId {
+//                 return undefined;
+//             }
+//             protected getCreateCommandNames(): string[] {
+//                 return ["createTexture"];
+//             }
+//             protected getBindCommandNames(): string[] {
+//                 return ["bindTexture"];
+//             }
+//             protected getUpdateCommandNames(): string[] {
+//                 return ["texImage2D"];
+//             }
+//             protected getDeleteCommandNames(): string[] {
+//                 return ["deleteTexture"];
+//             }
+//             protected create(functionInformation: IFunctionInformation): object {
+//                 return undefined;
+//             }
+//             protected update(functionInformation: IFunctionInformation): object {
+//                 getParameter(finctionInformation.argiuments[0] ? "2d" : "cube")...
+//                 this.currentTexture.tag.version++;
+//                 this.records[tag] = data;
+//                 ... ioter clientInformation.
+//                 // add memory.
+//             }
+//             protected delete(functionInformation: IFunctionInformation): object {
+//                 delete this.records[tag];
+//                 //remove memory/
+//             }
+//         }
+//     }
 var SPECTOR;
 (function (SPECTOR) {
     var Spies;
@@ -3384,7 +3431,8 @@ var SPECTOR;
                     attachmentState.type = "TEXTURE";
                     attachmentState.texture = this.options.tagWebGlObject(storage);
                     attachmentState.textureLevel = this.context.getFramebufferAttachmentParameter(target, attachment, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
-                    attachmentState.textureCubeMapFace = this.getWebGlConstant(this.context.getFramebufferAttachmentParameter(target, attachment, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value));
+                    var cubeMapFace = this.context.getFramebufferAttachmentParameter(target, attachment, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
+                    attachmentState.textureCubeMapFace = this.getWebGlConstant(cubeMapFace);
                 }
                 if (this.extensions["EXT_sRGB"]) {
                     attachmentState.encoding = this.getWebGlConstant(this.context.getFramebufferAttachmentParameter(target, attachment, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT.value));
@@ -4173,7 +4221,7 @@ var SPECTOR;
                     this.removeNode();
                     return null;
                 }
-                var currentChildrenContainer = this.__cachedCurrentChildrenContainer;
+                var currentChildrenContainer = this.cachedCurrentChildrenContainer;
                 if (lastOperation === 0 /* Processed */) {
                     return currentChildrenContainer;
                 }
@@ -4191,15 +4239,15 @@ var SPECTOR;
                         newChildrenContainer.appendChild(children[0]);
                     }
                 }
-                this.__cachedCurrentChildrenContainer = newChildrenContainer;
+                this.cachedCurrentChildrenContainer = newChildrenContainer;
                 if (indexInContainer >= parentContainer.children.length) {
                     parentContainer.appendChild(element);
-                    if (this.__cachedCurrentDomNode && lastOperation === 40 /* Update */) {
-                        if (this.__cachedCurrentDomNode.remove) {
-                            this.__cachedCurrentDomNode.remove();
+                    if (this.cachedCurrentDomNode && lastOperation === 40 /* Update */) {
+                        if (this.cachedCurrentDomNode.remove) {
+                            this.cachedCurrentDomNode.remove();
                         }
-                        else if (this.__cachedCurrentDomNode.parentNode) {
-                            this.__cachedCurrentDomNode.parentNode.removeChild(this.__cachedCurrentDomNode);
+                        else if (this.cachedCurrentDomNode.parentNode) {
+                            this.cachedCurrentDomNode.parentNode.removeChild(this.cachedCurrentDomNode);
                         }
                     }
                 }
@@ -4210,7 +4258,7 @@ var SPECTOR;
                         parentContainer.removeChild(currentElement);
                     }
                 }
-                this.__cachedCurrentDomNode = this.domNode;
+                this.cachedCurrentDomNode = this.domNode;
                 return newChildrenContainer;
             };
             ComponentInstance.prototype.removeNode = function () {
@@ -4222,12 +4270,12 @@ var SPECTOR;
                         this.domNode.parentNode.removeChild(this.domNode);
                     }
                 }
-                if (this.__cachedCurrentDomNode && this.__cachedCurrentDomNode.parentElement) {
-                    if (this.__cachedCurrentDomNode.remove) {
-                        this.__cachedCurrentDomNode.remove();
+                if (this.cachedCurrentDomNode && this.cachedCurrentDomNode.parentElement) {
+                    if (this.cachedCurrentDomNode.remove) {
+                        this.cachedCurrentDomNode.remove();
                     }
-                    else if (this.__cachedCurrentDomNode.parentNode) {
-                        this.__cachedCurrentDomNode.parentNode.removeChild(this.__cachedCurrentDomNode);
+                    else if (this.cachedCurrentDomNode.parentNode) {
+                        this.cachedCurrentDomNode.parentNode.removeChild(this.cachedCurrentDomNode);
                     }
                 }
             };
@@ -4457,7 +4505,7 @@ var SPECTOR;
                 return _this;
             }
             CanvasListComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div class=\"canvasListComponent\">\n                <span commandName=\"onCanvasSelection\">", "</span>\n                <ul childrenContainer=\"true\" style=\"", "\"></ul>\n            </div>"], _a.raw = ["\n            <div class=\"canvasListComponent\">\n                <span commandName=\"onCanvasSelection\">", "</span>\n                <ul childrenContainer=\"true\" style=\"", "\"></ul>\n            </div>"], this.htmlTemplate(_a, state.currentCanvasInformation ? state.currentCanvasInformation.id + " (" + state.currentCanvasInformation.width + "*" + state.currentCanvasInformation.height + ")" : "Choose Canvas...", state.showList ? "display:block;visibility:visible" : "display:none;visibility:hidden"));
+                var htmlString = (_a = ["\n            <div class=\"canvasListComponent\">\n                <span commandName=\"onCanvasSelection\">\n                    ", "\n                </span>\n                <ul childrenContainer=\"true\" style=\"", "\"></ul>\n            </div>"], _a.raw = ["\n            <div class=\"canvasListComponent\">\n                <span commandName=\"onCanvasSelection\">\n                    ", "\n                </span>\n                <ul childrenContainer=\"true\" style=\"", "\"></ul>\n            </div>"], this.htmlTemplate(_a, state.currentCanvasInformation ? state.currentCanvasInformation.id + " (" + state.currentCanvasInformation.width + "*" + state.currentCanvasInformation.height + ")" : "Choose Canvas...", state.showList ? "display:block;visibility:visible" : "display:none;visibility:hidden"));
                 return this.renderElementFromTemplate(htmlString, state, stateId);
                 var _a;
             };
@@ -4601,53 +4649,24 @@ var SPECTOR;
                 }
             };
             CaptureMenu.prototype.updateCanvasesList = function (canvases) {
-                this.mvx.removeChildrenStates(this.canvasListStateId);
-                var canvasesInformation = [];
-                for (var i = 0; i < canvases.length; i++) {
-                    var canvas = canvases[i];
-                    var context = null;
-                    try {
-                        context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-                    }
-                    catch (e) {
-                        // Do Nothing.
-                    }
-                    if (!context) {
-                        try {
-                            context = canvas.getContext("webgl2") || canvas.getContext("experimental-webgl2");
-                        }
-                        catch (e) {
-                            // Do Nothing.
-                        }
-                    }
-                    if (context) {
-                        var canvasInformation = {
-                            id: canvas.id,
-                            width: canvas.width,
-                            height: canvas.height,
-                            ref: canvas,
-                        };
-                        canvasesInformation.push(canvasInformation);
-                        this.mvx.addChildState(this.canvasListStateId, canvasInformation, this.canvasListItemComponent);
-                    }
-                }
-                this.updateCanvasesListInformationCurrentState(canvasesInformation);
+                this.updateCanvasesListInformationInternal(canvases, function (info) {
+                    return {
+                        id: info.id,
+                        width: info.width,
+                        height: info.height,
+                        ref: info,
+                    };
+                });
             };
             CaptureMenu.prototype.updateCanvasesListInformation = function (canvasesInformation) {
-                this.mvx.removeChildrenStates(this.canvasListStateId);
-                var canvasesInformationClone = [];
-                for (var i = 0; i < canvasesInformation.length; i++) {
-                    var canvas = canvasesInformation[i];
-                    var canvasInformationClone = {
-                        id: canvas.id,
-                        width: canvas.width,
-                        height: canvas.height,
-                        ref: canvas.ref,
+                this.updateCanvasesListInformationInternal(canvasesInformation, function (info) {
+                    return {
+                        id: info.id,
+                        width: info.width,
+                        height: info.height,
+                        ref: info.ref,
                     };
-                    canvasesInformationClone.push(canvasInformationClone);
-                    this.mvx.addChildState(this.canvasListStateId, canvasInformationClone, this.canvasListItemComponent);
-                }
-                this.updateCanvasesListInformationCurrentState(canvasesInformationClone);
+                });
             };
             CaptureMenu.prototype.display = function () {
                 this.updateMenuStateVisibility(true);
@@ -4666,13 +4685,23 @@ var SPECTOR;
             CaptureMenu.prototype.setFPS = function (fps) {
                 this.mvx.updateState(this.fpsStateId, fps);
             };
-            CaptureMenu.prototype.updateCanvasesListInformationCurrentState = function (canvasesInformation) {
-                var canvasesCount = canvasesInformation.length;
+            CaptureMenu.prototype.updateCanvasesListInformationInternal = function (canvasesInformation, convertToListInfo) {
+                // Create a consumable information list for the view.
+                this.mvx.removeChildrenStates(this.canvasListStateId);
+                var canvasesInformationClone = [];
+                for (var i = 0; i < canvasesInformation.length; i++) {
+                    var canvas = canvasesInformation[i];
+                    var canvasInformationClone = convertToListInfo(canvas);
+                    canvasesInformationClone.push(canvasInformationClone);
+                    this.mvx.addChildState(this.canvasListStateId, canvasInformationClone, this.canvasListItemComponent);
+                }
+                // Auto Adapt selectoin in the list.
+                var canvasesCount = canvasesInformationClone.length;
                 var canvasListState = this.mvx.getGenericState(this.canvasListStateId);
                 var visible = canvasListState.showList;
                 if (!visible) {
                     if (canvasesCount === 1) {
-                        var canvasToSelect = canvasesInformation[0];
+                        var canvasToSelect = canvasesInformationClone[0];
                         this.mvx.updateState(this.canvasListStateId, {
                             currentCanvasInformation: canvasToSelect,
                             showList: visible,
@@ -5156,7 +5185,7 @@ var SPECTOR;
                 return _this;
             }
             ResultViewMenuComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\"><input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\"><a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">Commands", "</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"], _a.raw = ["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\"><input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\"><a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">Commands", "</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"], this.htmlTemplate(_a, state.searchText, state.status === 0 /* Captures */ ? "active" : "", state.status === 10 /* Information */ ? "active" : "", state.status === 20 /* InitState */ ? "active" : "", state.status === 40 /* Commands */ ? "active" : "", state.commandCount > 0 ? " (" + state.commandCount + ")" : "", state.status === 30 /* EndState */ ? "active" : ""));
+                var htmlString = (_a = ["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\">\n                    <input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\">\n                    <a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li>\n                    <a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">\n                        Commands", "\n                    </a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"], _a.raw = ["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\">\n                    <input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\">\n                    <a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li>\n                    <a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">\n                        Commands", "\n                    </a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"], this.htmlTemplate(_a, state.searchText, state.status === 0 /* Captures */ ? "active" : "", state.status === 10 /* Information */ ? "active" : "", state.status === 20 /* InitState */ ? "active" : "", state.status === 40 /* Commands */ ? "active" : "", state.commandCount > 0 ? " (" + state.commandCount + ")" : "", state.status === 30 /* EndState */ ? "active" : ""));
                 var element = this.renderElementFromTemplate(htmlString, state, stateId);
                 var openButton = element.querySelector(".resultViewMenuOpen");
                 var lis = element.querySelectorAll("li:not(.resultViewMenuSmall)");
@@ -5302,9 +5331,10 @@ var SPECTOR;
                 });
                 this.jsonSourceItemComponent.onOpenSourceClicked.add(function (sourceEventArg) {
                     _this.mvx.removeChildrenStates(_this.contentStateId);
+                    var formattedShader = _this.beautify(sourceEventArg.state.value);
                     var jsonContentStateId = _this.mvx.addChildState(_this.contentStateId, {
                         description: "WebGl Shader Source Code:",
-                        source: sourceEventArg.state.value,
+                        source: formattedShader,
                     }, _this.sourceCodeComponent);
                 });
                 this.updateViewState();
@@ -5348,6 +5378,65 @@ var SPECTOR;
                 }, 0, this.captureListItemComponent);
                 this.selectCapture(captureSateId);
                 return captureSateId;
+            };
+            /**
+             * Returns the position of the first "{" and the corresponding "}"
+             * @param str the Shader source code as a string
+             */
+            ResultView.prototype.getBracket = function (str) {
+                var fb = str.indexOf("{");
+                var arr = str.substr(fb + 1).split("");
+                var counter = 1;
+                var currentPosInString = fb;
+                var lastBracketIndex = 0;
+                for (var _i = 0, arr_1 = arr; _i < arr_1.length; _i++) {
+                    var char = arr_1[_i];
+                    currentPosInString++;
+                    if (char === "{") {
+                        counter++;
+                    }
+                    if (char === "}") {
+                        counter--;
+                    }
+                    if (counter === 0) {
+                        lastBracketIndex = currentPosInString;
+                        break;
+                    }
+                }
+                return { firstIteration: fb, lastIteration: lastBracketIndex };
+            };
+            /**
+             * Beautify the given string : correct indentation according to brackets
+             */
+            ResultView.prototype.beautify = function (glsl, level) {
+                if (level === void 0) { level = 0; }
+                // return condition : no brackets at all
+                var brackets = this.getBracket(glsl);
+                var firstBracket = brackets.firstIteration;
+                var lastBracket = brackets.lastIteration;
+                var spaces = "";
+                for (var i = 0; i < level; i++) {
+                    spaces += "    "; // 4 spaces
+                }
+                // If no brackets, return the indented string
+                if (firstBracket === -1) {
+                    glsl = spaces + glsl; // indent first line
+                    glsl = glsl
+                        .replace(/;./g, function (x) { return "\n" + x.substr(1); }); // new line after ;  except the last one
+                    glsl = glsl.replace(/\s*(=)\s*/g, function (x) { return " " + x.trim() + " "; }); // space around =
+                    glsl = glsl.replace(/\s*(,)\s*/g, function (x) { return x.trim() + " "; }); // space after ,
+                    glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
+                    return glsl;
+                }
+                else {
+                    // if brackets, beautify the inside
+                    // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
+                    var left = glsl.substr(0, firstBracket);
+                    var right = glsl.substr(lastBracket + 1, glsl.length);
+                    var inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1);
+                    inside = this.beautify(inside, level + 1);
+                    return this.beautify(left, level) + "{" + inside + "\n" + spaces + "}" + this.beautify(right, level);
+                }
             };
             ResultView.prototype.initMenuComponent = function () {
                 var _this = this;
@@ -5734,6 +5823,31 @@ var SPECTOR;
             this.timeSpy.onFrameEnd.add(this.onFrameEnd, this);
             this.timeSpy.onError.add(this.onErrorInternal, this);
         }
+        Spector.getFirstAvailable3dContext = function (canvas) {
+            // Custom detection to run in the extension.
+            return this.tryGetContextFromHelperField(canvas) ||
+                this.tryGetContextFromCanvas(canvas, "webgl") ||
+                this.tryGetContextFromCanvas(canvas, "experimental-webgl") ||
+                this.tryGetContextFromCanvas(canvas, "webgl2") ||
+                this.tryGetContextFromCanvas(canvas, "experimental-webgl2");
+        };
+        Spector.tryGetContextFromHelperField = function (canvas) {
+            var type = canvas.getAttribute("__spector_context_type");
+            if (type) {
+                return this.tryGetContextFromCanvas(canvas, type);
+            }
+            return undefined;
+        };
+        Spector.tryGetContextFromCanvas = function (canvas, type) {
+            var context;
+            try {
+                context = canvas.getContext(type);
+            }
+            catch (e) {
+                // Nothing to do here, canvas has not been found.;
+            }
+            return context;
+        };
         Spector.prototype.displayUI = function () {
             var _this = this;
             if (!this.captureMenu) {
@@ -5814,33 +5928,7 @@ var SPECTOR;
         Spector.prototype.captureCanvas = function (canvas) {
             var contextSpy = this.getAvailableContextSpyByCanvas(canvas);
             if (!contextSpy) {
-                // Custom detection to run in the extension.
-                var context = void 0;
-                try {
-                    var contextType = canvas.getAttribute("__spector_context_type");
-                    if (contextType) {
-                        context = canvas.getContext(contextType);
-                    }
-                }
-                catch (e) {
-                    // Do Nothing.
-                }
-                if (!context) {
-                    try {
-                        context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-                    }
-                    catch (e) {
-                        this.logger.error(e);
-                    }
-                }
-                if (!context) {
-                    try {
-                        context = canvas.getContext("webgl2") || canvas.getContext("experimental-webgl2");
-                    }
-                    catch (e) {
-                        this.logger.error(e);
-                    }
-                }
+                var context = Spector.getFirstAvailable3dContext(canvas);
                 if (context) {
                     this.captureContext(context);
                 }

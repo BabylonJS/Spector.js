@@ -115,8 +115,7 @@ namespace SPECTOR.EmbeddedFrontend {
             });
             this.jsonSourceItemComponent.onOpenSourceClicked.add((sourceEventArg) => {
                 this.mvx.removeChildrenStates(this.contentStateId);
-                let formattedShader = this._beautify(sourceEventArg.state.value);
-                // let formattedShader = sourceEventArg.state.value;
+                const formattedShader = this._beautify(sourceEventArg.state.value);
                 const jsonContentStateId = this.mvx.addChildState(this.contentStateId, {
                     description: "WebGl Shader Source Code:",
                     source: formattedShader,
@@ -125,6 +124,54 @@ namespace SPECTOR.EmbeddedFrontend {
 
             this.updateViewState();
         }
+        public saveCapture(capture: ICapture): void {
+            const a = document.createElement("a");
+            const captureInString = JSON.stringify(capture, null, 4);
+            const blob = new Blob([captureInString], { type: "octet/stream" });
+            const url = window.URL.createObjectURL(blob);
+            a.setAttribute("href", url);
+            a.setAttribute("download", "capture " + new Date(capture.startTime).toTimeString().split(" ")[0] + ".json");
+            a.click();
+        }
+
+        public selectCapture(captureStateId: number): void {
+            this.currentCommandId = -1;
+            this.currentCaptureStateId = captureStateId;
+            this.displayCurrentCapture();
+        }
+
+        public selectCommand(commandStateId: number): void {
+            this.currentCommandStateId = commandStateId;
+            this.currentVisualStateId = this.displayCurrentCommand();
+            this.displayCurrentVisualState();
+        }
+
+        public selectVisualState(visualStateId: number): void {
+            this.currentVisualStateId = visualStateId;
+            this.currentCommandStateId = this.displayCurrentVisualState();
+            this.displayCurrentCommand();
+        }
+
+        public display(): void {
+            this.visible = true;
+            this.updateViewState();
+        }
+
+        public hide(): void {
+            this.visible = false;
+            this.updateViewState();
+        }
+
+        public addCapture(capture: ICapture): number {
+            const captureSateId = this.mvx.insertChildState(this.captureListStateId, {
+                capture,
+                active: false,
+            },
+                0, this.captureListItemComponent);
+            this.selectCapture(captureSateId);
+            return captureSateId;
+        }
+
 
         /**
          * Returns the position of the first "{" and the corresponding "}"
@@ -186,54 +233,6 @@ namespace SPECTOR.EmbeddedFrontend {
                 return this._beautify(left, level) + '{\n' + inside + '\n' + spaces + '}\n' + this._beautify(right, level);
 
             }
-        }
-
-        public saveCapture(capture: ICapture): void {
-            const a = document.createElement("a");
-            const captureInString = JSON.stringify(capture, null, 4);
-            const blob = new Blob([captureInString], { type: "octet/stream" });
-            const url = window.URL.createObjectURL(blob);
-            a.setAttribute("href", url);
-            a.setAttribute("download", "capture " + new Date(capture.startTime).toTimeString().split(" ")[0] + ".json");
-            a.click();
-        }
-
-        public selectCapture(captureStateId: number): void {
-            this.currentCommandId = -1;
-            this.currentCaptureStateId = captureStateId;
-            this.displayCurrentCapture();
-        }
-
-        public selectCommand(commandStateId: number): void {
-            this.currentCommandStateId = commandStateId;
-            this.currentVisualStateId = this.displayCurrentCommand();
-            this.displayCurrentVisualState();
-        }
-
-        public selectVisualState(visualStateId: number): void {
-            this.currentVisualStateId = visualStateId;
-            this.currentCommandStateId = this.displayCurrentVisualState();
-            this.displayCurrentCommand();
-        }
-
-        public display(): void {
-            this.visible = true;
-            this.updateViewState();
-        }
-
-        public hide(): void {
-            this.visible = false;
-            this.updateViewState();
-        }
-
-        public addCapture(capture: ICapture): number {
-            const captureSateId = this.mvx.insertChildState(this.captureListStateId, {
-                capture,
-                active: false,
-            },
-                0, this.captureListItemComponent);
-            this.selectCapture(captureSateId);
-            return captureSateId;
         }
 
         private initMenuComponent(): void {

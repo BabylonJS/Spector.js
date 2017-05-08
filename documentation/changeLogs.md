@@ -7,8 +7,9 @@ Please, find below the per release summary of the contribution added to the proj
 ## v0.0.11 Fix Release
 This release is aimed to address a few of the first created bugs:
 
-- [Sketchfab WebGL2 Crash](https://github.com/BabylonJS/Spector.js/issues/13)
+- Shader Beautyfier by [Temechon](https://github.com/Temechon)
 - UX improvments
+- [Sketchfab WebGL2 Crash](https://github.com/BabylonJS/Spector.js/issues/13)
 
 [View More...](changeLogs/v0.0.11.md)
 

@@ -1636,8 +1636,8 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private readonly logger;
         private static idGenerator;
         private readonly component;
-        private __cachedCurrentChildrenContainer;
-        private __cachedCurrentDomNode;
+        private cachedCurrentChildrenContainer;
+        private cachedCurrentDomNode;
         private domNode;
         constructor(component: BaseNoneGenericComponent, logger: ILogger);
         render(state: {}, stateId: number, lastOperation: LastOperation): void;
@@ -1788,7 +1788,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         hide(): void;
         captureComplete(errorText: string): void;
         setFPS(fps: number): void;
-        private updateCanvasesListInformationCurrentState(canvasesInformation);
+        private updateCanvasesListInformationInternal<T>(canvasesInformation, convertToListInfo);
         private hideMenuStateLog();
         private showMenuStateLog();
         private updateMenuStateLog(logLevel, logText, immediate?);
@@ -1995,6 +1995,15 @@ declare namespace SPECTOR.EmbeddedFrontend {
         display(): void;
         hide(): void;
         addCapture(capture: ICapture): number;
+        /**
+         * Returns the position of the first "{" and the corresponding "}"
+         * @param str the Shader source code as a string
+         */
+        private getBracket(str);
+        /**
+         * Beautify the given string : correct indentation according to brackets
+         */
+        private beautify(glsl, level?);
         private initMenuComponent();
         private onCaptureRelatedAction(menuStatus);
         private displayCaptures();
@@ -2052,6 +2061,9 @@ declare namespace SPECTOR {
     }
     class Spector {
         private options;
+        static getFirstAvailable3dContext(canvas: HTMLCanvasElement): WebGLRenderingContexts;
+        private static tryGetContextFromHelperField(canvas);
+        private static tryGetContextFromCanvas(canvas, type);
         readonly onCaptureStarted: IEvent<any>;
         readonly onCapture: IEvent<ICapture>;
         readonly onError: IEvent<string>;

@@ -38,6 +38,11 @@ namespace SPECTOR {
 }
 
 namespace SPECTOR.EmbeddedFrontend {
+    interface IArrayLike<T> {
+        length: number;
+        [index: number]: T;
+    }
+
     export class CaptureMenu implements ICaptureMenu {
         public static SelectCanvasHelpText = "Please, select a canvas in the list above.";
         public static ActionsHelpText = "Record with the red button, you can also pause or continue playing the current scene.";
@@ -161,58 +166,25 @@ namespace SPECTOR.EmbeddedFrontend {
         }
 
         public updateCanvasesList(canvases: NodeListOf<HTMLCanvasElement>): void {
-            this.mvx.removeChildrenStates(this.canvasListStateId);
-            const canvasesInformation: ICanvasInformation[] = [];
-
-            for (let i = 0; i < canvases.length; i++) {
-                const canvas = canvases[i];
-
-                let context = null;
-                try {
-                    context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-                }
-                catch (e) {
-                    // Do Nothing.
-                }
-
-                if (!context) {
-                    try {
-                        context = canvas.getContext("webgl2") || canvas.getContext("experimental-webgl2");
-                    }
-                    catch (e) {
-                        // Do Nothing.
-                    }
-                }
-
-                if (context) {
-                    const canvasInformation = {
-                        id: canvas.id,
-                        width: canvas.width,
-                        height: canvas.height,
-                        ref: canvas,
-                    };
-                    canvasesInformation.push(canvasInformation);
-                    this.mvx.addChildState(this.canvasListStateId, canvasInformation, this.canvasListItemComponent);
-                }
-            }
-            this.updateCanvasesListInformationCurrentState(canvasesInformation);
+            this.updateCanvasesListInformationInternal(canvases, (info) => {
+                return {
+                    id: info.id,
+                    width: info.width,
+                    height: info.height,
+                    ref: info,
+                };
+            });
         }
 
         public updateCanvasesListInformation(canvasesInformation: ICanvasInformation[]): void {
-            this.mvx.removeChildrenStates(this.canvasListStateId);
-            const canvasesInformationClone: ICanvasInformation[] = [];
-            for (let i = 0; i < canvasesInformation.length; i++) {
-                const canvas = canvasesInformation[i];
-                const canvasInformationClone = {
-                    id: canvas.id,
-                    width: canvas.width,
-                    height: canvas.height,
-                    ref: canvas.ref,
+            this.updateCanvasesListInformationInternal(canvasesInformation, (info) => {
+                return {
+                    id: info.id,
+                    width: info.width,
+                    height: info.height,
+                    ref: info.ref,
                 };
-                canvasesInformationClone.push(canvasInformationClone);
-                this.mvx.addChildState(this.canvasListStateId, canvasInformationClone, this.canvasListItemComponent);
-            }
-            this.updateCanvasesListInformationCurrentState(canvasesInformationClone);
+            });
         }
 
         public display(): void {
@@ -236,13 +208,24 @@ namespace SPECTOR.EmbeddedFrontend {
             this.mvx.updateState(this.fpsStateId, fps);
         }
 
-        private updateCanvasesListInformationCurrentState(canvasesInformation: ICanvasInformation[]) {
-            const canvasesCount = canvasesInformation.length;
+        private updateCanvasesListInformationInternal<T>(canvasesInformation: ArrayLike<T>, convertToListInfo: (info: T) => ICanvasInformation): void {
+            // Create a consumable information list for the view.
+            this.mvx.removeChildrenStates(this.canvasListStateId);
+            const canvasesInformationClone: ICanvasInformation[] = [];
+            for (let i = 0; i < canvasesInformation.length; i++) {
+                const canvas = canvasesInformation[i];
+                const canvasInformationClone = convertToListInfo(canvas);
+                canvasesInformationClone.push(canvasInformationClone);
+                this.mvx.addChildState(this.canvasListStateId, canvasInformationClone, this.canvasListItemComponent);
+            }
+
+            // Auto Adapt selectoin in the list.
+            const canvasesCount = canvasesInformationClone.length;
             const canvasListState = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId);
             const visible = canvasListState.showList;
             if (!visible) {
                 if (canvasesCount === 1) {
-                    const canvasToSelect = canvasesInformation[0];
+                    const canvasToSelect = canvasesInformationClone[0];
                     this.mvx.updateState(this.canvasListStateId, {
                         currentCanvasInformation: canvasToSelect,
                         showList: visible,
