@@ -32,7 +32,9 @@
     "one-line": [false],
     "space-before-function-paren": false,
     "align": [false],
-    "max-line-length": [true, 500]
+    "max-line-length": [true, 200],
+    "cyclomatic-complexity": [true, 20],
+    "max-file-line-count": [true, 750]
   },
   "rulesDirectory": []
 }

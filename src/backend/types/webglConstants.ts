@@ -1,5 +1,8 @@
+// tslint:disable:max-file-line-count
+// tslint:disable:interface-name
+// tslint:disable:max-line-length
+// Generated file disable rules.
 namespace SPECTOR {
-    // tslint:disable-next-line:interface-name
     export interface WebGlConstant {
         readonly name: string;
         readonly value: number;

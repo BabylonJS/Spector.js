@@ -1788,7 +1788,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         hide(): void;
         captureComplete(errorText: string): void;
         setFPS(fps: number): void;
-        private updateCanvasesListInformationCurrentState(canvasesInformation);
+        private updateCanvasesListInformationInternal<T>(canvasesInformation, convertToListInfo);
         private hideMenuStateLog();
         private showMenuStateLog();
         private updateMenuStateLog(logLevel, logText, immediate?);
@@ -2052,6 +2052,9 @@ declare namespace SPECTOR {
     }
     class Spector {
         private options;
+        static getFirstAvailable3dContext(canvas: HTMLCanvasElement): WebGLRenderingContexts;
+        private static tryGetContextFromHelperField(canvas);
+        private static tryGetContextFromCanvas(canvas, type);
         readonly onCaptureStarted: IEvent<any>;
         readonly onCapture: IEvent<ICapture>;
         readonly onError: IEvent<string>;

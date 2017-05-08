@@ -10,6 +10,35 @@ namespace SPECTOR {
     }
 
     export class Spector {
+        public static getFirstAvailable3dContext(canvas: HTMLCanvasElement): WebGLRenderingContexts {
+            // Custom detection to run in the extension.
+            return this.tryGetContextFromHelperField(canvas) ||
+                this.tryGetContextFromCanvas(canvas, "webgl") ||
+                this.tryGetContextFromCanvas(canvas, "experimental-webgl") ||
+                this.tryGetContextFromCanvas(canvas, "webgl2") ||
+                this.tryGetContextFromCanvas(canvas, "experimental-webgl2");
+        }
+
+        private static tryGetContextFromHelperField(canvas: HTMLCanvasElement): WebGLRenderingContexts {
+            const type = canvas.getAttribute("__spector_context_type");
+            if (type) {
+                return this.tryGetContextFromCanvas(canvas, type);
+            }
+
+            return undefined;
+        }
+
+        private static tryGetContextFromCanvas(canvas: HTMLCanvasElement, type: string): WebGLRenderingContexts {
+            let context: WebGLRenderingContexts;
+            try {
+                context = canvas.getContext(type) as WebGLRenderingContexts;
+            }
+            catch (e) {
+                // Nothing to do here, canvas has not been found.;
+            }
+            return context;
+        }
+
         public readonly onCaptureStarted: IEvent<any>;
         public readonly onCapture: IEvent<ICapture>;
         public readonly onError: IEvent<string>;
@@ -146,36 +175,7 @@ namespace SPECTOR {
         public captureCanvas(canvas: HTMLCanvasElement) {
             const contextSpy = this.getAvailableContextSpyByCanvas(canvas);
             if (!contextSpy) {
-                // Custom detection to run in the extension.
-                let context: WebGLRenderingContexts;
-                try {
-                    const contextType = canvas.getAttribute("__spector_context_type");
-                    if (contextType) {
-                        context = canvas.getContext(contextType) as any;
-                    }
-                }
-                catch (e) {
-                    // Do Nothing.
-                }
-
-                if (!context) {
-                    try {
-                        context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-                    }
-                    catch (e) {
-                        this.logger.error(e);
-                    }
-                }
-
-                if (!context) {
-                    try {
-                        context = canvas.getContext("webgl2") || canvas.getContext("experimental-webgl2");
-                    }
-                    catch (e) {
-                        this.logger.error(e);
-                    }
-                }
-
+                const context = Spector.getFirstAvailable3dContext(canvas);
                 if (context) {
                     this.captureContext(context);
                 }

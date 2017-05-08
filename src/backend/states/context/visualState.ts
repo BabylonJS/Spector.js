@@ -81,7 +81,9 @@ namespace SPECTOR.States {
             }
         }
 
-        protected readFrameBufferAttachmentFromContext(gl: WebGLRenderingContext | WebGL2RenderingContext, frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant, x: number, y: number, width: number, height: number): void {
+        protected readFrameBufferAttachmentFromContext(gl: WebGLRenderingContext | WebGL2RenderingContext,
+            frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant,
+            x: number, y: number, width: number, height: number): void {
             const target = WebGlConstants.FRAMEBUFFER.value;
             const type = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE.value);
             if (type === WebGlConstants.NONE.value) {
