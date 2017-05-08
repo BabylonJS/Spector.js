@@ -117,7 +117,7 @@ namespace SPECTOR.EmbeddedFrontend {
             });
             this.jsonSourceItemComponent.onOpenSourceClicked.add((sourceEventArg) => {
                 this.mvx.removeChildrenStates(this.contentStateId);
-                const formattedShader = this._beautify(sourceEventArg.state.value);
+                const formattedShader = this._indentIfdef(this._beautify(sourceEventArg.state.value));
                 const jsonContentStateId = this.mvx.addChildState(this.contentStateId, {
                     description: "WebGl Shader Source Code:",
                     source: formattedShader,
@@ -232,8 +232,32 @@ namespace SPECTOR.EmbeddedFrontend {
                 let inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
                 inside = this._beautify(inside, level + 1);
                 return this._beautify(left, level) + "{\n" + inside + "\n" + spaces + "}\n" + this._beautify(right, level);
-
             }
+        }
+
+        private _indentIfdef(str: string): string {
+            let level = 0;
+
+            const arr2 = str.split("\n");
+
+            for (let index = 0; index < arr2.length; index++) {
+                const line = arr2[index];
+                if (line.indexOf("#endif") !== -1) {
+                    level--;
+                }
+                if (line.indexOf("#else") !== -1) {
+                    level--;
+                }
+                let spaces = "";
+                for (let i = 0; i < level; i++) {
+                    spaces += "    "; // 4 spaces
+                }
+                arr2[index] = spaces + line;
+                if (line.indexOf("#if") !== -1 || line.indexOf("#else") !== -1) {
+                    level++;
+                }
+            }
+            return arr2.join("\n");
         }
 
         private initMenuComponent(): void {
