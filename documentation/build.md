@@ -39,6 +39,6 @@ Once ```npm start``` has been launched, you can access the following samples to 
 6. [Custom Metadata](http://localhost:1337/sample/index.html?sample=customMetadata): Test to a capture objects containing metadata.
 
 ### Add more samples
-To add a new sample, simply add a new script in the ```sample/js``` folder. To launch it you can use the following url by replacing the ```<fileName>``` by your new file name without the ```.js``` extension.
+To add a new sample, simply add a new script in the ```sample/js``` folder. To launch it you can use the following url by replacing the ```fileName``` by your new file name without the ```.js``` extension.
 
-[http://localhost:1337/sample/index.html?sample=<fileName>](http://localhost:1337/sample/index.html?sample=<fileName>)
+[http://localhost:1337/sample/index.html?sample=fileName](http://localhost:1337/sample/index.html?sample=fileName)
