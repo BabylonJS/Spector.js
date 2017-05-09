@@ -10,4 +10,4 @@ If you are willing to add a feature and you would like to contribute, feel free 
 
 We enjoy any contibutions from tests to Pull Requests.
 
-PS: Please use TsLint locally before PR.
+PS: Please use TsLint locally before making a pull request and refer to the [build](build.md) documentation for more information.
