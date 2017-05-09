@@ -5827,7 +5827,7 @@ var SPECTOR;
                             value: result,
                         }, this.jsonItemComponent);
                     }
-                    if (value.__Spector_Metadata) {
+                    if (value && value.__Spector_Metadata) {
                         this.displayJSONGroup(parentGroupId, "Metadata", value.__Spector_Metadata);
                     }
                 }
