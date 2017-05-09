@@ -52,7 +52,7 @@ namespace SPECTOR.Recorders {
         protected abstract getDeleteCommandNames(): string[];
         protected abstract getBoundInstance(target: number): T;
 
-        protected abstract update(functionInformation: IFunctionInformation, instance: T): void;
+        protected abstract update(functionInformation: IFunctionInformation, target: string, instance: T): void;
 
         protected create(functionInformation: IFunctionInformation): void {
             return undefined;
@@ -73,8 +73,10 @@ namespace SPECTOR.Recorders {
                 return;
             }
             this.options.toggleCapture(false);
-            const instance = this.getBoundInstance(functionInformation.arguments[0]);
-            this.update(functionInformation, instance);
+            const target = functionInformation.arguments[0];
+            const targetString = this.getWebGlConstant(target);
+            const instance = this.getBoundInstance(target);
+            this.update(functionInformation, targetString, instance);
             this.options.toggleCapture(true);
         }
 

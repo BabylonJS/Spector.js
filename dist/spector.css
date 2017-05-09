@@ -190,7 +190,8 @@
     flex-flow: row wrap;
     justify-content: flex-start; }
     .captureListComponent ul li {
-      margin: 5px; }
+      margin: 5px;
+      border: 1px solid #606060; }
       .captureListComponent ul li img {
         width: 295px;
         background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
@@ -369,9 +370,32 @@
 .jsonItemComponentValue {
   white-space: pre-wrap; }
 
-.jsonItemImage {
-  width: 100%;
-  max-width: 256; }
+.jsonItemImageHolder {
+  width: 50%;
+  margin: auto; }
+  .jsonItemImageHolder .jsonItemImage {
+    margin: 5px;
+    display: block;
+    border: 1px solid #606060;
+    width: 100%; }
+    .jsonItemImageHolder .jsonItemImage img {
+      width: 100%;
+      display: block;
+      margin: auto;
+      max-width: 256px;
+      background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
+      background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9));
+      -moz-background-size: 50px 50px;
+      background-size: 50px 50px;
+      -webkit-background-size: 50px 51px;
+      background-position: 0 0, 25px 0, 25px -25px, 0px 25px; }
+    .jsonItemImageHolder .jsonItemImage span {
+      margin: 0px;
+      padding: 5px;
+      word-wrap: break-word;
+      display: inline-block;
+      width: 100%;
+      box-sizing: border-box; }
 
 [commandName=onOpenSourceClicked]:hover {
   color: #f9f9f9;
@@ -384,6 +408,7 @@
   text-align: center;
   padding: 10px; }
   .jsonVisualStateItemComponent img {
+    border: 1px solid #606060;
     margin: 5px;
     background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
     background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9));
@@ -409,6 +434,11 @@
 .jsonItemComponentValue {
   word-break: break-all;
   white-space: normal; }
+
+.jsonSourceItemComponentOpen {
+  font-weight: bold;
+  color: #5db0d7;
+  text-decoration: underline; }
 
 .sourceCodeComponent {
   position: absolute;

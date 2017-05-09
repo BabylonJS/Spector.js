@@ -1140,7 +1140,7 @@ declare namespace SPECTOR.Recorders {
         protected abstract getUpdateCommandNames(): string[];
         protected abstract getDeleteCommandNames(): string[];
         protected abstract getBoundInstance(target: number): T;
-        protected abstract update(functionInformation: IFunctionInformation, instance: T): void;
+        protected abstract update(functionInformation: IFunctionInformation, target: string, instance: T): void;
         protected create(functionInformation: IFunctionInformation): void;
         protected delete(functionInformation: IFunctionInformation): void;
         protected createWithoutSideEffects(functionInformation: IFunctionInformation): void;
@@ -1150,7 +1150,21 @@ declare namespace SPECTOR.Recorders {
     }
 }
 declare namespace SPECTOR {
+    interface ITextureRecorderState {
+        level: number;
+        internalFormat: string;
+        format: string;
+        type: string;
+        width: number;
+        height: number;
+        visual: {
+            [target: string]: string;
+        };
+    }
+}
+declare namespace SPECTOR.Recorders {
     interface ITextureRecorderData {
+        target: string;
         level: number;
         internalFormat: number;
         width: number;
@@ -1160,8 +1174,6 @@ declare namespace SPECTOR {
         type: number;
         visual: any;
     }
-}
-declare namespace SPECTOR.Recorders {
     class TextureRecorder extends BaseRecorder<WebGLTexture> {
         private readonly visualState;
         constructor(options: IRecorderOptions, logger: ILogger);
@@ -1169,7 +1181,8 @@ declare namespace SPECTOR.Recorders {
         protected getUpdateCommandNames(): string[];
         protected getDeleteCommandNames(): string[];
         protected getBoundInstance(target: number): WebGLTexture;
-        protected update(functionInformation: IFunctionInformation, instance: WebGLTexture): void;
+        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): void;
+        private getTexImage2DCustomData(functionInformation, target, instance);
     }
 }
 declare namespace SPECTOR.Recorders {
@@ -1508,7 +1521,7 @@ declare namespace SPECTOR.States {
         protected getConsumeCommands(): string[];
         protected readFromContext(): void;
         protected readFrameBufferAttachmentFromContext(gl: WebGLRenderingContext | WebGL2RenderingContext, frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant, x: number, y: number, width: number, height: number): void;
-        protected getCapture(gl: WebGLRenderingContext, name: string, x: number, y: number, width: number, height: number): void;
+        protected getCapture(gl: WebGLRenderingContext, name: string, x: number, y: number, width: number, height: number, textureCubeMapFace: number, textureLayer: number): void;
         protected analyse(consumeCommand: ICommandCapture): void;
         private getTag(object);
     }
@@ -1528,7 +1541,7 @@ declare namespace SPECTOR.States {
         protected readAttributeFromContext(program: WebGLProgram, activeAttributeIndex: number): {};
         protected readUniformFromContext(program: WebGLProgram, activeUniformIndex: number): {};
         protected readTextureFromContext(textureUnit: number, target: WebGlConstant): {};
-        protected readTextureCustomDataFromTag(textureState: any, target: WebGlConstant): void;
+        protected readTextureCustomDataFromTag(target: WebGlConstant): any;
         protected readUniformsFromContextIntoState(program: WebGLProgram, uniformIndices: number[], uniformsState: any[]): void;
         protected readTransformFeedbackFromContext(program: WebGLProgram, index: number): {};
         protected readUniformBlockFromContext(program: WebGLProgram, index: number): {};
@@ -2051,6 +2064,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
          * Beautify the given string : correct indentation according to brackets
          */
         private _beautify(glsl, level?);
+        private _indentIfdef(str);
         private initMenuComponent();
         private onCaptureRelatedAction(menuStatus);
         private displayCaptures();

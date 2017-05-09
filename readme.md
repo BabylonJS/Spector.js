@@ -150,6 +150,14 @@ var canvas = document.getElementById("renderCanvas");
 spector.captureCanvas(canvas);
 ```
 
+Another api you can rely upon is:
+
+```javascript
+spector.spyCanvases();
+```
+
+This will enable a complete tracking of the gl calls even before capturing which enables for instance access to the texture inputs or memory consumption information.
+
 ## Learn About WebGL
 ###### [Back to top](#table-of-content)
 I would advise you to check out and start with the Awesome [BabylonJS](http://www.babylonjs.com/) the community there will be more than happy to welcome anybody willing to learn Web 3d.

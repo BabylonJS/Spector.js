@@ -116,7 +116,10 @@ namespace SPECTOR.States {
                 frameBufferState.colorAttachments = [];
                 const maxDrawBuffers = this.context.getParameter(WebGlConstants.MAX_DRAW_BUFFERS_WEBGL.value);
                 for (let i = 0; i < maxDrawBuffers; i++) {
-                    frameBufferState.colorAttachments.push(this.readFrameBufferAttachmentFromContext(WebGlConstantsByName["COLOR_ATTACHMENT" + i + "_WEBGL"].value));
+                    const attachment = this.readFrameBufferAttachmentFromContext(WebGlConstantsByName["COLOR_ATTACHMENT" + i + "_WEBGL"].value);
+                    if (attachment) {
+                        frameBufferState.colorAttachments.push(attachment);
+                    }
                 }
             }
             else if (this.contextVersion > 1) {
@@ -126,7 +129,16 @@ namespace SPECTOR.States {
                 frameBufferState.colorAttachments = [];
                 const maxDrawBuffers = context2.getParameter(WebGlConstants.MAX_DRAW_BUFFERS.value);
                 for (let i = 0; i < maxDrawBuffers; i++) {
-                    frameBufferState.colorAttachments.push(this.readFrameBufferAttachmentFromContext(WebGlConstantsByName["COLOR_ATTACHMENT" + i].value));
+                    const attachment = this.readFrameBufferAttachmentFromContext(WebGlConstantsByName["COLOR_ATTACHMENT" + i].value);
+                    if (attachment) {
+                        frameBufferState.colorAttachments.push(attachment);
+                    }
+                }
+            }
+            else {
+                const attachment = this.readFrameBufferAttachmentFromContext(WebGlConstantsByName["COLOR_ATTACHMENT0"].value);
+                if (attachment) {
+                    frameBufferState.colorAttachments.push(attachment);
                 }
             }
 
@@ -135,13 +147,12 @@ namespace SPECTOR.States {
 
         protected readFrameBufferAttachmentFromContext(attachment: number): any {
             const target = WebGlConstants.FRAMEBUFFER.value;
-            const attachmentState: any = {};
             const type = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE.value);
             if (type === WebGlConstants.NONE.value) {
-                attachmentState.type = "NONE";
-                return attachmentState;
+                return undefined;
             }
 
+            const attachmentState: any = {};
             const storage = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_NAME.value);
             if (type === WebGlConstants.RENDERBUFFER.value) {
                 attachmentState.type = "RENDERBUFFER";
@@ -294,22 +305,7 @@ namespace SPECTOR.States {
                 }
             }
 
-            this.readTextureCustomDataFromTag(textureState, target);
-
-            this.context.activeTexture(activeTexture);
-            return textureState;
-        }
-
-        protected readTextureCustomDataFromTag(textureState: any, target: WebGlConstant): void {
-            // Add texture visual.
-            let customData: any;
-            if (target === WebGlConstants.TEXTURE_2D) {
-                const texture2D = this.context.getParameter(WebGlConstants.TEXTURE_BINDING_2D.value);
-                const tag = this.getTag(texture2D);
-                if (tag && tag.customData) {
-                    customData = tag.customData;
-                }
-            }
+            const customData = this.readTextureCustomDataFromTag(target);
             if (customData) {
                 for (const visualProperty in customData) {
                     if (customData.hasOwnProperty(visualProperty)) {
@@ -317,6 +313,31 @@ namespace SPECTOR.States {
                     }
                 }
             }
+
+            this.context.activeTexture(activeTexture);
+            return textureState;
+        }
+
+        protected readTextureCustomDataFromTag(target: WebGlConstant): any {
+            // Add texture visual.
+            // 2D Textures.
+            if (target === WebGlConstants.TEXTURE_2D) {
+                const texture2D = this.context.getParameter(WebGlConstants.TEXTURE_BINDING_2D.value);
+                const tag = this.getTag(texture2D);
+                if (tag && tag.customData) {
+                    return tag.customData;
+                }
+            }
+            // Cube Textures.
+            else if (target === WebGlConstants.TEXTURE_CUBE_MAP) {
+                const textureCube = this.context.getParameter(WebGlConstants.TEXTURE_BINDING_CUBE_MAP.value);
+                const tag = this.getTag(textureCube);
+                if (tag && tag.customData) {
+                    return tag.customData;
+                }
+            }
+            // TODO. textureArray_3d, Texture2d_array if find a way to visualize.
+            return undefined;
         }
 
         protected readUniformsFromContextIntoState(program: WebGLProgram, uniformIndices: number[], uniformsState: any[]) {

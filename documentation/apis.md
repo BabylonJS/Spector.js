@@ -20,6 +20,7 @@ foo.onEvent.add(function(s) { console.log(s); }, context);
 This is the main entry point of the library and contains the following methods:
 - ```constructor()``` : creates a new instance.
 - ```displayUI()``` : displays the embedded ui and begins to track the pages available canvas elements.
+- ```spayCanvases()```: enables recording some extra information merged in the capture like texture memory sizes and formats. This should be launched before you update the texture objects.
 - ```getFps()``` : to get the current fps of the selected canvas.
 - ```captureCanvas(canvas: HTMLCanvasElement)``` : to start a capture on a specific canvas.
 

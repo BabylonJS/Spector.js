@@ -347,6 +347,17 @@ namespace SPECTOR.EmbeddedFrontend {
                         value,
                     }, this.jsonSourceItemComponent);
                 }
+                else if (key === "visual") {
+                    const value = json[key];
+                    for (const target in value) {
+                        if (value.hasOwnProperty(target)) {
+                            this.mvx.addChildState(parentGroupId, {
+                                key: target,
+                                value: value[target],
+                            }, this.jsonItemImageComponent);
+                        }
+                    }
+                }
                 else {
                     const value = json[key];
 
@@ -361,7 +372,7 @@ namespace SPECTOR.EmbeddedFrontend {
                     this.mvx.addChildState(parentGroupId, {
                         key,
                         value: result,
-                    }, key === "visual" ? this.jsonItemImageComponent : this.jsonItemComponent);
+                    }, this.jsonItemComponent);
                 }
             }
         }

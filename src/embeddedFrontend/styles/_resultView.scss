@@ -252,6 +252,7 @@ $menuHeight: $menuBaseHeight * 2;
 
     li {
       margin: $margin;
+      border : 1px solid darken($foreground, 60%);
 
       img {
         width: 300px - $margin;
@@ -327,9 +328,9 @@ $visualStateListComponentWidth: 20%;
 .visualStateListComponent {
   position:absolute; 
   top: 0;
-  left: 0;  
+  left: 0;
   bottom: 0;
-  padding:5px;    
+  padding:5px;
   right: 100% - $visualStateListComponentWidth;
   overflow-y: visible;
   overflow-x: hidden;
@@ -340,7 +341,7 @@ $visualStateListComponentWidth: 20%;
     list-style: none;
     li {
       margin: 20px 15px 0px 15px; 
-      border : 1px solid darken($foreground, 60%); 
+      border : 1px solid darken($foreground, 60%);
 
       img {
         display: block;
@@ -499,9 +500,33 @@ $commandDetailComponentWidth: 40%;
   white-space: pre-wrap;
 }
 
-.jsonItemImage {
-  width: 100%;
-  max-width: 256;
+.jsonItemImageHolder {
+  width:50%;
+  margin:auto;
+
+  .jsonItemImage {
+    margin: 5px;
+    display:block;
+    border : 1px solid darken($foreground, 60%);
+    width:100%;
+
+    img {
+      width: 100%;
+      display: block;
+      margin: auto;
+      max-width: 256px;
+      @include img-checkboard();
+    }
+
+    span {
+      margin: 0px;
+      padding: 5px;
+      word-wrap: break-word;
+      display: inline-block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
 }
 
 [commandName=onOpenSourceClicked] {
@@ -515,6 +540,7 @@ $commandDetailComponentWidth: 40%;
   padding:10px;
 
   img {
+    border : 1px solid darken($foreground, 60%);
     margin: $margin;
     @include img-checkboard();
     width: 100%;
@@ -540,6 +566,12 @@ $commandDetailComponentWidth: 40%;
 .jsonItemComponentValue {
   word-break: break-all;
   white-space: normal; 
+}
+
+.jsonSourceItemComponentOpen {
+  font-weight: bold;
+  color: $foreground-title;
+  text-decoration: underline;
 }
 
 .sourceCodeComponent {

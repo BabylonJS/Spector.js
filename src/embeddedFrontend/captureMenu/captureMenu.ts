@@ -219,7 +219,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 this.mvx.addChildState(this.canvasListStateId, canvasInformationClone, this.canvasListItemComponent);
             }
 
-            // Auto Adapt selectoin in the list.
+            // Auto Select in the list if only one canvas.
             const canvasesCount = canvasesInformationClone.length;
             const canvasListState = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId);
             const visible = canvasListState.showList;

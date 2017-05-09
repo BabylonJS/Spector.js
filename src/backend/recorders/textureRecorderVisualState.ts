@@ -1,7 +1,7 @@
 namespace SPECTOR.Recorders {
     export class TextureRecorderVisualState {
 
-        public static captureBaseSize = 256;
+        public static captureBaseSize = 128;
 
         private readonly context: WebGLRenderingContext;
         private readonly workingCanvas: HTMLCanvasElement;

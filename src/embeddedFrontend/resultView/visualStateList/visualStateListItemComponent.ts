@@ -37,6 +37,16 @@ namespace SPECTOR.EmbeddedFrontend {
                         attachment.innerText = imageState.attachmentName;
                         liHolder.appendChild(attachment);
                     }
+                    if (imageState.textureLayer) {
+                        const layer = document.createElement("span");
+                        layer.innerText = "Layer: " + imageState.textureLayer;
+                        liHolder.appendChild(layer);
+                    }
+                    if (imageState.textureCubeMapFace) {
+                        const face = document.createElement("span");
+                        face.innerText = imageState.textureCubeMapFace;
+                        liHolder.appendChild(face);
+                    }
                 }
             }
             else {
@@ -46,7 +56,13 @@ namespace SPECTOR.EmbeddedFrontend {
             }
 
             const fbo = document.createElement("span");
-            fbo.innerText = state.VisualState.FrameBuffer ? "Frame buffer: " + state.VisualState.FrameBuffer.__SPECTOR_Object_TAG.id : "Canvas frame buffer";
+            if (state.VisualState.FrameBuffer) {
+                fbo.innerText = "Frame buffer: " + state.VisualState.FrameBuffer.__SPECTOR_Object_TAG.id;
+            }
+            else {
+                fbo.innerText = "Canvas frame buffer";
+            }
+
             liHolder.appendChild(fbo);
 
             this.mapEventListener(liHolder, "click", "onVisualStateSelected", state, stateId);
