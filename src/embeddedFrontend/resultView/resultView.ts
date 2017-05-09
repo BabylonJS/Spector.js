@@ -340,15 +340,15 @@ namespace SPECTOR.EmbeddedFrontend {
                 if (key === "VisualState") {
                     continue;
                 }
-                else if (key === "source") {
-                    const value = json[key];
+
+                const value = json[key];
+                if (key === "source") {
                     this.mvx.addChildState(parentGroupId, {
                         key,
                         value,
                     }, this.jsonSourceItemComponent);
                 }
                 else if (key === "visual") {
-                    const value = json[key];
                     for (const target in value) {
                         if (value.hasOwnProperty(target)) {
                             this.mvx.addChildState(parentGroupId, {
@@ -359,8 +359,6 @@ namespace SPECTOR.EmbeddedFrontend {
                     }
                 }
                 else {
-                    const value = json[key];
-
                     const result = this.getJSONAsString(parentGroupId, key, value);
                     if (result === null || result === undefined) {
                         continue;
@@ -373,6 +371,10 @@ namespace SPECTOR.EmbeddedFrontend {
                         key,
                         value: result,
                     }, this.jsonItemComponent);
+                }
+
+                if (value.__Spector_Metadata) {
+                    this.displayJSONGroup(parentGroupId, "Metadata", value.__Spector_Metadata);
                 }
             }
         }

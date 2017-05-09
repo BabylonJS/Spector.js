@@ -3896,7 +3896,7 @@ var SPECTOR;
             if (!tag) {
                 return "No tag available.";
             }
-            return tag.typeName + " - ID: " + tag.id + " - Version: " + tag.version;
+            return tag.typeName + " - ID: " + tag.id;
         }
         WebGlObjects.stringifyWebGlObjectTag = stringifyWebGlObjectTag;
     })(WebGlObjects = SPECTOR.WebGlObjects || (SPECTOR.WebGlObjects = {}));
@@ -3928,7 +3928,6 @@ var SPECTOR;
                     tag = {
                         typeName: this.typeName,
                         id: id,
-                        version: 0,
                     };
                     WebGlObjects.attachWebGlObjectTag(webGlObject, tag);
                     return tag;
@@ -5798,15 +5797,14 @@ var SPECTOR;
                     if (key === "VisualState") {
                         continue;
                     }
-                    else if (key === "source") {
-                        var value = json[key];
+                    var value = json[key];
+                    if (key === "source") {
                         this.mvx.addChildState(parentGroupId, {
                             key: key,
                             value: value,
                         }, this.jsonSourceItemComponent);
                     }
                     else if (key === "visual") {
-                        var value = json[key];
                         for (var target in value) {
                             if (value.hasOwnProperty(target)) {
                                 this.mvx.addChildState(parentGroupId, {
@@ -5817,7 +5815,6 @@ var SPECTOR;
                         }
                     }
                     else {
-                        var value = json[key];
                         var result = this.getJSONAsString(parentGroupId, key, value);
                         if (result === null || result === undefined) {
                             continue;
@@ -5829,6 +5826,9 @@ var SPECTOR;
                             key: key,
                             value: result,
                         }, this.jsonItemComponent);
+                    }
+                    if (value.__Spector_Metadata) {
+                        this.displayJSONGroup(parentGroupId, "Metadata", value.__Spector_Metadata);
                     }
                 }
             };

@@ -2,7 +2,6 @@ namespace SPECTOR {
     export type WebGlObjectTag = {
         readonly typeName: string;
         readonly id: number;
-        version: number;
         displayText?: string;
         customData?: {};
     };
@@ -42,7 +41,7 @@ namespace SPECTOR.WebGlObjects {
         if (!tag) {
             return "No tag available.";
         }
-        return `${tag.typeName} - ID: ${tag.id} - Version: ${tag.version}`;
+        return `${tag.typeName} - ID: ${tag.id}`;
     }
 }
 
@@ -81,7 +80,6 @@ namespace SPECTOR.WebGlObjects {
                 tag = {
                     typeName: this.typeName,
                     id,
-                    version: 0,
                 };
                 attachWebGlObjectTag(webGlObject, tag);
                 return tag;

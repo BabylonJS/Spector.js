@@ -26,6 +26,7 @@ This can be used either as a *browser extension* or directly from your page a a 
   * [Node_Modules](#node_modules)
   * [How To Reference](#how-to-reference)
 * [Basic usage](#basic-usage)
+* [Custom data](#custom-data)
 * [Available APIs](documentation/apis.md)
 * [Build Locally](documentation/build.md)
 * [Contribute](documentation/contribute.md)
@@ -157,6 +158,17 @@ spector.spyCanvases();
 ```
 
 This will enable a complete tracking of the gl calls even before capturing which enables for instance access to the texture inputs or memory consumption information.
+
+## Custom Data
+###### [Back to top](#table-of-content)
+You can simply add custom data to the capture by adding a special field named **__Spector_Metadata** to your WebGLObjects.
+
+```javascript
+var cubeVerticesColorBuffer = gl.createBuffer();
+cubeVerticesColorBuffer.__Spector_Metadata = { name: "cubeVerticesColorBuffer" };
+```
+
+This will enable the visibility of your custom name in your capture. This can be an invaluable asset during troubleshoot session. This can also help referencing your materials friendly names from your captures.
 
 ## Learn About WebGL
 ###### [Back to top](#table-of-content)

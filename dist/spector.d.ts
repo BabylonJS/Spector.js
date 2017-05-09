@@ -1553,7 +1553,6 @@ declare namespace SPECTOR {
     type WebGlObjectTag = {
         readonly typeName: string;
         readonly id: number;
-        version: number;
         displayText?: string;
         customData?: {};
     };
