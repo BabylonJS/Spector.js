@@ -57,8 +57,8 @@ namespace SPECTOR {
 
             // Else, attempt to convert.
             const newPixels = new Uint8Array(width * height * 4);
-            for (let i = 0; i < width; i++) {
-                for (let j = 0; j < height; j++) {
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
                     newPixels[i * width * 4 + j * 4 + 0] = Math.min(Math.max((pixels as any)[i * width * 4 + j * 4 + 0], 0), 1) * 255;
                     newPixels[i * width * 4 + j * 4 + 1] = Math.min(Math.max((pixels as any)[i * width * 4 + j * 4 + 1], 0), 1) * 255;
                     newPixels[i * width * 4 + j * 4 + 2] = Math.min(Math.max((pixels as any)[i * width * 4 + j * 4 + 2], 0), 1) * 255;
