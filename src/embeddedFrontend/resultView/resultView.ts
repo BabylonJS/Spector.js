@@ -33,8 +33,9 @@ namespace SPECTOR.EmbeddedFrontend {
         private readonly jsonContentComponent: JSONContentComponent;
         private readonly jsonGroupComponent: JSONGroupComponent;
         private readonly jsonItemComponent: JSONItemComponent;
-        private readonly jsonItemImageComponent: JSONItemImageComponent;
+        private readonly jsonImageItemComponent: JSONImageItemComponent;
         private readonly jsonSourceItemComponent: JSONSourceItemComponent;
+        private readonly jsonHelpItemComponent: JSONHelpItemComponent;
         private readonly jsonVisualStateItemComponent: JSONVisualStateItemComponent;
         private readonly resultViewMenuComponent: ResultViewMenuComponent;
         private readonly resultViewContentComponent: ResultViewContentComponent;
@@ -86,8 +87,9 @@ namespace SPECTOR.EmbeddedFrontend {
             this.jsonContentComponent = new JSONContentComponent(options.eventConstructor, logger);
             this.jsonGroupComponent = new JSONGroupComponent(options.eventConstructor, logger);
             this.jsonItemComponent = new JSONItemComponent(options.eventConstructor, logger);
-            this.jsonItemImageComponent = new JSONItemImageComponent(options.eventConstructor, logger);
+            this.jsonImageItemComponent = new JSONImageItemComponent(options.eventConstructor, logger);
             this.jsonSourceItemComponent = new JSONSourceItemComponent(options.eventConstructor, logger);
+            this.jsonHelpItemComponent = new JSONHelpItemComponent(options.eventConstructor, logger);
             this.jsonVisualStateItemComponent = new JSONVisualStateItemComponent(options.eventConstructor, logger);
             this.resultViewMenuComponent = new ResultViewMenuComponent(options.eventConstructor, logger);
             this.resultViewContentComponent = new ResultViewContentComponent(options.eventConstructor, logger);
@@ -354,7 +356,7 @@ namespace SPECTOR.EmbeddedFrontend {
                             this.mvx.addChildState(parentGroupId, {
                                 key: target,
                                 value: value[target],
-                            }, this.jsonItemImageComponent);
+                            }, this.jsonImageItemComponent);
                         }
                     }
                 }
@@ -413,6 +415,15 @@ namespace SPECTOR.EmbeddedFrontend {
                     }
                 }
                 return arrayResult.length === 0 ? null : arrayResult.join(", ");
+            }
+
+            if (json.help) {
+                this.mvx.addChildState(parentGroupId, {
+                    key,
+                    value: json.name,
+                    help: json.help,
+                }, this.jsonHelpItemComponent);
+                return null;
             }
 
             if (json.__SPECTOR_Object_TAG) {
@@ -515,9 +526,10 @@ namespace SPECTOR.EmbeddedFrontend {
                     break;
             }
 
+            const helpLink = MDNCommandLinkHelper.getMDNLink(command.name);
             if (command.result) {
                 this.displayJSONGroup(this.commandDetailStateId, "Global", {
-                    name: command.name,
+                    name: { help: helpLink, name: command.name },
                     duration: command.commandEndTime - command.startTime,
                     result: command.result,
                     status,
@@ -525,7 +537,7 @@ namespace SPECTOR.EmbeddedFrontend {
             }
             else {
                 this.displayJSONGroup(this.commandDetailStateId, "Global", {
-                    name: command.name,
+                    name: { help: helpLink, name: command.name },
                     duration: command.commandEndTime - command.startTime,
                     status,
                 });

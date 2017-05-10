@@ -1899,6 +1899,19 @@ declare namespace SPECTOR.EmbeddedFrontend {
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
+    class MDNCommandLinkHelper {
+        static WebGL2RootUrl: string;
+        static WebGLRootUrl: string;
+        static WebGL2Functions: {
+            [key: string]: string;
+        };
+        static WebGLFunctions: {
+            [key: string]: string;
+        };
+        static getMDNLink(commandName: string): string;
+    }
+}
+declare namespace SPECTOR.EmbeddedFrontend {
     class JSONContentComponent extends BaseComponent<any> {
         render(state: any, stateId: number): Element;
     }
@@ -1906,11 +1919,6 @@ declare namespace SPECTOR.EmbeddedFrontend {
 declare namespace SPECTOR.EmbeddedFrontend {
     class JSONGroupComponent extends BaseComponent<string> {
         render(state: string, stateId: number): Element;
-    }
-}
-declare namespace SPECTOR.EmbeddedFrontend {
-    class JSONItemImageComponent extends BaseComponent<IJSONItemState> {
-        render(state: IJSONItemState, stateId: number): Element;
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
@@ -1923,10 +1931,25 @@ declare namespace SPECTOR.EmbeddedFrontend {
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
+    class JSONImageItemComponent extends BaseComponent<IJSONItemState> {
+        render(state: IJSONItemState, stateId: number): Element;
+    }
+}
+declare namespace SPECTOR.EmbeddedFrontend {
     class JSONSourceItemComponent extends BaseComponent<IJSONItemState> {
         onOpenSourceClicked: IStateEvent<IJSONItemState>;
         constructor(eventConstructor: EventConstructor, logger: ILogger);
         render(state: IJSONItemState, stateId: number): Element;
+    }
+}
+declare namespace SPECTOR.EmbeddedFrontend {
+    interface IJSONHelpItemState {
+        key: string;
+        value: string;
+        help: string;
+    }
+    class JSONHelpItemComponent extends BaseComponent<IJSONHelpItemState> {
+        render(state: IJSONHelpItemState, stateId: number): Element;
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
@@ -2012,8 +2035,9 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private readonly jsonContentComponent;
         private readonly jsonGroupComponent;
         private readonly jsonItemComponent;
-        private readonly jsonItemImageComponent;
+        private readonly jsonImageItemComponent;
         private readonly jsonSourceItemComponent;
+        private readonly jsonHelpItemComponent;
         private readonly jsonVisualStateItemComponent;
         private readonly resultViewMenuComponent;
         private readonly resultViewContentComponent;

@@ -5351,6 +5351,160 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
+        var MDNCommandLinkHelper = (function () {
+            function MDNCommandLinkHelper() {
+            }
+            MDNCommandLinkHelper.getMDNLink = function (commandName) {
+                var webgl2Name = MDNCommandLinkHelper.WebGL2Functions[commandName];
+                if (webgl2Name) {
+                    return MDNCommandLinkHelper.WebGL2RootUrl + webgl2Name;
+                }
+                var webglName = MDNCommandLinkHelper.WebGLFunctions[commandName];
+                if (webglName) {
+                    return MDNCommandLinkHelper.WebGLRootUrl + webglName;
+                }
+                return MDNCommandLinkHelper.WebGLRootUrl + commandName;
+            };
+            return MDNCommandLinkHelper;
+        }());
+        MDNCommandLinkHelper.WebGL2RootUrl = "https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/";
+        MDNCommandLinkHelper.WebGLRootUrl = "https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/";
+        MDNCommandLinkHelper.WebGL2Functions = {
+            beginQuery: "beginQuery",
+            beginTransformFeedback: "beginTransformFeedback",
+            bindBufferBase: "bindBufferBase",
+            bindBufferRange: "bindBufferRange",
+            bindSampler: "bindSampler",
+            bindTransformFeedback: "bindTransformFeedback",
+            bindVertexArray: "bindVertexArray",
+            blitFramebuffer: "blitFramebuffer",
+            clearBufferfv: "clearBuffer",
+            clearBufferiv: "clearBuffer",
+            clearBufferuiv: "clearBuffer",
+            clearBufferfi: "clearBuffer",
+            clientWaitSync: "clientWaitSync",
+            compressedTexImage3D: "compressedTexImage3D",
+            compressedTexSubImage3D: "compressedTexSubImage3D",
+            copyBufferSubData: "copyBufferSubData",
+            copyTexSubImage3D: "copyTexSubImage3D",
+            createQuery: "createQuery",
+            createSampler: "createSampler",
+            createTransformFeedback: "createTransformFeedback",
+            createVertexArray: "createVertexArray",
+            deleteQuery: "deleteQuery",
+            deleteSampler: "deleteSampler",
+            deleteSync: "deleteSync",
+            deleteTransformFeedback: "deleteTransformFeedback",
+            deleteVertexArray: "deleteVertexArray",
+            drawArraysInstanced: "drawArraysInstanced",
+            drawBuffers: "drawBuffers",
+            drawElementsInstanced: "drawElementsInstanced",
+            drawRangeElements: "drawRangeElements",
+            endQuery: "endQuery",
+            endTransformFeedback: "endTransformFeedback",
+            fenceSync: "fenceSync",
+            framebufferTextureLayer: "framebufferTextureLayer",
+            getActiveUniformBlockName: "getActiveUniformBlockName",
+            getActiveUniformBlockParameter: "getActiveUniformBlockParameter",
+            getActiveUniforms: "getActiveUniforms",
+            getBufferSubData: "getBufferSubData",
+            getFragDataLocation: "getFragDataLocation",
+            getIndexedParameter: "getIndexedParameter",
+            getInternalformatParameter: "getInternalformatParameter",
+            getQuery: "getQuery",
+            getQueryParameter: "getQueryParameter",
+            getSamplerParameter: "getSamplerParameter",
+            getSyncParameter: "getSyncParameter",
+            getTransformFeedbackVarying: "getTransformFeedbackVarying",
+            getUniformBlockIndex: "getUniformBlockIndex",
+            getUniformIndices: "getUniformIndices",
+            invalidateFramebuffer: "invalidateFramebuffer",
+            invalidateSubFramebuffer: "invalidateSubFramebuffer",
+            isQuery: "isQuery",
+            isSampler: "isSampler",
+            isSync: "isSync",
+            isTransformFeedback: "isTransformFeedback",
+            isVertexArray: "isVertexArray",
+            pauseTransformFeedback: "pauseTransformFeedback",
+            readBuffer: "readBuffer",
+            renderbufferStorageMultisample: "renderbufferStorageMultisample",
+            resumeTransformFeedback: "resumeTransformFeedback",
+            samplerParameteri: "samplerParameter",
+            samplerParameterf: "samplerParameter",
+            texImage3D: "texImage3D",
+            texStorage2D: "texStorage2D",
+            texStorage3D: "texStorage3D",
+            texSubImage3D: "texSubImage3D",
+            transformFeedbackVaryings: "transformFeedbackVaryings",
+            uniform1ui: "uniform",
+            uniform2ui: "uniform",
+            uniform3ui: "uniform",
+            uniform4ui: "uniform",
+            uniform1fv: "uniform",
+            uniform2fv: "uniform",
+            uniform3fv: "uniform",
+            uniform4fv: "uniform",
+            uniform1iv: "uniform",
+            uniform2iv: "uniform",
+            uniform3iv: "uniform",
+            uniform4iv: "uniform",
+            uniform1uiv: "uniform",
+            uniform2uiv: "uniform",
+            uniform3uiv: "uniform",
+            uniform4uiv: "uniform",
+            uniformBlockBinding: "uniformBlockBinding",
+            uniformMatrix2fv: "uniformMatrix",
+            uniformMatrix3x2fv: "uniformMatrix",
+            uniformMatrix4x2fv: "uniformMatrix",
+            uniformMatrix2x3fv: "uniformMatrix",
+            uniformMatrix3fv: "uniformMatrix",
+            uniformMatrix4x3fv: "uniformMatrix",
+            uniformMatrix2x4fv: "uniformMatrix",
+            uniformMatrix3x4fv: "uniformMatrix",
+            uniformMatrix4fv: "uniformMatrix",
+            vertexAttribDivisor: "vertexAttribDivisor",
+            vertexAttribI4i: "vertexAttribI",
+            vertexAttribI4ui: "vertexAttribI",
+            vertexAttribI4iv: "vertexAttribI",
+            vertexAttribI4uiv: "vertexAttribI",
+            vertexAttribIPointer: "vertexAttribIPointer",
+            waitSync: "waitSync",
+        };
+        MDNCommandLinkHelper.WebGLFunctions = {
+            uniform1f: "uniform",
+            uniform1fv: "uniform",
+            uniform1i: "uniform",
+            uniform1iv: "uniform",
+            uniform2f: "uniform",
+            uniform2fv: "uniform",
+            uniform2i: "uniform",
+            uniform2iv: "uniform",
+            uniform3f: "uniform",
+            uniform3i: "uniform",
+            uniform3iv: "uniform",
+            uniform4f: "uniform",
+            uniform4fv: "uniform",
+            uniform4i: "uniform",
+            uniform4iv: "uniform",
+            uniformMatrix2fv: "uniformMatrix",
+            uniformMatrix3fv: "uniformMatrix",
+            uniformMatrix4fv: "uniformMatrix",
+            vertexAttrib1f: "vertexAttrib",
+            vertexAttrib2f: "vertexAttrib",
+            vertexAttrib3f: "vertexAttrib",
+            vertexAttrib4f: "vertexAttrib",
+            vertexAttrib1fv: "vertexAttrib",
+            vertexAttrib2fv: "vertexAttrib",
+            vertexAttrib3fv: "vertexAttrib",
+            vertexAttrib4fv: "vertexAttrib",
+        };
+        EmbeddedFrontend.MDNCommandLinkHelper = MDNCommandLinkHelper;
+    })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var EmbeddedFrontend;
+    (function (EmbeddedFrontend) {
         var JSONContentComponent = (function (_super) {
             __extends(JSONContentComponent, _super);
             function JSONContentComponent() {
@@ -5389,25 +5543,6 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var JSONItemImageComponent = (function (_super) {
-            __extends(JSONItemImageComponent, _super);
-            function JSONItemImageComponent() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            JSONItemImageComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <li class=\"jsonItemImageHolder\"><div class=\"jsonItemImage\"><img src=\"", "\"/><span>", "</span></div></li>"], _a.raw = ["\n            <li class=\"jsonItemImageHolder\"><div class=\"jsonItemImage\"><img src=\"", "\"/><span>", "</span></div></li>"], this.htmlTemplate(_a, state.value, state.key));
-                return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
-            };
-            return JSONItemImageComponent;
-        }(EmbeddedFrontend.BaseComponent));
-        EmbeddedFrontend.JSONItemImageComponent = JSONItemImageComponent;
-    })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
-})(SPECTOR || (SPECTOR = {}));
-var SPECTOR;
-(function (SPECTOR) {
-    var EmbeddedFrontend;
-    (function (EmbeddedFrontend) {
         var JSONItemComponent = (function (_super) {
             __extends(JSONItemComponent, _super);
             function JSONItemComponent() {
@@ -5421,6 +5556,25 @@ var SPECTOR;
             return JSONItemComponent;
         }(EmbeddedFrontend.BaseComponent));
         EmbeddedFrontend.JSONItemComponent = JSONItemComponent;
+    })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var EmbeddedFrontend;
+    (function (EmbeddedFrontend) {
+        var JSONImageItemComponent = (function (_super) {
+            __extends(JSONImageItemComponent, _super);
+            function JSONImageItemComponent() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            JSONImageItemComponent.prototype.render = function (state, stateId) {
+                var htmlString = (_a = ["\n            <li class=\"jsonItemImageHolder\"><div class=\"jsonItemImage\"><img src=\"", "\"/><span>", "</span></div></li>"], _a.raw = ["\n            <li class=\"jsonItemImageHolder\"><div class=\"jsonItemImage\"><img src=\"", "\"/><span>", "</span></div></li>"], this.htmlTemplate(_a, state.value, state.key));
+                return this.renderElementFromTemplate(htmlString, state, stateId);
+                var _a;
+            };
+            return JSONImageItemComponent;
+        }(EmbeddedFrontend.BaseComponent));
+        EmbeddedFrontend.JSONImageItemComponent = JSONImageItemComponent;
     })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
@@ -5442,6 +5596,25 @@ var SPECTOR;
             return JSONSourceItemComponent;
         }(EmbeddedFrontend.BaseComponent));
         EmbeddedFrontend.JSONSourceItemComponent = JSONSourceItemComponent;
+    })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var EmbeddedFrontend;
+    (function (EmbeddedFrontend) {
+        var JSONHelpItemComponent = (function (_super) {
+            __extends(JSONHelpItemComponent, _super);
+            function JSONHelpItemComponent() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            JSONHelpItemComponent.prototype.render = function (state, stateId) {
+                var htmlString = (_a = ["\n            <li><span class=\"jsonItemComponentKey\">", ": </span>\n                <span class=\"jsonItemComponentValue\">", " (<a href=\"", "\" target=\"_blank\" class=\"jsonSourceItemComponentOpen\">Open help page</a>)\n                </span>\n            <li>"], _a.raw = ["\n            <li><span class=\"jsonItemComponentKey\">", ": </span>\n                <span class=\"jsonItemComponentValue\">", " (<a href=\"", "\" target=\"_blank\" class=\"jsonSourceItemComponentOpen\">Open help page</a>)\n                </span>\n            <li>"], this.htmlTemplate(_a, state.key, state.value, state.help));
+                return this.renderElementFromTemplate(htmlString, state, stateId);
+                var _a;
+            };
+            return JSONHelpItemComponent;
+        }(EmbeddedFrontend.BaseComponent));
+        EmbeddedFrontend.JSONHelpItemComponent = JSONHelpItemComponent;
     })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
@@ -5624,8 +5797,9 @@ var SPECTOR;
                 this.jsonContentComponent = new EmbeddedFrontend.JSONContentComponent(options.eventConstructor, logger);
                 this.jsonGroupComponent = new EmbeddedFrontend.JSONGroupComponent(options.eventConstructor, logger);
                 this.jsonItemComponent = new EmbeddedFrontend.JSONItemComponent(options.eventConstructor, logger);
-                this.jsonItemImageComponent = new EmbeddedFrontend.JSONItemImageComponent(options.eventConstructor, logger);
+                this.jsonImageItemComponent = new EmbeddedFrontend.JSONImageItemComponent(options.eventConstructor, logger);
                 this.jsonSourceItemComponent = new EmbeddedFrontend.JSONSourceItemComponent(options.eventConstructor, logger);
+                this.jsonHelpItemComponent = new EmbeddedFrontend.JSONHelpItemComponent(options.eventConstructor, logger);
                 this.jsonVisualStateItemComponent = new EmbeddedFrontend.JSONVisualStateItemComponent(options.eventConstructor, logger);
                 this.resultViewMenuComponent = new EmbeddedFrontend.ResultViewMenuComponent(options.eventConstructor, logger);
                 this.resultViewContentComponent = new EmbeddedFrontend.ResultViewContentComponent(options.eventConstructor, logger);
@@ -5868,7 +6042,7 @@ var SPECTOR;
                                 this.mvx.addChildState(parentGroupId, {
                                     key: target,
                                     value: value[target],
-                                }, this.jsonItemImageComponent);
+                                }, this.jsonImageItemComponent);
                             }
                         }
                     }
@@ -5918,6 +6092,14 @@ var SPECTOR;
                         }
                     }
                     return arrayResult.length === 0 ? null : arrayResult.join(", ");
+                }
+                if (json.help) {
+                    this.mvx.addChildState(parentGroupId, {
+                        key: key,
+                        value: json.name,
+                        help: json.help,
+                    }, this.jsonHelpItemComponent);
+                    return null;
                 }
                 if (json.__SPECTOR_Object_TAG) {
                     return json.__SPECTOR_Object_TAG.displayText;
@@ -5996,9 +6178,10 @@ var SPECTOR;
                         status = "Valid";
                         break;
                 }
+                var helpLink = EmbeddedFrontend.MDNCommandLinkHelper.getMDNLink(command.name);
                 if (command.result) {
                     this.displayJSONGroup(this.commandDetailStateId, "Global", {
-                        name: command.name,
+                        name: { help: helpLink, name: command.name },
                         duration: command.commandEndTime - command.startTime,
                         result: command.result,
                         status: status,
@@ -6006,7 +6189,7 @@ var SPECTOR;
                 }
                 else {
                     this.displayJSONGroup(this.commandDetailStateId, "Global", {
-                        name: command.name,
+                        name: { help: helpLink, name: command.name },
                         duration: command.commandEndTime - command.startTime,
                         status: status,
                     });
