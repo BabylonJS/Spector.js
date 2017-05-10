@@ -3440,8 +3440,8 @@ var SPECTOR;
                     return;
                 }
                 this.currentState.frameBuffer = this.readFrameBufferFromContext();
-                this.currentState.program = this.getSpectorData(program);
                 this.currentState.programStatus = {
+                    program: this.getSpectorData(program),
                     DELETE_STATUS: this.context.getProgramParameter(program, SPECTOR.WebGlConstants.DELETE_STATUS.value),
                     LINK_STATUS: this.context.getProgramParameter(program, SPECTOR.WebGlConstants.LINK_STATUS.value),
                     VALIDATE_STATUS: this.context.getProgramParameter(program, SPECTOR.WebGlConstants.VALIDATE_STATUS.value),
@@ -3476,16 +3476,27 @@ var SPECTOR;
                         this.currentState.uniformBlocks.push(uniformBlockState);
                     }
                     var transformFeedbackActive = this.context.getParameter(SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_ACTIVE.value);
-                    this.currentState.transformFeedbacks = [];
                     if (transformFeedbackActive) {
                         var transformFeedbackModeValue = this.context.getProgramParameter(program, SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_MODE.value);
-                        var transformFeedbackMode = this.getWebGlConstant(transformFeedbackModeValue);
+                        this.currentState.transformFeedbackMode = this.getWebGlConstant(transformFeedbackModeValue);
+                        this.currentState.transformFeedbacks = [];
                         var transformFeedbacks = this.context.getProgramParameter(program, SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_VARYINGS.value);
                         for (var i = 0; i < transformFeedbacks; i++) {
                             var transformFeedbackState = this.readTransformFeedbackFromContext(program, i);
                             this.currentState.transformFeedbacks.push(transformFeedbackState);
                         }
                     }
+                }
+                // Insert texture state at the end of the uniform datas.
+                for (var i = 0; i < uniformIndices.length; i++) {
+                    var uniformState = this.currentState.uniforms[i];
+                    if (uniformState.value !== null) {
+                        var textureTarget = DrawCallState_1.samplerTypes[uniformState.typeValue];
+                        if (textureTarget) {
+                            uniformState.texture = this.readTextureFromContext(uniformState.value, textureTarget);
+                        }
+                    }
+                    delete uniformState.typeValue;
                 }
             };
             DrawCallState.prototype.readFrameBufferFromContext = function () {
@@ -3495,8 +3506,14 @@ var SPECTOR;
                 }
                 var frameBufferState = {};
                 frameBufferState.frameBuffer = this.getSpectorData(frameBuffer);
-                frameBufferState.depthAttachment = this.readFrameBufferAttachmentFromContext(SPECTOR.WebGlConstants.DEPTH_ATTACHMENT.value);
-                frameBufferState.stencilAttachment = this.readFrameBufferAttachmentFromContext(SPECTOR.WebGlConstants.STENCIL_ATTACHMENT.value);
+                var depthAttachment = this.readFrameBufferAttachmentFromContext(SPECTOR.WebGlConstants.DEPTH_ATTACHMENT.value);
+                if (depthAttachment) {
+                    frameBufferState.depthAttachment = this.readFrameBufferAttachmentFromContext(SPECTOR.WebGlConstants.DEPTH_ATTACHMENT.value);
+                }
+                var stencilAttachment = this.readFrameBufferAttachmentFromContext(SPECTOR.WebGlConstants.STENCIL_ATTACHMENT.value);
+                if (stencilAttachment) {
+                    frameBufferState.stencilAttachment = this.readFrameBufferAttachmentFromContext(SPECTOR.WebGlConstants.STENCIL_ATTACHMENT.value);
+                }
                 var drawBuffersExtension = this.extensions[SPECTOR.WebGlConstants.MAX_DRAW_BUFFERS_WEBGL.extensionName];
                 if (drawBuffersExtension) {
                     frameBufferState.colorAttachments = [];
@@ -3610,13 +3627,10 @@ var SPECTOR;
                         name: info.name,
                         size: info.size,
                         type: this.getWebGlConstant(info.type),
+                        typeValue: info.type,
                         location: this.getSpectorData(location),
                         value: value,
                     };
-                    var textureTarget = DrawCallState_1.samplerTypes[info.type];
-                    if (textureTarget) {
-                        uniformState.texture = this.readTextureFromContext(value, textureTarget);
-                    }
                     return uniformState;
                 }
                 else {
@@ -3624,6 +3638,7 @@ var SPECTOR;
                         name: info.name,
                         size: info.size,
                         type: this.getWebGlConstant(info.type),
+                        typeValue: info.type,
                         location: null,
                         value: null,
                     };

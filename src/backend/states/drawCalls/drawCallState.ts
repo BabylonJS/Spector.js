@@ -51,8 +51,8 @@ namespace SPECTOR.States {
 
             this.currentState.frameBuffer = this.readFrameBufferFromContext();
 
-            this.currentState.program = this.getSpectorData(program);
             this.currentState.programStatus = {
+                program: this.getSpectorData(program),
                 DELETE_STATUS: this.context.getProgramParameter(program, WebGlConstants.DELETE_STATUS.value),
                 LINK_STATUS: this.context.getProgramParameter(program, WebGlConstants.LINK_STATUS.value),
                 VALIDATE_STATUS: this.context.getProgramParameter(program, WebGlConstants.VALIDATE_STATUS.value),
@@ -92,17 +92,29 @@ namespace SPECTOR.States {
                 }
 
                 const transformFeedbackActive = this.context.getParameter(WebGlConstants.TRANSFORM_FEEDBACK_ACTIVE.value);
-                this.currentState.transformFeedbacks = [];
                 if (transformFeedbackActive) {
                     const transformFeedbackModeValue = this.context.getProgramParameter(program, WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_MODE.value);
-                    const transformFeedbackMode = this.getWebGlConstant(transformFeedbackModeValue);
+                    this.currentState.transformFeedbackMode = this.getWebGlConstant(transformFeedbackModeValue);
 
+                    this.currentState.transformFeedbacks = [];
                     const transformFeedbacks = this.context.getProgramParameter(program, WebGlConstants.TRANSFORM_FEEDBACK_VARYINGS.value);
                     for (let i = 0; i < transformFeedbacks; i++) {
                         const transformFeedbackState = this.readTransformFeedbackFromContext(program, i);
                         this.currentState.transformFeedbacks.push(transformFeedbackState);
                     }
                 }
+            }
+
+            // Insert texture state at the end of the uniform datas.
+            for (let i = 0; i < uniformIndices.length; i++) {
+                const uniformState = this.currentState.uniforms[i];
+                if (uniformState.value !== null) {
+                    const textureTarget = DrawCallState.samplerTypes[uniformState.typeValue];
+                    if (textureTarget) {
+                        uniformState.texture = this.readTextureFromContext(uniformState.value, textureTarget);
+                    }
+                }
+                delete uniformState.typeValue;
             }
         }
 
@@ -115,8 +127,15 @@ namespace SPECTOR.States {
             const frameBufferState: any = {};
             frameBufferState.frameBuffer = this.getSpectorData(frameBuffer);
 
-            frameBufferState.depthAttachment = this.readFrameBufferAttachmentFromContext(WebGlConstants.DEPTH_ATTACHMENT.value);
-            frameBufferState.stencilAttachment = this.readFrameBufferAttachmentFromContext(WebGlConstants.STENCIL_ATTACHMENT.value);
+            const depthAttachment = this.readFrameBufferAttachmentFromContext(WebGlConstants.DEPTH_ATTACHMENT.value);
+            if (depthAttachment) {
+                frameBufferState.depthAttachment = this.readFrameBufferAttachmentFromContext(WebGlConstants.DEPTH_ATTACHMENT.value);
+            }
+
+            const stencilAttachment = this.readFrameBufferAttachmentFromContext(WebGlConstants.STENCIL_ATTACHMENT.value);
+            if (stencilAttachment) {
+                frameBufferState.stencilAttachment = this.readFrameBufferAttachmentFromContext(WebGlConstants.STENCIL_ATTACHMENT.value);
+            }
 
             const drawBuffersExtension = this.extensions[WebGlConstants.MAX_DRAW_BUFFERS_WEBGL.extensionName];
             if (drawBuffersExtension) {
@@ -245,14 +264,10 @@ namespace SPECTOR.States {
                     name: info.name,
                     size: info.size,
                     type: this.getWebGlConstant(info.type),
+                    typeValue: info.type,
                     location: this.getSpectorData(location),
                     value,
                 };
-
-                const textureTarget = DrawCallState.samplerTypes[info.type];
-                if (textureTarget) {
-                    uniformState.texture = this.readTextureFromContext(value, textureTarget);
-                }
                 return uniformState;
             }
             else {
@@ -260,6 +275,7 @@ namespace SPECTOR.States {
                     name: info.name,
                     size: info.size,
                     type: this.getWebGlConstant(info.type),
+                    typeValue: info.type,
                     location: null,
                     value: null,
                 };
