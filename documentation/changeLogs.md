@@ -4,6 +4,11 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.0.20 Analytics
+This release is planned to adress analytics. It adds memory and time tracking in order to help improving your apps.
+
+[View More...](changeLogs/v0.0.20.md)
+
 ## v0.0.11 Fix Release
 This release is aimed to address a few of the first created bugs:
 
