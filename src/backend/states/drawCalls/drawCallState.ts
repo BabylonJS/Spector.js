@@ -164,7 +164,7 @@ namespace SPECTOR.States {
             else {
                 const attachment = this.readFrameBufferAttachmentFromContext(WebGlConstantsByName["COLOR_ATTACHMENT0"].value);
                 if (attachment) {
-                    frameBufferState.colorAttachments.push(attachment);
+                    frameBufferState.colorAttachments = [attachment];
                 }
             }
 

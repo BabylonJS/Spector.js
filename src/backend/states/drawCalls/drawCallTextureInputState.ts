@@ -3,32 +3,6 @@ namespace SPECTOR.States {
 
         public static captureBaseSize = 64;
 
-        protected static allowedInternalFormat = [
-            WebGlConstants.RGB.value,
-            WebGlConstants.RGBA.value,
-
-            WebGlConstants.RGB8.value,
-            WebGlConstants.RGB8_SNORM.value,
-            WebGlConstants.RGB8I.value,
-            WebGlConstants.RGBA8.value,
-            WebGlConstants.RGBA8_SNORM.value,
-            WebGlConstants.RGBA8I.value,
-
-            WebGlConstants.RGB16F.value,
-            WebGlConstants.RGB16I.value,
-            WebGlConstants.RGB16UI.value,
-            WebGlConstants.RGBA16F.value,
-            WebGlConstants.RGBA16I.value,
-            WebGlConstants.RGBA16UI.value,
-
-            WebGlConstants.RGB32F.value,
-            WebGlConstants.RGB32I.value,
-            WebGlConstants.RGB32UI.value,
-            WebGlConstants.RGBA32F.value,
-            WebGlConstants.RGBA32I.value,
-            WebGlConstants.RGBA32UI.value,
-        ];
-
         protected static cubeMapFaces = [
             WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_X,
             WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Y,
@@ -72,7 +46,7 @@ namespace SPECTOR.States {
                     visual: {},
                 };
 
-                if (DrawCallTextureInputState.allowedInternalFormat.indexOf(info.internalFormat) === -1) {
+                if (!ReadPixelsHelper.isSupportedCombination(info.type, info.format, info.internalFormat)) {
                     return result;
                 }
 
@@ -89,13 +63,13 @@ namespace SPECTOR.States {
                         for (const face of DrawCallTextureInputState.cubeMapFaces) {
                             gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                                 face.value, storage, textureLevel);
-                            (result.visual as any)[face.name] = this.getCapture(gl, 0, 0, width, height);
+                            (result.visual as any)[face.name] = this.getCapture(gl, 0, 0, width, height, info.type);
                         }
                     }
                     else {
                         gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                             WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
-                        (result.visual as any)[WebGlConstants.TEXTURE_2D.name] = this.getCapture(gl, 0, 0, width, height);
+                        (result.visual as any)[WebGlConstants.TEXTURE_2D.name] = this.getCapture(gl, 0, 0, width, height, info.type);
                     }
                 }
                 catch (e) {
@@ -112,7 +86,7 @@ namespace SPECTOR.States {
             return undefined;
         }
 
-        protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number): string {
+        protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number): string {
             try {
                 // Check FBO status.
                 const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);
@@ -120,14 +94,9 @@ namespace SPECTOR.States {
                     return undefined;
                 }
 
-                // Empty error list.
-                gl.getError();
-
-                // Read the pixels from the frame buffer.
-                const size = width * height * 4;
-                const pixels = new Uint8Array(size);
-                gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-                if (gl.getError()) {
+                // Read the pixels from the context.
+                const pixels = ReadPixelsHelper.readPixels(gl, x, y, width, height, type);
+                if (!pixels) {
                     return undefined;
                 }
 

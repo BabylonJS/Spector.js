@@ -772,8 +772,6 @@ declare namespace SPECTOR {
         static readonly COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL: WebGlConstant;
         static readonly UNSIGNED_INT_24_8_WEBGL: WebGlConstant;
         static readonly HALF_FLOAT_OES: WebGlConstant;
-        static readonly RGBA32F_EXT: WebGlConstant;
-        static readonly RGB32F_EXT: WebGlConstant;
         static readonly FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE_EXT: WebGlConstant;
         static readonly UNSIGNED_NORMALIZED_EXT: WebGlConstant;
         static readonly MIN_EXT: WebGlConstant;
@@ -859,6 +857,12 @@ declare namespace SPECTOR.Decorators {
     function webGlObject(objectName: string): (target: any) => void;
     function getWebGlObjectName(target: any): string;
     function getWebGlObjectType(target: any): Function;
+}
+declare namespace SPECTOR {
+    class ReadPixelsHelper {
+        static isSupportedCombination(type: number, format: number, internalFormat: number): boolean;
+        static readPixels(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number): Uint8Array;
+    }
 }
 declare namespace SPECTOR {
     interface ITimeSpy {
@@ -1481,7 +1485,6 @@ declare namespace SPECTOR.States {
 declare namespace SPECTOR.States {
     class VisualState extends BaseState {
         static captureBaseSize: number;
-        protected static allowedInternalFormat: number[];
         private readonly captureFrameBuffer;
         private readonly workingCanvas;
         private readonly captureCanvas;
@@ -1491,7 +1494,7 @@ declare namespace SPECTOR.States {
         protected getConsumeCommands(): string[];
         protected readFromContext(): void;
         protected readFrameBufferAttachmentFromContext(gl: WebGLRenderingContext | WebGL2RenderingContext, frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant, x: number, y: number, width: number, height: number): void;
-        protected getCapture(gl: WebGLRenderingContext, name: string, x: number, y: number, width: number, height: number, textureCubeMapFace: number, textureLayer: number): void;
+        protected getCapture(gl: WebGLRenderingContext, name: string, x: number, y: number, width: number, height: number, textureCubeMapFace: number, textureLayer: number, type: number): void;
         protected analyse(consumeCommand: ICommandCapture): void;
     }
 }
@@ -1523,7 +1526,6 @@ declare namespace SPECTOR.States {
     class DrawCallTextureInputState {
         protected readonly logger: ILogger;
         static captureBaseSize: number;
-        protected static allowedInternalFormat: number[];
         protected static cubeMapFaces: WebGlConstant[];
         private readonly context;
         private readonly captureFrameBuffer;
@@ -1533,7 +1535,7 @@ declare namespace SPECTOR.States {
         private readonly captureContext2D;
         constructor(options: IStateOptions, logger: ILogger);
         getTextureState(target: WebGlConstant, storage: WebGLTexture, info: ITextureRecorderData): any;
-        protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number): string;
+        protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number): string;
         protected getWebGlConstant(value: number): string;
     }
 }

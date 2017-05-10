@@ -35,8 +35,9 @@ Once ```npm start``` has been launched, you can access the following samples to 
 2. [Lights](http://localhost:1337/sample/index.html?sample=lights): Simple BabylonJS scene with three lights.
 3. [Texture 2d](http://localhost:1337/sample/index.html?sample=texture2d): BabylonJS scene containing materials with texture.
 4. [Texture cube](http://localhost:1337/sample/index.html?sample=textureCube): BabylonJS scene containing a cube texture.
-5. [Render Target Texture](http://localhost:1337/sample/index.html?sample=renderTargetTexture): Test to a capture containing render target textures.
-6. [Custom Metadata](http://localhost:1337/sample/index.html?sample=customMetadata): Test to a capture objects containing metadata.
+5. [Render Target Texture](http://localhost:1337/sample/index.html?sample=renderTargetTexture): Test to do a capture containing render target textures.
+6. [Buffer View Texture](http://localhost:1337/sample/index.html?sample=bufferViewTexture): Test to do a capture containing a cube texture created from bufferview data.
+7. [Custom Metadata](http://localhost:1337/sample/index.html?sample=customMetadata): Test to do a capture objects containing metadata.
 
 ### Add more samples
 To add a new sample, simply add a new script in the ```sample/js``` folder. To launch it you can use the following url by replacing the ```fileName``` by your new file name without the ```.js``` extension.
