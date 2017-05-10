@@ -5754,11 +5754,97 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             SourceCodeComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div class=\"sourceCodeComponent\">\n                <span class=\"sourceCodeComponentTitle\">", "</span>\n                <pre class=\"language-glsl\"><code>$", "</code></pre>\n            </div>"], _a.raw = ["\n            <div class=\"sourceCodeComponent\">\n                <span class=\"sourceCodeComponentTitle\">", "</span>\n                <pre class=\"language-glsl\"><code>$", "</code></pre>\n            </div>"], this.htmlTemplate(_a, state.description, state.source));
-                var element = this.renderElementFromTemplate(htmlString, state, stateId);
+                var formattedShader = state.source ? this._indentIfdef(this._beautify(state.source)) : "";
+                var htmlString = (_a = ["\n            <div class=\"sourceCodeComponent\">\n                <span class=\"sourceCodeComponentTitle\">", "</span>\n                <pre class=\"language-glsl\"><code>", "</code></pre>\n            </div>"], _a.raw = ["\n            <div class=\"sourceCodeComponent\">\n                <span class=\"sourceCodeComponentTitle\">", "</span>\n                <pre class=\"language-glsl\"><code>", "</code></pre>\n            </div>"], this.htmlTemplate(_a, state.description, formattedShader));
+                // Pre and Prism work on the normal carriage return.
+                var element = this.renderElementFromTemplate(htmlString.replace(/<br>/g, "\n"), state, stateId);
                 Prism.highlightElement(element.querySelector("pre"));
                 return element;
                 var _a;
+            };
+            /**
+             * Returns the position of the first "{" and the corresponding "}"
+             * @param str the Shader source code as a string
+             */
+            SourceCodeComponent.prototype._getBracket = function (str) {
+                var fb = str.indexOf("{");
+                var arr = str.substr(fb + 1).split("");
+                var counter = 1;
+                var currentPosInString = fb;
+                var lastBracketIndex = 0;
+                for (var _i = 0, arr_1 = arr; _i < arr_1.length; _i++) {
+                    var char = arr_1[_i];
+                    currentPosInString++;
+                    if (char === "{") {
+                        counter++;
+                    }
+                    if (char === "}") {
+                        counter--;
+                    }
+                    if (counter === 0) {
+                        lastBracketIndex = currentPosInString;
+                        break;
+                    }
+                }
+                return { firstIteration: fb, lastIteration: lastBracketIndex };
+            };
+            /**
+             * Beautify the given string : correct indentation according to brackets
+             */
+            SourceCodeComponent.prototype._beautify = function (glsl, level) {
+                if (level === void 0) { level = 0; }
+                // return condition : no brackets at all
+                glsl = glsl.trim();
+                var brackets = this._getBracket(glsl);
+                var firstBracket = brackets.firstIteration;
+                var lastBracket = brackets.lastIteration;
+                var spaces = "";
+                for (var i = 0; i < level; i++) {
+                    spaces += "    "; // 4 spaces
+                }
+                // If no brackets, return the indented string
+                if (firstBracket === -1) {
+                    glsl = spaces + glsl; // indent first line
+                    glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
+                    glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, function (x) { return " " + x.trim() + " "; }); // space around =, *=, +=, -=, /=, ==, >=, <=
+                    glsl = glsl.replace(/\s*(,)\s*/g, function (x) { return x.trim() + " "; }); // space after ,
+                    glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
+                    glsl = glsl.replace(/\s+$/g, "");
+                    glsl = glsl.replace(/\n+$/g, "");
+                    return glsl;
+                }
+                else {
+                    // if brackets, beautify the inside
+                    // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
+                    var left = glsl.substr(0, firstBracket);
+                    var right = glsl.substr(lastBracket + 1, glsl.length);
+                    var inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
+                    var prettyInside = this._beautify(inside, level + 1);
+                    var result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
+                    return result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
+                }
+            };
+            SourceCodeComponent.prototype._indentIfdef = function (str) {
+                var level = 0;
+                var arr2 = str.split("\n");
+                for (var index = 0; index < arr2.length; index++) {
+                    var line = arr2[index];
+                    if (line.indexOf("#endif") !== -1) {
+                        level--;
+                    }
+                    if (line.indexOf("#else") !== -1) {
+                        level--;
+                    }
+                    var spaces = "";
+                    for (var i = 0; i < level; i++) {
+                        spaces += "    "; // 4 spaces
+                    }
+                    arr2[index] = spaces + line;
+                    if (line.indexOf("#if") !== -1 || line.indexOf("#else") !== -1) {
+                        level++;
+                    }
+                }
+                return arr2.join("\n");
             };
             return SourceCodeComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -5827,10 +5913,9 @@ var SPECTOR;
                 });
                 this.jsonSourceItemComponent.onOpenSourceClicked.add(function (sourceEventArg) {
                     _this.mvx.removeChildrenStates(_this.contentStateId);
-                    var formattedShader = _this._indentIfdef(_this._beautify(sourceEventArg.state.value));
                     var jsonContentStateId = _this.mvx.addChildState(_this.contentStateId, {
                         description: "WebGl Shader Source Code:",
-                        source: formattedShader,
+                        source: sourceEventArg.state.value,
                     }, _this.sourceCodeComponent);
                 });
                 this.updateViewState();
@@ -5874,87 +5959,6 @@ var SPECTOR;
                 }, 0, this.captureListItemComponent);
                 this.selectCapture(captureSateId);
                 return captureSateId;
-            };
-            /**
-             * Returns the position of the first "{" and the corresponding "}"
-             * @param str the Shader source code as a string
-             */
-            ResultView.prototype._getBracket = function (str) {
-                var fb = str.indexOf("{");
-                var arr = str.substr(fb + 1).split("");
-                var counter = 1;
-                var currentPosInString = fb;
-                var lastBracketIndex = 0;
-                for (var _i = 0, arr_1 = arr; _i < arr_1.length; _i++) {
-                    var char = arr_1[_i];
-                    currentPosInString++;
-                    if (char === "{") {
-                        counter++;
-                    }
-                    if (char === "}") {
-                        counter--;
-                    }
-                    if (counter === 0) {
-                        lastBracketIndex = currentPosInString;
-                        break;
-                    }
-                }
-                return { firstIteration: fb, lastIteration: lastBracketIndex };
-            };
-            /**
-             * Beautify the given string : correct indentation according to brackets
-             */
-            ResultView.prototype._beautify = function (glsl, level) {
-                if (level === void 0) { level = 0; }
-                // return condition : no brackets at all
-                glsl = glsl.trim();
-                var brackets = this._getBracket(glsl);
-                var firstBracket = brackets.firstIteration;
-                var lastBracket = brackets.lastIteration;
-                var spaces = "";
-                for (var i = 0; i < level; i++) {
-                    spaces += "    "; // 4 spaces
-                }
-                // If no brackets, return the indented string
-                if (firstBracket === -1) {
-                    glsl = spaces + glsl; // indent first line
-                    glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
-                    glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, function (x) { return " " + x.trim() + " "; }); // space around =, *=, +=, -=, /=, ==, >=, <=
-                    glsl = glsl.replace(/\s*(,)\s*/g, function (x) { return x.trim() + " "; }); // space after ,
-                    glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
-                    return glsl;
-                }
-                else {
-                    // if brackets, beautify the inside
-                    // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
-                    var left = glsl.substr(0, firstBracket);
-                    var right = glsl.substr(lastBracket + 1, glsl.length);
-                    var inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
-                    inside = this._beautify(inside, level + 1);
-                    return this._beautify(left, level) + "{\n" + inside + "\n" + spaces + "}\n" + this._beautify(right, level);
-                }
-            };
-            ResultView.prototype._indentIfdef = function (str) {
-                var level = 0;
-                var arr2 = str.split("\n");
-                for (var index = 0; index < arr2.length; index++) {
-                    var line = arr2[index];
-                    if (line.indexOf("#endif") !== -1) {
-                        level--;
-                    }
-                    if (line.indexOf("#else") !== -1) {
-                        level--;
-                    }
-                    var spaces = "";
-                    for (var i = 0; i < level; i++) {
-                        spaces += "    "; // 4 spaces
-                    }
-                    arr2[index] = spaces + line;
-                    if (line.indexOf("#if") !== -1 || line.indexOf("#else") !== -1) {
-                        level++;
-                    }
-                }
-                return arr2.join("\n");
             };
             ResultView.prototype.initMenuComponent = function () {
                 var _this = this;

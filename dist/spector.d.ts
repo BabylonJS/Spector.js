@@ -2002,6 +2002,16 @@ declare namespace SPECTOR.EmbeddedFrontend {
     }
     class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         render(state: ISourceCodeState, stateId: number): Element;
+        /**
+         * Returns the position of the first "{" and the corresponding "}"
+         * @param str the Shader source code as a string
+         */
+        private _getBracket(str);
+        /**
+         * Beautify the given string : correct indentation according to brackets
+         */
+        private _beautify(glsl, level?);
+        private _indentIfdef(str);
     }
 }
 declare namespace SPECTOR {
@@ -2066,16 +2076,6 @@ declare namespace SPECTOR.EmbeddedFrontend {
         display(): void;
         hide(): void;
         addCapture(capture: ICapture): number;
-        /**
-         * Returns the position of the first "{" and the corresponding "}"
-         * @param str the Shader source code as a string
-         */
-        private _getBracket(str);
-        /**
-         * Beautify the given string : correct indentation according to brackets
-         */
-        private _beautify(glsl, level?);
-        private _indentIfdef(str);
         private initMenuComponent();
         private onCaptureRelatedAction(menuStatus);
         private displayCaptures();
