@@ -2,7 +2,33 @@ namespace SPECTOR.States {
 
     @Decorators.state("VisualState")
     export class VisualState extends BaseState {
-        public static captureBaseSize = 512;
+        public static captureBaseSize = 256;
+
+        protected static allowedInternalFormat = [
+            WebGlConstants.RGB.value,
+            WebGlConstants.RGBA.value,
+
+            WebGlConstants.RGB8.value,
+            WebGlConstants.RGB8_SNORM.value,
+            WebGlConstants.RGB8I.value,
+            WebGlConstants.RGBA8.value,
+            WebGlConstants.RGBA8_SNORM.value,
+            WebGlConstants.RGBA8I.value,
+
+            WebGlConstants.RGB16F.value,
+            WebGlConstants.RGB16I.value,
+            WebGlConstants.RGB16UI.value,
+            WebGlConstants.RGBA16F.value,
+            WebGlConstants.RGBA16I.value,
+            WebGlConstants.RGBA16UI.value,
+
+            WebGlConstants.RGB32F.value,
+            WebGlConstants.RGB32I.value,
+            WebGlConstants.RGB32UI.value,
+            WebGlConstants.RGBA32F.value,
+            WebGlConstants.RGBA32I.value,
+            WebGlConstants.RGBA32UI.value,
+        ];
 
         private readonly captureFrameBuffer: WebGLFramebuffer;
         private readonly workingCanvas: HTMLCanvasElement;
@@ -49,8 +75,7 @@ namespace SPECTOR.States {
             const width = viewport[2];
             const height = viewport[3];
 
-            this.getTag(frameBuffer);
-            this.currentState["FrameBuffer"] = frameBuffer;
+            this.currentState["FrameBuffer"] = this.getSpectorData(frameBuffer);
 
             // Check FBO status.
             const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);
@@ -109,6 +134,18 @@ namespace SPECTOR.States {
 
                 const textureLevel = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
                 const textureCubeMapFace = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
+                const textureCubeMapFaceName = textureCubeMapFace > 0 ? WebGlConstantsByValue[textureCubeMapFace].name : WebGlConstants.TEXTURE_2D.name;
+
+                // Adapt to constraints defines in the custom data  if any.
+                if (storage.__SPECTOR_Object_CustomData) {
+                    if (VisualState.allowedInternalFormat.indexOf(
+                        storage.__SPECTOR_Object_CustomData.internalFormat) === -1) {
+                        return;
+                    }
+
+                    width = storage.__SPECTOR_Object_CustomData.width;
+                    height = storage.__SPECTOR_Object_CustomData.height;
+                }
 
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                 if (textureLayer === 0) {
@@ -194,19 +231,6 @@ namespace SPECTOR.States {
 
         protected analyse(consumeCommand: ICommandCapture): void {
             // Nothing to analyse on visual state.
-        }
-
-        private getTag(object: any): any {
-            if (!object) {
-                return undefined;
-            }
-
-            const tag = WebGlObjects.getWebGlObjectTag(object);
-            if (!tag) {
-                this.options.tagWebGlObject(object);
-            }
-
-            return object;
         }
     }
 }

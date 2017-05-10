@@ -28,6 +28,13 @@ namespace SPECTOR.States {
             return false;
         }
 
+        private readonly drawCallTextureInputState: DrawCallTextureInputState;
+
+        constructor(options: IStateOptions, logger: ILogger) {
+            super(options, logger);
+            this.drawCallTextureInputState = new DrawCallTextureInputState(options, logger);
+        }
+
         protected getConsumeCommands(): string[] {
             return drawCommands;
         }
@@ -44,7 +51,7 @@ namespace SPECTOR.States {
 
             this.currentState.frameBuffer = this.readFrameBufferFromContext();
 
-            this.currentState.program = this.getTag(program);
+            this.currentState.program = this.getSpectorData(program);
             this.currentState.programStatus = {
                 DELETE_STATUS: this.context.getProgramParameter(program, WebGlConstants.DELETE_STATUS.value),
                 LINK_STATUS: this.context.getProgramParameter(program, WebGlConstants.LINK_STATUS.value),
@@ -106,7 +113,7 @@ namespace SPECTOR.States {
             }
 
             const frameBufferState: any = {};
-            frameBufferState.frameBuffer = this.getTag(frameBuffer);
+            frameBufferState.frameBuffer = this.getSpectorData(frameBuffer);
 
             frameBufferState.depthAttachment = this.readFrameBufferAttachmentFromContext(WebGlConstants.DEPTH_ATTACHMENT.value);
             frameBufferState.stencilAttachment = this.readFrameBufferAttachmentFromContext(WebGlConstants.STENCIL_ATTACHMENT.value);
@@ -190,7 +197,7 @@ namespace SPECTOR.States {
 
         protected readShaderFromContext(shader: WebGLShader): {} {
             return {
-                shader: this.getTag(shader),
+                shader: this.getSpectorData(shader),
                 COMPILE_STATUS: this.context.getShaderParameter(shader, WebGlConstants.COMPILE_STATUS.value),
                 DELETE_STATUS: this.context.getShaderParameter(shader, WebGlConstants.DELETE_STATUS.value),
                 SHADER_TYPE: this.getWebGlConstant(this.context.getShaderParameter(shader, WebGlConstants.SHADER_TYPE.value)),
@@ -208,7 +215,7 @@ namespace SPECTOR.States {
                 type: this.getWebGlConstant(info.type),
                 location,
                 offsetPointer: this.context.getVertexAttribOffset(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_POINTER.value),
-                bufferBinding: this.getTag(this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING.value)),
+                bufferBinding: this.getSpectorData(this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING.value)),
                 enabled: this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_ENABLED.value),
                 arraySize: this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_SIZE.value),
                 stride: this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_STRIDE.value),
@@ -238,7 +245,7 @@ namespace SPECTOR.States {
                     name: info.name,
                     size: info.size,
                     type: this.getWebGlConstant(info.type),
-                    location: this.getTag(location),
+                    location: this.getSpectorData(location),
                     value,
                 };
 
@@ -283,7 +290,7 @@ namespace SPECTOR.States {
 
                 const sampler = this.context.getParameter(WebGlConstants.SAMPLER_BINDING.value);
                 if (sampler) {
-                    textureState.sampler = this.getTag(sampler);
+                    textureState.sampler = this.getSpectorData(sampler);
                     const context2 = this.context as WebGL2RenderingContext;
 
                     textureState.samplerMaxLod = context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
@@ -307,9 +314,9 @@ namespace SPECTOR.States {
 
             const customData = this.readTextureCustomDataFromTag(target);
             if (customData) {
-                for (const visualProperty in customData) {
-                    if (customData.hasOwnProperty(visualProperty)) {
-                        textureState[visualProperty] = customData[visualProperty];
+                for (const intelligibleProperty in customData) {
+                    if (customData.hasOwnProperty(intelligibleProperty)) {
+                        textureState[intelligibleProperty] = customData[intelligibleProperty];
                     }
                 }
             }
@@ -319,23 +326,27 @@ namespace SPECTOR.States {
         }
 
         protected readTextureCustomDataFromTag(target: WebGlConstant): any {
+            let texture: WebGLTexture;
             // Add texture visual.
             // 2D Textures.
             if (target === WebGlConstants.TEXTURE_2D) {
-                const texture2D = this.context.getParameter(WebGlConstants.TEXTURE_BINDING_2D.value);
-                const tag = this.getTag(texture2D);
-                if (tag && tag.customData) {
-                    return tag.customData;
-                }
+                texture = this.context.getParameter(WebGlConstants.TEXTURE_BINDING_2D.value);
             }
             // Cube Textures.
             else if (target === WebGlConstants.TEXTURE_CUBE_MAP) {
-                const textureCube = this.context.getParameter(WebGlConstants.TEXTURE_BINDING_CUBE_MAP.value);
-                const tag = this.getTag(textureCube);
-                if (tag && tag.customData) {
-                    return tag.customData;
-                }
+                texture = this.context.getParameter(WebGlConstants.TEXTURE_BINDING_CUBE_MAP.value);
             }
+
+            // Check for custom data.
+            const tag = this.getSpectorData(texture);
+            if (tag && tag.__SPECTOR_Object_CustomData) {
+                const customDataState = this.drawCallTextureInputState.getTextureState(target,
+                    texture,
+                    tag.__SPECTOR_Object_CustomData);
+
+                return customDataState;
+            }
+
             // TODO. textureArray_3d, Texture2d_array if find a way to visualize.
             return undefined;
         }
@@ -374,7 +385,7 @@ namespace SPECTOR.States {
                 name: info.name,
                 size: info.size,
                 type: this.getWebGlConstant(info.type),
-                buffer: this.getTag(context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING.value, index)),
+                buffer: this.getSpectorData(context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING.value, index)),
                 bufferSize: context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_SIZE.value, index),
                 bufferStart: context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_START.value, index),
             };
@@ -392,7 +403,7 @@ namespace SPECTOR.States {
                 vertex: context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER.value),
                 fragment: context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER.value),
 
-                buffer: this.getTag(context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint)),
+                buffer: this.getSpectorData(context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint)),
                 bufferSize: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_SIZE.value, bindingPoint),
                 bufferStart: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_START.value, bindingPoint),
             };
@@ -401,17 +412,6 @@ namespace SPECTOR.States {
         private getWebGlConstant(value: number) {
             const constant = WebGlConstantsByValue[value];
             return constant ? constant.name : value;
-        }
-
-        private getTag(object: any): WebGlObjectTag {
-            if (!object) {
-                return undefined;
-            }
-
-            const tag = WebGlObjects.getWebGlObjectTag(object) ||
-                this.options.tagWebGlObject(object);
-
-            return tag;
         }
     }
 }

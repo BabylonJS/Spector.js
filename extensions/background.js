@@ -19,7 +19,7 @@ function listenForMessage(callback) {
 
 var tabInfo = {}
 var resultTab = null;
-var currentCaptureInString = null;
+var currentCapture = null;
 
 var refreshCanvases = function() {
     var popup = window.browser.extension.getViews({ type: "popup" })[0];
@@ -111,19 +111,19 @@ listenForMessage(function(request, sender, sendResponse) {
             popup.captureComplete(request.errorString);
         }
     }
-    else if (request.captureString) {
+    else if (request.capture) {
         // If a capture has been received,
         var tabWindows = browser.extension.getViews({type: "tab"});
         // Open the result view if not open (need to check if length == 1 that the function exists for Edge),
-        if (tabWindows.length < 1 || !tabWindows[0].addCaptureFromString) {
+        if (tabWindows.length < 1 || !tabWindows[0].addCapture) {
             window.browser.tabs.create({ url: "result.html", active: true }, function(tab) {
                 resultTab = tab;
-                currentCaptureInString = request.captureString;
+                currentCapture = request.capture;
             });
         }
         // Or update if it already exists.
         else {
-            tabWindows[0].addCaptureFromString(request.captureString);
+            tabWindows[0].addCapture(request.capture);
             window.browser.tabs.update(resultTab.id, { active: true });
             try  {
                 browser.windows.update(resultTab.windowId, { focused: true });

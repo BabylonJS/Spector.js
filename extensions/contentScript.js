@@ -127,7 +127,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                 document.dispatchEvent(myEvent);
             });
             spector.onCapture.add((capture) => {
-                var myEvent = new CustomEvent("SpectorOnCaptureEvent", { detail: { captureString: JSON.stringify(capture) } });
+                var myEvent = new CustomEvent("SpectorOnCaptureEvent", { detail: { capture: capture } });
                 document.dispatchEvent(myEvent);
             });
             setInterval(() => {
@@ -157,7 +157,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
     });
 
     document.addEventListener('SpectorOnCaptureEvent', function (e) {
-        sendMessage({ captureString: e.detail.captureString });
+        sendMessage({ capture: e.detail.capture });
     }, false);
 
     document.addEventListener('SpectorOnErrorEvent', function (e) {

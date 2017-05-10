@@ -161,11 +161,11 @@ This will enable a complete tracking of the gl calls even before capturing which
 
 ## Custom Data
 ###### [Back to top](#table-of-content)
-You can simply add custom data to the capture by adding a special field named **__Spector_Metadata** to your WebGLObjects.
+You can simply add custom data to the capture by adding a special field named **__SPECTOR_Metadata** to your WebGLObjects.
 
 ```javascript
 var cubeVerticesColorBuffer = gl.createBuffer();
-cubeVerticesColorBuffer.__Spector_Metadata = { name: "cubeVerticesColorBuffer" };
+cubeVerticesColorBuffer.__SPECTOR_Metadata = { name: "cubeVerticesColorBuffer" };
 ```
 
 This will enable the visibility of your custom name in your capture. This can be an invaluable asset during troubleshoot session. This can also help referencing your materials friendly names from your captures.

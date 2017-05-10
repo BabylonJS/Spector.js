@@ -52,7 +52,6 @@
 
         "backend/recorders/baseRecorder.ts",
         "backend/recorders/textureRecorder.ts",
-        "backend/recorders/textureRecorderVisualState.ts",
 
         "backend/spies/canvasSpy.ts",
         "backend/spies/commandSpy.ts",
@@ -81,6 +80,7 @@
         "backend/states/context/stencilState.ts",
         "backend/states/context/visualState.ts",
         "backend/states/drawCalls/drawCallState.ts",
+        "backend/states/drawCalls/drawCallTextureInputState.ts",
         
         "backend/webGlObjects/baseWebGlObject.ts",
         "backend/webGlObjects/webGlObjects.ts",

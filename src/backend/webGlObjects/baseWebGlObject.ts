@@ -3,7 +3,7 @@ namespace SPECTOR {
         readonly typeName: string;
         readonly id: number;
         displayText?: string;
-        customData?: {};
+        customData?: any;
     };
 
     export interface IWebGlObject {

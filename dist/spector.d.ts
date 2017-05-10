@@ -1150,19 +1150,6 @@ declare namespace SPECTOR.Recorders {
     }
 }
 declare namespace SPECTOR {
-    interface ITextureRecorderState {
-        level: number;
-        internalFormat: string;
-        format: string;
-        type: string;
-        width: number;
-        height: number;
-        visual: {
-            [target: string]: string;
-        };
-    }
-}
-declare namespace SPECTOR.Recorders {
     interface ITextureRecorderData {
         target: string;
         level: number;
@@ -1172,35 +1159,16 @@ declare namespace SPECTOR.Recorders {
         border?: number;
         format: number;
         type: number;
-        visual: any;
     }
+}
+declare namespace SPECTOR.Recorders {
     class TextureRecorder extends BaseRecorder<WebGLTexture> {
-        private readonly visualState;
-        constructor(options: IRecorderOptions, logger: ILogger);
         protected getCreateCommandNames(): string[];
         protected getUpdateCommandNames(): string[];
         protected getDeleteCommandNames(): string[];
         protected getBoundInstance(target: number): WebGLTexture;
         protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): void;
         private getTexImage2DCustomData(functionInformation, target, instance);
-    }
-}
-declare namespace SPECTOR.Recorders {
-    class TextureRecorderVisualState {
-        protected readonly logger: ILogger;
-        static captureBaseSize: number;
-        private readonly context;
-        private readonly workingCanvas;
-        private readonly captureCanvas;
-        private readonly workingContext2D;
-        private readonly captureContext2D;
-        constructor(options: IRecorderOptions, logger: ILogger);
-        getBase64Visual(info: ITextureRecorderData): string;
-        protected getBase64VisualFromImageData(info: ITextureRecorderData): string;
-        protected getBase64VisualFromArrayBufferView(info: ITextureRecorderData): string;
-        protected getBase64VisualFromCanvasImageSource(info: ITextureRecorderData): string;
-        protected getBase64RescaledImage(info: ITextureRecorderData): string;
-        private isArrayBufferView(value);
     }
 }
 declare namespace SPECTOR {
@@ -1346,6 +1314,7 @@ declare namespace SPECTOR.States {
         protected changeCommandCaptureStatus(capture: ICommandCapture, status: CommandCaptureStatus): boolean;
         protected areStatesEquals(a: any, b: any): boolean;
         protected isStateEnable(stateName: string, args: IArguments): boolean;
+        protected getSpectorData(object: any): any;
         private readFromContextNoSideEffects();
         private isStateEnableNoSideEffects(stateName, args);
         private getCommandNameToStates();
@@ -1512,6 +1481,7 @@ declare namespace SPECTOR.States {
 declare namespace SPECTOR.States {
     class VisualState extends BaseState {
         static captureBaseSize: number;
+        protected static allowedInternalFormat: number[];
         private readonly captureFrameBuffer;
         private readonly workingCanvas;
         private readonly captureCanvas;
@@ -1523,13 +1493,14 @@ declare namespace SPECTOR.States {
         protected readFrameBufferAttachmentFromContext(gl: WebGLRenderingContext | WebGL2RenderingContext, frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant, x: number, y: number, width: number, height: number): void;
         protected getCapture(gl: WebGLRenderingContext, name: string, x: number, y: number, width: number, height: number, textureCubeMapFace: number, textureLayer: number): void;
         protected analyse(consumeCommand: ICommandCapture): void;
-        private getTag(object);
     }
 }
 declare namespace SPECTOR.States {
     class DrawCallState extends BaseState {
         private static samplerTypes;
         readonly requireStartAndStopStates: boolean;
+        private readonly drawCallTextureInputState;
+        constructor(options: IStateOptions, logger: ILogger);
         protected getConsumeCommands(): string[];
         protected getChangeCommandsByState(): {
             [key: string]: string[];
@@ -1546,7 +1517,24 @@ declare namespace SPECTOR.States {
         protected readTransformFeedbackFromContext(program: WebGLProgram, index: number): {};
         protected readUniformBlockFromContext(program: WebGLProgram, index: number): {};
         private getWebGlConstant(value);
-        private getTag(object);
+    }
+}
+declare namespace SPECTOR.States {
+    class DrawCallTextureInputState {
+        protected readonly logger: ILogger;
+        static captureBaseSize: number;
+        protected static allowedInternalFormat: number[];
+        protected static cubeMapFaces: WebGlConstant[];
+        private readonly context;
+        private readonly captureFrameBuffer;
+        private readonly workingCanvas;
+        private readonly captureCanvas;
+        private readonly workingContext2D;
+        private readonly captureContext2D;
+        constructor(options: IStateOptions, logger: ILogger);
+        getTextureState(target: WebGlConstant, storage: WebGLTexture, info: ITextureRecorderData): any;
+        protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number): string;
+        protected getWebGlConstant(value: number): string;
     }
 }
 declare namespace SPECTOR {
@@ -1554,7 +1542,7 @@ declare namespace SPECTOR {
         readonly typeName: string;
         readonly id: number;
         displayText?: string;
-        customData?: {};
+        customData?: any;
     };
     interface IWebGlObject {
         readonly typeName: string;

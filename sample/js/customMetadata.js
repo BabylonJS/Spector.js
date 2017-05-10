@@ -109,7 +109,7 @@ function initBuffers() {
   // Create a buffer for the cube's vertices.
 
   cubeVerticesBuffer = gl.createBuffer();
-  cubeVerticesBuffer.__Spector_Metadata = { name: "CubeVerticesBuffer" };
+  cubeVerticesBuffer.__SPECTOR_Metadata = { name: "CubeVerticesBuffer" };
 
   // Select the cubeVerticesBuffer as the one to apply vertex
   // operations to from here out.
@@ -189,7 +189,7 @@ function initBuffers() {
   }
 
   cubeVerticesColorBuffer = gl.createBuffer();
-  cubeVerticesColorBuffer.__Spector_Metadata = { name: "cubeVerticesColorBuffer" };
+  cubeVerticesColorBuffer.__SPECTOR_Metadata = { name: "cubeVerticesColorBuffer" };
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesColorBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(generatedColors), gl.STATIC_DRAW);
 
@@ -197,7 +197,7 @@ function initBuffers() {
   // into the vertex array for each face's vertices.
 
   cubeVerticesIndexBuffer = gl.createBuffer();  
-  cubeVerticesIndexBuffer.__Spector_Metadata = { name: "cubeVerticesIndexBuffer" };
+  cubeVerticesIndexBuffer.__SPECTOR_Metadata = { name: "cubeVerticesIndexBuffer" };
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
 
   // This array defines each face as two triangles, using the
@@ -306,14 +306,14 @@ function drawScene() {
 //
 function initShaders() {
   var fragmentShader = getShader(gl, fragmentShaderSource, false);  
-  fragmentShader.__Spector_Metadata = { name: "FragmentShader" };
+  fragmentShader.__SPECTOR_Metadata = { name: "FragmentShader" };
   var vertexShader = getShader(gl, vertexShaderSource, true);  
-  vertexShader.__Spector_Metadata = { name: "VertexShader" };
+  vertexShader.__SPECTOR_Metadata = { name: "VertexShader" };
 
   // Create the shader program
 
   shaderProgram = gl.createProgram();
-  shaderProgram.__Spector_Metadata = { name: "ShaderProgram" };
+  shaderProgram.__SPECTOR_Metadata = { name: "ShaderProgram" };
   gl.attachShader(shaderProgram, vertexShader);
   gl.attachShader(shaderProgram, fragmentShader);
   gl.linkProgram(shaderProgram);
@@ -327,11 +327,11 @@ function initShaders() {
   gl.useProgram(shaderProgram);
 
   vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-  vertexPositionAttribute.__Spector_Metadata = { name: "VertexPositionAttribute" };
+  vertexPositionAttribute.__SPECTOR_Metadata = { name: "VertexPositionAttribute" };
   gl.enableVertexAttribArray(vertexPositionAttribute);
 
   vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
-  vertexPositionAttribute.__Spector_Metadata = { name: "VertexColorAttribute" };
+  vertexPositionAttribute.__SPECTOR_Metadata = { name: "VertexColorAttribute" };
   gl.enableVertexAttribArray(vertexColorAttribute);
 }
 
@@ -372,11 +372,11 @@ function mvTranslate(v) {
 
 function setMatrixUniforms() {
   var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");  
-  pUniform.__Spector_Metadata = { name: "pUniform" };
+  pUniform.__SPECTOR_Metadata = { name: "pUniform" };
   gl.uniformMatrix4fv(pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
 
   var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-  mvUniform.__Spector_Metadata = { name: "mvUniform" };
+  mvUniform.__SPECTOR_Metadata = { name: "mvUniform" };
   gl.uniformMatrix4fv(mvUniform, false, new Float32Array(mvMatrix.flatten()));
 }
 

@@ -350,7 +350,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 }
                 else if (key === "visual") {
                     for (const target in value) {
-                        if (value.hasOwnProperty(target)) {
+                        if (value.hasOwnProperty(target) && value[target]) {
                             this.mvx.addChildState(parentGroupId, {
                                 key: target,
                                 value: value[target],
@@ -373,8 +373,8 @@ namespace SPECTOR.EmbeddedFrontend {
                     }, this.jsonItemComponent);
                 }
 
-                if (value && value.__Spector_Metadata) {
-                    this.displayJSONGroup(parentGroupId, "Metadata", value.__Spector_Metadata);
+                if (value && value.__SPECTOR_Metadata) {
+                    this.displayJSONGroup(parentGroupId, "Metadata", value.__SPECTOR_Metadata);
                 }
             }
         }

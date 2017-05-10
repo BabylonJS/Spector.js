@@ -1458,6 +1458,10 @@ var SPECTOR;
                         commandCapture.commandArguments[i] = "Array Legnth: " + argument.length;
                     }
                 }
+                commandCapture.commandArguments = JSON.parse(JSON.stringify(commandCapture.commandArguments));
+                if (commandCapture.result) {
+                    commandCapture.result = JSON.parse(JSON.stringify(commandCapture.result));
+                }
                 return commandCapture;
             };
             BaseCommand.prototype.transformCapture = function (commandCapture) {
@@ -1893,10 +1897,8 @@ var SPECTOR;
     (function (Recorders) {
         var TextureRecorder = (function (_super) {
             __extends(TextureRecorder, _super);
-            function TextureRecorder(options, logger) {
-                var _this = _super.call(this, options, logger) || this;
-                _this.visualState = new Recorders.TextureRecorderVisualState(options, logger);
-                return _this;
+            function TextureRecorder() {
+                return _super !== null && _super.apply(this, arguments) || this;
             }
             TextureRecorder.prototype.getCreateCommandNames = function () {
                 return ["createTexture"];
@@ -1942,17 +1944,7 @@ var SPECTOR;
                     customData = this.getTexImage2DCustomData(functionInformation, target, instance);
                 }
                 // TODO. texSubImage2D, compressedTexImage2D, compressedTexSubImage2D, texImage3D, texSubImage3D, compressedTexImage3D, compressedTexSubImage3D
-                if (customData) {
-                    tag.customData = tag.customData || {};
-                    tag.customData.level = customData.level;
-                    tag.customData.type = this.getWebGlConstant(customData.type);
-                    tag.customData.format = this.getWebGlConstant(customData.format);
-                    tag.customData.internalFormat = this.getWebGlConstant(customData.internalFormat);
-                    tag.customData.width = customData.width;
-                    tag.customData.height = customData.height;
-                    tag.customData.visual = tag.customData.visual || {};
-                    tag.customData.visual[customData.target] = this.visualState.getBase64Visual(customData);
-                }
+                instance.__SPECTOR_Object_CustomData = customData;
             };
             TextureRecorder.prototype.getTexImage2DCustomData = function (functionInformation, target, instance) {
                 if (functionInformation.arguments[1] !== 0) {
@@ -1960,12 +1952,7 @@ var SPECTOR;
                     return undefined;
                 }
                 var customData;
-                if (functionInformation.arguments.length >= 9) {
-                    var data = functionInformation.arguments[8];
-                    if (!data || !data.width) {
-                        // Discard wegl2 pointer offsets... so far.
-                        return undefined;
-                    }
+                if (functionInformation.arguments.length >= 8) {
                     // Custom data required to display the texture.
                     customData = {
                         target: target,
@@ -1976,15 +1963,9 @@ var SPECTOR;
                         border: functionInformation.arguments[5],
                         format: functionInformation.arguments[6],
                         type: functionInformation.arguments[7],
-                        visual: functionInformation.arguments[8],
                     };
                 }
                 else if (functionInformation.arguments.length === 6) {
-                    var data = functionInformation.arguments[5];
-                    if (!data || !data.width) {
-                        // Discard wegl2 offests... so far.
-                        return undefined;
-                    }
                     // Custom data required to display the texture.
                     customData = {
                         target: target,
@@ -1994,7 +1975,6 @@ var SPECTOR;
                         height: functionInformation.arguments[5].height,
                         format: functionInformation.arguments[3],
                         type: functionInformation.arguments[4],
-                        visual: functionInformation.arguments[5],
                     };
                 }
                 // else NO DATA.
@@ -2006,107 +1986,6 @@ var SPECTOR;
             SPECTOR.Decorators.recorder("WebGLTexture")
         ], TextureRecorder);
         Recorders.TextureRecorder = TextureRecorder;
-    })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
-})(SPECTOR || (SPECTOR = {}));
-var SPECTOR;
-(function (SPECTOR) {
-    var Recorders;
-    (function (Recorders) {
-        var TextureRecorderVisualState = (function () {
-            function TextureRecorderVisualState(options, logger) {
-                this.logger = logger;
-                this.context = options.context;
-                this.workingCanvas = document.createElement("canvas");
-                this.workingContext2D = this.workingCanvas.getContext("2d");
-                this.captureCanvas = document.createElement("canvas");
-                this.captureContext2D = this.captureCanvas.getContext("2d");
-                this.captureContext2D.imageSmoothingEnabled = true;
-                this.captureContext2D.mozImageSmoothingEnabled = true;
-                this.captureContext2D.oImageSmoothingEnabled = true;
-                this.captureContext2D.webkitImageSmoothingEnabled = true;
-                this.captureContext2D.msImageSmoothingEnabled = true;
-            }
-            TextureRecorderVisualState.prototype.getBase64Visual = function (info) {
-                try {
-                    var textureData = info.visual;
-                    if (!textureData) {
-                        return undefined;
-                    }
-                    // Deals with ImageData.
-                    if (textureData.data) {
-                        return this.getBase64VisualFromImageData(info);
-                    }
-                    // Deals with ABV.
-                    if (this.isArrayBufferView(textureData)) {
-                        return this.getBase64VisualFromArrayBufferView(info);
-                    }
-                    // Deals with HtmlCanvasSource.
-                    if (textureData.width && textureData.height) {
-                        return this.getBase64VisualFromCanvasImageSource(info);
-                    }
-                }
-                catch (e) {
-                    // Do nothing, probably an incompatible format, should add combinaison check upfront.
-                }
-                return undefined;
-            };
-            TextureRecorderVisualState.prototype.getBase64VisualFromImageData = function (info) {
-                this.workingCanvas.width = info.width;
-                this.workingCanvas.height = info.height;
-                this.workingContext2D.putImageData(info.visual, 0, 0);
-                return this.getBase64RescaledImage(info);
-            };
-            TextureRecorderVisualState.prototype.getBase64VisualFromArrayBufferView = function (info) {
-                this.workingCanvas.width = info.width;
-                this.workingCanvas.height = info.height;
-                var imageData = this.workingContext2D.createImageData(info.width, info.width);
-                imageData.data.set(info.visual);
-                this.workingContext2D.putImageData(imageData, 0, 0);
-                return this.getBase64RescaledImage(info);
-            };
-            TextureRecorderVisualState.prototype.getBase64VisualFromCanvasImageSource = function (info) {
-                this.workingCanvas.width = info.width;
-                this.workingCanvas.height = info.height;
-                this.workingContext2D.drawImage(info.visual, 0, 0, info.width, info.height, 0, 0, info.width, info.height);
-                return this.getBase64RescaledImage(info);
-            };
-            TextureRecorderVisualState.prototype.getBase64RescaledImage = function (info) {
-                var x = 0;
-                var y = 0;
-                var width = info.width;
-                var height = info.height;
-                // Copy the pixels to a resized capture 2D canvas.
-                var imageAspectRatio = width / height;
-                if (imageAspectRatio < 1) {
-                    this.captureCanvas.width = TextureRecorderVisualState.captureBaseSize * imageAspectRatio;
-                    this.captureCanvas.height = TextureRecorderVisualState.captureBaseSize;
-                }
-                else if (imageAspectRatio > 1) {
-                    this.captureCanvas.width = TextureRecorderVisualState.captureBaseSize;
-                    this.captureCanvas.height = TextureRecorderVisualState.captureBaseSize / imageAspectRatio;
-                }
-                else {
-                    this.captureCanvas.width = TextureRecorderVisualState.captureBaseSize;
-                    this.captureCanvas.height = TextureRecorderVisualState.captureBaseSize;
-                }
-                // Scale and draw to flip Y to reorient readPixels.
-                this.captureContext2D.globalCompositeOperation = "copy";
-                // Do not flip for textures.
-                // this.captureContext2D.scale(1, -1); // Y flip
-                // this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
-                this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
-                this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
-                this.captureContext2D.globalCompositeOperation = "source-over";
-                // get the screen capture
-                return this.captureCanvas.toDataURL();
-            };
-            TextureRecorderVisualState.prototype.isArrayBufferView = function (value) {
-                return value && value.buffer instanceof ArrayBuffer && value.byteLength !== undefined;
-            };
-            return TextureRecorderVisualState;
-        }());
-        TextureRecorderVisualState.captureBaseSize = 128;
-        Recorders.TextureRecorderVisualState = TextureRecorderVisualState;
     })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
@@ -2523,6 +2402,16 @@ var SPECTOR;
             };
             BaseState.prototype.isStateEnable = function (stateName, args) {
                 return true;
+            };
+            BaseState.prototype.getSpectorData = function (object) {
+                if (!object) {
+                    return undefined;
+                }
+                return {
+                    __SPECTOR_Object_TAG: SPECTOR.WebGlObjects.getWebGlObjectTag(object) || this.options.tagWebGlObject(object),
+                    __SPECTOR_Object_CustomData: object.__SPECTOR_Object_CustomData,
+                    __SPECTOR_Metadata: object.__SPECTOR_Metadata,
+                };
             };
             BaseState.prototype.readFromContextNoSideEffects = function () {
                 this.toggleCapture(false);
@@ -3358,8 +3247,7 @@ var SPECTOR;
                 var y = viewport[1];
                 var width = viewport[2];
                 var height = viewport[3];
-                this.getTag(frameBuffer);
-                this.currentState["FrameBuffer"] = frameBuffer;
+                this.currentState["FrameBuffer"] = this.getSpectorData(frameBuffer);
                 // Check FBO status.
                 var status = this.context.checkFramebufferStatus(SPECTOR.WebGlConstants.FRAMEBUFFER.value);
                 this.currentState["FrameBufferStatus"] = SPECTOR.WebGlConstantsByValue[status].name;
@@ -3408,6 +3296,15 @@ var SPECTOR;
                     }
                     var textureLevel = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
                     var textureCubeMapFace = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
+                    var textureCubeMapFaceName = textureCubeMapFace > 0 ? SPECTOR.WebGlConstantsByValue[textureCubeMapFace].name : SPECTOR.WebGlConstants.TEXTURE_2D.name;
+                    // Adapt to constraints defines in the custom data  if any.
+                    if (storage.__SPECTOR_Object_CustomData) {
+                        if (VisualState_1.allowedInternalFormat.indexOf(storage.__SPECTOR_Object_CustomData.internalFormat) === -1) {
+                            return;
+                        }
+                        width = storage.__SPECTOR_Object_CustomData.width;
+                        height = storage.__SPECTOR_Object_CustomData.height;
+                    }
                     gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                     if (textureLayer === 0) {
                         gl.framebufferTexture2D(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, textureCubeMapFace ? textureCubeMapFace : SPECTOR.WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
@@ -3481,19 +3378,31 @@ var SPECTOR;
             VisualState.prototype.analyse = function (consumeCommand) {
                 // Nothing to analyse on visual state.
             };
-            VisualState.prototype.getTag = function (object) {
-                if (!object) {
-                    return undefined;
-                }
-                var tag = SPECTOR.WebGlObjects.getWebGlObjectTag(object);
-                if (!tag) {
-                    this.options.tagWebGlObject(object);
-                }
-                return object;
-            };
             return VisualState;
         }(States.BaseState));
-        VisualState.captureBaseSize = 512;
+        VisualState.captureBaseSize = 256;
+        VisualState.allowedInternalFormat = [
+            SPECTOR.WebGlConstants.RGB.value,
+            SPECTOR.WebGlConstants.RGBA.value,
+            SPECTOR.WebGlConstants.RGB8.value,
+            SPECTOR.WebGlConstants.RGB8_SNORM.value,
+            SPECTOR.WebGlConstants.RGB8I.value,
+            SPECTOR.WebGlConstants.RGBA8.value,
+            SPECTOR.WebGlConstants.RGBA8_SNORM.value,
+            SPECTOR.WebGlConstants.RGBA8I.value,
+            SPECTOR.WebGlConstants.RGB16F.value,
+            SPECTOR.WebGlConstants.RGB16I.value,
+            SPECTOR.WebGlConstants.RGB16UI.value,
+            SPECTOR.WebGlConstants.RGBA16F.value,
+            SPECTOR.WebGlConstants.RGBA16I.value,
+            SPECTOR.WebGlConstants.RGBA16UI.value,
+            SPECTOR.WebGlConstants.RGB32F.value,
+            SPECTOR.WebGlConstants.RGB32I.value,
+            SPECTOR.WebGlConstants.RGB32UI.value,
+            SPECTOR.WebGlConstants.RGBA32F.value,
+            SPECTOR.WebGlConstants.RGBA32I.value,
+            SPECTOR.WebGlConstants.RGBA32UI.value,
+        ];
         VisualState = VisualState_1 = __decorate([
             SPECTOR.Decorators.state("VisualState")
         ], VisualState);
@@ -3507,8 +3416,10 @@ var SPECTOR;
     (function (States) {
         var DrawCallState = DrawCallState_1 = (function (_super) {
             __extends(DrawCallState, _super);
-            function DrawCallState() {
-                return _super !== null && _super.apply(this, arguments) || this;
+            function DrawCallState(options, logger) {
+                var _this = _super.call(this, options, logger) || this;
+                _this.drawCallTextureInputState = new States.DrawCallTextureInputState(options, logger);
+                return _this;
             }
             Object.defineProperty(DrawCallState.prototype, "requireStartAndStopStates", {
                 get: function () {
@@ -3529,7 +3440,7 @@ var SPECTOR;
                     return;
                 }
                 this.currentState.frameBuffer = this.readFrameBufferFromContext();
-                this.currentState.program = this.getTag(program);
+                this.currentState.program = this.getSpectorData(program);
                 this.currentState.programStatus = {
                     DELETE_STATUS: this.context.getProgramParameter(program, SPECTOR.WebGlConstants.DELETE_STATUS.value),
                     LINK_STATUS: this.context.getProgramParameter(program, SPECTOR.WebGlConstants.LINK_STATUS.value),
@@ -3583,7 +3494,7 @@ var SPECTOR;
                     return null;
                 }
                 var frameBufferState = {};
-                frameBufferState.frameBuffer = this.getTag(frameBuffer);
+                frameBufferState.frameBuffer = this.getSpectorData(frameBuffer);
                 frameBufferState.depthAttachment = this.readFrameBufferAttachmentFromContext(SPECTOR.WebGlConstants.DEPTH_ATTACHMENT.value);
                 frameBufferState.stencilAttachment = this.readFrameBufferAttachmentFromContext(SPECTOR.WebGlConstants.STENCIL_ATTACHMENT.value);
                 var drawBuffersExtension = this.extensions[SPECTOR.WebGlConstants.MAX_DRAW_BUFFERS_WEBGL.extensionName];
@@ -3657,7 +3568,7 @@ var SPECTOR;
             };
             DrawCallState.prototype.readShaderFromContext = function (shader) {
                 return {
-                    shader: this.getTag(shader),
+                    shader: this.getSpectorData(shader),
                     COMPILE_STATUS: this.context.getShaderParameter(shader, SPECTOR.WebGlConstants.COMPILE_STATUS.value),
                     DELETE_STATUS: this.context.getShaderParameter(shader, SPECTOR.WebGlConstants.DELETE_STATUS.value),
                     SHADER_TYPE: this.getWebGlConstant(this.context.getShaderParameter(shader, SPECTOR.WebGlConstants.SHADER_TYPE.value)),
@@ -3673,7 +3584,7 @@ var SPECTOR;
                     type: this.getWebGlConstant(info.type),
                     location: location,
                     offsetPointer: this.context.getVertexAttribOffset(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_POINTER.value),
-                    bufferBinding: this.getTag(this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING.value)),
+                    bufferBinding: this.getSpectorData(this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING.value)),
                     enabled: this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_ENABLED.value),
                     arraySize: this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_SIZE.value),
                     stride: this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_STRIDE.value),
@@ -3699,7 +3610,7 @@ var SPECTOR;
                         name: info.name,
                         size: info.size,
                         type: this.getWebGlConstant(info.type),
-                        location: this.getTag(location),
+                        location: this.getSpectorData(location),
                         value: value,
                     };
                     var textureTarget = DrawCallState_1.samplerTypes[info.type];
@@ -3738,7 +3649,7 @@ var SPECTOR;
                     textureState.maxLevel = this.context.getTexParameter(target.value, SPECTOR.WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
                     var sampler = this.context.getParameter(SPECTOR.WebGlConstants.SAMPLER_BINDING.value);
                     if (sampler) {
-                        textureState.sampler = this.getTag(sampler);
+                        textureState.sampler = this.getSpectorData(sampler);
                         var context2 = this.context;
                         textureState.samplerMaxLod = context2.getSamplerParameter(sampler, SPECTOR.WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
                         textureState.samplerMinLod = context2.getSamplerParameter(sampler, SPECTOR.WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
@@ -3760,9 +3671,9 @@ var SPECTOR;
                 }
                 var customData = this.readTextureCustomDataFromTag(target);
                 if (customData) {
-                    for (var visualProperty in customData) {
-                        if (customData.hasOwnProperty(visualProperty)) {
-                            textureState[visualProperty] = customData[visualProperty];
+                    for (var intelligibleProperty in customData) {
+                        if (customData.hasOwnProperty(intelligibleProperty)) {
+                            textureState[intelligibleProperty] = customData[intelligibleProperty];
                         }
                     }
                 }
@@ -3770,21 +3681,20 @@ var SPECTOR;
                 return textureState;
             };
             DrawCallState.prototype.readTextureCustomDataFromTag = function (target) {
+                var texture;
                 // Add texture visual.
                 // 2D Textures.
                 if (target === SPECTOR.WebGlConstants.TEXTURE_2D) {
-                    var texture2D = this.context.getParameter(SPECTOR.WebGlConstants.TEXTURE_BINDING_2D.value);
-                    var tag = this.getTag(texture2D);
-                    if (tag && tag.customData) {
-                        return tag.customData;
-                    }
+                    texture = this.context.getParameter(SPECTOR.WebGlConstants.TEXTURE_BINDING_2D.value);
                 }
                 else if (target === SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP) {
-                    var textureCube = this.context.getParameter(SPECTOR.WebGlConstants.TEXTURE_BINDING_CUBE_MAP.value);
-                    var tag = this.getTag(textureCube);
-                    if (tag && tag.customData) {
-                        return tag.customData;
-                    }
+                    texture = this.context.getParameter(SPECTOR.WebGlConstants.TEXTURE_BINDING_CUBE_MAP.value);
+                }
+                // Check for custom data.
+                var tag = this.getSpectorData(texture);
+                if (tag && tag.__SPECTOR_Object_CustomData) {
+                    var customDataState = this.drawCallTextureInputState.getTextureState(target, texture, tag.__SPECTOR_Object_CustomData);
+                    return customDataState;
                 }
                 // TODO. textureArray_3d, Texture2d_array if find a way to visualize.
                 return undefined;
@@ -3819,7 +3729,7 @@ var SPECTOR;
                     name: info.name,
                     size: info.size,
                     type: this.getWebGlConstant(info.type),
-                    buffer: this.getTag(context2.getIndexedParameter(SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING.value, index)),
+                    buffer: this.getSpectorData(context2.getIndexedParameter(SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING.value, index)),
                     bufferSize: context2.getIndexedParameter(SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_SIZE.value, index),
                     bufferStart: context2.getIndexedParameter(SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_START.value, index),
                 };
@@ -3834,7 +3744,7 @@ var SPECTOR;
                     activeUniformCount: context2.getActiveUniformBlockParameter(program, index, SPECTOR.WebGlConstants.UNIFORM_BLOCK_ACTIVE_UNIFORMS.value),
                     vertex: context2.getActiveUniformBlockParameter(program, index, SPECTOR.WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER.value),
                     fragment: context2.getActiveUniformBlockParameter(program, index, SPECTOR.WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER.value),
-                    buffer: this.getTag(context2.getIndexedParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint)),
+                    buffer: this.getSpectorData(context2.getIndexedParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint)),
                     bufferSize: context2.getIndexedParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_SIZE.value, bindingPoint),
                     bufferStart: context2.getIndexedParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_START.value, bindingPoint),
                 };
@@ -3842,14 +3752,6 @@ var SPECTOR;
             DrawCallState.prototype.getWebGlConstant = function (value) {
                 var constant = SPECTOR.WebGlConstantsByValue[value];
                 return constant ? constant.name : value;
-            };
-            DrawCallState.prototype.getTag = function (object) {
-                if (!object) {
-                    return undefined;
-                }
-                var tag = SPECTOR.WebGlObjects.getWebGlObjectTag(object) ||
-                    this.options.tagWebGlObject(object);
-                return tag;
             };
             return DrawCallState;
         }(States.BaseState));
@@ -3876,6 +3778,162 @@ var SPECTOR;
         States.DrawCallState = DrawCallState;
         var DrawCallState_1;
         var _a;
+    })(States = SPECTOR.States || (SPECTOR.States = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var States;
+    (function (States) {
+        var DrawCallTextureInputState = (function () {
+            function DrawCallTextureInputState(options, logger) {
+                this.logger = logger;
+                this.context = options.context;
+                this.captureFrameBuffer = options.context.createFramebuffer();
+                this.workingCanvas = document.createElement("canvas");
+                this.workingContext2D = this.workingCanvas.getContext("2d");
+                this.captureCanvas = document.createElement("canvas");
+                this.captureContext2D = this.captureCanvas.getContext("2d");
+                this.captureContext2D.imageSmoothingEnabled = true;
+                this.captureContext2D.mozImageSmoothingEnabled = true;
+                this.captureContext2D.oImageSmoothingEnabled = true;
+                this.captureContext2D.webkitImageSmoothingEnabled = true;
+                this.captureContext2D.msImageSmoothingEnabled = true;
+            }
+            DrawCallTextureInputState.prototype.getTextureState = function (target, storage, info) {
+                try {
+                    var gl = this.context;
+                    var result = {
+                        level: info.level,
+                        type: this.getWebGlConstant(info.type),
+                        format: this.getWebGlConstant(info.format),
+                        internalFormat: this.getWebGlConstant(info.internalFormat),
+                        width: info.width,
+                        height: info.height,
+                        visual: {},
+                    };
+                    if (DrawCallTextureInputState.allowedInternalFormat.indexOf(info.internalFormat) === -1) {
+                        return result;
+                    }
+                    // Check the framebuffer status.
+                    var currentFrameBuffer = this.context.getParameter(SPECTOR.WebGlConstants.FRAMEBUFFER_BINDING.value);
+                    gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
+                    try {
+                        var textureLevel = 0;
+                        var width = info.width;
+                        var height = info.height;
+                        if (target === SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP) {
+                            for (var _i = 0, _a = DrawCallTextureInputState.cubeMapFaces; _i < _a.length; _i++) {
+                                var face = _a[_i];
+                                gl.framebufferTexture2D(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, face.value, storage, textureLevel);
+                                result.visual[face.name] = this.getCapture(gl, 0, 0, width, height);
+                            }
+                        }
+                        else {
+                            gl.framebufferTexture2D(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, SPECTOR.WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
+                            result.visual[SPECTOR.WebGlConstants.TEXTURE_2D.name] = this.getCapture(gl, 0, 0, width, height);
+                        }
+                    }
+                    catch (e) {
+                        // Something went wrong during the capture.
+                    }
+                    gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, currentFrameBuffer);
+                    return result;
+                }
+                catch (e) {
+                    // Do nothing, probably an incompatible format, should add more combinaison check upfront.
+                }
+                return undefined;
+            };
+            DrawCallTextureInputState.prototype.getCapture = function (gl, x, y, width, height) {
+                try {
+                    // Check FBO status.
+                    var status_2 = this.context.checkFramebufferStatus(SPECTOR.WebGlConstants.FRAMEBUFFER.value);
+                    if (status_2 !== SPECTOR.WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
+                        return undefined;
+                    }
+                    // Empty error list.
+                    gl.getError();
+                    // Read the pixels from the frame buffer.
+                    var size = width * height * 4;
+                    var pixels = new Uint8Array(size);
+                    gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+                    if (gl.getError()) {
+                        return undefined;
+                    }
+                    // Copy the pixels to a working 2D canvas same size.
+                    this.workingCanvas.width = width;
+                    this.workingCanvas.height = height;
+                    var imageData = this.workingContext2D.createImageData(width, height);
+                    imageData.data.set(pixels);
+                    this.workingContext2D.putImageData(imageData, 0, 0);
+                    // Copy the pixels to a resized capture 2D canvas.
+                    var imageAspectRatio = width / height;
+                    if (imageAspectRatio < 1) {
+                        this.captureCanvas.width = States.VisualState.captureBaseSize * imageAspectRatio;
+                        this.captureCanvas.height = States.VisualState.captureBaseSize;
+                    }
+                    else if (imageAspectRatio > 1) {
+                        this.captureCanvas.width = States.VisualState.captureBaseSize;
+                        this.captureCanvas.height = States.VisualState.captureBaseSize / imageAspectRatio;
+                    }
+                    else {
+                        this.captureCanvas.width = States.VisualState.captureBaseSize;
+                        this.captureCanvas.height = States.VisualState.captureBaseSize;
+                    }
+                    // Scale and draw to flip Y to reorient readPixels.
+                    this.captureContext2D.globalCompositeOperation = "copy";
+                    this.captureContext2D.scale(1, -1); // Y flip
+                    this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
+                    this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
+                    this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
+                    this.captureContext2D.globalCompositeOperation = "source-over";
+                    // get the screen capture
+                    var src = this.captureCanvas.toDataURL();
+                    return src;
+                }
+                catch (e) {
+                    // TODO. Nothing to do here... so far.
+                }
+                return undefined;
+            };
+            DrawCallTextureInputState.prototype.getWebGlConstant = function (value) {
+                var constant = SPECTOR.WebGlConstantsByValue[value];
+                return constant ? constant.name : value + "";
+            };
+            return DrawCallTextureInputState;
+        }());
+        DrawCallTextureInputState.captureBaseSize = 64;
+        DrawCallTextureInputState.allowedInternalFormat = [
+            SPECTOR.WebGlConstants.RGB.value,
+            SPECTOR.WebGlConstants.RGBA.value,
+            SPECTOR.WebGlConstants.RGB8.value,
+            SPECTOR.WebGlConstants.RGB8_SNORM.value,
+            SPECTOR.WebGlConstants.RGB8I.value,
+            SPECTOR.WebGlConstants.RGBA8.value,
+            SPECTOR.WebGlConstants.RGBA8_SNORM.value,
+            SPECTOR.WebGlConstants.RGBA8I.value,
+            SPECTOR.WebGlConstants.RGB16F.value,
+            SPECTOR.WebGlConstants.RGB16I.value,
+            SPECTOR.WebGlConstants.RGB16UI.value,
+            SPECTOR.WebGlConstants.RGBA16F.value,
+            SPECTOR.WebGlConstants.RGBA16I.value,
+            SPECTOR.WebGlConstants.RGBA16UI.value,
+            SPECTOR.WebGlConstants.RGB32F.value,
+            SPECTOR.WebGlConstants.RGB32I.value,
+            SPECTOR.WebGlConstants.RGB32UI.value,
+            SPECTOR.WebGlConstants.RGBA32F.value,
+            SPECTOR.WebGlConstants.RGBA32I.value,
+            SPECTOR.WebGlConstants.RGBA32UI.value,
+        ];
+        DrawCallTextureInputState.cubeMapFaces = [
+            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_X,
+            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Y,
+            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Z,
+            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_X,
+            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+        ];
+        States.DrawCallTextureInputState = DrawCallTextureInputState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
@@ -5092,9 +5150,9 @@ var SPECTOR;
                     }
                 }
                 else {
-                    var status_2 = document.createElement("span");
-                    status_2.innerText = state.capture.endState.VisualState.FrameBufferStatus;
-                    liHolder.appendChild(status_2);
+                    var status_3 = document.createElement("span");
+                    status_3.innerText = state.capture.endState.VisualState.FrameBufferStatus;
+                    liHolder.appendChild(status_3);
                 }
                 var text = document.createElement("span");
                 text.innerText = new Date(state.capture.startTime).toTimeString().split(" ")[0];
@@ -5177,9 +5235,9 @@ var SPECTOR;
                     }
                 }
                 else {
-                    var status_3 = document.createElement("span");
-                    status_3.innerText = state.VisualState.FrameBufferStatus;
-                    liHolder.appendChild(status_3);
+                    var status_4 = document.createElement("span");
+                    status_4.innerText = state.VisualState.FrameBufferStatus;
+                    liHolder.appendChild(status_4);
                 }
                 var fbo = document.createElement("span");
                 if (state.VisualState.FrameBuffer) {
@@ -5415,9 +5473,9 @@ var SPECTOR;
                     }
                 }
                 else {
-                    var status_4 = document.createElement("span");
-                    status_4.innerText = state.FrameBufferStatus;
-                    divHolder.appendChild(status_4);
+                    var status_5 = document.createElement("span");
+                    status_5.innerText = state.FrameBufferStatus;
+                    divHolder.appendChild(status_5);
                 }
                 var fbo = document.createElement("span");
                 fbo.innerText = state.FrameBuffer ? state.FrameBuffer.__SPECTOR_Object_TAG.displayText : "Canvas frame buffer";
@@ -5806,7 +5864,7 @@ var SPECTOR;
                     }
                     else if (key === "visual") {
                         for (var target in value) {
-                            if (value.hasOwnProperty(target)) {
+                            if (value.hasOwnProperty(target) && value[target]) {
                                 this.mvx.addChildState(parentGroupId, {
                                     key: target,
                                     value: value[target],
@@ -5827,8 +5885,8 @@ var SPECTOR;
                             value: result,
                         }, this.jsonItemComponent);
                     }
-                    if (value && value.__Spector_Metadata) {
-                        this.displayJSONGroup(parentGroupId, "Metadata", value.__Spector_Metadata);
+                    if (value && value.__SPECTOR_Metadata) {
+                        this.displayJSONGroup(parentGroupId, "Metadata", value.__SPECTOR_Metadata);
                     }
                 }
             };

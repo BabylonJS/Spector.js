@@ -23,12 +23,12 @@ window.addEventListener("DOMContentLoaded", function() {
 
     // On first load collect and display the capture from the background page.
     var bgPage = browser.extension.getBackgroundPage();
-    addCaptureFromString(bgPage.currentCaptureInString);
-    bgPage.currentCaptureInString = null;
+    addCapture(bgPage.currentCapture);
+    bgPage.currentCapture = null;
 });
 
-var addCaptureFromString = function(captureInString) {
-    if (ui && captureInString) {
-        ui.addCapture(JSON.parse(captureInString));
+var addCapture = function(capture) {
+    if (ui && capture) {
+        ui.addCapture(capture);
     }
 }

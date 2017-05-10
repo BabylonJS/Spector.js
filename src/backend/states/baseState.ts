@@ -278,6 +278,18 @@ namespace SPECTOR.States {
             return true;
         }
 
+        protected getSpectorData(object: any): any {
+            if (!object) {
+                return undefined;
+            }
+
+            return {
+                __SPECTOR_Object_TAG: WebGlObjects.getWebGlObjectTag(object) || this.options.tagWebGlObject(object),
+                __SPECTOR_Object_CustomData: object.__SPECTOR_Object_CustomData,
+                __SPECTOR_Metadata: object.__SPECTOR_Metadata,
+            };
+        }
+
         private readFromContextNoSideEffects(): void {
             this.toggleCapture(false);
             this.readFromContext();

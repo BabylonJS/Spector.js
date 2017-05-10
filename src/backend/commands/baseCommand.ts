@@ -54,6 +54,12 @@ namespace SPECTOR.Commands {
                     commandCapture.commandArguments[i] = "Array Legnth: " + argument.length;
                 }
             }
+
+            commandCapture.commandArguments = JSON.parse(JSON.stringify(commandCapture.commandArguments));
+            if (commandCapture.result) {
+                commandCapture.result = JSON.parse(JSON.stringify(commandCapture.result));
+            }
+
             return commandCapture;
         }
 

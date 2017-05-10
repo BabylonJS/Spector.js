@@ -73,7 +73,7 @@ var loadFiles = function(event) {
                 };
                 reader.onload = e => {
                     try {
-                        window.browser.runtime.sendMessage({ captureString: e.target['result'] }, function(response) { });                        
+                        window.browser.runtime.sendMessage({ capture: JSON.parse(e.target['result']) }, function(response) { });
                     }
                     catch (exception) {
                         console.error("Error while reading file: " + fileToLoad.name + exception);

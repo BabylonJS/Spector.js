@@ -1,15 +1,4 @@
 namespace SPECTOR {
-    export interface ITextureRecorderState {
-        level: number;
-        internalFormat: string;
-        format: string;
-        type: string;
-        width: number;
-        height: number;
-        visual: { [target: string]: string };
-    }
-}
-namespace SPECTOR.Recorders {
     export interface ITextureRecorderData {
         target: string;
         level: number;
@@ -19,19 +8,11 @@ namespace SPECTOR.Recorders {
         border?: number;
         format: number;
         type: number;
-        visual: any;
     }
-
+}
+namespace SPECTOR.Recorders {
     @Decorators.recorder("WebGLTexture")
     export class TextureRecorder extends BaseRecorder<WebGLTexture> {
-
-        private readonly visualState: TextureRecorderVisualState;
-
-        constructor(options: IRecorderOptions, logger: ILogger) {
-            super(options, logger);
-            this.visualState = new TextureRecorderVisualState(options, logger);
-        }
-
         protected getCreateCommandNames(): string[] {
             return ["createTexture"];
         }
@@ -82,18 +63,7 @@ namespace SPECTOR.Recorders {
                 customData = this.getTexImage2DCustomData(functionInformation, target, instance);
             }
             // TODO. texSubImage2D, compressedTexImage2D, compressedTexSubImage2D, texImage3D, texSubImage3D, compressedTexImage3D, compressedTexSubImage3D
-
-            if (customData) {
-                tag.customData = tag.customData || {};
-                (tag.customData as ITextureRecorderState).level = customData.level;
-                (tag.customData as ITextureRecorderState).type = this.getWebGlConstant(customData.type);
-                (tag.customData as ITextureRecorderState).format = this.getWebGlConstant(customData.format);
-                (tag.customData as ITextureRecorderState).internalFormat = this.getWebGlConstant(customData.internalFormat);
-                (tag.customData as ITextureRecorderState).width = customData.width;
-                (tag.customData as ITextureRecorderState).height = customData.height;
-                (tag.customData as ITextureRecorderState).visual = (tag.customData as ITextureRecorderState).visual || {};
-                (tag.customData as ITextureRecorderState).visual[customData.target] = this.visualState.getBase64Visual(customData);
-            }
+            (instance as any).__SPECTOR_Object_CustomData = customData;
         }
 
         private getTexImage2DCustomData(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): ITextureRecorderData {
@@ -103,13 +73,7 @@ namespace SPECTOR.Recorders {
             }
 
             let customData: ITextureRecorderData;
-            if (functionInformation.arguments.length >= 9) {
-                const data = functionInformation.arguments[8];
-                if (!data || !data.width) {
-                    // Discard wegl2 pointer offsets... so far.
-                    return undefined;
-                }
-
+            if (functionInformation.arguments.length >= 8) {
                 // Custom data required to display the texture.
                 customData = {
                     target,
@@ -120,16 +84,9 @@ namespace SPECTOR.Recorders {
                     border: functionInformation.arguments[5],
                     format: functionInformation.arguments[6],
                     type: functionInformation.arguments[7],
-                    visual: functionInformation.arguments[8],
                 };
             }
             else if (functionInformation.arguments.length === 6) {
-                const data = functionInformation.arguments[5];
-                if (!data || !data.width) {
-                    // Discard wegl2 offests... so far.
-                    return undefined;
-                }
-
                 // Custom data required to display the texture.
                 customData = {
                     target,
@@ -139,7 +96,6 @@ namespace SPECTOR.Recorders {
                     height: functionInformation.arguments[5].height,
                     format: functionInformation.arguments[3],
                     type: functionInformation.arguments[4],
-                    visual: functionInformation.arguments[5],
                 };
             }
 
