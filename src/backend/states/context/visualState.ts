@@ -94,10 +94,11 @@ namespace SPECTOR.States {
                 return;
             }
 
+            const componentType = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE.value);
             if (type === WebGlConstants.RENDERBUFFER.value) {
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                 gl.framebufferRenderbuffer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value, WebGlConstants.RENDERBUFFER.value, storage);
-                this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, WebGlConstants.UNSIGNED_BYTE.value);
+                this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, componentType);
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, frameBuffer);
             }
             else if (type === WebGlConstants.TEXTURE.value) {
@@ -111,7 +112,7 @@ namespace SPECTOR.States {
                 const textureCubeMapFaceName = textureCubeMapFace > 0 ? WebGlConstantsByValue[textureCubeMapFace].name : WebGlConstants.TEXTURE_2D.name;
 
                 // Adapt to constraints defines in the custom data  if any.
-                let textureType = WebGlConstants.UNSIGNED_BYTE.value;
+                let textureType = componentType;
                 if (storage.__SPECTOR_Object_CustomData) {
                     const info = storage.__SPECTOR_Object_CustomData;
                     width = info.width;
@@ -143,60 +144,56 @@ namespace SPECTOR.States {
 
         protected getCapture(gl: WebGLRenderingContext, name: string, x: number, y: number, width: number, height: number,
             textureCubeMapFace: number, textureLayer: number, type: number) {
+            const attachmentVisualState = {
+                attachmentName: name,
+                src: null as string,
+                textureCubeMapFace: textureCubeMapFace ? WebGlConstantsByValue[textureCubeMapFace].name : null,
+                textureLayer,
+            };
+
             try {
                 // Read the pixels from the context.
                 const pixels = ReadPixelsHelper.readPixels(gl, x, y, width, height, type);
-                if (!pixels) {
-                    return;
-                }
+                if (pixels) {
+                    // Copy the pixels to a working 2D canvas same size.
+                    this.workingCanvas.width = width;
+                    this.workingCanvas.height = height;
+                    const imageData = this.workingContext2D.createImageData(width, height);
+                    imageData.data.set(pixels);
+                    this.workingContext2D.putImageData(imageData, 0, 0);
 
-                // Copy the pixels to a working 2D canvas same size.
-                this.workingCanvas.width = width;
-                this.workingCanvas.height = height;
-                const imageData = this.workingContext2D.createImageData(width, height);
-                imageData.data.set(pixels);
-                this.workingContext2D.putImageData(imageData, 0, 0);
+                    // Copy the pixels to a resized capture 2D canvas.
+                    const imageAspectRatio = width / height;
+                    if (imageAspectRatio < 1) {
+                        this.captureCanvas.width = VisualState.captureBaseSize * imageAspectRatio;
+                        this.captureCanvas.height = VisualState.captureBaseSize;
+                    }
+                    else if (imageAspectRatio > 1) {
+                        this.captureCanvas.width = VisualState.captureBaseSize;
+                        this.captureCanvas.height = VisualState.captureBaseSize / imageAspectRatio;
+                    }
+                    else {
+                        this.captureCanvas.width = VisualState.captureBaseSize;
+                        this.captureCanvas.height = VisualState.captureBaseSize;
+                    }
 
-                // Copy the pixels to a resized capture 2D canvas.
-                const imageAspectRatio = width / height;
-                if (imageAspectRatio < 1) {
-                    this.captureCanvas.width = VisualState.captureBaseSize * imageAspectRatio;
-                    this.captureCanvas.height = VisualState.captureBaseSize;
-                }
-                else if (imageAspectRatio > 1) {
-                    this.captureCanvas.width = VisualState.captureBaseSize;
-                    this.captureCanvas.height = VisualState.captureBaseSize / imageAspectRatio;
-                }
-                else {
-                    this.captureCanvas.width = VisualState.captureBaseSize;
-                    this.captureCanvas.height = VisualState.captureBaseSize;
-                }
+                    // Scale and draw to flip Y to reorient readPixels.
+                    this.captureContext2D.globalCompositeOperation = "copy";
+                    this.captureContext2D.scale(1, -1); // Y flip
+                    this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
+                    this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
+                    this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
+                    this.captureContext2D.globalCompositeOperation = "source-over";
 
-                // Scale and draw to flip Y to reorient readPixels.
-                this.captureContext2D.globalCompositeOperation = "copy";
-                this.captureContext2D.scale(1, -1); // Y flip
-                this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
-                this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
-                this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
-                this.captureContext2D.globalCompositeOperation = "source-over";
-
-                // get the screen capture
-                this.currentState["Attachments"].push({
-                    attachmentName: name,
-                    src: this.captureCanvas.toDataURL(),
-                    textureCubeMapFace: textureCubeMapFace ? WebGlConstantsByValue[textureCubeMapFace].name : null,
-                    textureLayer,
-                });
+                    // get the screen capture
+                    attachmentVisualState.src = this.captureCanvas.toDataURL();
+                }
             }
             catch (e) {
-                // get the screen capture
-                this.currentState["Attachments"].push({
-                    attachmentName: name,
-                    src: null,
-                    textureCubeMapFace: null,
-                    textureLayer,
-                });
+                // Do nothing in case of error at this level.
             }
+
+            this.currentState["Attachments"].push(attachmentVisualState);
         }
 
         protected analyse(consumeCommand: ICommandCapture): void {

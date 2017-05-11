@@ -2012,7 +2012,9 @@ var SPECTOR;
                     customData = this.getTexImage2DCustomData(functionInformation, target, instance);
                 }
                 // TODO. texSubImage2D, compressedTexImage2D, compressedTexSubImage2D, texImage3D, texSubImage3D, compressedTexImage3D, compressedTexSubImage3D
-                instance.__SPECTOR_Object_CustomData = customData;
+                if (customData) {
+                    instance.__SPECTOR_Object_CustomData = customData;
+                }
             };
             TextureRecorder.prototype.getTexImage2DCustomData = function (functionInformation, target, instance) {
                 if (functionInformation.arguments[1] !== 0) {
@@ -3351,10 +3353,11 @@ var SPECTOR;
                 if (!storage) {
                     return;
                 }
+                var componentType = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE.value);
                 if (type === SPECTOR.WebGlConstants.RENDERBUFFER.value) {
                     gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                     gl.framebufferRenderbuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, SPECTOR.WebGlConstants.RENDERBUFFER.value, storage);
-                    this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, SPECTOR.WebGlConstants.UNSIGNED_BYTE.value);
+                    this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, componentType);
                     gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, frameBuffer);
                 }
                 else if (type === SPECTOR.WebGlConstants.TEXTURE.value) {
@@ -3366,7 +3369,7 @@ var SPECTOR;
                     var textureCubeMapFace = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
                     var textureCubeMapFaceName = textureCubeMapFace > 0 ? SPECTOR.WebGlConstantsByValue[textureCubeMapFace].name : SPECTOR.WebGlConstants.TEXTURE_2D.name;
                     // Adapt to constraints defines in the custom data  if any.
-                    var textureType = SPECTOR.WebGlConstants.UNSIGNED_BYTE.value;
+                    var textureType = componentType;
                     if (storage.__SPECTOR_Object_CustomData) {
                         var info = storage.__SPECTOR_Object_CustomData;
                         width = info.width;
@@ -3391,56 +3394,51 @@ var SPECTOR;
                 }
             };
             VisualState.prototype.getCapture = function (gl, name, x, y, width, height, textureCubeMapFace, textureLayer, type) {
+                var attachmentVisualState = {
+                    attachmentName: name,
+                    src: null,
+                    textureCubeMapFace: textureCubeMapFace ? SPECTOR.WebGlConstantsByValue[textureCubeMapFace].name : null,
+                    textureLayer: textureLayer,
+                };
                 try {
                     // Read the pixels from the context.
                     var pixels = SPECTOR.ReadPixelsHelper.readPixels(gl, x, y, width, height, type);
-                    if (!pixels) {
-                        return;
+                    if (pixels) {
+                        // Copy the pixels to a working 2D canvas same size.
+                        this.workingCanvas.width = width;
+                        this.workingCanvas.height = height;
+                        var imageData = this.workingContext2D.createImageData(width, height);
+                        imageData.data.set(pixels);
+                        this.workingContext2D.putImageData(imageData, 0, 0);
+                        // Copy the pixels to a resized capture 2D canvas.
+                        var imageAspectRatio = width / height;
+                        if (imageAspectRatio < 1) {
+                            this.captureCanvas.width = VisualState_1.captureBaseSize * imageAspectRatio;
+                            this.captureCanvas.height = VisualState_1.captureBaseSize;
+                        }
+                        else if (imageAspectRatio > 1) {
+                            this.captureCanvas.width = VisualState_1.captureBaseSize;
+                            this.captureCanvas.height = VisualState_1.captureBaseSize / imageAspectRatio;
+                        }
+                        else {
+                            this.captureCanvas.width = VisualState_1.captureBaseSize;
+                            this.captureCanvas.height = VisualState_1.captureBaseSize;
+                        }
+                        // Scale and draw to flip Y to reorient readPixels.
+                        this.captureContext2D.globalCompositeOperation = "copy";
+                        this.captureContext2D.scale(1, -1); // Y flip
+                        this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
+                        this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
+                        this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
+                        this.captureContext2D.globalCompositeOperation = "source-over";
+                        // get the screen capture
+                        attachmentVisualState.src = this.captureCanvas.toDataURL();
                     }
-                    // Copy the pixels to a working 2D canvas same size.
-                    this.workingCanvas.width = width;
-                    this.workingCanvas.height = height;
-                    var imageData = this.workingContext2D.createImageData(width, height);
-                    imageData.data.set(pixels);
-                    this.workingContext2D.putImageData(imageData, 0, 0);
-                    // Copy the pixels to a resized capture 2D canvas.
-                    var imageAspectRatio = width / height;
-                    if (imageAspectRatio < 1) {
-                        this.captureCanvas.width = VisualState_1.captureBaseSize * imageAspectRatio;
-                        this.captureCanvas.height = VisualState_1.captureBaseSize;
-                    }
-                    else if (imageAspectRatio > 1) {
-                        this.captureCanvas.width = VisualState_1.captureBaseSize;
-                        this.captureCanvas.height = VisualState_1.captureBaseSize / imageAspectRatio;
-                    }
-                    else {
-                        this.captureCanvas.width = VisualState_1.captureBaseSize;
-                        this.captureCanvas.height = VisualState_1.captureBaseSize;
-                    }
-                    // Scale and draw to flip Y to reorient readPixels.
-                    this.captureContext2D.globalCompositeOperation = "copy";
-                    this.captureContext2D.scale(1, -1); // Y flip
-                    this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
-                    this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
-                    this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
-                    this.captureContext2D.globalCompositeOperation = "source-over";
-                    // get the screen capture
-                    this.currentState["Attachments"].push({
-                        attachmentName: name,
-                        src: this.captureCanvas.toDataURL(),
-                        textureCubeMapFace: textureCubeMapFace ? SPECTOR.WebGlConstantsByValue[textureCubeMapFace].name : null,
-                        textureLayer: textureLayer,
-                    });
                 }
                 catch (e) {
-                    // get the screen capture
-                    this.currentState["Attachments"].push({
-                        attachmentName: name,
-                        src: null,
-                        textureCubeMapFace: null,
-                        textureLayer: textureLayer,
-                    });
+                    // Do nothing in case of error at this level.
                 }
+                this.currentState["Attachments"].push(attachmentVisualState);
             };
             VisualState.prototype.analyse = function (consumeCommand) {
                 // Nothing to analyse on visual state.
@@ -3464,6 +3462,7 @@ var SPECTOR;
             function DrawCallState(options, logger) {
                 var _this = _super.call(this, options, logger) || this;
                 _this.drawCallTextureInputState = new States.DrawCallTextureInputState(options, logger);
+                _this.drawCallUboInputState = new States.DrawCallUboInputState(options, logger);
                 return _this;
             }
             Object.defineProperty(DrawCallState.prototype, "requireStartAndStopStates", {
@@ -3535,10 +3534,18 @@ var SPECTOR;
                 // Insert texture state at the end of the uniform datas.
                 for (var i = 0; i < uniformIndices.length; i++) {
                     var uniformState = this.currentState.uniforms[i];
-                    if (uniformState.value !== null) {
+                    if (uniformState.value !== null && uniformState.value !== undefined) {
                         var textureTarget = DrawCallState_1.samplerTypes[uniformState.typeValue];
                         if (textureTarget) {
-                            uniformState.texture = this.readTextureFromContext(uniformState.value, textureTarget);
+                            if (uniformState.value.length) {
+                                uniformState.textures = [];
+                                for (var j = 0; j < uniformState.value.length; j++) {
+                                    uniformState.textures.push(this.readTextureFromContext(uniformState.value[j], textureTarget));
+                                }
+                            }
+                            else {
+                                uniformState.texture = this.readTextureFromContext(uniformState.value, textureTarget);
+                            }
                         }
                     }
                     delete uniformState.typeValue;
@@ -3601,14 +3608,21 @@ var SPECTOR;
                 var storage = this.context.getFramebufferAttachmentParameter(target, attachment, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_NAME.value);
                 if (type === SPECTOR.WebGlConstants.RENDERBUFFER.value) {
                     attachmentState.type = "RENDERBUFFER";
-                    attachmentState.buffer = this.options.tagWebGlObject(storage);
+                    attachmentState.buffer = this.getSpectorData(storage);
                 }
                 else if (type === SPECTOR.WebGlConstants.TEXTURE.value) {
                     attachmentState.type = "TEXTURE";
-                    attachmentState.texture = this.options.tagWebGlObject(storage);
+                    attachmentState.texture = this.getSpectorData(storage);
                     attachmentState.textureLevel = this.context.getFramebufferAttachmentParameter(target, attachment, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
                     var cubeMapFace = this.context.getFramebufferAttachmentParameter(target, attachment, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
                     attachmentState.textureCubeMapFace = this.getWebGlConstant(cubeMapFace);
+                    if (attachmentState.texture && attachmentState.texture.__SPECTOR_Object_CustomData) {
+                        var info = attachmentState.texture.__SPECTOR_Object_CustomData;
+                        attachmentState.format = this.getWebGlConstant(info.format);
+                        attachmentState.internalFormat = this.getWebGlConstant(info.internalFormat);
+                        attachmentState.width = info.width;
+                        attachmentState.height = info.height;
+                    }
                 }
                 if (this.extensions["EXT_sRGB"]) {
                     attachmentState.encoding = this.getWebGlConstant(this.context.getFramebufferAttachmentParameter(target, attachment, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT.value));
@@ -3652,7 +3666,7 @@ var SPECTOR;
                     stride: this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_STRIDE.value),
                     arrayType: this.getWebGlConstant(this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_TYPE.value)),
                     normalized: this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_NORMALIZED.value),
-                    vertexAttrib: this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.CURRENT_VERTEX_ATTRIB.value),
+                    vertexAttrib: Array.prototype.slice.call(this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.CURRENT_VERTEX_ATTRIB.value)),
                 };
                 if (this.extensions[SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE.extensionName]) {
                     attributeState.divisor = this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE.value);
@@ -3668,6 +3682,9 @@ var SPECTOR;
                 var location = this.context.getUniformLocation(program, info.name);
                 if (location) {
                     var value = this.context.getUniform(program, location);
+                    if (value.length) {
+                        value = Array.prototype.slice.call(value);
+                    }
                     var uniformState = {
                         name: info.name,
                         size: info.size,
@@ -3684,8 +3701,6 @@ var SPECTOR;
                         size: info.size,
                         type: this.getWebGlConstant(info.type),
                         typeValue: info.type,
-                        location: null,
-                        value: null,
                     };
                     return uniformState;
                 }
@@ -3780,6 +3795,9 @@ var SPECTOR;
                     uniformState.arrayStride = arrayStrides[i];
                     uniformState.matrixStride = matrixStrides[i];
                     uniformState.rowMajor = rowMajors[i];
+                    if (uniformState.blockIndice > -1) {
+                        uniformState.value = this.drawCallUboInputState.getUboValue(blockIndices[i], uniformState.offset, uniformState.size, typeValues[i]);
+                    }
                 }
             };
             DrawCallState.prototype.readTransformFeedbackFromContext = function (program, index) {
@@ -3805,8 +3823,6 @@ var SPECTOR;
                     vertex: context2.getActiveUniformBlockParameter(program, index, SPECTOR.WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER.value),
                     fragment: context2.getActiveUniformBlockParameter(program, index, SPECTOR.WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER.value),
                     buffer: this.getSpectorData(context2.getIndexedParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint)),
-                    bufferSize: context2.getIndexedParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_SIZE.value, bindingPoint),
-                    bufferStart: context2.getIndexedParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_START.value, bindingPoint),
                 };
             };
             DrawCallState.prototype.getWebGlConstant = function (value) {
@@ -3968,6 +3984,74 @@ var SPECTOR;
             SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Z,
         ];
         States.DrawCallTextureInputState = DrawCallTextureInputState;
+    })(States = SPECTOR.States || (SPECTOR.States = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var States;
+    (function (States) {
+        var DrawCallUboInputState = (function () {
+            function DrawCallUboInputState(options, logger) {
+                this.logger = logger;
+                this.context = options.context;
+            }
+            DrawCallUboInputState.prototype.getUboValue = function (indice, offset, size, type) {
+                var uboType = DrawCallUboInputState.uboTypes[type];
+                if (!uboType) {
+                    return undefined;
+                }
+                var destination = new uboType.arrayBufferView(size * uboType.lengthMultiplier);
+                var context2 = this.context;
+                var ownerbuffer = context2.getIndexedParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_BINDING.value, indice);
+                if (ownerbuffer) {
+                    var boundBuffer = context2.getParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_BINDING.value);
+                    try {
+                        context2.bindBuffer(SPECTOR.WebGlConstants.UNIFORM_BUFFER.value, ownerbuffer);
+                        context2.getBufferSubData(SPECTOR.WebGlConstants.UNIFORM_BUFFER.value, offset, destination);
+                    }
+                    catch (e) {
+                        // Prevent back fromats to break the capture.
+                        return undefined;
+                    }
+                    if (boundBuffer) {
+                        context2.bindBuffer(SPECTOR.WebGlConstants.UNIFORM_BUFFER.value, boundBuffer);
+                    }
+                }
+                return Array.prototype.slice.call(destination);
+            };
+            return DrawCallUboInputState;
+        }());
+        DrawCallUboInputState.uboTypes = (_a = {},
+            _a[SPECTOR.WebGlConstants.BOOL.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 1 },
+            _a[SPECTOR.WebGlConstants.BOOL_VEC2.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 2 },
+            _a[SPECTOR.WebGlConstants.BOOL_VEC3.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 3 },
+            _a[SPECTOR.WebGlConstants.BOOL_VEC4.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 4 },
+            _a[SPECTOR.WebGlConstants.INT.value] = { arrayBufferView: Int32Array, lengthMultiplier: 1 },
+            _a[SPECTOR.WebGlConstants.INT_VEC2.value] = { arrayBufferView: Int32Array, lengthMultiplier: 2 },
+            _a[SPECTOR.WebGlConstants.INT_VEC3.value] = { arrayBufferView: Int32Array, lengthMultiplier: 3 },
+            _a[SPECTOR.WebGlConstants.INT_VEC4.value] = { arrayBufferView: Int32Array, lengthMultiplier: 4 },
+            _a[SPECTOR.WebGlConstants.UNSIGNED_INT.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 1 },
+            _a[SPECTOR.WebGlConstants.UNSIGNED_INT_VEC2.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 2 },
+            _a[SPECTOR.WebGlConstants.UNSIGNED_INT_VEC3.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 3 },
+            _a[SPECTOR.WebGlConstants.UNSIGNED_INT_VEC4.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 4 },
+            _a[SPECTOR.WebGlConstants.FLOAT.value] = { arrayBufferView: Float32Array, lengthMultiplier: 1 },
+            _a[SPECTOR.WebGlConstants.FLOAT_VEC2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 2 },
+            _a[SPECTOR.WebGlConstants.FLOAT_VEC3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 3 },
+            _a[SPECTOR.WebGlConstants.FLOAT_VEC4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 4 },
+            _a[SPECTOR.WebGlConstants.FLOAT_MAT2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 4 },
+            _a[SPECTOR.WebGlConstants.FLOAT_MAT2x3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 6 },
+            _a[SPECTOR.WebGlConstants.FLOAT_MAT2x4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 8 },
+            _a[SPECTOR.WebGlConstants.FLOAT_MAT3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 9 },
+            _a[SPECTOR.WebGlConstants.FLOAT_MAT3x2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 6 },
+            _a[SPECTOR.WebGlConstants.FLOAT_MAT3x4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 12 },
+            _a[SPECTOR.WebGlConstants.FLOAT_MAT4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 16 },
+            _a[SPECTOR.WebGlConstants.FLOAT_MAT4x2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 8 },
+            _a[SPECTOR.WebGlConstants.FLOAT_MAT4x3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 12 },
+            _a[SPECTOR.WebGlConstants.SAMPLER_2D.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 1 },
+            _a[SPECTOR.WebGlConstants.SAMPLER_CUBE.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 1 },
+            _a);
+        States.DrawCallUboInputState = DrawCallUboInputState;
+        var _a;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;

@@ -82,6 +82,7 @@
         "backend/states/context/visualState.ts",
         "backend/states/drawCalls/drawCallState.ts",
         "backend/states/drawCalls/drawCallTextureInputState.ts",
+        "backend/states/drawCalls/drawCallUboInputState.ts",
         
         "backend/webGlObjects/baseWebGlObject.ts",
         "backend/webGlObjects/webGlObjects.ts",
