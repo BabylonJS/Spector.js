@@ -29,10 +29,12 @@ namespace SPECTOR.States {
         }
 
         private readonly drawCallTextureInputState: DrawCallTextureInputState;
+        private readonly drawCallUboInputState: DrawCallUboInputState;
 
         constructor(options: IStateOptions, logger: ILogger) {
             super(options, logger);
             this.drawCallTextureInputState = new DrawCallTextureInputState(options, logger);
+            this.drawCallUboInputState = new DrawCallUboInputState(options, logger);
         }
 
         protected getConsumeCommands(): string[] {
@@ -108,10 +110,18 @@ namespace SPECTOR.States {
             // Insert texture state at the end of the uniform datas.
             for (let i = 0; i < uniformIndices.length; i++) {
                 const uniformState = this.currentState.uniforms[i];
-                if (uniformState.value !== null) {
+                if (uniformState.value !== null && uniformState.value !== undefined) {
                     const textureTarget = DrawCallState.samplerTypes[uniformState.typeValue];
                     if (textureTarget) {
-                        uniformState.texture = this.readTextureFromContext(uniformState.value, textureTarget);
+                        if (uniformState.value.length) {
+                            uniformState.textures = [];
+                            for (let j = 0; j < uniformState.value.length; j++) {
+                                uniformState.textures.push(this.readTextureFromContext(uniformState.value[j], textureTarget));
+                            }
+                        }
+                        else {
+                            uniformState.texture = this.readTextureFromContext(uniformState.value, textureTarget);
+                        }
                     }
                 }
                 delete uniformState.typeValue;
@@ -182,14 +192,22 @@ namespace SPECTOR.States {
             const storage = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_NAME.value);
             if (type === WebGlConstants.RENDERBUFFER.value) {
                 attachmentState.type = "RENDERBUFFER";
-                attachmentState.buffer = this.options.tagWebGlObject(storage);
+                attachmentState.buffer = this.getSpectorData(storage);
             }
             else if (type === WebGlConstants.TEXTURE.value) {
                 attachmentState.type = "TEXTURE";
-                attachmentState.texture = this.options.tagWebGlObject(storage);
+                attachmentState.texture = this.getSpectorData(storage);
                 attachmentState.textureLevel = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
                 const cubeMapFace = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
                 attachmentState.textureCubeMapFace = this.getWebGlConstant(cubeMapFace);
+
+                if (attachmentState.texture && attachmentState.texture.__SPECTOR_Object_CustomData) {
+                    const info = attachmentState.texture.__SPECTOR_Object_CustomData;
+                    attachmentState.format = this.getWebGlConstant(info.format);
+                    attachmentState.internalFormat = this.getWebGlConstant(info.internalFormat);
+                    attachmentState.width = info.width;
+                    attachmentState.height = info.height;
+                }
             }
 
             if (this.extensions["EXT_sRGB"]) {
@@ -240,7 +258,7 @@ namespace SPECTOR.States {
                 stride: this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_STRIDE.value),
                 arrayType: this.getWebGlConstant(this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_TYPE.value)),
                 normalized: this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_NORMALIZED.value),
-                vertexAttrib: this.context.getVertexAttrib(location, WebGlConstants.CURRENT_VERTEX_ATTRIB.value),
+                vertexAttrib: Array.prototype.slice.call(this.context.getVertexAttrib(location, WebGlConstants.CURRENT_VERTEX_ATTRIB.value)),
             };
 
             if (this.extensions[WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE.extensionName]) {
@@ -258,7 +276,10 @@ namespace SPECTOR.States {
             const info = this.context.getActiveUniform(program, activeUniformIndex);
             const location = this.context.getUniformLocation(program, info.name);
             if (location) {
-                const value = this.context.getUniform(program, location);
+                let value = this.context.getUniform(program, location);
+                if (value.length) {
+                    value = Array.prototype.slice.call(value);
+                }
 
                 const uniformState: any = {
                     name: info.name,
@@ -276,8 +297,6 @@ namespace SPECTOR.States {
                     size: info.size,
                     type: this.getWebGlConstant(info.type),
                     typeValue: info.type,
-                    location: null,
-                    value: null,
                 };
                 return uniformState;
             }
@@ -390,6 +409,12 @@ namespace SPECTOR.States {
                 uniformState.arrayStride = arrayStrides[i];
                 uniformState.matrixStride = matrixStrides[i];
                 uniformState.rowMajor = rowMajors[i];
+                if (uniformState.blockIndice > -1) {
+                    uniformState.value = this.drawCallUboInputState.getUboValue(blockIndices[i],
+                        uniformState.offset,
+                        uniformState.size,
+                        typeValues[i]);
+                }
             }
         }
 
@@ -420,8 +445,9 @@ namespace SPECTOR.States {
                 fragment: context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER.value),
 
                 buffer: this.getSpectorData(context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint)),
-                bufferSize: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_SIZE.value, bindingPoint),
-                bufferStart: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_START.value, bindingPoint),
+                // Do not display Ptr data.
+                // bufferSize: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_SIZE.value, bindingPoint),
+                // bufferStart: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_START.value, bindingPoint),
             };
         }
 

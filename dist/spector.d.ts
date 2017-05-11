@@ -1503,6 +1503,7 @@ declare namespace SPECTOR.States {
         private static samplerTypes;
         readonly requireStartAndStopStates: boolean;
         private readonly drawCallTextureInputState;
+        private readonly drawCallUboInputState;
         constructor(options: IStateOptions, logger: ILogger);
         protected getConsumeCommands(): string[];
         protected getChangeCommandsByState(): {
@@ -1537,6 +1538,15 @@ declare namespace SPECTOR.States {
         getTextureState(target: WebGlConstant, storage: WebGLTexture, info: ITextureRecorderData): any;
         protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number): string;
         protected getWebGlConstant(value: number): string;
+    }
+}
+declare namespace SPECTOR.States {
+    class DrawCallUboInputState {
+        protected readonly logger: ILogger;
+        private static uboTypes;
+        private readonly context;
+        constructor(options: IStateOptions, logger: ILogger);
+        getUboValue(indice: number, offset: number, size: number, type: number): any;
     }
 }
 declare namespace SPECTOR {

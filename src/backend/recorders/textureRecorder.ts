@@ -63,7 +63,9 @@ namespace SPECTOR.Recorders {
                 customData = this.getTexImage2DCustomData(functionInformation, target, instance);
             }
             // TODO. texSubImage2D, compressedTexImage2D, compressedTexSubImage2D, texImage3D, texSubImage3D, compressedTexImage3D, compressedTexSubImage3D
-            (instance as any).__SPECTOR_Object_CustomData = customData;
+            if (customData) {
+                (instance as any).__SPECTOR_Object_CustomData = customData;
+            }
         }
 
         private getTexImage2DCustomData(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): ITextureRecorderData {
