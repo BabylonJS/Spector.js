@@ -10,7 +10,7 @@ This release is planned to adress Frame Analytics (Redundant, Unused...).
 [View More...](changeLogs/v0.2.0.md)
 
 ## v0.1.2 First Stable
-This release is planned as a first stable release contining the Minimum Valuable Product.
+This release is the first stable release containing the Minimum Valuable Product.
 
 - npm version fix
 - [Mipped Textures](https://github.com/BabylonJS/Spector.js/issues/31)
