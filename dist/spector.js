@@ -1017,7 +1017,8 @@ var SPECTOR;
                 internalFormat !== SPECTOR.WebGlConstants.RGBA16F.value &&
                 internalFormat !== SPECTOR.WebGlConstants.RGBA32F.value &&
                 internalFormat !== SPECTOR.WebGlConstants.RGB16F.value &&
-                internalFormat !== SPECTOR.WebGlConstants.RGB32F.value) {
+                internalFormat !== SPECTOR.WebGlConstants.RGB32F.value &&
+                internalFormat !== SPECTOR.WebGlConstants.R11F_G11F_B10F.value) {
                 return false;
             }
             // Only reads https://www.khronos.org/registry/webgl/specs/latest/2.0/ texImage2D supported combination.

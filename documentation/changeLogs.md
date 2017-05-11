@@ -4,10 +4,15 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
-## v0.0.20 Analytics
-This release is planned to adress analytics. It adds memory and time tracking in order to help improving your apps.
+## v0.2.0 Frame Analytics (Redundant, Unused...)
+This release is planned to adress Frame Analytics (Redundant, Unused...).
 
-[View More...](changeLogs/v0.0.20.md)
+[View More...](changeLogs/v0.2.0.md)
+
+## v0.1.0 First Stable
+This release is planned as a first stable release contining the Minimum Valuable Product.
+
+[View More...](changeLogs/v0.1.0.md)
 
 ## v0.0.12 Hot Fix Release
 Fixing a crash in unpspyed canvas mode and adding UBO values:Fixing a crash in unpspyed canvas mode, adding UBO values and fixing mipped texture inputs:

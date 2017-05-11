@@ -47,3 +47,12 @@ You can also add &noSpy=1 at the end of the previous Urls to test without enabli
 To add a new sample, simply add a new script in the ```sample/js``` folder. To launch it you can use the following url by replacing the ```fileName``` by your new file name without the ```.js``` extension.
 
 [http://localhost:1337/sample/index.html?sample=fileName](http://localhost:1337/sample/index.html?sample=fileName)
+
+## Extension
+As stated on the [extension documentation](extension.md), you can side load the extension. The main use cases to try out to test the captures are:
+
+- [BabylonJS playground](http://www.babylonjs-playground.com/): Test a few of the available scenes.
+- [Sketchfab](https://sketchfab.com/models/09f6d0e4d611421bbd53d35f1ef013ec)
+- [Sketchfab WebGL 2](https://sketchfab.com/models/4d9f1a93a4a04b08aec30a8f2f9c6fa2?webgl2=1)
+- [Play Canvas Over the flood](https://playcanv.as/e/p/44MRmJRU/)
+- [5000 Commands](http://marcinignac.com/experiments/deferred-rendering/demo/)
