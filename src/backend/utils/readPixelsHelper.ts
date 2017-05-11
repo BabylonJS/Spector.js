@@ -41,7 +41,8 @@ namespace SPECTOR {
             if (type === WebGlConstants.UNSIGNED_BYTE.value) {
                 pixels = new Uint8Array(size);
             }
-            else if (type === WebGlConstants.FLOAT.value) {
+            else {
+                type = WebGlConstants.FLOAT.value;
                 pixels = new Float32Array(size);
             }
 

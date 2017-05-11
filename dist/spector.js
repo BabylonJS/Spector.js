@@ -1041,7 +1041,8 @@ var SPECTOR;
             if (type === SPECTOR.WebGlConstants.UNSIGNED_BYTE.value) {
                 pixels = new Uint8Array(size);
             }
-            else if (type === SPECTOR.WebGlConstants.FLOAT.value) {
+            else {
+                type = SPECTOR.WebGlConstants.FLOAT.value;
                 pixels = new Float32Array(size);
             }
             // Read the pixels from the frame buffer.
@@ -3621,6 +3622,7 @@ var SPECTOR;
                         var info = attachmentState.texture.__SPECTOR_Object_CustomData;
                         attachmentState.format = this.getWebGlConstant(info.format);
                         attachmentState.internalFormat = this.getWebGlConstant(info.internalFormat);
+                        attachmentState.textureType = this.getWebGlConstant(info.type);
                         attachmentState.width = info.width;
                         attachmentState.height = info.height;
                     }

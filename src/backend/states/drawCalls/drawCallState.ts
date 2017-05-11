@@ -205,6 +205,7 @@ namespace SPECTOR.States {
                     const info = attachmentState.texture.__SPECTOR_Object_CustomData;
                     attachmentState.format = this.getWebGlConstant(info.format);
                     attachmentState.internalFormat = this.getWebGlConstant(info.internalFormat);
+                    attachmentState.textureType = this.getWebGlConstant(info.type);
                     attachmentState.width = info.width;
                     attachmentState.height = info.height;
                 }

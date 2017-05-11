@@ -9,7 +9,7 @@ This release is planned to adress Frame Analytics (Redundant, Unused...).
 
 [View More...](changeLogs/v0.2.0.md)
 
-## v0.1.1 First Stable
+## v0.1.2 First Stable
 This release is planned as a first stable release contining the Minimum Valuable Product.
 
 - npm version fix
@@ -17,7 +17,7 @@ This release is planned as a first stable release contining the Minimum Valuable
 - [UBO Values](https://github.com/BabylonJS/Spector.js/issues/30)
 - [Unspyed Mode](https://github.com/BabylonJS/Spector.js/issues/29)
 
-[View More...](changeLogs/v0.1.1.md)
+[View More...](changeLogs/v0.1.2.md)
 
 ## v0.0.11 Fix Release
 This release is aimed to address a few of the first created bugs:
