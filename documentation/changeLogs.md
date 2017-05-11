@@ -10,7 +10,7 @@ This release is planned to adress analytics. It adds memory and time tracking in
 [View More...](changeLogs/v0.0.20.md)
 
 ## v0.0.12 Hot Fix Release
-Fixing a crash in unpspyed canvas mode and adding UBO values:
+Fixing a crash in unpspyed canvas mode and adding UBO values:Fixing a crash in unpspyed canvas mode, adding UBO values and fixing mipped texture inputs:
 
 - [Mipped Textures](https://github.com/BabylonJS/Spector.js/issues/31)
 - [UBO Values](https://github.com/BabylonJS/Spector.js/issues/30)
