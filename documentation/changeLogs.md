@@ -12,16 +12,11 @@ This release is planned to adress Frame Analytics (Redundant, Unused...).
 ## v0.1.0 First Stable
 This release is planned as a first stable release contining the Minimum Valuable Product.
 
-[View More...](changeLogs/v0.1.0.md)
-
-## v0.0.12 Hot Fix Release
-Fixing a crash in unpspyed canvas mode and adding UBO values:Fixing a crash in unpspyed canvas mode, adding UBO values and fixing mipped texture inputs:
-
 - [Mipped Textures](https://github.com/BabylonJS/Spector.js/issues/31)
 - [UBO Values](https://github.com/BabylonJS/Spector.js/issues/30)
 - [Unspyed Mode](https://github.com/BabylonJS/Spector.js/issues/29)
 
-[View More...](changeLogs/v0.0.11.md)
+[View More...](changeLogs/v0.1.0.md)
 
 ## v0.0.11 Fix Release
 This release is aimed to address a few of the first created bugs:
