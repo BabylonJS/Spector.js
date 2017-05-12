@@ -200,15 +200,7 @@ namespace SPECTOR.States {
                 attachmentState.textureLevel = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
                 const cubeMapFace = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
                 attachmentState.textureCubeMapFace = this.getWebGlConstant(cubeMapFace);
-
-                if (attachmentState.texture && attachmentState.texture.__SPECTOR_Object_CustomData) {
-                    const info = attachmentState.texture.__SPECTOR_Object_CustomData;
-                    attachmentState.format = this.getWebGlConstant(info.format);
-                    attachmentState.internalFormat = this.getWebGlConstant(info.internalFormat);
-                    attachmentState.textureType = this.getWebGlConstant(info.type);
-                    attachmentState.width = info.width;
-                    attachmentState.height = info.height;
-                }
+                this.drawCallTextureInputState.appendTextureState(attachmentState, storage);
             }
 
             if (this.extensions["EXT_sRGB"]) {
@@ -348,42 +340,28 @@ namespace SPECTOR.States {
                 }
             }
 
-            const customData = this.readTextureCustomDataFromTag(target);
-            if (customData) {
-                for (const intelligibleProperty in customData) {
-                    if (customData.hasOwnProperty(intelligibleProperty)) {
-                        textureState[intelligibleProperty] = customData[intelligibleProperty];
-                    }
-                }
+            const storage = this.getTextureStorage(target);
+            if (storage) {
+                this.drawCallTextureInputState.appendTextureState(textureState, storage, target);
             }
 
             this.context.activeTexture(activeTexture);
             return textureState;
         }
 
-        protected readTextureCustomDataFromTag(target: WebGlConstant): any {
-            let texture: WebGLTexture;
-            // Add texture visual.
-            // 2D Textures.
+        protected getTextureStorage(target: WebGlConstant): any {
             if (target === WebGlConstants.TEXTURE_2D) {
-                texture = this.context.getParameter(WebGlConstants.TEXTURE_BINDING_2D.value);
+                return this.context.getParameter(WebGlConstants.TEXTURE_BINDING_2D.value);
             }
-            // Cube Textures.
             else if (target === WebGlConstants.TEXTURE_CUBE_MAP) {
-                texture = this.context.getParameter(WebGlConstants.TEXTURE_BINDING_CUBE_MAP.value);
+                return this.context.getParameter(WebGlConstants.TEXTURE_BINDING_CUBE_MAP.value);
             }
-
-            // Check for custom data.
-            const tag = this.getSpectorData(texture);
-            if (tag && tag.__SPECTOR_Object_CustomData) {
-                const customDataState = this.drawCallTextureInputState.getTextureState(target,
-                    texture,
-                    tag.__SPECTOR_Object_CustomData);
-
-                return customDataState;
+            else if (target === WebGlConstants.TEXTURE_3D) {
+                return this.context.getParameter(WebGlConstants.TEXTURE_BINDING_3D.value);
             }
-
-            // TODO. textureArray_3d, Texture2d_array if find a way to visualize.
+            else if (target === WebGlConstants.TEXTURE_2D_ARRAY) {
+                return this.context.getParameter(WebGlConstants.TEXTURE_BINDING_2D_ARRAY.value);
+            }
             return undefined;
         }
 

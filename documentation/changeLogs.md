@@ -4,10 +4,18 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
-## v0.2.0 Frame Analytics (Redundant, Unused...)
+<!--## v0.2.0 Frame Analytics (Redundant, Unused...)
 This release is planned to adress Frame Analytics (Redundant, Unused...).
 
-[View More...](changeLogs/v0.2.0.md)
+[View More...](changeLogs/v0.2.0.md)-->
+
+## v0.1.x Currently on Master
+These are the changes on master yet to be released.
+
+- WebGL2 Texture 3d visualization (first and last three to save space)
+- WebGL2 Texture 2d array visualization (first and last three to save space)
+- [Compressed textures information](https://github.com/BabylonJS/Spector.js/issues/32)
+- Webgl1 Texture type Half Float OES Visualization.
 
 ## v0.1.2 First Stable
 This release is the first stable release containing the Minimum Valuable Product.

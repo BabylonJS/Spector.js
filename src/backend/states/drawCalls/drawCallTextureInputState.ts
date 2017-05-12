@@ -33,21 +33,46 @@ namespace SPECTOR.States {
             (this.captureContext2D as any).msImageSmoothingEnabled = true;
         }
 
-        public getTextureState(target: WebGlConstant, storage: WebGLTexture, info: ITextureRecorderData): any {
+        public appendTextureState(state: any, storage: WebGLTexture, target: WebGlConstant = null): void {
+            if (!storage) {
+                return;
+            }
+
+            // Check for custom data.
+            const customData: ITextureRecorderData = (storage as any).__SPECTOR_Object_CustomData;
+            if (!customData) {
+                return;
+            }
+
+            if (customData.type) {
+                state.type = this.getWebGlConstant(customData.type);
+            }
+            if (customData.format) {
+                state.format = this.getWebGlConstant(customData.format);
+            }
+            if (customData.internalFormat) {
+                state.internalFormat = this.getWebGlConstant(customData.internalFormat);
+            }
+            state.width = customData.width;
+            state.height = customData.height;
+            if (customData.depth) {
+                state.depth = customData.depth;
+            }
+
+            if (target) {
+                state.visual = this.getTextureVisualState(target,
+                    storage,
+                    customData);
+            }
+        }
+
+        protected getTextureVisualState(target: WebGlConstant, storage: WebGLTexture, info: ITextureRecorderData): any {
             try {
                 const gl = this.context;
-                const result = {
-                    level: info.level,
-                    type: this.getWebGlConstant(info.type),
-                    format: this.getWebGlConstant(info.format),
-                    internalFormat: this.getWebGlConstant(info.internalFormat),
-                    width: info.width,
-                    height: info.height,
-                    visual: {},
-                };
+                const visual: any = {};
 
                 if (!ReadPixelsHelper.isSupportedCombination(info.type, info.format, info.internalFormat)) {
-                    return result;
+                    return visual;
                 }
 
                 // Check the framebuffer status.
@@ -59,17 +84,41 @@ namespace SPECTOR.States {
                     const width = info.width;
                     const height = info.height;
 
-                    if (target === WebGlConstants.TEXTURE_CUBE_MAP) {
+                    if (target === WebGlConstants.TEXTURE_3D && info.depth) {
+                        const gl2 = gl as WebGL2RenderingContext;
+                        for (let i = 0; i < info.depth; i++) {
+                            // Limit to 6 the visible texture...
+                            if (i > 2 && i < (info.depth - 3)) {
+                                continue;
+                            }
+                            gl2.framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
+                                storage, textureLevel, i);
+                            visual["3D Layer " + i] = this.getCapture(gl, 0, 0, width, height, info.type);
+                        }
+                    }
+                    else if (target === WebGlConstants.TEXTURE_2D_ARRAY && info.depth) {
+                        const gl2 = gl as WebGL2RenderingContext;
+                        // Limit to 6 the visible texture...
+                        for (let i = 0; i < info.depth; i++) {
+                            if (i > 2 && i < (info.depth - 3)) {
+                                continue;
+                            }
+                            gl2.framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
+                                storage, textureLevel, i);
+                            visual["Layer " + i] = this.getCapture(gl, 0, 0, width, height, info.type);
+                        }
+                    }
+                    else if (target === WebGlConstants.TEXTURE_CUBE_MAP) {
                         for (const face of DrawCallTextureInputState.cubeMapFaces) {
                             gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                                 face.value, storage, textureLevel);
-                            (result.visual as any)[face.name] = this.getCapture(gl, 0, 0, width, height, info.type);
+                            visual[face.name] = this.getCapture(gl, 0, 0, width, height, info.type);
                         }
                     }
                     else {
                         gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                             WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
-                        (result.visual as any)[WebGlConstants.TEXTURE_2D.name] = this.getCapture(gl, 0, 0, width, height, info.type);
+                        visual[WebGlConstants.TEXTURE_2D.name] = this.getCapture(gl, 0, 0, width, height, info.type);
                     }
                 }
                 catch (e) {
@@ -77,7 +126,7 @@ namespace SPECTOR.States {
                 }
 
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, currentFrameBuffer);
-                return result;
+                return visual;
             }
             catch (e) {
                 // Do nothing, probably an incompatible format, should add more combinaison check upfront.
@@ -94,6 +143,8 @@ namespace SPECTOR.States {
                     return undefined;
                 }
 
+                // In case of texStorage.
+                type = type || WebGlConstants.UNSIGNED_BYTE.value;
                 // Read the pixels from the context.
                 const pixels = ReadPixelsHelper.readPixels(gl, x, y, width, height, type);
                 if (!pixels) {

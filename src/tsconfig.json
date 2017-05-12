@@ -52,7 +52,8 @@
         "backend/commands/viewport.ts",
 
         "backend/recorders/baseRecorder.ts",
-        "backend/recorders/textureRecorder.ts",
+        "backend/recorders/texture2DRecorder.ts",
+        "backend/recorders/texture3DRecorder.ts",
 
         "backend/spies/canvasSpy.ts",
         "backend/spies/commandSpy.ts",

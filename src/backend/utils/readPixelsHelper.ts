@@ -1,6 +1,10 @@
 namespace SPECTOR {
     export class ReadPixelsHelper {
         public static isSupportedCombination(type: number, format: number, internalFormat: number) {
+            // In case of texStorage.
+            type = type || WebGlConstants.UNSIGNED_BYTE.value;
+            format = format || WebGlConstants.RGBA.value;
+
             // Only reads RGB RGBA.
             if (format !== WebGlConstants.RGB.value &&
                 format !== WebGlConstants.RGBA.value) {
@@ -24,6 +28,7 @@ namespace SPECTOR {
                 type !== WebGlConstants.UNSIGNED_SHORT_5_5_5_1.value &&
                 type !== WebGlConstants.UNSIGNED_SHORT_5_6_5.value &&
                 type !== WebGlConstants.HALF_FLOAT.value &&
+                type !== WebGlConstants.HALF_FLOAT_OES.value &&
                 type !== WebGlConstants.FLOAT.value) {
                 return false;
             }

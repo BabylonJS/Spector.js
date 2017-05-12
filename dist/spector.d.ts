@@ -1156,23 +1156,36 @@ declare namespace SPECTOR.Recorders {
 declare namespace SPECTOR {
     interface ITextureRecorderData {
         target: string;
-        level: number;
         internalFormat: number;
         width: number;
         height: number;
-        border?: number;
-        format: number;
-        type: number;
+        format?: number;
+        type?: number;
+        depth?: number;
     }
 }
 declare namespace SPECTOR.Recorders {
-    class TextureRecorder extends BaseRecorder<WebGLTexture> {
+    class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
         protected getCreateCommandNames(): string[];
         protected getUpdateCommandNames(): string[];
         protected getDeleteCommandNames(): string[];
         protected getBoundInstance(target: number): WebGLTexture;
         protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): void;
+        private getTexStorage2DCustomData(functionInformation, target, instance);
+        private getCompressedTexImage2DCustomData(functionInformation, target, instance);
         private getTexImage2DCustomData(functionInformation, target, instance);
+    }
+}
+declare namespace SPECTOR.Recorders {
+    class Texture3DRecorder extends BaseRecorder<WebGLTexture> {
+        protected getCreateCommandNames(): string[];
+        protected getUpdateCommandNames(): string[];
+        protected getDeleteCommandNames(): string[];
+        protected getBoundInstance(target: number): WebGLTexture;
+        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): void;
+        private getTexStorage3DCustomData(functionInformation, target, instance);
+        private getCompressedTexImage3DCustomData(functionInformation, target, instance);
+        private getTexImage3DCustomData(functionInformation, target, instance);
     }
 }
 declare namespace SPECTOR {
@@ -1516,7 +1529,7 @@ declare namespace SPECTOR.States {
         protected readAttributeFromContext(program: WebGLProgram, activeAttributeIndex: number): {};
         protected readUniformFromContext(program: WebGLProgram, activeUniformIndex: number): {};
         protected readTextureFromContext(textureUnit: number, target: WebGlConstant): {};
-        protected readTextureCustomDataFromTag(target: WebGlConstant): any;
+        protected getTextureStorage(target: WebGlConstant): any;
         protected readUniformsFromContextIntoState(program: WebGLProgram, uniformIndices: number[], uniformsState: any[]): void;
         protected readTransformFeedbackFromContext(program: WebGLProgram, index: number): {};
         protected readUniformBlockFromContext(program: WebGLProgram, index: number): {};
@@ -1535,7 +1548,8 @@ declare namespace SPECTOR.States {
         private readonly workingContext2D;
         private readonly captureContext2D;
         constructor(options: IStateOptions, logger: ILogger);
-        getTextureState(target: WebGlConstant, storage: WebGLTexture, info: ITextureRecorderData): any;
+        appendTextureState(state: any, storage: WebGLTexture, target?: WebGlConstant): void;
+        protected getTextureVisualState(target: WebGlConstant, storage: WebGLTexture, info: ITextureRecorderData): any;
         protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number): string;
         protected getWebGlConstant(value: number): string;
     }

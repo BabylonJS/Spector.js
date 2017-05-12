@@ -1,25 +1,23 @@
 namespace SPECTOR {
     export interface ITextureRecorderData {
         target: string;
-        level: number;
         internalFormat: number;
         width: number;
         height: number;
-        border?: number;
-        format: number;
-        type: number;
+        format?: number;
+        type?: number;
+        depth?: number;
     }
 }
 namespace SPECTOR.Recorders {
-    @Decorators.recorder("WebGLTexture")
-    export class TextureRecorder extends BaseRecorder<WebGLTexture> {
+    @Decorators.recorder("WebGLTexture2D")
+    export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
         protected getCreateCommandNames(): string[] {
             return ["createTexture"];
         }
 
         protected getUpdateCommandNames(): string[] {
-            return ["texImage2D"];
-            // TODO. texSubImage2D, compressedTexImage2D, compressedTexSubImage2D, texImage3D, texSubImage3D, compressedTexImage3D, compressedTexSubImage3D
+            return ["texImage2D", "compressedTexImage2D", "texStorage2D"];
         }
 
         protected getDeleteCommandNames(): string[] {
@@ -39,12 +37,6 @@ namespace SPECTOR.Recorders {
                 target === WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Z.value) {
                 return gl.getParameter(WebGlConstants.TEXTURE_BINDING_CUBE_MAP.value);
             }
-            else if (target === WebGlConstants.TEXTURE_2D_ARRAY.value) {
-                return gl.getParameter(WebGlConstants.TEXTURE_BINDING_2D_ARRAY.value);
-            }
-            else if (target === WebGlConstants.TEXTURE_3D.value) {
-                return gl.getParameter(WebGlConstants.TEXTURE_BINDING_3D.value);
-            }
             return undefined;
         }
 
@@ -62,10 +54,55 @@ namespace SPECTOR.Recorders {
             if (functionInformation.name === "texImage2D") {
                 customData = this.getTexImage2DCustomData(functionInformation, target, instance);
             }
-            // TODO. texSubImage2D, compressedTexImage2D, compressedTexSubImage2D, texImage3D, texSubImage3D, compressedTexImage3D, compressedTexSubImage3D
+            else if (functionInformation.name === "compressedTexImage2D") {
+                customData = this.getCompressedTexImage2DCustomData(functionInformation, target, instance);
+            }
+            else if (functionInformation.name === "texStorage2D") {
+                customData = this.getTexStorage2DCustomData(functionInformation, target, instance);
+            }
+
             if (customData) {
                 (instance as any).__SPECTOR_Object_CustomData = customData;
             }
+        }
+
+        private getTexStorage2DCustomData(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): ITextureRecorderData {
+            let customData: ITextureRecorderData;
+            if (functionInformation.arguments.length === 5) {
+                // Custom data required to display the texture.
+                customData = {
+                    target,
+                    // level: functionInformation.arguments[1],
+                    internalFormat: functionInformation.arguments[2],
+                    width: functionInformation.arguments[3],
+                    height: functionInformation.arguments[4],
+                };
+            }
+
+            // else NO DATA.
+            return customData;
+        }
+
+        private getCompressedTexImage2DCustomData(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): ITextureRecorderData {
+            if (functionInformation.arguments[1] !== 0) {
+                // Only manage main lod... so far.
+                return undefined;
+            }
+
+            let customData: ITextureRecorderData;
+            if (functionInformation.arguments.length >= 7) {
+                // Custom data required to display the texture.
+                customData = {
+                    target,
+                    // level: functionInformation.arguments[1],
+                    internalFormat: functionInformation.arguments[2],
+                    width: functionInformation.arguments[3],
+                    height: functionInformation.arguments[4],
+                };
+            }
+
+            // else NO DATA.
+            return customData;
         }
 
         private getTexImage2DCustomData(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): ITextureRecorderData {
@@ -79,11 +116,10 @@ namespace SPECTOR.Recorders {
                 // Custom data required to display the texture.
                 customData = {
                     target,
-                    level: functionInformation.arguments[1],
+                    // level: functionInformation.arguments[1],
                     internalFormat: functionInformation.arguments[2],
                     width: functionInformation.arguments[3],
                     height: functionInformation.arguments[4],
-                    border: functionInformation.arguments[5],
                     format: functionInformation.arguments[6],
                     type: functionInformation.arguments[7],
                 };
@@ -92,7 +128,7 @@ namespace SPECTOR.Recorders {
                 // Custom data required to display the texture.
                 customData = {
                     target,
-                    level: functionInformation.arguments[1],
+                    // level: functionInformation.arguments[1],
                     internalFormat: functionInformation.arguments[2],
                     width: functionInformation.arguments[5].width,
                     height: functionInformation.arguments[5].height,
