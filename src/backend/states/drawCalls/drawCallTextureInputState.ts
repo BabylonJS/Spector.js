@@ -173,6 +173,9 @@ namespace SPECTOR.States {
                     this.captureCanvas.height = VisualState.captureBaseSize;
                 }
 
+                this.captureCanvas.width = Math.max(this.captureCanvas.width, 1);
+                this.captureCanvas.height = Math.max(this.captureCanvas.height, 1);
+
                 // Scale and draw to flip Y to reorient readPixels.
                 this.captureContext2D.globalCompositeOperation = "copy";
                 this.captureContext2D.scale(1, -1); // Y flip

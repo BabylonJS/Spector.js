@@ -238,7 +238,16 @@ namespace SPECTOR.States {
         protected readAttributeFromContext(program: WebGLProgram, activeAttributeIndex: number): {} {
             const info = this.context.getActiveAttrib(program, activeAttributeIndex);
             const location = this.context.getAttribLocation(program, info.name);
+            if (location === -1) {
+                return {
+                    name: info.name,
+                    size: info.size,
+                    type: this.getWebGlConstant(info.type),
+                    location: -1,
+                };
+            }
 
+            const unbufferedValue = this.context.getVertexAttrib(location, WebGlConstants.CURRENT_VERTEX_ATTRIB.value);
             const attributeState: any = {
                 name: info.name,
                 size: info.size,
@@ -251,7 +260,7 @@ namespace SPECTOR.States {
                 stride: this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_STRIDE.value),
                 arrayType: this.getWebGlConstant(this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_TYPE.value)),
                 normalized: this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_NORMALIZED.value),
-                vertexAttrib: Array.prototype.slice.call(this.context.getVertexAttrib(location, WebGlConstants.CURRENT_VERTEX_ATTRIB.value)),
+                vertexAttrib: Array.prototype.slice.call(unbufferedValue),
             };
 
             if (this.extensions[WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE.extensionName]) {

@@ -1879,24 +1879,177 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var Viewport = (function (_super) {
-            __extends(Viewport, _super);
-            function Viewport() {
+        var DrawArrays = (function (_super) {
+            __extends(DrawArrays, _super);
+            function DrawArrays() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
-            Viewport.prototype.stringifyArgs = function (args) {
+            DrawArrays.prototype.stringifyArgs = function (args) {
                 var stringified = [];
-                for (var i = 0; i < 4; i++) {
-                    stringified.push(args[i].toFixed(2));
+                stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[0], "drawArrays"));
+                stringified.push(args[1]);
+                stringified.push(args[2]);
+                return stringified;
+            };
+            return DrawArrays;
+        }(Commands.BaseCommand));
+        DrawArrays = __decorate([
+            SPECTOR.Decorators.command("drawArrays")
+        ], DrawArrays);
+        Commands.DrawArrays = DrawArrays;
+    })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Commands;
+    (function (Commands) {
+        var DrawArraysInstanced = (function (_super) {
+            __extends(DrawArraysInstanced, _super);
+            function DrawArraysInstanced() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            DrawArraysInstanced.prototype.stringifyArgs = function (args) {
+                var stringified = [];
+                stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[0], "drawArraysInstanced"));
+                stringified.push(args[1]);
+                stringified.push(args[2]);
+                stringified.push(args[3]);
+                return stringified;
+            };
+            return DrawArraysInstanced;
+        }(Commands.BaseCommand));
+        DrawArraysInstanced = __decorate([
+            SPECTOR.Decorators.command("drawArraysInstanced")
+        ], DrawArraysInstanced);
+        Commands.DrawArraysInstanced = DrawArraysInstanced;
+    })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Commands;
+    (function (Commands) {
+        var DrawBuffers = (function (_super) {
+            __extends(DrawBuffers, _super);
+            function DrawBuffers() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            DrawBuffers.prototype.stringifyArgs = function (args) {
+                var stringified = [];
+                for (var i = 0; i < args.length; i++) {
+                    stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[i], "drawBuffers"));
                 }
                 return stringified;
             };
-            return Viewport;
+            return DrawBuffers;
         }(Commands.BaseCommand));
-        Viewport = __decorate([
-            SPECTOR.Decorators.command("viewport")
-        ], Viewport);
-        Commands.Viewport = Viewport;
+        DrawBuffers = __decorate([
+            SPECTOR.Decorators.command("drawBuffers")
+        ], DrawBuffers);
+        Commands.DrawBuffers = DrawBuffers;
+    })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Commands;
+    (function (Commands) {
+        var DrawElements = (function (_super) {
+            __extends(DrawElements, _super);
+            function DrawElements() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            DrawElements.prototype.stringifyArgs = function (args) {
+                var stringified = [];
+                stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[0], "drawElements"));
+                stringified.push(args[1]);
+                stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[2], "drawElements"));
+                stringified.push(args[3]);
+                return stringified;
+            };
+            return DrawElements;
+        }(Commands.BaseCommand));
+        DrawElements = __decorate([
+            SPECTOR.Decorators.command("drawElements")
+        ], DrawElements);
+        Commands.DrawElements = DrawElements;
+    })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Commands;
+    (function (Commands) {
+        var DrawElementsInstanced = (function (_super) {
+            __extends(DrawElementsInstanced, _super);
+            function DrawElementsInstanced() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            DrawElementsInstanced.prototype.stringifyArgs = function (args) {
+                var stringified = [];
+                stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[0], "drawElementsInstanced"));
+                stringified.push(args[1]);
+                stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[2], "drawElementsInstanced"));
+                stringified.push(args[3]);
+                stringified.push(args[4]);
+                return stringified;
+            };
+            return DrawElementsInstanced;
+        }(Commands.BaseCommand));
+        DrawElementsInstanced = __decorate([
+            SPECTOR.Decorators.command("drawElementsInstanced")
+        ], DrawElementsInstanced);
+        Commands.DrawElementsInstanced = DrawElementsInstanced;
+    })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Commands;
+    (function (Commands) {
+        var DrawElementsInstancedAngle = (function (_super) {
+            __extends(DrawElementsInstancedAngle, _super);
+            function DrawElementsInstancedAngle() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            DrawElementsInstancedAngle.prototype.stringifyArgs = function (args) {
+                var stringified = [];
+                stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[0], "drawElementsInstancedANGLE"));
+                stringified.push(args[1]);
+                stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[2], "drawElementsInstancedANGLE"));
+                stringified.push(args[3]);
+                stringified.push(args[4]);
+                return stringified;
+            };
+            return DrawElementsInstancedAngle;
+        }(Commands.BaseCommand));
+        DrawElementsInstancedAngle = __decorate([
+            SPECTOR.Decorators.command("drawElementsInstancedANGLE")
+        ], DrawElementsInstancedAngle);
+        Commands.DrawElementsInstancedAngle = DrawElementsInstancedAngle;
+    })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Commands;
+    (function (Commands) {
+        var DrawRangeElements = (function (_super) {
+            __extends(DrawRangeElements, _super);
+            function DrawRangeElements() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            DrawRangeElements.prototype.stringifyArgs = function (args) {
+                var stringified = [];
+                stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[0], "drawRangeElements"));
+                stringified.push(args[1]);
+                stringified.push(args[2]);
+                stringified.push(args[3]);
+                stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[4], "drawRangeElements"));
+                stringified.push(args[5]);
+                return stringified;
+            };
+            return DrawRangeElements;
+        }(Commands.BaseCommand));
+        DrawRangeElements = __decorate([
+            SPECTOR.Decorators.command("drawRangeElements")
+        ], DrawRangeElements);
+        Commands.DrawRangeElements = DrawRangeElements;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
@@ -3577,6 +3730,8 @@ var SPECTOR;
                             this.captureCanvas.width = VisualState_1.captureBaseSize;
                             this.captureCanvas.height = VisualState_1.captureBaseSize;
                         }
+                        this.captureCanvas.width = Math.max(this.captureCanvas.width, 1);
+                        this.captureCanvas.height = Math.max(this.captureCanvas.height, 1);
                         // Scale and draw to flip Y to reorient readPixels.
                         this.captureContext2D.globalCompositeOperation = "copy";
                         this.captureContext2D.scale(1, -1); // Y flip
@@ -3801,6 +3956,15 @@ var SPECTOR;
             DrawCallState.prototype.readAttributeFromContext = function (program, activeAttributeIndex) {
                 var info = this.context.getActiveAttrib(program, activeAttributeIndex);
                 var location = this.context.getAttribLocation(program, info.name);
+                if (location === -1) {
+                    return {
+                        name: info.name,
+                        size: info.size,
+                        type: this.getWebGlConstant(info.type),
+                        location: -1,
+                    };
+                }
+                var unbufferedValue = this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.CURRENT_VERTEX_ATTRIB.value);
                 var attributeState = {
                     name: info.name,
                     size: info.size,
@@ -3813,7 +3977,7 @@ var SPECTOR;
                     stride: this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_STRIDE.value),
                     arrayType: this.getWebGlConstant(this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_TYPE.value)),
                     normalized: this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_NORMALIZED.value),
-                    vertexAttrib: Array.prototype.slice.call(this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.CURRENT_VERTEX_ATTRIB.value)),
+                    vertexAttrib: Array.prototype.slice.call(unbufferedValue),
                 };
                 if (this.extensions[SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE.extensionName]) {
                     attributeState.divisor = this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE.value);
@@ -4135,6 +4299,8 @@ var SPECTOR;
                         this.captureCanvas.width = States.VisualState.captureBaseSize;
                         this.captureCanvas.height = States.VisualState.captureBaseSize;
                     }
+                    this.captureCanvas.width = Math.max(this.captureCanvas.width, 1);
+                    this.captureCanvas.height = Math.max(this.captureCanvas.height, 1);
                     // Scale and draw to flip Y to reorient readPixels.
                     this.captureContext2D.globalCompositeOperation = "copy";
                     this.captureContext2D.scale(1, -1); // Y flip

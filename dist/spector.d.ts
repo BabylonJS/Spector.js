@@ -1114,7 +1114,37 @@ declare namespace SPECTOR.Commands {
     }
 }
 declare namespace SPECTOR.Commands {
-    class Viewport extends BaseCommand {
+    class DrawArrays extends BaseCommand {
+        protected stringifyArgs(args: IArguments): string[];
+    }
+}
+declare namespace SPECTOR.Commands {
+    class DrawArraysInstanced extends BaseCommand {
+        protected stringifyArgs(args: IArguments): string[];
+    }
+}
+declare namespace SPECTOR.Commands {
+    class DrawBuffers extends BaseCommand {
+        protected stringifyArgs(args: IArguments): string[];
+    }
+}
+declare namespace SPECTOR.Commands {
+    class DrawElements extends BaseCommand {
+        protected stringifyArgs(args: IArguments): string[];
+    }
+}
+declare namespace SPECTOR.Commands {
+    class DrawElementsInstanced extends BaseCommand {
+        protected stringifyArgs(args: IArguments): string[];
+    }
+}
+declare namespace SPECTOR.Commands {
+    class DrawElementsInstancedAngle extends BaseCommand {
+        protected stringifyArgs(args: IArguments): string[];
+    }
+}
+declare namespace SPECTOR.Commands {
+    class DrawRangeElements extends BaseCommand {
         protected stringifyArgs(args: IArguments): string[];
     }
 }
