@@ -20,6 +20,7 @@ These are the changes on master yet to be released.
 ## v0.1.2 First Stable
 This release is the first stable release containing the Minimum Valuable Product.
 
+- [Firefox Extension](https://addons.mozilla.org/en-US/firefox/addon/spector-js/)
 - npm version fix
 - [Mipped Textures](https://github.com/BabylonJS/Spector.js/issues/31)
 - [UBO Values](https://github.com/BabylonJS/Spector.js/issues/30)

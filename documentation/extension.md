@@ -16,6 +16,7 @@ Spector is a tool aim to *WebGl* developers willing to know what happens on thei
 ## How to Install the extension
 Please find below the link to the browser market places.
 - [Chrome](https://chrome.google.com/webstore/detail/spectorjs/denbgaamihkadbghdceggmchnflmhpmk)
+- [Firefox](https://addons.mozilla.org/en-US/firefox/addon/spector-js/)
 
 As it is not currently deployed to all the browser extension store, you can easily sideload it in your browser of choice. This is also the recommended approach to contribute to the extension code.
 
