@@ -94,7 +94,10 @@ namespace SPECTOR.States {
                 return;
             }
 
-            const componentType = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE.value);
+            const componentType = this.contextVersion > 1 ?
+                this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE.value) :
+                WebGlConstants.UNSIGNED_BYTE.value;
+
             if (type === WebGlConstants.RENDERBUFFER.value) {
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                 gl.framebufferRenderbuffer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value, WebGlConstants.RENDERBUFFER.value, storage);

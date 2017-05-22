@@ -2061,8 +2061,9 @@ declare namespace SPECTOR.EmbeddedFrontend {
         /**
          * Returns the position of the first "{" and the corresponding "}"
          * @param str the Shader source code as a string
+         * @param searchFrom Search open brackets from this position
          */
-        private _getBracket(str);
+        private _getBracket(str, searchFrom?);
         /**
          * Beautify the given string : correct indentation according to brackets
          */

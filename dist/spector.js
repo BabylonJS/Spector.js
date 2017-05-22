@@ -3659,7 +3659,9 @@ var SPECTOR;
                 if (!storage) {
                     return;
                 }
-                var componentType = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE.value);
+                var componentType = this.contextVersion > 1 ?
+                    this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE.value) :
+                    SPECTOR.WebGlConstants.UNSIGNED_BYTE.value;
                 if (type === SPECTOR.WebGlConstants.RENDERBUFFER.value) {
                     gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                     gl.framebufferRenderbuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, SPECTOR.WebGlConstants.RENDERBUFFER.value, storage);
@@ -6232,9 +6234,11 @@ var SPECTOR;
             /**
              * Returns the position of the first "{" and the corresponding "}"
              * @param str the Shader source code as a string
+             * @param searchFrom Search open brackets from this position
              */
-            SourceCodeComponent.prototype._getBracket = function (str) {
-                var fb = str.indexOf("{");
+            SourceCodeComponent.prototype._getBracket = function (str, searchFrom) {
+                if (searchFrom === void 0) { searchFrom = -1; }
+                var fb = str.indexOf("{", searchFrom);
                 var arr = str.substr(fb + 1).split("");
                 var counter = 1;
                 var currentPosInString = fb;
@@ -6252,6 +6256,10 @@ var SPECTOR;
                         lastBracketIndex = currentPosInString;
                         break;
                     }
+                }
+                // More open than close.
+                if (fb > -1 && lastBracketIndex === 0) {
+                    return this._getBracket(str, fb + 1);
                 }
                 return { firstIteration: fb, lastIteration: lastBracketIndex };
             };
@@ -6275,6 +6283,7 @@ var SPECTOR;
                     glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
                     glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, function (x) { return " " + x.trim() + " "; }); // space around =, *=, +=, -=, /=, ==, >=, <=
                     glsl = glsl.replace(/\s*(,)\s*/g, function (x) { return x.trim() + " "; }); // space after ,
+                    glsl = glsl.replace(/\n[ \t]+/g, "\n"); // trim Start
                     glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
                     glsl = glsl.replace(/\s+$/g, "");
                     glsl = glsl.replace(/\n+$/g, "");

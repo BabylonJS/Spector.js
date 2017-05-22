@@ -28,15 +28,17 @@ namespace SPECTOR.EmbeddedFrontend {
         /**
          * Returns the position of the first "{" and the corresponding "}"
          * @param str the Shader source code as a string
+         * @param searchFrom Search open brackets from this position
          */
-        private _getBracket(str: string): { firstIteration: number, lastIteration: number } {
-            const fb = str.indexOf("{");
+        private _getBracket(str: string, searchFrom = -1): { firstIteration: number, lastIteration: number } {
+            const fb = str.indexOf("{", searchFrom);
             const arr = str.substr(fb + 1).split("");
             let counter = 1;
             let currentPosInString = fb;
             let lastBracketIndex = 0;
             for (const char of arr) {
                 currentPosInString++;
+
                 if (char === "{") {
                     counter++;
                 }
@@ -47,6 +49,11 @@ namespace SPECTOR.EmbeddedFrontend {
                     lastBracketIndex = currentPosInString;
                     break;
                 }
+            }
+
+            // More open than close.
+            if (fb > -1 && lastBracketIndex === 0) {
+                return this._getBracket(str, fb + 1);
             }
 
             return { firstIteration: fb, lastIteration: lastBracketIndex };
@@ -73,11 +80,13 @@ namespace SPECTOR.EmbeddedFrontend {
                 glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
                 glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, (x) => " " + x.trim() + " "); // space around =, *=, +=, -=, /=, ==, >=, <=
                 glsl = glsl.replace(/\s*(,)\s*/g, (x) => x.trim() + " "); // space after ,
+                glsl = glsl.replace(/\n[ \t]+/g, "\n"); // trim Start
                 glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
                 glsl = glsl.replace(/\s+$/g, "");
                 glsl = glsl.replace(/\n+$/g, "");
                 return glsl;
-            } else {
+            }
+            else {
                 // if brackets, beautify the inside
                 // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
                 const left = glsl.substr(0, firstBracket);
