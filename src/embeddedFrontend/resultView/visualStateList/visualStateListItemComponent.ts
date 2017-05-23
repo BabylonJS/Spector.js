@@ -56,12 +56,9 @@ namespace SPECTOR.EmbeddedFrontend {
             }
 
             const fbo = document.createElement("span");
-            if (state.VisualState.FrameBuffer) {
-                fbo.innerText = "Frame buffer: " + state.VisualState.FrameBuffer.__SPECTOR_Object_TAG.id;
-            }
-            else {
-                fbo.innerText = "Canvas frame buffer";
-            }
+            fbo.innerText = (state.VisualState.FrameBuffer) ?
+                "Frame buffer: " + state.VisualState.FrameBuffer.__SPECTOR_Object_TAG.id :
+                "Canvas frame buffer";
 
             liHolder.appendChild(fbo);
 

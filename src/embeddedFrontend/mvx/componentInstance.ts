@@ -36,14 +36,7 @@ namespace SPECTOR.EmbeddedFrontend {
             }
 
             const element = this.domNode;
-            let newChildrenContainer: Element;
-            if (element.getAttribute("childrencontainer")) {
-                newChildrenContainer = element;
-            }
-            else {
-                newChildrenContainer = element.querySelector("[childrenContainer]");
-            }
-
+            const newChildrenContainer = element.getAttribute("childrencontainer") ? element : element.querySelector("[childrenContainer]");
             if (newChildrenContainer && currentChildrenContainer) {
                 const children = currentChildrenContainer.children;
                 while (children.length > 0) {

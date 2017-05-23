@@ -5181,13 +5181,7 @@ var SPECTOR;
                     return currentChildrenContainer;
                 }
                 var element = this.domNode;
-                var newChildrenContainer;
-                if (element.getAttribute("childrencontainer")) {
-                    newChildrenContainer = element;
-                }
-                else {
-                    newChildrenContainer = element.querySelector("[childrenContainer]");
-                }
+                var newChildrenContainer = element.getAttribute("childrencontainer") ? element : element.querySelector("[childrenContainer]");
                 if (newChildrenContainer && currentChildrenContainer) {
                     var children = currentChildrenContainer.children;
                     while (children.length > 0) {
@@ -5908,12 +5902,9 @@ var SPECTOR;
                     liHolder.appendChild(status_4);
                 }
                 var fbo = document.createElement("span");
-                if (state.VisualState.FrameBuffer) {
-                    fbo.innerText = "Frame buffer: " + state.VisualState.FrameBuffer.__SPECTOR_Object_TAG.id;
-                }
-                else {
-                    fbo.innerText = "Canvas frame buffer";
-                }
+                fbo.innerText = (state.VisualState.FrameBuffer) ?
+                    "Frame buffer: " + state.VisualState.FrameBuffer.__SPECTOR_Object_TAG.id :
+                    "Canvas frame buffer";
                 liHolder.appendChild(fbo);
                 this.mapEventListener(liHolder, "click", "onVisualStateSelected", state, stateId);
                 return liHolder;
