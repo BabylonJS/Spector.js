@@ -193,6 +193,18 @@ namespace SPECTOR.States {
             if (type === WebGlConstants.RENDERBUFFER.value) {
                 attachmentState.type = "RENDERBUFFER";
                 attachmentState.buffer = this.getSpectorData(storage);
+
+                // Check for custom data.
+                if (storage) {
+                    const customData: IRenderBufferRecorderData = (storage as any).__SPECTOR_Object_CustomData;
+                    if (customData) {
+                        if (customData.internalFormat) {
+                            attachmentState.internalFormat = this.getWebGlConstant(customData.internalFormat);
+                        }
+                        attachmentState.width = customData.width;
+                        attachmentState.height = customData.height;
+                    }
+                }
             }
             else if (type === WebGlConstants.TEXTURE.value) {
                 attachmentState.type = "TEXTURE";
@@ -248,13 +260,14 @@ namespace SPECTOR.States {
             }
 
             const unbufferedValue = this.context.getVertexAttrib(location, WebGlConstants.CURRENT_VERTEX_ATTRIB.value);
+            const boundBuffer = this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING.value);
             const attributeState: any = {
                 name: info.name,
                 size: info.size,
                 type: this.getWebGlConstant(info.type),
                 location,
                 offsetPointer: this.context.getVertexAttribOffset(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_POINTER.value),
-                bufferBinding: this.getSpectorData(this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING.value)),
+                bufferBinding: this.getSpectorData(boundBuffer),
                 enabled: this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_ENABLED.value),
                 arraySize: this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_SIZE.value),
                 stride: this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_STRIDE.value),
@@ -271,6 +284,7 @@ namespace SPECTOR.States {
                 attributeState.divisor = this.context.getVertexAttrib(location, WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR.value);
             }
 
+            this.appendBufferCustomData(attributeState, boundBuffer);
             return attributeState;
         }
 
@@ -410,21 +424,26 @@ namespace SPECTOR.States {
             const context2 = this.context as WebGL2RenderingContext;
             const info = context2.getTransformFeedbackVarying(program, index);
 
-            return {
+            const boundBuffer = context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING.value, index);
+            const transformFeedbackState = {
                 name: info.name,
                 size: info.size,
                 type: this.getWebGlConstant(info.type),
-                buffer: this.getSpectorData(context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING.value, index)),
+                buffer: this.getSpectorData(boundBuffer),
                 bufferSize: context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_SIZE.value, index),
                 bufferStart: context2.getIndexedParameter(WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_START.value, index),
             };
+
+            this.appendBufferCustomData(transformFeedbackState, boundBuffer);
+            return transformFeedbackState;
         }
 
         protected readUniformBlockFromContext(program: WebGLProgram, index: number): {} {
             const context2 = this.context as WebGL2RenderingContext;
             const bindingPoint = context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_BINDING.value);
 
-            return {
+            const boundBuffer = context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint);
+            const uniformBlockState = {
                 name: context2.getActiveUniformBlockName(program, index),
                 bindingPoint,
                 size: context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_DATA_SIZE.value),
@@ -432,11 +451,32 @@ namespace SPECTOR.States {
                 vertex: context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER.value),
                 fragment: context2.getActiveUniformBlockParameter(program, index, WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER.value),
 
-                buffer: this.getSpectorData(context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint)),
+                buffer: this.getSpectorData(boundBuffer),
                 // Do not display Ptr data.
                 // bufferSize: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_SIZE.value, bindingPoint),
                 // bufferStart: context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_START.value, bindingPoint),
             };
+            this.appendBufferCustomData(uniformBlockState, boundBuffer);
+            return uniformBlockState;
+        }
+
+        private appendBufferCustomData(state: any, buffer: WebGLBuffer) {
+            if (buffer) {
+                // Check for custom data.
+                const customData: IBufferRecorderData = (buffer as any).__SPECTOR_Object_CustomData;
+                if (customData) {
+                    if (customData.usage) {
+                        state.bufferUsage = this.getWebGlConstant(customData.usage);
+                    }
+                    state.bufferLength = customData.length;
+                    if (customData.offset) {
+                        state.bufferOffset = customData.offset;
+                    }
+                    if (customData.sourceLength) {
+                        state.bufferSourceLength = customData.sourceLength;
+                    }
+                }
+            }
         }
 
         private getWebGlConstant(value: number) {

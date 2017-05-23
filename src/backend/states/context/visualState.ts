@@ -101,6 +101,17 @@ namespace SPECTOR.States {
             if (type === WebGlConstants.RENDERBUFFER.value) {
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                 gl.framebufferRenderbuffer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value, WebGlConstants.RENDERBUFFER.value, storage);
+
+                // Adapt to constraints defines in the custom data if any.
+                if (storage.__SPECTOR_Object_CustomData) {
+                    const info = storage.__SPECTOR_Object_CustomData as IRenderBufferRecorderData;
+                    width = info.width;
+                    height = info.height;
+                    if (!ReadPixelsHelper.isSupportedCombination(componentType, WebGlConstants.RGBA.value, info.internalFormat)) {
+                        return;
+                    }
+                }
+
                 this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, componentType);
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, frameBuffer);
             }
@@ -114,10 +125,10 @@ namespace SPECTOR.States {
                 const textureCubeMapFace = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
                 const textureCubeMapFaceName = textureCubeMapFace > 0 ? WebGlConstantsByValue[textureCubeMapFace].name : WebGlConstants.TEXTURE_2D.name;
 
-                // Adapt to constraints defines in the custom data  if any.
+                // Adapt to constraints defines in the custom data if any.
                 let textureType = componentType;
                 if (storage.__SPECTOR_Object_CustomData) {
-                    const info = storage.__SPECTOR_Object_CustomData;
+                    const info = storage.__SPECTOR_Object_CustomData as ITextureRecorderData;
                     width = info.width;
                     height = info.height;
                     textureType = info.type;

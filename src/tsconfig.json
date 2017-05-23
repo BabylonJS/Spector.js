@@ -60,6 +60,8 @@
         "backend/recorders/baseRecorder.ts",
         "backend/recorders/texture2DRecorder.ts",
         "backend/recorders/texture3DRecorder.ts",
+        "backend/recorders/bufferRecorder.ts",
+        "backend/recorders/renderBufferRecorder.ts",
 
         "backend/spies/canvasSpy.ts",
         "backend/spies/commandSpy.ts",

@@ -2366,6 +2366,159 @@ var SPECTOR;
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
 (function (SPECTOR) {
+    var Recorders;
+    (function (Recorders) {
+        var BufferRecorder = (function (_super) {
+            __extends(BufferRecorder, _super);
+            function BufferRecorder() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            BufferRecorder.prototype.getCreateCommandNames = function () {
+                return ["createBuffer"];
+            };
+            BufferRecorder.prototype.getUpdateCommandNames = function () {
+                return ["bufferData"];
+            };
+            BufferRecorder.prototype.getDeleteCommandNames = function () {
+                return ["deleteBuffer"];
+            };
+            BufferRecorder.prototype.getBoundInstance = function (target) {
+                var gl = this.options.context;
+                if (target === SPECTOR.WebGlConstants.ARRAY_BUFFER.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.ARRAY_BUFFER_BINDING.value);
+                }
+                else if (target === SPECTOR.WebGlConstants.ELEMENT_ARRAY_BUFFER.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.ELEMENT_ARRAY_BUFFER_BINDING.value);
+                }
+                else if (target === SPECTOR.WebGlConstants.COPY_READ_BUFFER.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.COPY_READ_BUFFER_BINDING.value);
+                }
+                else if (target === SPECTOR.WebGlConstants.COPY_WRITE_BUFFER.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.COPY_WRITE_BUFFER_BINDING.value);
+                }
+                else if (target === SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_BUFFER.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING.value);
+                }
+                else if (target === SPECTOR.WebGlConstants.UNIFORM_BUFFER.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_BINDING.value);
+                }
+                else if (target === SPECTOR.WebGlConstants.PIXEL_PACK_BUFFER.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.PIXEL_PACK_BUFFER_BINDING.value);
+                }
+                else if (target === SPECTOR.WebGlConstants.PIXEL_UNPACK_BUFFER.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.PIXEL_UNPACK_BUFFER_BINDING.value);
+                }
+                return undefined;
+            };
+            BufferRecorder.prototype.update = function (functionInformation, target, instance) {
+                if (!instance) {
+                    return;
+                }
+                var tag = SPECTOR.WebGlObjects.getWebGlObjectTag(instance);
+                if (!tag) {
+                    return;
+                }
+                var length = this.getLength(functionInformation);
+                var customData = this.getCustomData(target, length, functionInformation);
+                if (customData) {
+                    instance.__SPECTOR_Object_CustomData = customData;
+                }
+            };
+            BufferRecorder.prototype.getLength = function (functionInformation) {
+                var length = -1;
+                if (functionInformation.arguments.length === 5) {
+                    length = functionInformation.arguments[4];
+                }
+                if (length <= 0) {
+                    if (typeof functionInformation.arguments[1] === "number") {
+                        length = functionInformation.arguments[1];
+                    }
+                    else if (functionInformation.arguments[1]) {
+                        length = functionInformation.arguments[1].length;
+                    }
+                }
+                return length;
+            };
+            BufferRecorder.prototype.getCustomData = function (target, length, functionInformation) {
+                if (functionInformation.arguments.length >= 4) {
+                    return {
+                        target: target,
+                        length: length,
+                        usage: functionInformation.arguments[2],
+                        offset: functionInformation.arguments[3],
+                        sourceLength: functionInformation.arguments[1] ? functionInformation.arguments[1].length : -1,
+                    };
+                }
+                if (functionInformation.arguments.length === 3) {
+                    return {
+                        target: target,
+                        length: length,
+                        usage: functionInformation.arguments[2],
+                    };
+                }
+                return undefined;
+            };
+            return BufferRecorder;
+        }(Recorders.BaseRecorder));
+        BufferRecorder = __decorate([
+            SPECTOR.Decorators.recorder("WebGLBuffer")
+        ], BufferRecorder);
+        Recorders.BufferRecorder = BufferRecorder;
+    })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Recorders;
+    (function (Recorders) {
+        var RenderBufferRecorder = (function (_super) {
+            __extends(RenderBufferRecorder, _super);
+            function RenderBufferRecorder() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            RenderBufferRecorder.prototype.getCreateCommandNames = function () {
+                return ["createRenderbuffer"];
+            };
+            RenderBufferRecorder.prototype.getUpdateCommandNames = function () {
+                return ["renderbufferStorage"];
+            };
+            RenderBufferRecorder.prototype.getDeleteCommandNames = function () {
+                return ["deleteRenderbuffer"];
+            };
+            RenderBufferRecorder.prototype.getBoundInstance = function (target) {
+                var gl = this.options.context;
+                if (target === SPECTOR.WebGlConstants.RENDERBUFFER.value) {
+                    return gl.getParameter(SPECTOR.WebGlConstants.RENDERBUFFER_BINDING.value);
+                }
+                return undefined;
+            };
+            RenderBufferRecorder.prototype.update = function (functionInformation, target, instance) {
+                if (!instance) {
+                    return;
+                }
+                var tag = SPECTOR.WebGlObjects.getWebGlObjectTag(instance);
+                if (!tag) {
+                    return;
+                }
+                var customData = {
+                    target: target,
+                    internalFormat: functionInformation.arguments[1],
+                    width: functionInformation.arguments[2],
+                    height: functionInformation.arguments[3],
+                };
+                if (customData) {
+                    instance.__SPECTOR_Object_CustomData = customData;
+                }
+            };
+            return RenderBufferRecorder;
+        }(Recorders.BaseRecorder));
+        RenderBufferRecorder = __decorate([
+            SPECTOR.Decorators.recorder("WebGLRenderbuffer")
+        ], RenderBufferRecorder);
+        Recorders.RenderBufferRecorder = RenderBufferRecorder;
+    })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
     var Spies;
     (function (Spies) {
         var RecorderSpy = (function () {
@@ -3665,6 +3818,15 @@ var SPECTOR;
                 if (type === SPECTOR.WebGlConstants.RENDERBUFFER.value) {
                     gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
                     gl.framebufferRenderbuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, SPECTOR.WebGlConstants.RENDERBUFFER.value, storage);
+                    // Adapt to constraints defines in the custom data if any.
+                    if (storage.__SPECTOR_Object_CustomData) {
+                        var info = storage.__SPECTOR_Object_CustomData;
+                        width = info.width;
+                        height = info.height;
+                        if (!SPECTOR.ReadPixelsHelper.isSupportedCombination(componentType, SPECTOR.WebGlConstants.RGBA.value, info.internalFormat)) {
+                            return;
+                        }
+                    }
                     this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, componentType);
                     gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, frameBuffer);
                 }
@@ -3676,7 +3838,7 @@ var SPECTOR;
                     var textureLevel = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
                     var textureCubeMapFace = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
                     var textureCubeMapFaceName = textureCubeMapFace > 0 ? SPECTOR.WebGlConstantsByValue[textureCubeMapFace].name : SPECTOR.WebGlConstants.TEXTURE_2D.name;
-                    // Adapt to constraints defines in the custom data  if any.
+                    // Adapt to constraints defines in the custom data if any.
                     var textureType = componentType;
                     if (storage.__SPECTOR_Object_CustomData) {
                         var info = storage.__SPECTOR_Object_CustomData;
@@ -3919,6 +4081,17 @@ var SPECTOR;
                 if (type === SPECTOR.WebGlConstants.RENDERBUFFER.value) {
                     attachmentState.type = "RENDERBUFFER";
                     attachmentState.buffer = this.getSpectorData(storage);
+                    // Check for custom data.
+                    if (storage) {
+                        var customData = storage.__SPECTOR_Object_CustomData;
+                        if (customData) {
+                            if (customData.internalFormat) {
+                                attachmentState.internalFormat = this.getWebGlConstant(customData.internalFormat);
+                            }
+                            attachmentState.width = customData.width;
+                            attachmentState.height = customData.height;
+                        }
+                    }
                 }
                 else if (type === SPECTOR.WebGlConstants.TEXTURE.value) {
                     attachmentState.type = "TEXTURE";
@@ -3967,13 +4140,14 @@ var SPECTOR;
                     };
                 }
                 var unbufferedValue = this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.CURRENT_VERTEX_ATTRIB.value);
+                var boundBuffer = this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING.value);
                 var attributeState = {
                     name: info.name,
                     size: info.size,
                     type: this.getWebGlConstant(info.type),
                     location: location,
                     offsetPointer: this.context.getVertexAttribOffset(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_POINTER.value),
-                    bufferBinding: this.getSpectorData(this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING.value)),
+                    bufferBinding: this.getSpectorData(boundBuffer),
                     enabled: this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_ENABLED.value),
                     arraySize: this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_SIZE.value),
                     stride: this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_STRIDE.value),
@@ -3988,6 +4162,7 @@ var SPECTOR;
                     attributeState.integer = this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_INTEGER.value);
                     attributeState.divisor = this.context.getVertexAttrib(location, SPECTOR.WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR.value);
                 }
+                this.appendBufferCustomData(attributeState, boundBuffer);
                 return attributeState;
             };
             DrawCallState.prototype.readUniformFromContext = function (program, activeUniformIndex) {
@@ -4108,27 +4283,51 @@ var SPECTOR;
             DrawCallState.prototype.readTransformFeedbackFromContext = function (program, index) {
                 var context2 = this.context;
                 var info = context2.getTransformFeedbackVarying(program, index);
-                return {
+                var boundBuffer = context2.getIndexedParameter(SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING.value, index);
+                var transformFeedbackState = {
                     name: info.name,
                     size: info.size,
                     type: this.getWebGlConstant(info.type),
-                    buffer: this.getSpectorData(context2.getIndexedParameter(SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING.value, index)),
+                    buffer: this.getSpectorData(boundBuffer),
                     bufferSize: context2.getIndexedParameter(SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_SIZE.value, index),
                     bufferStart: context2.getIndexedParameter(SPECTOR.WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_START.value, index),
                 };
+                this.appendBufferCustomData(transformFeedbackState, boundBuffer);
+                return transformFeedbackState;
             };
             DrawCallState.prototype.readUniformBlockFromContext = function (program, index) {
                 var context2 = this.context;
                 var bindingPoint = context2.getActiveUniformBlockParameter(program, index, SPECTOR.WebGlConstants.UNIFORM_BLOCK_BINDING.value);
-                return {
+                var boundBuffer = context2.getIndexedParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint);
+                var uniformBlockState = {
                     name: context2.getActiveUniformBlockName(program, index),
                     bindingPoint: bindingPoint,
                     size: context2.getActiveUniformBlockParameter(program, index, SPECTOR.WebGlConstants.UNIFORM_BLOCK_DATA_SIZE.value),
                     activeUniformCount: context2.getActiveUniformBlockParameter(program, index, SPECTOR.WebGlConstants.UNIFORM_BLOCK_ACTIVE_UNIFORMS.value),
                     vertex: context2.getActiveUniformBlockParameter(program, index, SPECTOR.WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER.value),
                     fragment: context2.getActiveUniformBlockParameter(program, index, SPECTOR.WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER.value),
-                    buffer: this.getSpectorData(context2.getIndexedParameter(SPECTOR.WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint)),
+                    buffer: this.getSpectorData(boundBuffer),
                 };
+                this.appendBufferCustomData(uniformBlockState, boundBuffer);
+                return uniformBlockState;
+            };
+            DrawCallState.prototype.appendBufferCustomData = function (state, buffer) {
+                if (buffer) {
+                    // Check for custom data.
+                    var customData = buffer.__SPECTOR_Object_CustomData;
+                    if (customData) {
+                        if (customData.usage) {
+                            state.bufferUsage = this.getWebGlConstant(customData.usage);
+                        }
+                        state.bufferLength = customData.length;
+                        if (customData.offset) {
+                            state.bufferOffset = customData.offset;
+                        }
+                        if (customData.sourceLength) {
+                            state.bufferSourceLength = customData.sourceLength;
+                        }
+                    }
+                }
             };
             DrawCallState.prototype.getWebGlConstant = function (value) {
                 var constant = SPECTOR.WebGlConstantsByValue[value];

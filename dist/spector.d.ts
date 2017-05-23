@@ -1219,6 +1219,43 @@ declare namespace SPECTOR.Recorders {
     }
 }
 declare namespace SPECTOR {
+    interface IBufferRecorderData {
+        target: string;
+        usage: number;
+        length: number;
+        offset?: number;
+        sourceLength?: number;
+    }
+}
+declare namespace SPECTOR.Recorders {
+    class BufferRecorder extends BaseRecorder<WebGLBuffer> {
+        protected getCreateCommandNames(): string[];
+        protected getUpdateCommandNames(): string[];
+        protected getDeleteCommandNames(): string[];
+        protected getBoundInstance(target: number): WebGLTexture;
+        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLBuffer): void;
+        protected getLength(functionInformation: IFunctionInformation): number;
+        protected getCustomData(target: string, length: number, functionInformation: IFunctionInformation): IBufferRecorderData;
+    }
+}
+declare namespace SPECTOR {
+    interface IRenderBufferRecorderData {
+        target: string;
+        internalFormat: number;
+        width: number;
+        height: number;
+    }
+}
+declare namespace SPECTOR.Recorders {
+    class RenderBufferRecorder extends BaseRecorder<WebGLRenderbuffer> {
+        protected getCreateCommandNames(): string[];
+        protected getUpdateCommandNames(): string[];
+        protected getDeleteCommandNames(): string[];
+        protected getBoundInstance(target: number): WebGLTexture;
+        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): void;
+    }
+}
+declare namespace SPECTOR {
     interface IRecorderSpy {
         readonly contextInformation: IContextInformation;
         recordCommand(functionInformation: IFunctionInformation): void;
@@ -1563,6 +1600,7 @@ declare namespace SPECTOR.States {
         protected readUniformsFromContextIntoState(program: WebGLProgram, uniformIndices: number[], uniformsState: any[]): void;
         protected readTransformFeedbackFromContext(program: WebGLProgram, index: number): {};
         protected readUniformBlockFromContext(program: WebGLProgram, index: number): {};
+        private appendBufferCustomData(state, buffer);
         private getWebGlConstant(value);
     }
 }
