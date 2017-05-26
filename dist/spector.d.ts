@@ -134,6 +134,12 @@ declare namespace SPECTOR {
     }
 }
 declare namespace SPECTOR {
+    interface IAnalysis {
+        analyserName: string;
+        [key: string]: any;
+    }
+}
+declare namespace SPECTOR {
     interface ICapture {
         canvas: ICanvasCapture;
         context: IContextCapture;
@@ -144,6 +150,15 @@ declare namespace SPECTOR {
         listenCommandsStartTime: number;
         listenCommandsEndTime: number;
         endTime: number;
+        analyses: IAnalysis[];
+        frameMemory: {
+            [objectName: string]: number;
+        };
+        memory: {
+            [objectName: string]: {
+                [second: number]: number;
+            };
+        };
     }
 }
 declare namespace SPECTOR {
@@ -857,6 +872,8 @@ declare namespace SPECTOR.Decorators {
     function webGlObject(objectName: string): (target: any) => void;
     function getWebGlObjectName(target: any): string;
     function getWebGlObjectType(target: any): Function;
+    function analyser(analyerName: string): (target: any) => void;
+    function getAnalyserName(target: any): string;
 }
 declare namespace SPECTOR {
     class ReadPixelsHelper {
@@ -977,6 +994,7 @@ declare namespace SPECTOR.Spies {
         private currentCapture;
         private canvasCapture;
         private contextCapture;
+        private analyser;
         constructor(options: IContextSpyOptions, time: ITime, logger: ILogger);
         spy(): void;
         unSpy(): void;
@@ -1152,9 +1170,13 @@ declare namespace SPECTOR {
     interface IRecorder {
         readonly objectName: string;
         registerCallbacks(onFunctionCallbacks: FunctionCallbacks): void;
+        startCapture(): void;
+        stopCapture(): void;
+        appendRecordedInformation(capture: ICapture): void;
     }
     interface IRecorderOptions extends IContextInformation {
         readonly objectName: string;
+        readonly time: ITime;
     }
     type RecorderConstructor = {
         new (options: IRecorderOptions, logger: ILogger): IRecorder;
@@ -1164,23 +1186,39 @@ declare namespace SPECTOR.Recorders {
     abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
         protected readonly options: IRecorderOptions;
         protected readonly logger: ILogger;
+        protected static byteSizePerInternalFormat: {
+            [fromat: number]: number;
+        };
+        protected static initializeByteSizeFormat(): void;
         readonly objectName: string;
         protected readonly createCommandNames: string[];
         protected readonly updateCommandNames: string[];
         protected readonly deleteCommandNames: string[];
+        protected readonly startTime: number;
+        protected readonly memoryPerSecond: {
+            [second: number]: number;
+        };
+        private totalMemory;
+        private frameMemory;
+        private capturing;
         constructor(options: IRecorderOptions, logger: ILogger);
         registerCallbacks(onFunctionCallbacks: FunctionCallbacks): void;
+        startCapture(): void;
+        stopCapture(): void;
+        appendRecordedInformation(capture: ICapture): void;
         protected abstract getCreateCommandNames(): string[];
         protected abstract getUpdateCommandNames(): string[];
         protected abstract getDeleteCommandNames(): string[];
         protected abstract getBoundInstance(target: number): T;
-        protected abstract update(functionInformation: IFunctionInformation, target: string, instance: T): void;
+        protected abstract update(functionInformation: IFunctionInformation, target: string, instance: T): number;
+        protected abstract delete(instance: T): number;
         protected create(functionInformation: IFunctionInformation): void;
-        protected delete(functionInformation: IFunctionInformation): void;
         protected createWithoutSideEffects(functionInformation: IFunctionInformation): void;
         protected updateWithoutSideEffects(functionInformation: IFunctionInformation): void;
         protected deleteWithoutSideEffects(functionInformation: IFunctionInformation): void;
+        protected changeMemorySize(size: number): void;
         protected getWebGlConstant(value: number): string;
+        protected getByteSizeForInternalFormat(internalFormat: number): number;
     }
 }
 declare namespace SPECTOR {
@@ -1189,6 +1227,7 @@ declare namespace SPECTOR {
         internalFormat: number;
         width: number;
         height: number;
+        length: number;
         format?: number;
         type?: number;
         depth?: number;
@@ -1200,7 +1239,9 @@ declare namespace SPECTOR.Recorders {
         protected getUpdateCommandNames(): string[];
         protected getDeleteCommandNames(): string[];
         protected getBoundInstance(target: number): WebGLTexture;
-        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): void;
+        protected delete(instance: WebGLTexture): number;
+        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): number;
+        private getCustomData(functionInformation, target, instance);
         private getTexStorage2DCustomData(functionInformation, target, instance);
         private getCompressedTexImage2DCustomData(functionInformation, target, instance);
         private getTexImage2DCustomData(functionInformation, target, instance);
@@ -1212,7 +1253,9 @@ declare namespace SPECTOR.Recorders {
         protected getUpdateCommandNames(): string[];
         protected getDeleteCommandNames(): string[];
         protected getBoundInstance(target: number): WebGLTexture;
-        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): void;
+        protected delete(instance: WebGLTexture): number;
+        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): number;
+        private getCustomData(functionInformation, target, instance);
         private getTexStorage3DCustomData(functionInformation, target, instance);
         private getCompressedTexImage3DCustomData(functionInformation, target, instance);
         private getTexImage3DCustomData(functionInformation, target, instance);
@@ -1233,9 +1276,10 @@ declare namespace SPECTOR.Recorders {
         protected getUpdateCommandNames(): string[];
         protected getDeleteCommandNames(): string[];
         protected getBoundInstance(target: number): WebGLTexture;
-        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLBuffer): void;
+        protected delete(instance: WebGLBuffer): number;
+        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLBuffer): number;
+        protected getCustomData(target: string, functionInformation: IFunctionInformation): IBufferRecorderData;
         protected getLength(functionInformation: IFunctionInformation): number;
-        protected getCustomData(target: string, length: number, functionInformation: IFunctionInformation): IBufferRecorderData;
     }
 }
 declare namespace SPECTOR {
@@ -1244,6 +1288,7 @@ declare namespace SPECTOR {
         internalFormat: number;
         width: number;
         height: number;
+        length: number;
     }
 }
 declare namespace SPECTOR.Recorders {
@@ -1252,17 +1297,23 @@ declare namespace SPECTOR.Recorders {
         protected getUpdateCommandNames(): string[];
         protected getDeleteCommandNames(): string[];
         protected getBoundInstance(target: number): WebGLTexture;
-        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): void;
+        protected delete(instance: WebGLRenderbuffer): number;
+        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLRenderbuffer): number;
+        protected getCustomData(functionInformation: IFunctionInformation, target: string): IRenderBufferRecorderData;
     }
 }
 declare namespace SPECTOR {
     interface IRecorderSpy {
         readonly contextInformation: IContextInformation;
         recordCommand(functionInformation: IFunctionInformation): void;
+        startCapture(): void;
+        stopCapture(): void;
+        appendRecordedInformation(capture: ICapture): void;
     }
     interface IRecorderSpyOptions {
         readonly contextInformation: IContextInformation;
         readonly recorderNamespace: FunctionIndexer;
+        readonly timeConstructor: TimeConstructor;
     }
     type RecorderSpyConstructor = {
         new (options: IRecorderSpyOptions, logger: ILogger): IRecorderSpy;
@@ -1276,8 +1327,12 @@ declare namespace SPECTOR.Spies {
         private readonly recorderConstructors;
         private readonly recorders;
         private readonly onCommandCallbacks;
+        private readonly time;
         constructor(options: IRecorderSpyOptions, logger: ILogger);
         recordCommand(functionInformation: IFunctionInformation): void;
+        startCapture(): void;
+        stopCapture(): void;
+        appendRecordedInformation(capture: ICapture): void;
         private initAvailableRecorders();
         private initRecorders();
     }
@@ -1693,6 +1748,71 @@ declare namespace SPECTOR.WebGlObjects {
     class VertexArrayObject extends BaseWebGlObject {
     }
 }
+declare namespace SPECTOR {
+    interface IAnalyser {
+        readonly analyserName: string;
+        appendAnalysis(capture: ICapture): void;
+        getAnalysis(capture: ICapture): IAnalysis;
+    }
+    interface IAnalyserOptions extends IContextInformation {
+        readonly analyserName: string;
+    }
+    type AnalyserConstructor = {
+        new (options: IAnalyserOptions, logger: ILogger): IAnalyser;
+    };
+}
+declare namespace SPECTOR.Analysers {
+    abstract class BaseAnalyser implements IAnalyser {
+        protected readonly options: IAnalyserOptions;
+        protected readonly logger: ILogger;
+        readonly analyserName: string;
+        constructor(options: IAnalyserOptions, logger: ILogger);
+        appendAnalysis(capture: ICapture): void;
+        getAnalysis(capture: ICapture): IAnalysis;
+        protected abstract appendToAnalysis(capture: ICapture, analysis: IAnalysis): void;
+    }
+}
+declare namespace SPECTOR {
+    interface ICaptureAnalyser {
+        appendAnalyses(capture: ICapture): void;
+    }
+    interface ICaptureAnalyserOptions {
+        readonly contextInformation: IContextInformation;
+        readonly analyserNamespace: FunctionIndexer;
+    }
+    type CaptureAnalyserConstructor = {
+        new (options: ICaptureAnalyserOptions, logger: ILogger): ICaptureAnalyser;
+    };
+}
+declare namespace SPECTOR.Analysers {
+    class CaptureAnalyser implements ICaptureAnalyser {
+        readonly options: ICaptureAnalyserOptions;
+        private readonly logger;
+        private readonly contextInformation;
+        private readonly analyserConstructors;
+        private readonly analysers;
+        constructor(options: ICaptureAnalyserOptions, logger: ILogger);
+        appendAnalyses(capture: ICapture): void;
+        private initAvailableAnalysers();
+        private initAnalysers();
+    }
+}
+declare namespace SPECTOR.Analysers {
+    class CommandsSummaryAnalyser extends BaseAnalyser {
+        private static drawCommands;
+        protected appendToAnalysis(capture: ICapture, analysis: IAnalysis): void;
+    }
+}
+declare namespace SPECTOR.Analysers {
+    class CommandsAnalyser extends BaseAnalyser {
+        protected appendToAnalysis(capture: ICapture, analysis: IAnalysis): void;
+    }
+}
+declare namespace SPECTOR.Analysers {
+    class PrimitivesAnalyser extends BaseAnalyser {
+        protected appendToAnalysis(capture: ICapture, analysis: IAnalysis): void;
+    }
+}
 declare namespace SPECTOR.EmbeddedFrontend {
     class ScrollIntoViewHelper {
         static scrollIntoView(element: HTMLElement): void;
@@ -2084,6 +2204,12 @@ declare namespace SPECTOR.EmbeddedFrontend {
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
+    class InformationColumnComponent extends BaseComponent<boolean> {
+        constructor(eventConstructor: EventConstructor, logger: ILogger);
+        render(state: boolean, stateId: number): Element;
+    }
+}
+declare namespace SPECTOR.EmbeddedFrontend {
     class ResultViewComponent extends BaseComponent<boolean> {
         constructor(eventConstructor: EventConstructor, logger: ILogger);
         render(state: boolean, stateId: number): Element;
@@ -2148,6 +2274,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private readonly resultViewContentComponent;
         private readonly resultViewComponent;
         private readonly sourceCodeComponent;
+        private readonly informationColumnComponent;
         private readonly rootStateId;
         private readonly menuStateId;
         private readonly contentStateId;
@@ -2196,6 +2323,7 @@ declare namespace SPECTOR {
         readonly RecorderNamespace: FunctionIndexer;
         readonly CommandNamespace: FunctionIndexer;
         readonly StateNamespace: FunctionIndexer;
+        readonly AnalyserNamespace: FunctionIndexer;
         readonly StackTraceCtor: StackTraceConstructor;
         readonly LoggerCtor: LoggerConstructor;
         readonly EventCtor: EventConstructor;
@@ -2207,6 +2335,7 @@ declare namespace SPECTOR {
         readonly StateSpyCtor: StateSpyConstructor;
         readonly TimeSpyCtor: TimeSpyConstructor;
         readonly WebGlObjectSpyCtor: WebGlObjectSpyConstructor;
+        readonly CaptureAnalyserCtor: CaptureAnalyserConstructor;
         readonly ExtensionsCtor: ExtensionsConstructor;
         readonly CapabilitiesCtor: StateConstructor;
         readonly CompressedTexturesCtor: StateConstructor;

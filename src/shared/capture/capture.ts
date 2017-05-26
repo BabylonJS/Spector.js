@@ -9,5 +9,8 @@ namespace SPECTOR {
         listenCommandsStartTime: number;
         listenCommandsEndTime: number;
         endTime: number;
+        analyses: IAnalysis[];
+        frameMemory: { [objectName: string]: number };
+        memory: { [objectName: string]: { [second: number]: number } };
     }
 }

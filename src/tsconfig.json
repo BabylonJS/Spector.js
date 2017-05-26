@@ -21,6 +21,7 @@
         "shared/capture/canvasCapture.ts",
         "shared/capture/contextCapture.ts",
         "shared/capture/commandCapture.ts",
+        "shared/capture/analysis.ts",
         "shared/capture/capture.ts",
         
         "backend/types/functionInformation.ts",
@@ -96,6 +97,12 @@
         "backend/webGlObjects/baseWebGlObject.ts",
         "backend/webGlObjects/webGlObjects.ts",
 
+        "backend/analysers/baseAnalyser.ts",
+        "backend/analysers/captureAnalyser.ts",
+        "backend/analysers/commandsSummaryAnalyser.ts",
+        "backend/analysers/commandsAnalyser.ts",
+        "backend/analysers/primitivesAnalyser.ts",
+
         "embeddedFrontend/ux/scrollIntoViewHelper.ts",
 
         "embeddedFrontend/mvx/baseComponent.ts",
@@ -128,6 +135,7 @@
         "embeddedFrontend/resultView/JSON/jsonVisualStateItemComponent.ts",
         "embeddedFrontend/resultView/menu/resultViewMenuComponent.ts",
         "embeddedFrontend/resultView/content/resultViewContentComponent.ts",
+        "embeddedFrontend/resultView/information/informationColumnComponent.ts",
         "embeddedFrontend/resultView/resultViewComponent.ts",
         "embeddedFrontend/resultView/sourceCode/sourceCodeComponent.ts",
         "embeddedFrontend/resultView/resultView.ts",

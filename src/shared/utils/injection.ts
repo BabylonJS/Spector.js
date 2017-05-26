@@ -4,6 +4,7 @@ namespace SPECTOR {
         readonly RecorderNamespace: FunctionIndexer;
         readonly CommandNamespace: FunctionIndexer;
         readonly StateNamespace: FunctionIndexer;
+        readonly AnalyserNamespace: FunctionIndexer;
 
         readonly StackTraceCtor: StackTraceConstructor;
         readonly LoggerCtor: LoggerConstructor;
@@ -17,6 +18,7 @@ namespace SPECTOR {
         readonly StateSpyCtor: StateSpyConstructor;
         readonly TimeSpyCtor: TimeSpyConstructor;
         readonly WebGlObjectSpyCtor: WebGlObjectSpyConstructor;
+        readonly CaptureAnalyserCtor: CaptureAnalyserConstructor;
 
         readonly ExtensionsCtor: ExtensionsConstructor;
         readonly CapabilitiesCtor: StateConstructor;
@@ -35,6 +37,7 @@ namespace SPECTOR.ProvidedInjection {
         RecorderNamespace: Recorders,
         CommandNamespace: Commands,
         StateNamespace: States,
+        AnalyserNamespace: Analysers,
 
         StackTraceCtor: Utils.StackTrace,
         LoggerCtor: Utils.ConsoleLogger,
@@ -48,6 +51,7 @@ namespace SPECTOR.ProvidedInjection {
         StateSpyCtor: Spies.StateSpy,
         TimeSpyCtor: Spies.TimeSpy,
         WebGlObjectSpyCtor: Spies.WebGlObjectSpy,
+        CaptureAnalyserCtor: Analysers.CaptureAnalyser,
 
         ExtensionsCtor: States.Information.Extensions,
         CapabilitiesCtor: States.Information.Capabilities,

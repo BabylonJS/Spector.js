@@ -41,6 +41,7 @@ namespace SPECTOR.EmbeddedFrontend {
         private readonly resultViewContentComponent: ResultViewContentComponent;
         private readonly resultViewComponent: ResultViewComponent;
         private readonly sourceCodeComponent: SourceCodeComponent;
+        private readonly informationColumnComponent: InformationColumnComponent;
 
         private readonly rootStateId: number;
         private readonly menuStateId: number;
@@ -95,6 +96,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.resultViewContentComponent = new ResultViewContentComponent(options.eventConstructor, logger);
             this.resultViewComponent = new ResultViewComponent(options.eventConstructor, logger);
             this.sourceCodeComponent = new SourceCodeComponent(options.eventConstructor, logger);
+            this.informationColumnComponent = new InformationColumnComponent(options.eventConstructor, logger);
 
             this.rootStateId = this.mvx.addRootState(null, this.resultViewComponent);
             this.menuStateId = this.mvx.addChildState(this.rootStateId, null, this.resultViewMenuComponent);
@@ -241,9 +243,19 @@ namespace SPECTOR.EmbeddedFrontend {
         private displayInformation(): void {
             const capture = this.onCaptureRelatedAction(MenuStatus.Information);
 
-            const jsonContentStateId = this.mvx.addChildState(this.contentStateId, null, this.jsonContentComponent);
-            this.displayJSONGroup(jsonContentStateId, "Canvas", capture.canvas);
-            this.displayJSONGroup(jsonContentStateId, "Context", capture.context);
+            const leftId = this.mvx.addChildState(this.contentStateId, true, this.informationColumnComponent);
+            const rightId = this.mvx.addChildState(this.contentStateId, false, this.informationColumnComponent);
+
+            const leftJsonContentStateId = this.mvx.addChildState(leftId, null, this.jsonContentComponent);
+            this.displayJSONGroup(leftJsonContentStateId, "Canvas", capture.canvas);
+            this.displayJSONGroup(leftJsonContentStateId, "Context", capture.context);
+
+            const rightJsonContentStateId = this.mvx.addChildState(rightId, null, this.jsonContentComponent);
+            for (const analysis of capture.analyses) {
+                this.displayJSONGroup(rightJsonContentStateId, analysis.analyserName, analysis);
+            }
+            this.displayJSONGroup(rightJsonContentStateId, "Frame Memory Changes", capture.frameMemory);
+            this.displayJSONGroup(rightJsonContentStateId, "Total Memory (seconds since application start: bytes)", capture.memory);
         }
 
         private displayJSON(parentGroupId: number, json: any) {
@@ -252,7 +264,7 @@ namespace SPECTOR.EmbeddedFrontend {
             }
 
             for (const key in json) {
-                if (key === "VisualState") {
+                if (key === "VisualState" || key === "analyserName") {
                     continue;
                 }
 

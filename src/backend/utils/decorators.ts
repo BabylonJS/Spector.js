@@ -47,4 +47,14 @@ namespace SPECTOR.Decorators {
     export function getWebGlObjectType(target: any): Function {
         return target[OBJECTTYPEKEY];
     }
+
+    const ANLYSEROBJECTNAMEKEY = "___AnalyserObjectName";
+    export function analyser(analyerName: string) {
+        return function (target: any) {
+            target[ANLYSEROBJECTNAMEKEY] = analyerName;
+        };
+    }
+    export function getAnalyserName(target: any): string {
+        return target[ANLYSEROBJECTNAMEKEY];
+    }
 }

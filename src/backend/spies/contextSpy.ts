@@ -50,6 +50,7 @@ namespace SPECTOR.Spies {
         private currentCapture: ICapture;
         private canvasCapture: ICanvasCapture;
         private contextCapture: IContextCapture;
+        private analyser: ICaptureAnalyser;
 
         constructor(private readonly options: IContextSpyOptions,
             private readonly time: ITime,
@@ -80,10 +81,15 @@ namespace SPECTOR.Spies {
             this.recorderSpy = new this.injection.RecorderSpyCtor({
                 contextInformation: this.contextInformation,
                 recorderNamespace: this.injection.RecorderNamespace,
+                timeConstructor: this.injection.TimeCtor,
             }, logger);
             this.webGlObjectSpy = new this.injection.WebGlObjectSpyCtor({
                 contextInformation: this.contextInformation,
                 webGlObjectNamespace: this.injection.WebGlObjectNamespace,
+            }, logger);
+            this.analyser = new this.injection.CaptureAnalyserCtor({
+                contextInformation: this.contextInformation,
+                analyserNamespace: this.injection.AnalyserNamespace,
             }, logger);
 
             this.initStaticCapture();
@@ -129,9 +135,13 @@ namespace SPECTOR.Spies {
                 listenCommandsStartTime: 0,
                 listenCommandsEndTime: 0,
                 endTime: 0,
+                analyses: [],
+                frameMemory: {},
+                memory: {},
             };
 
             this.stateSpy.startCapture(this.currentCapture);
+            this.recorderSpy.startCapture();
 
             this.currentCapture.listenCommandsStartTime = this.time.now;
         }
@@ -144,9 +154,13 @@ namespace SPECTOR.Spies {
 
             this.capturing = false;
             this.stateSpy.stopCapture(this.currentCapture);
+            this.recorderSpy.stopCapture();
 
             this.currentCapture.listenCommandsEndTime = listenCommandsEndTime;
             this.currentCapture.endTime = this.time.now;
+
+            this.recorderSpy.appendRecordedInformation(this.currentCapture);
+            this.analyser.appendAnalyses(this.currentCapture);
             return this.currentCapture;
         }
 

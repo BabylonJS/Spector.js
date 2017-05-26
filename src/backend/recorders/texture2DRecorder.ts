@@ -4,13 +4,14 @@ namespace SPECTOR {
         internalFormat: number;
         width: number;
         height: number;
+        length: number;
         format?: number;
         type?: number;
         depth?: number;
     }
 }
 namespace SPECTOR.Recorders {
-    @Decorators.recorder("WebGLTexture2D")
+    @Decorators.recorder("Texture2d")
     export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
         protected getCreateCommandNames(): string[] {
             return ["createTexture"];
@@ -40,30 +41,41 @@ namespace SPECTOR.Recorders {
             return undefined;
         }
 
-        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): void {
-            if (!instance) {
-                return;
+        protected delete(instance: WebGLTexture): number {
+            const customData = (instance as any).__SPECTOR_Object_CustomData;
+            if (!customData) {
+                return 0;
+            }
+            if (customData.target === WebGlConstants.TEXTURE_2D_ARRAY.name || customData.target === WebGlConstants.TEXTURE_3D.name) {
+                return 0;
             }
 
-            const tag = WebGlObjects.getWebGlObjectTag(instance);
-            if (!tag) {
-                return;
+            return customData.length;
+        }
+
+        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): number {
+            const customData = this.getCustomData(functionInformation, target, instance);
+            if (!customData) {
+                return 0;
             }
 
-            let customData: ITextureRecorderData = null;
+            const previousLength = (instance as any).__SPECTOR_Object_CustomData ? (instance as any).__SPECTOR_Object_CustomData.length : 0;
+            customData.length = customData.width * customData.height * this.getByteSizeForInternalFormat(customData.internalFormat);
+            (instance as any).__SPECTOR_Object_CustomData = customData;
+            return customData.length - previousLength;
+        }
+
+        private getCustomData(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): ITextureRecorderData {
             if (functionInformation.name === "texImage2D") {
-                customData = this.getTexImage2DCustomData(functionInformation, target, instance);
+                return this.getTexImage2DCustomData(functionInformation, target, instance);
             }
             else if (functionInformation.name === "compressedTexImage2D") {
-                customData = this.getCompressedTexImage2DCustomData(functionInformation, target, instance);
+                return this.getCompressedTexImage2DCustomData(functionInformation, target, instance);
             }
             else if (functionInformation.name === "texStorage2D") {
-                customData = this.getTexStorage2DCustomData(functionInformation, target, instance);
+                return this.getTexStorage2DCustomData(functionInformation, target, instance);
             }
-
-            if (customData) {
-                (instance as any).__SPECTOR_Object_CustomData = customData;
-            }
+            return undefined;
         }
 
         private getTexStorage2DCustomData(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): ITextureRecorderData {
@@ -76,6 +88,7 @@ namespace SPECTOR.Recorders {
                     internalFormat: functionInformation.arguments[2],
                     width: functionInformation.arguments[3],
                     height: functionInformation.arguments[4],
+                    length: 0,
                 };
             }
 
@@ -98,6 +111,7 @@ namespace SPECTOR.Recorders {
                     internalFormat: functionInformation.arguments[2],
                     width: functionInformation.arguments[3],
                     height: functionInformation.arguments[4],
+                    length: 0,
                 };
             }
 
@@ -122,6 +136,7 @@ namespace SPECTOR.Recorders {
                     height: functionInformation.arguments[4],
                     format: functionInformation.arguments[6],
                     type: functionInformation.arguments[7],
+                    length: 0,
                 };
             }
             else if (functionInformation.arguments.length === 6) {
@@ -134,6 +149,7 @@ namespace SPECTOR.Recorders {
                     height: functionInformation.arguments[5].height,
                     format: functionInformation.arguments[3],
                     type: functionInformation.arguments[4],
+                    length: 0,
                 };
             }
 

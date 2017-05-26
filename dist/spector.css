@@ -152,6 +152,26 @@
   bottom: 0;
   right: 0; }
 
+.informationColumnLeftComponent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 50%;
+  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: visible; }
+
+.informationColumnRightComponent {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  bottom: 0;
+  right: 0;
+  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: visible; }
+
 .captureListComponent {
   position: absolute;
   top: 40px;

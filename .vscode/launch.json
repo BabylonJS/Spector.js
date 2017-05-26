@@ -9,10 +9,11 @@
             "webRoot": "${workspaceRoot}/",
             "sourceMaps": true,
             "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
+            "preLaunchTask": "test",
             "runtimeArgs": [
                 "--enable-unsafe-es3-apis" 
             ]
-        },         
+        },
         {
             "name": "Launch debug Extension (Chrome)",
             "type": "chrome",
@@ -21,6 +22,7 @@
             "webRoot": "${workspaceRoot}/",
             "sourceMaps": true,
             "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
+            "preLaunchTask": "test",
             "runtimeArgs": [
                 "--enable-unsafe-es3-apis" 
             ]
@@ -33,6 +35,7 @@
             "webRoot": "${workspaceRoot}/",
             "sourceMaps": true,
             "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
+            "preLaunchTask": "test",
             "runtimeArgs": [
                 "--disable-es3-apis" 
             ]
@@ -45,6 +48,7 @@
             "webRoot": "${workspaceRoot}/",
             "sourceMaps": true,
             "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
+            "preLaunchTask": "test",
             "runtimeArgs": [
                 "--disable-es3-apis" 
             ]

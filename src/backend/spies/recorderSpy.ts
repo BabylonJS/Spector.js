@@ -3,11 +3,15 @@ namespace SPECTOR {
     export interface IRecorderSpy {
         readonly contextInformation: IContextInformation;
         recordCommand(functionInformation: IFunctionInformation): void;
+        startCapture(): void;
+        stopCapture(): void;
+        appendRecordedInformation(capture: ICapture): void;
     }
 
     export interface IRecorderSpyOptions {
         readonly contextInformation: IContextInformation;
         readonly recorderNamespace: FunctionIndexer;
+        readonly timeConstructor: TimeConstructor;
     }
 
     export type RecorderSpyConstructor = {
@@ -23,12 +27,14 @@ namespace SPECTOR.Spies {
         private readonly recorderConstructors: { [objectName: string]: RecorderConstructor; };
         private readonly recorders: { [objectName: string]: IRecorder };
         private readonly onCommandCallbacks: FunctionCallbacks;
+        private readonly time: ITime;
 
         constructor(public readonly options: IRecorderSpyOptions, private readonly logger: ILogger) {
             this.recorders = {};
             this.recorderConstructors = {};
             this.onCommandCallbacks = {};
             this.contextInformation = options.contextInformation;
+            this.time = new options.timeConstructor();
 
             this.initAvailableRecorders();
             this.initRecorders();
@@ -39,6 +45,33 @@ namespace SPECTOR.Spies {
             if (callbacks) {
                 for (const callback of callbacks) {
                     callback(functionInformation);
+                }
+            }
+        }
+
+        public startCapture(): void {
+            for (const objectName in this.recorders) {
+                if (this.recorders.hasOwnProperty(objectName)) {
+                    const recorder = this.recorders[objectName];
+                    recorder.startCapture();
+                }
+            }
+        }
+
+        public stopCapture(): void {
+            for (const objectName in this.recorders) {
+                if (this.recorders.hasOwnProperty(objectName)) {
+                    const recorder = this.recorders[objectName];
+                    recorder.stopCapture();
+                }
+            }
+        }
+
+        public appendRecordedInformation(capture: ICapture): void {
+            for (const objectName in this.recorders) {
+                if (this.recorders.hasOwnProperty(objectName)) {
+                    const recorder = this.recorders[objectName];
+                    recorder.appendRecordedInformation(capture);
                 }
             }
         }
@@ -59,7 +92,10 @@ namespace SPECTOR.Spies {
             for (const objectName in this.recorderConstructors) {
                 if (this.recorderConstructors.hasOwnProperty(objectName)) {
                     const options = merge(
-                        { objectName },
+                        {
+                            objectName,
+                            time: this.time,
+                        },
                         this.contextInformation,
                     );
 

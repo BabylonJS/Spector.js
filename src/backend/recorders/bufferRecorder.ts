@@ -8,7 +8,7 @@ namespace SPECTOR {
     }
 }
 namespace SPECTOR.Recorders {
-    @Decorators.recorder("WebGLBuffer")
+    @Decorators.recorder("Buffer")
     export class BufferRecorder extends BaseRecorder<WebGLBuffer> {
         protected getCreateCommandNames(): string[] {
             return ["createBuffer"];
@@ -51,41 +51,28 @@ namespace SPECTOR.Recorders {
             return undefined;
         }
 
-        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLBuffer): void {
-            if (!instance) {
-                return;
+        protected delete(instance: WebGLBuffer): number {
+            const customData = (instance as any).__SPECTOR_Object_CustomData;
+            if (!customData) {
+                return 0;
             }
 
-            const tag = WebGlObjects.getWebGlObjectTag(instance);
-            if (!tag) {
-                return;
+            return customData.length;
+        }
+
+        protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLBuffer): number {
+            const customData = this.getCustomData(target, functionInformation);
+            if (!customData) {
+                return 0;
             }
 
+            const previousLength = (instance as any).__SPECTOR_Object_CustomData ? (instance as any).__SPECTOR_Object_CustomData.length : 0;
+            (instance as any).__SPECTOR_Object_CustomData = customData;
+            return customData.length - previousLength;
+        }
+
+        protected getCustomData(target: string, functionInformation: IFunctionInformation): IBufferRecorderData {
             const length = this.getLength(functionInformation);
-            const customData = this.getCustomData(target, length, functionInformation);
-            if (customData) {
-                (instance as any).__SPECTOR_Object_CustomData = customData;
-            }
-        }
-
-        protected getLength(functionInformation: IFunctionInformation): number {
-            let length = -1;
-            if (functionInformation.arguments.length === 5) {
-                length = functionInformation.arguments[4];
-            }
-
-            if (length <= 0) {
-                if (typeof functionInformation.arguments[1] === "number") {
-                    length = functionInformation.arguments[1];
-                }
-                else if (functionInformation.arguments[1]) {
-                    length = functionInformation.arguments[1].length;
-                }
-            }
-            return length;
-        }
-
-        protected getCustomData(target: string, length: number, functionInformation: IFunctionInformation): IBufferRecorderData {
             if (functionInformation.arguments.length >= 4) {
                 return {
                     target,
@@ -105,6 +92,28 @@ namespace SPECTOR.Recorders {
             }
 
             return undefined;
+        }
+
+        protected getLength(functionInformation: IFunctionInformation): number {
+            let length = -1;
+            if (functionInformation.arguments.length === 5) {
+                length = functionInformation.arguments[4];
+            }
+
+            if (length <= 0) {
+                if (typeof functionInformation.arguments[1] === "number") {
+                    length = functionInformation.arguments[1];
+                }
+                else if (functionInformation.arguments[1]) {
+                    length = (functionInformation.arguments[1].buffer) ?
+                        functionInformation.arguments[1].buffer.byteLength :
+                        functionInformation.arguments[1].byteLength || functionInformation.arguments[1].length || 0;
+                }
+                else {
+                    length = 0;
+                }
+            }
+            return length;
         }
     }
 }
