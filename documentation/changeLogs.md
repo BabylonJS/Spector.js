@@ -5,7 +5,7 @@
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
 ## v0.2.0 Frame Analytics and Texture Inputs
-This release is planned to adress Frame Analytics (Redundant, Unused...).
+This release includes new data around like number of commands, memory and more texture types support:
 
 - Analyse capture and extract number of calls per commands.
 - Analyse records and extract memory information (Frame and global).
