@@ -37,6 +37,10 @@ namespace SPECTOR.Recorders {
         }
 
         protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): number {
+            if (functionInformation.arguments.length >= 2 && functionInformation.arguments[1] !== 0) {
+                return 0;
+            }
+
             const customData = this.getCustomData(functionInformation, target, instance);
             if (!customData) {
                 return 0;

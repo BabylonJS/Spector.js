@@ -59,7 +59,15 @@ namespace SPECTOR.Commands {
                 const argumentsArray: any[] = [];
                 for (let i = 0; i < commandCapture.commandArguments.length; i++) {
                     const commandArgument = commandCapture.commandArguments[i];
-                    argumentsArray.push(JSON.parse(JSON.stringify(commandArgument)));
+                    if (commandArgument === undefined) {
+                        argumentsArray.push(undefined);
+                    }
+                    else if (commandArgument === null) {
+                        argumentsArray.push(null);
+                    }
+                    else {
+                        argumentsArray.push(JSON.parse(JSON.stringify(commandArgument)));
+                    }
                 }
                 commandCapture.commandArguments = argumentsArray as any;
             }

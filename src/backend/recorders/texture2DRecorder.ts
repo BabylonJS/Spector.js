@@ -54,13 +54,18 @@ namespace SPECTOR.Recorders {
         }
 
         protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): number {
+            if (functionInformation.arguments.length >= 2 && functionInformation.arguments[1] !== 0) {
+                return 0;
+            }
+
             const customData = this.getCustomData(functionInformation, target, instance);
             if (!customData) {
                 return 0;
             }
 
             const previousLength = (instance as any).__SPECTOR_Object_CustomData ? (instance as any).__SPECTOR_Object_CustomData.length : 0;
-            customData.length = customData.width * customData.height * this.getByteSizeForInternalFormat(customData.internalFormat);
+            const cubeMapMultiplier = target === "TEXTURE_2D" ? 1 : 6;
+            customData.length = customData.width * customData.height * cubeMapMultiplier * this.getByteSizeForInternalFormat(customData.internalFormat);
             (instance as any).__SPECTOR_Object_CustomData = customData;
             return customData.length - previousLength;
         }

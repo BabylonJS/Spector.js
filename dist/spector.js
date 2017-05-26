@@ -1559,7 +1559,15 @@ var SPECTOR;
                     var argumentsArray = [];
                     for (var i = 0; i < commandCapture.commandArguments.length; i++) {
                         var commandArgument = commandCapture.commandArguments[i];
-                        argumentsArray.push(JSON.parse(JSON.stringify(commandArgument)));
+                        if (commandArgument === undefined) {
+                            argumentsArray.push(undefined);
+                        }
+                        else if (commandArgument === null) {
+                            argumentsArray.push(null);
+                        }
+                        else {
+                            argumentsArray.push(JSON.parse(JSON.stringify(commandArgument)));
+                        }
                     }
                     commandCapture.commandArguments = argumentsArray;
                 }
@@ -2288,12 +2296,16 @@ var SPECTOR;
                 return customData.length;
             };
             Texture2DRecorder.prototype.update = function (functionInformation, target, instance) {
+                if (functionInformation.arguments.length >= 2 && functionInformation.arguments[1] !== 0) {
+                    return 0;
+                }
                 var customData = this.getCustomData(functionInformation, target, instance);
                 if (!customData) {
                     return 0;
                 }
                 var previousLength = instance.__SPECTOR_Object_CustomData ? instance.__SPECTOR_Object_CustomData.length : 0;
-                customData.length = customData.width * customData.height * this.getByteSizeForInternalFormat(customData.internalFormat);
+                var cubeMapMultiplier = target === "TEXTURE_2D" ? 1 : 6;
+                customData.length = customData.width * customData.height * cubeMapMultiplier * this.getByteSizeForInternalFormat(customData.internalFormat);
                 instance.__SPECTOR_Object_CustomData = customData;
                 return customData.length - previousLength;
             };
@@ -2427,6 +2439,9 @@ var SPECTOR;
                 return customData.length;
             };
             Texture3DRecorder.prototype.update = function (functionInformation, target, instance) {
+                if (functionInformation.arguments.length >= 2 && functionInformation.arguments[1] !== 0) {
+                    return 0;
+                }
                 var customData = this.getCustomData(functionInformation, target, instance);
                 if (!customData) {
                     return 0;

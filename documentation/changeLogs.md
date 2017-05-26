@@ -4,18 +4,17 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
-<!--## v0.2.0 Frame Analytics (Redundant, Unused...)
+## v0.2.0 Frame Analytics and Texture Inputs
 This release is planned to adress Frame Analytics (Redundant, Unused...).
 
-[View More...](changeLogs/v0.2.0.md)-->
-
-## v0.1.x Currently on Master
-These are the changes on master yet to be released.
-
-- WebGL2 Texture 3d visualization (first and last three to save space)
-- WebGL2 Texture 2d array visualization (first and last three to save space)
+- Analyse capture and extract number of calls per commands.
+- Analyse records and extract memory information (Frame and global).
+- Display Buffer and Render Buffer information.
+- [Shader Display Repeat issue of some sections.](https://github.com/BabylonJS/Spector.js/issues/34)
+- [Invalid Attrib Location Crash](https://github.com/BabylonJS/Spector.js/issues/33)
 - [Compressed textures information](https://github.com/BabylonJS/Spector.js/issues/32)
-- Webgl1 Texture type Half Float OES Visualization.
+
+[View More...](changeLogs/v0.2.0.md)
 
 ## v0.1.2 First Stable
 This release is the first stable release containing the Minimum Valuable Product.
