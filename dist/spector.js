@@ -7194,6 +7194,10 @@ var SPECTOR;
                     return "undefined";
                 }
                 if (typeof json === "number") {
+                    // Do not consider the isFinite case yet for browser compat.
+                    if (Math.floor(json) === json) {
+                        return json.toFixed(0);
+                    }
                     return json.toFixed(4);
                 }
                 if (typeof json === "string") {
