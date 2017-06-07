@@ -4,6 +4,9 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.2.2 Viewport and Scissor Commands format
+This simply contains another quick fix concerning the command formatting used in spector. It now does not display WebglConstants for both ```viewport``` and ```scissor```.
+
 ## v0.2.1 Capture Number format
 This simply contains a quick fix concerning the number formatting used in spector. It now does not display trailing 0 in case of integers.
 

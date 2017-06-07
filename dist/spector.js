@@ -2092,6 +2092,54 @@ var SPECTOR;
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
 (function (SPECTOR) {
+    var Commands;
+    (function (Commands) {
+        var Scissor = (function (_super) {
+            __extends(Scissor, _super);
+            function Scissor() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            Scissor.prototype.stringifyArgs = function (args) {
+                var stringified = [];
+                for (var i = 0; i < 4; i++) {
+                    stringified.push(args[i].toFixed(0));
+                }
+                return stringified;
+            };
+            return Scissor;
+        }(Commands.BaseCommand));
+        Scissor = __decorate([
+            SPECTOR.Decorators.command("scissor")
+        ], Scissor);
+        Commands.Scissor = Scissor;
+    })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Commands;
+    (function (Commands) {
+        var Viewport = (function (_super) {
+            __extends(Viewport, _super);
+            function Viewport() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            Viewport.prototype.stringifyArgs = function (args) {
+                var stringified = [];
+                for (var i = 0; i < 4; i++) {
+                    stringified.push(args[i].toFixed(0));
+                }
+                return stringified;
+            };
+            return Viewport;
+        }(Commands.BaseCommand));
+        Viewport = __decorate([
+            SPECTOR.Decorators.command("viewport")
+        ], Viewport);
+        Commands.Viewport = Viewport;
+    })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
     var Recorders;
     (function (Recorders) {
         var BaseRecorder = (function () {

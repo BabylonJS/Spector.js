@@ -57,6 +57,9 @@
         "backend/commands/drawElementsInstanced.ts",
         "backend/commands/drawElementsInstancedAngle.ts",
         "backend/commands/drawRangeElements.ts",
+        "backend/commands/drawRangeElements.ts",
+        "backend/commands/scissor.ts",
+        "backend/commands/viewport.ts",
 
         "backend/recorders/baseRecorder.ts",
         "backend/recorders/texture2DRecorder.ts",
