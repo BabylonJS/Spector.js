@@ -1,15 +1,15 @@
-[SpectorJS](readme.md) 
+[SpectorJS](readme.md)
 =========
 
 ## Summary
 **Explore and Troubleshoot your WebGL scenes (All engines and Vanilla script support) with ease.**
 
-Spector is a tool aim to *WebGl* developers willing to know what happens on their context. It enables capturing all the available information from a frame. You will be empowered to look at your entire **commands list** with their asoociated **visual states** and **context information**.
+Spector is a tool aimed at *WebGl* developers wanting to know what happens in their context. It enables capturing of all the available information from a frame. You will be able to look at your entire **commands list** with their associated **visual states** and **context information**.
 
 [![Build Status](https://travis-ci.org/BabylonJS/Spector.js.svg?branch=master)](https://travis-ci.org/BabylonJS/Spector.js)
 [![Code Climate](https://codeclimate.com/github/BabylonJS/Spector.js.png)](https://codeclimate.com/github/BabylonJS/Spector.js)
 
-This can be used either as a *browser extension* or directly from your page a a *Standalone Version*.
+This can be used either as a *browser extension* or directly from your page with a *Standalone Version*.
 
 <p align="center">
   <img src="https://spectordoc.babylonjs.com/pictures/title.png" style="width:512px">
@@ -35,9 +35,9 @@ This can be used either as a *browser extension* or directly from your page a a 
 
 ## Why
 ###### [Back to top](#table-of-content)
-As a core member of the BabylonJS team I often found the need of debugging what is happening to my webgl context. I was a huge fan of webgl inspector until we introduced WebGl2 in Babylon. As the WebGL community as a whole is our focus, I thought it would be great to share an extension compatible with all the Webgl/Webgl2 engines available.
+As a core member of the BabylonJS team I often found the need to debug what was happening to my webgl context. I was a huge fan of webgl inspector until we introduced WebGl2 in Babylon. As the WebGL community as a whole is our focus, I thought it would be great to share an extension compatible with all the Webgl/Webgl2 engines available.
 
-You can use the library inside of your own application easily. As it is transpiled as a UMD module, this will either work as a script reference or relying on you favorite bundling tools like webpack.
+You can use the library inside of your own application easily as it is transpiled as a UMD module. It will either work as a script reference or with your favorite bundling tools like webpack.
 
 ## Browser extension
 ###### [Back to top](#table-of-content)
@@ -53,7 +53,7 @@ Or you can direclty install it from the store:
 
 ## Use as a Module
 ###### [Back to top](#table-of-content)
-In order to install the library in your application directory, please type the following commands on a command line prompt open on the application directory:
+In order to install the library in your application directory, please type the following command on a command line prompt open on the application directory:
 
 ```
 npm install spectorjs
@@ -65,7 +65,7 @@ From this point you are all set to use it in your app.
 ###### [Back to top](#table-of-content)
 As a quick demo, here is a simple way to use the spector module with webpack.
 
-Please follow the instrctions below which are creating a new directory and installing the required tools:
+Please follow the instructions below to create a new directory and install the required tools:
 
 ```
 mkdir sample
@@ -75,7 +75,7 @@ npm install webpack --save-dev
 npm install spectorjs --save-dev
 ```
 
-Following the HelloWorld example from Webpack, you can now create in the sample folder:
+Following the HelloWorld example from Webpack, you can now create it in the sample folder:
 
 A js file named entry.js containing the following code:
 
@@ -98,13 +98,13 @@ And an html file named index.js containing the following code:
 </html>
 ```
 
-Now your application is ready, go back to your command line and bundle the javascript file:
+Now your application is ready. Go back to your command line and bundle the javascript file:
 
 ```
 webpack entry.js bundle.js
 ```
 
-You are all set, you can open your index.html file and see the inspector running. It will obviously won't be that usefull on an empty page but at least you get the integration idea.
+You are all set. You can open your index.html file and see the inspector running. It obviously won't be that usefull on an empty page but at least you get the integration idea.
 
 ## Use as a Script Reference
 ###### [Back to top](#table-of-content)
@@ -116,7 +116,7 @@ Feel free to leverage the CDN to use the library from your own projets: [https:/
 If you prefer to host your own version, the library is available in the [dist](https://github.com/BabylonJS/Spector.js/blob/master/dist/spector.bundle.js) folder of the repo.
 
 ### node_modules
-If you used npm to install the library you can find the spector.bundle.js file in the node_module/spectorjs/dist folder. 
+If you used npm to install the library you can find the spector.bundle.js file in the node_module/spectorjs/dist folder.
 
 ### How To Reference
 Simply add the following tag in your html page header:
@@ -169,7 +169,7 @@ var cubeVerticesColorBuffer = gl.createBuffer();
 cubeVerticesColorBuffer.__SPECTOR_Metadata = { name: "cubeVerticesColorBuffer" };
 ```
 
-This will enable the visibility of your custom name in your capture. This can be an invaluable asset during troubleshoot session. This can also help referencing your materials friendly names from your captures.
+This will enable the visibility of your custom name in your capture. This can be an invaluable asset during troubleshoot session. This can also help with referencing your materials' friendly names from your captures.
 
 ## Learn About WebGL
 ###### [Back to top](#table-of-content)
