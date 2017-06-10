@@ -74,6 +74,7 @@ function insertHeaderNode(node) {
 var spectorLoadedKey = "SPECTOR_LOADED";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
 var spectorContextTypeKey = "__spector_context_type";
+var openInNewTab = false;
 
 var canvasGetContextDetection = `
     var OLDGetContext = HTMLCanvasElement.prototype.getContext;
@@ -157,7 +158,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
     });
 
     document.addEventListener('SpectorOnCaptureEvent', function (e) {
-        sendMessage({ capture: e.detail.capture });
+        sendMessage({ capture: e.detail.capture, openInNewTab: openInNewTab });
     }, false);
 
     document.addEventListener('SpectorOnErrorEvent', function (e) {
@@ -170,7 +171,6 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
 }
 
 var frameId = null;
-
 
 var getCanvases = function() {
     if (document.body) {
@@ -288,6 +288,7 @@ listenForMessage(function (message) {
         var input = document.getElementById(spectorCommunicationElementId);
         if (input) {
             input.value = canvasRef.index;
+            openInNewTab = message.openInNewTab;
             var myEvent = new CustomEvent("SpectorRequestCaptureEvent");
             document.dispatchEvent(myEvent);
         }

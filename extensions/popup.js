@@ -137,6 +137,6 @@ var pause = function(e) {
 
 var captureCanvas = function(e) {
     if (e) {
-        sendMessage({ action: "capture", canvasRef: e.ref });
+        sendMessage({ action: "capture", canvasRef: e.ref, openInNewTab: document.getElementById('openInNewTab').checked });
     }
 }

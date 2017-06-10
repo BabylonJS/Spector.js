@@ -20,7 +20,7 @@ This can be used either as a *browser extension* or directly from your page with
 * [Browser extension](#browser-extension)
 * [Use as a Module](#use-as-a-module)
   * [Webpack sample](#webpack-sample)
-* [Use as a Script Reference](#use-as-a-script-eference)
+* [Use as a Script Reference](#use-as-a-script-reference)
   * [CDN](#cdn)
   * [From the repository](#repo)
   * [Node_Modules](#node_modules)
@@ -122,7 +122,7 @@ If you used npm to install the library you can find the spector.bundle.js file i
 Simply add the following tag in your html page header:
 
 ```html
-<script type="text/javascript" src="spector.bundle.js"></script>
+<script type="text/javascript" src="https://spectorcdn.babylonjs.com/spector.bundle.js"></script>
 ```
 
 ## Basic Usage

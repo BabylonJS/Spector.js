@@ -115,7 +115,7 @@ listenForMessage(function(request, sender, sendResponse) {
         // If a capture has been received,
         var tabWindows = browser.extension.getViews({type: "tab"});
         // Open the result view if not open (need to check if length == 1 that the function exists for Edge),
-        if (tabWindows.length < 1 || !tabWindows[0].addCapture) {
+        if (request.openInNewTab || tabWindows.length < 1 || !tabWindows[0].addCapture) {
             window.browser.tabs.create({ url: "result.html", active: true }, function(tab) {
                 resultTab = tab;
                 currentCapture = request.capture;
