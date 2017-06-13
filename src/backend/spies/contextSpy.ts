@@ -32,6 +32,7 @@ namespace SPECTOR.Spies {
         private static readonly unSpyableMembers = ["canvas",
             "drawingBufferWidth",
             "drawingBufferHeight",
+            "glp", // WebGl Insight internal method.
         ];
 
         public readonly context: WebGLRenderingContexts;

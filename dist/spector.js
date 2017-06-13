@@ -1437,6 +1437,7 @@ var SPECTOR;
         ContextSpy.unSpyableMembers = ["canvas",
             "drawingBufferWidth",
             "drawingBufferHeight",
+            "glp",
         ];
         Spies.ContextSpy = ContextSpy;
     })(Spies = SPECTOR.Spies || (SPECTOR.Spies = {}));
