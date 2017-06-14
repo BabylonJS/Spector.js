@@ -95,7 +95,7 @@ namespace SPECTOR.Recorders {
             this.totalMemory = 0;
             this.frameMemory = 0;
             this.capturing = false;
-            BaseRecorder.byteSizePerInternalFormat = {};
+            BaseRecorder.initializeByteSizeFormat();
         }
 
         public registerCallbacks(onFunctionCallbacks: FunctionCallbacks): void {

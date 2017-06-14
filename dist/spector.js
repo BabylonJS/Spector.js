@@ -2156,7 +2156,7 @@ var SPECTOR;
                 this.totalMemory = 0;
                 this.frameMemory = 0;
                 this.capturing = false;
-                BaseRecorder.byteSizePerInternalFormat = {};
+                BaseRecorder.initializeByteSizeFormat();
             }
             BaseRecorder.initializeByteSizeFormat = function () {
                 if (this.byteSizePerInternalFormat) {

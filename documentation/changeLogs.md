@@ -4,6 +4,11 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.3.0 Fix and Command Comparison
+This realeas enables command comparison and fixes a couple of reported issues:
+
+- Fix memory usage report.
+
 ## v0.2.3 Typos and MultiTabs
 This simply contains another quick fix concerning typos in readme and the extension popup. As a little bonus, you can now capture to a new tab.
 
