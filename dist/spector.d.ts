@@ -1849,6 +1849,7 @@ declare namespace SPECTOR.Analysers {
 declare namespace SPECTOR.Analysers {
     class PrimitivesAnalyser extends BaseAnalyser {
         protected appendToAnalysis(capture: ICapture, analysis: IAnalysis): void;
+        private appendToPrimitives(primitives, mode, count);
     }
 }
 declare namespace SPECTOR {
