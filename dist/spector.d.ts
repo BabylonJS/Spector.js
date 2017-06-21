@@ -162,6 +162,30 @@ declare namespace SPECTOR {
     }
 }
 declare namespace SPECTOR {
+    enum CaptureComparisonStatus {
+        Equal = 0,
+        Different = 1,
+        OnlyInA = 2,
+        OnlyInB = 3,
+    }
+    type PropertyComparisonResult = {
+        name: string;
+        status: CaptureComparisonStatus;
+        valueA: any;
+        valueB: any;
+    };
+    type GroupComparisonResult = {
+        name: string;
+        groups: GroupComparisonResult[];
+        properties: PropertyComparisonResult[];
+        status: CaptureComparisonStatus;
+    };
+    interface ICommandCaptureComparison {
+        groups: GroupComparisonResult[];
+        properties: PropertyComparisonResult[];
+    }
+}
+declare namespace SPECTOR {
     type FunctionIndexer = {
         [key: string]: any;
     };
@@ -879,6 +903,7 @@ declare namespace SPECTOR {
     class ReadPixelsHelper {
         static isSupportedCombination(type: number, format: number, internalFormat: number): boolean;
         static readPixels(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number): Uint8Array;
+        private static isSupportedComponentType(type);
     }
 }
 declare namespace SPECTOR {
@@ -1299,6 +1324,7 @@ declare namespace SPECTOR {
         width: number;
         height: number;
         length: number;
+        samples: number;
     }
 }
 declare namespace SPECTOR.Recorders {
@@ -1639,6 +1665,8 @@ declare namespace SPECTOR.States {
         protected getConsumeCommands(): string[];
         protected readFromContext(): void;
         protected readFrameBufferAttachmentFromContext(gl: WebGLRenderingContext | WebGL2RenderingContext, frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant, x: number, y: number, width: number, height: number): void;
+        protected readFrameBufferAttachmentFromRenderBuffer(gl: WebGLRenderingContext | WebGL2RenderingContext, frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant, x: number, y: number, width: number, height: number, target: number, componentType: number, storage: any): void;
+        protected readFrameBufferAttachmentFromTexture(gl: WebGLRenderingContext | WebGL2RenderingContext, frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant, x: number, y: number, width: number, height: number, target: number, componentType: number, storage: any): void;
         protected getCapture(gl: WebGLRenderingContext, name: string, x: number, y: number, width: number, height: number, textureCubeMapFace: number, textureLayer: number, type: number): void;
         protected analyse(consumeCommand: ICommandCapture): void;
     }
@@ -1821,6 +1849,23 @@ declare namespace SPECTOR.Analysers {
 declare namespace SPECTOR.Analysers {
     class PrimitivesAnalyser extends BaseAnalyser {
         protected appendToAnalysis(capture: ICapture, analysis: IAnalysis): void;
+    }
+}
+declare namespace SPECTOR {
+    interface ICommandComparator {
+        compare(commandA: ICommandCapture, commandB: ICommandCapture): ICommandCaptureComparison;
+    }
+    type CommandComparatorConstructor = {
+        new (logger: ILogger): ICommandComparator;
+    };
+}
+declare namespace SPECTOR.Comparators {
+    class CommandComparator implements ICommandComparator {
+        protected readonly logger: ILogger;
+        constructor(logger: ILogger);
+        compare(commandA: ICommandCapture, commandB: ICommandCapture): ICommandCaptureComparison;
+        private compareGroups(name, groupA, groupB);
+        private compareProperties(name, valueA, valueB);
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
@@ -2350,6 +2395,7 @@ declare namespace SPECTOR {
         readonly CapabilitiesCtor: StateConstructor;
         readonly CompressedTexturesCtor: StateConstructor;
         readonly DefaultCommandCtor: CommandConstructor;
+        readonly CommandComparatorCtor: CommandComparatorConstructor;
         readonly CaptureMenuConstructor: CaptureMenuConstructor;
         readonly ResultViewConstructor: ResultViewConstructor;
     };

@@ -23,6 +23,7 @@
         "shared/capture/commandCapture.ts",
         "shared/capture/analysis.ts",
         "shared/capture/capture.ts",
+        "shared/capture/captureComparison.ts",
         
         "backend/types/functionInformation.ts",
         "backend/types/contextInformation.ts",
@@ -105,6 +106,8 @@
         "backend/analysers/commandsSummaryAnalyser.ts",
         "backend/analysers/commandsAnalyser.ts",
         "backend/analysers/primitivesAnalyser.ts",
+
+        "backend/comparators/commandComparator.ts",
 
         "embeddedFrontend/ux/scrollIntoViewHelper.ts",
 

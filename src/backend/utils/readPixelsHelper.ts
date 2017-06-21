@@ -14,6 +14,7 @@ namespace SPECTOR {
             // Only reads 8 16 32.
             if (internalFormat !== WebGlConstants.RGB.value &&
                 internalFormat !== WebGlConstants.RGBA.value &&
+                internalFormat !== WebGlConstants.RGBA8.value &&
                 internalFormat !== WebGlConstants.RGBA16F.value &&
                 internalFormat !== WebGlConstants.RGBA32F.value &&
                 internalFormat !== WebGlConstants.RGB16F.value &&
@@ -22,18 +23,7 @@ namespace SPECTOR {
                 return false;
             }
 
-            // Only reads https://www.khronos.org/registry/webgl/specs/latest/2.0/ texImage2D supported combination.
-            if (type !== WebGlConstants.UNSIGNED_BYTE.value &&
-                type !== WebGlConstants.UNSIGNED_SHORT_4_4_4_4.value &&
-                type !== WebGlConstants.UNSIGNED_SHORT_5_5_5_1.value &&
-                type !== WebGlConstants.UNSIGNED_SHORT_5_6_5.value &&
-                type !== WebGlConstants.HALF_FLOAT.value &&
-                type !== WebGlConstants.HALF_FLOAT_OES.value &&
-                type !== WebGlConstants.FLOAT.value) {
-                return false;
-            }
-
-            return true;
+            return this.isSupportedComponentType(type);
         }
 
         public static readPixels(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number): Uint8Array {
@@ -74,6 +64,21 @@ namespace SPECTOR {
             }
 
             return newPixels;
+        }
+
+        private static isSupportedComponentType(type: number) {
+            // Only reads https://www.khronos.org/registry/webgl/specs/latest/2.0/ texImage2D supported combination.
+            if (type !== WebGlConstants.UNSIGNED_BYTE.value &&
+                type !== WebGlConstants.UNSIGNED_SHORT_4_4_4_4.value &&
+                type !== WebGlConstants.UNSIGNED_SHORT_5_5_5_1.value &&
+                type !== WebGlConstants.UNSIGNED_SHORT_5_6_5.value &&
+                type !== WebGlConstants.HALF_FLOAT.value &&
+                type !== WebGlConstants.HALF_FLOAT_OES.value &&
+                type !== WebGlConstants.FLOAT.value) {
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -215,6 +215,16 @@ var SPECTOR;
     }
     SPECTOR.merge = merge;
 })(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var CaptureComparisonStatus;
+    (function (CaptureComparisonStatus) {
+        CaptureComparisonStatus[CaptureComparisonStatus["Equal"] = 0] = "Equal";
+        CaptureComparisonStatus[CaptureComparisonStatus["Different"] = 1] = "Different";
+        CaptureComparisonStatus[CaptureComparisonStatus["OnlyInA"] = 2] = "OnlyInA";
+        CaptureComparisonStatus[CaptureComparisonStatus["OnlyInB"] = 3] = "OnlyInB";
+    })(CaptureComparisonStatus = SPECTOR.CaptureComparisonStatus || (SPECTOR.CaptureComparisonStatus = {}));
+})(SPECTOR || (SPECTOR = {}));
 // tslint:disable:max-file-line-count
 // tslint:disable:interface-name
 // tslint:disable:max-line-length
@@ -1028,6 +1038,7 @@ var SPECTOR;
             // Only reads 8 16 32.
             if (internalFormat !== SPECTOR.WebGlConstants.RGB.value &&
                 internalFormat !== SPECTOR.WebGlConstants.RGBA.value &&
+                internalFormat !== SPECTOR.WebGlConstants.RGBA8.value &&
                 internalFormat !== SPECTOR.WebGlConstants.RGBA16F.value &&
                 internalFormat !== SPECTOR.WebGlConstants.RGBA32F.value &&
                 internalFormat !== SPECTOR.WebGlConstants.RGB16F.value &&
@@ -1035,17 +1046,7 @@ var SPECTOR;
                 internalFormat !== SPECTOR.WebGlConstants.R11F_G11F_B10F.value) {
                 return false;
             }
-            // Only reads https://www.khronos.org/registry/webgl/specs/latest/2.0/ texImage2D supported combination.
-            if (type !== SPECTOR.WebGlConstants.UNSIGNED_BYTE.value &&
-                type !== SPECTOR.WebGlConstants.UNSIGNED_SHORT_4_4_4_4.value &&
-                type !== SPECTOR.WebGlConstants.UNSIGNED_SHORT_5_5_5_1.value &&
-                type !== SPECTOR.WebGlConstants.UNSIGNED_SHORT_5_6_5.value &&
-                type !== SPECTOR.WebGlConstants.HALF_FLOAT.value &&
-                type !== SPECTOR.WebGlConstants.HALF_FLOAT_OES.value &&
-                type !== SPECTOR.WebGlConstants.FLOAT.value) {
-                return false;
-            }
-            return true;
+            return this.isSupportedComponentType(type);
         };
         ReadPixelsHelper.readPixels = function (gl, x, y, width, height, type) {
             // Empty error list.
@@ -1080,6 +1081,19 @@ var SPECTOR;
                 }
             }
             return newPixels;
+        };
+        ReadPixelsHelper.isSupportedComponentType = function (type) {
+            // Only reads https://www.khronos.org/registry/webgl/specs/latest/2.0/ texImage2D supported combination.
+            if (type !== SPECTOR.WebGlConstants.UNSIGNED_BYTE.value &&
+                type !== SPECTOR.WebGlConstants.UNSIGNED_SHORT_4_4_4_4.value &&
+                type !== SPECTOR.WebGlConstants.UNSIGNED_SHORT_5_5_5_1.value &&
+                type !== SPECTOR.WebGlConstants.UNSIGNED_SHORT_5_6_5.value &&
+                type !== SPECTOR.WebGlConstants.HALF_FLOAT.value &&
+                type !== SPECTOR.WebGlConstants.HALF_FLOAT_OES.value &&
+                type !== SPECTOR.WebGlConstants.FLOAT.value) {
+                return false;
+            }
+            return true;
         };
         return ReadPixelsHelper;
     }());
@@ -2707,7 +2721,7 @@ var SPECTOR;
                 return ["createRenderbuffer"];
             };
             RenderBufferRecorder.prototype.getUpdateCommandNames = function () {
-                return ["renderbufferStorage"];
+                return ["renderbufferStorage", "renderbufferStorageMultisample"];
             };
             RenderBufferRecorder.prototype.getDeleteCommandNames = function () {
                 return ["deleteRenderbuffer"];
@@ -2737,12 +2751,24 @@ var SPECTOR;
                 return customData.length - previousLength;
             };
             RenderBufferRecorder.prototype.getCustomData = function (functionInformation, target) {
+                // renderbufferStorage
+                if (functionInformation.arguments.length === 4) {
+                    return {
+                        target: target,
+                        internalFormat: functionInformation.arguments[1],
+                        width: functionInformation.arguments[2],
+                        height: functionInformation.arguments[3],
+                        length: 0,
+                        samples: 0,
+                    };
+                }
                 return {
                     target: target,
-                    internalFormat: functionInformation.arguments[1],
-                    width: functionInformation.arguments[2],
-                    height: functionInformation.arguments[3],
+                    internalFormat: functionInformation.arguments[2],
+                    width: functionInformation.arguments[3],
+                    height: functionInformation.arguments[4],
                     length: 0,
+                    samples: functionInformation.arguments[1],
                 };
             };
             return RenderBufferRecorder;
@@ -4079,52 +4105,90 @@ var SPECTOR;
                     this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE.value) :
                     SPECTOR.WebGlConstants.UNSIGNED_BYTE.value;
                 if (type === SPECTOR.WebGlConstants.RENDERBUFFER.value) {
-                    gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
-                    gl.framebufferRenderbuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, SPECTOR.WebGlConstants.RENDERBUFFER.value, storage);
-                    // Adapt to constraints defines in the custom data if any.
-                    if (storage.__SPECTOR_Object_CustomData) {
-                        var info = storage.__SPECTOR_Object_CustomData;
-                        width = info.width;
-                        height = info.height;
-                        if (!SPECTOR.ReadPixelsHelper.isSupportedCombination(componentType, SPECTOR.WebGlConstants.RGBA.value, info.internalFormat)) {
-                            return;
-                        }
-                    }
-                    this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, componentType);
-                    gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, frameBuffer);
+                    this.readFrameBufferAttachmentFromRenderBuffer(gl, frameBuffer, webglConstant, x, y, width, height, target, componentType, storage);
                 }
                 else if (type === SPECTOR.WebGlConstants.TEXTURE.value) {
-                    var textureLayer = 0;
-                    if (this.contextVersion > 1) {
-                        textureLayer = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER.value);
+                    this.readFrameBufferAttachmentFromTexture(gl, frameBuffer, webglConstant, x, y, width, height, target, componentType, storage);
+                }
+            };
+            VisualState.prototype.readFrameBufferAttachmentFromRenderBuffer = function (gl, frameBuffer, webglConstant, x, y, width, height, target, componentType, storage) {
+                var samples = 0;
+                var internalFormat = 0;
+                if (storage.__SPECTOR_Object_CustomData) {
+                    var info = storage.__SPECTOR_Object_CustomData;
+                    width = info.width;
+                    height = info.height;
+                    samples = info.samples;
+                    internalFormat = info.internalFormat;
+                    if (!samples && !SPECTOR.ReadPixelsHelper.isSupportedCombination(componentType, SPECTOR.WebGlConstants.RGBA.value, internalFormat)) {
+                        return;
                     }
-                    var textureLevel = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
-                    var textureCubeMapFace = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
-                    var textureCubeMapFaceName = textureCubeMapFace > 0 ? SPECTOR.WebGlConstantsByValue[textureCubeMapFace].name : SPECTOR.WebGlConstants.TEXTURE_2D.name;
-                    // Adapt to constraints defines in the custom data if any.
-                    var textureType = componentType;
-                    if (storage.__SPECTOR_Object_CustomData) {
-                        var info = storage.__SPECTOR_Object_CustomData;
-                        width = info.width;
-                        height = info.height;
-                        textureType = info.type;
-                        if (!SPECTOR.ReadPixelsHelper.isSupportedCombination(info.type, info.format, info.internalFormat)) {
-                            return;
-                        }
-                    }
+                }
+                if (samples) {
+                    var gl2 = gl; // Samples only available in WebGL 2.
+                    var renderBuffer = gl.createRenderbuffer();
+                    var boundRenderBuffer = gl.getParameter(gl.RENDERBUFFER_BINDING);
+                    gl.bindRenderbuffer(gl.RENDERBUFFER, renderBuffer);
+                    gl.renderbufferStorage(gl.RENDERBUFFER, internalFormat, width, height);
+                    gl.bindRenderbuffer(gl.RENDERBUFFER, boundRenderBuffer);
                     gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
-                    if (textureLayer === 0) {
-                        gl.framebufferTexture2D(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, textureCubeMapFace ? textureCubeMapFace : SPECTOR.WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
-                    }
-                    else {
-                        gl.framebufferTextureLayer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, storage, textureLevel, textureLayer);
-                    }
+                    gl.framebufferRenderbuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, SPECTOR.WebGlConstants.RENDERBUFFER.value, renderBuffer);
+                    var readFrameBuffer = gl2.getParameter(gl2.READ_FRAMEBUFFER_BINDING);
+                    var drawFrameBuffer = gl2.getParameter(gl2.DRAW_FRAMEBUFFER_BINDING);
+                    gl2.bindFramebuffer(gl2.READ_FRAMEBUFFER, frameBuffer);
+                    gl2.bindFramebuffer(gl2.DRAW_FRAMEBUFFER, this.captureFrameBuffer);
+                    gl2.blitFramebuffer(0, 0, width, height, 0, 0, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+                    gl2.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
+                    gl2.bindFramebuffer(gl2.READ_FRAMEBUFFER, readFrameBuffer);
+                    gl2.bindFramebuffer(gl2.DRAW_FRAMEBUFFER, drawFrameBuffer);
                     var status_1 = this.context.checkFramebufferStatus(SPECTOR.WebGlConstants.FRAMEBUFFER.value);
                     if (status_1 === SPECTOR.WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
-                        this.getCapture(gl, webglConstant.name, x, y, width, height, textureCubeMapFace, textureLayer, textureType);
+                        this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, SPECTOR.WebGlConstants.UNSIGNED_BYTE.value);
+                    }
+                    gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, frameBuffer);
+                    gl.deleteRenderbuffer(renderBuffer);
+                }
+                else {
+                    gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
+                    gl.framebufferRenderbuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, SPECTOR.WebGlConstants.RENDERBUFFER.value, storage);
+                    var status_2 = this.context.checkFramebufferStatus(SPECTOR.WebGlConstants.FRAMEBUFFER.value);
+                    if (status_2 === SPECTOR.WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
+                        this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, componentType);
                     }
                     gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, frameBuffer);
                 }
+            };
+            VisualState.prototype.readFrameBufferAttachmentFromTexture = function (gl, frameBuffer, webglConstant, x, y, width, height, target, componentType, storage) {
+                var textureLayer = 0;
+                if (this.contextVersion > 1) {
+                    textureLayer = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER.value);
+                }
+                var textureLevel = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
+                var textureCubeMapFace = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, SPECTOR.WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
+                var textureCubeMapFaceName = textureCubeMapFace > 0 ? SPECTOR.WebGlConstantsByValue[textureCubeMapFace].name : SPECTOR.WebGlConstants.TEXTURE_2D.name;
+                // Adapt to constraints defines in the custom data if any.
+                var textureType = componentType;
+                if (storage.__SPECTOR_Object_CustomData) {
+                    var info = storage.__SPECTOR_Object_CustomData;
+                    width = info.width;
+                    height = info.height;
+                    textureType = info.type;
+                    if (!SPECTOR.ReadPixelsHelper.isSupportedCombination(info.type, info.format, info.internalFormat)) {
+                        return;
+                    }
+                }
+                gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
+                if (textureLayer === 0) {
+                    gl.framebufferTexture2D(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, textureCubeMapFace ? textureCubeMapFace : SPECTOR.WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
+                }
+                else {
+                    gl.framebufferTextureLayer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, SPECTOR.WebGlConstants.COLOR_ATTACHMENT0.value, storage, textureLevel, textureLayer);
+                }
+                var status = this.context.checkFramebufferStatus(SPECTOR.WebGlConstants.FRAMEBUFFER.value);
+                if (status === SPECTOR.WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
+                    this.getCapture(gl, webglConstant.name, x, y, width, height, textureCubeMapFace, textureLayer, textureType);
+                }
+                gl.bindFramebuffer(SPECTOR.WebGlConstants.FRAMEBUFFER.value, frameBuffer);
             };
             VisualState.prototype.getCapture = function (gl, name, x, y, width, height, textureCubeMapFace, textureLayer, type) {
                 var attachmentVisualState = {
@@ -4353,6 +4417,7 @@ var SPECTOR;
                             }
                             attachmentState.width = customData.width;
                             attachmentState.height = customData.height;
+                            attachmentState.msaaSamples = customData.samples;
                         }
                     }
                 }
@@ -4653,7 +4718,7 @@ var SPECTOR;
                     return;
                 }
                 if (customData.type) {
-                    state.type = this.getWebGlConstant(customData.type);
+                    state.textureType = this.getWebGlConstant(customData.type);
                 }
                 if (customData.format) {
                     state.format = this.getWebGlConstant(customData.format);
@@ -4732,8 +4797,8 @@ var SPECTOR;
             DrawCallTextureInputState.prototype.getCapture = function (gl, x, y, width, height, type) {
                 try {
                     // Check FBO status.
-                    var status_2 = this.context.checkFramebufferStatus(SPECTOR.WebGlConstants.FRAMEBUFFER.value);
-                    if (status_2 !== SPECTOR.WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
+                    var status_3 = this.context.checkFramebufferStatus(SPECTOR.WebGlConstants.FRAMEBUFFER.value);
+                    if (status_3 !== SPECTOR.WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
                         return undefined;
                     }
                     // In case of texStorage.
@@ -5278,6 +5343,121 @@ var SPECTOR;
         ], PrimitivesAnalyser);
         Analysers.PrimitivesAnalyser = PrimitivesAnalyser;
     })(Analysers = SPECTOR.Analysers || (SPECTOR.Analysers = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Comparators;
+    (function (Comparators) {
+        var CommandComparator = (function () {
+            function CommandComparator(logger) {
+                this.logger = logger;
+            }
+            CommandComparator.prototype.compare = function (commandA, commandB) {
+                var result = {
+                    groups: [],
+                    properties: [],
+                };
+                var comparison = this.compareGroups("Command", commandA, commandB);
+                var mainGroup = comparison.groups[0];
+                result.groups = mainGroup.groups;
+                result.properties = mainGroup.properties;
+                return result;
+            };
+            CommandComparator.prototype.compareGroups = function (name, groupA, groupB) {
+                // Prepare cache and result.
+                var processed = {};
+                var groupResult = {
+                    name: name,
+                    groups: [],
+                    properties: [],
+                    status: SPECTOR.CaptureComparisonStatus.Equal,
+                };
+                // Check A against B.
+                for (var keyA in groupA) {
+                    if (groupA.hasOwnProperty(keyA)) {
+                        var valueA = groupA[keyA];
+                        if (groupB.hasOwnProperty(keyA)) {
+                            var valueB = groupB[keyA];
+                            if (typeof valueA === "object") {
+                                var comparison = this.compareGroups(keyA, valueA, valueB);
+                                if (comparison.status !== SPECTOR.CaptureComparisonStatus.Equal) {
+                                    groupResult.status = SPECTOR.CaptureComparisonStatus.Different;
+                                }
+                                groupResult.groups.push(comparison);
+                            }
+                            else {
+                                var comparison = this.compareProperties(keyA, valueA, valueB);
+                                if (comparison.status !== SPECTOR.CaptureComparisonStatus.Equal) {
+                                    groupResult.status = SPECTOR.CaptureComparisonStatus.Different;
+                                }
+                                groupResult.properties.push(comparison);
+                            }
+                        }
+                        else {
+                            groupResult.status = SPECTOR.CaptureComparisonStatus.Different;
+                            if (typeof valueA === "object") {
+                                var comparison = {
+                                    name: name,
+                                    status: SPECTOR.CaptureComparisonStatus.OnlyInA,
+                                    groups: [],
+                                    properties: [],
+                                };
+                                groupResult.groups.push(comparison);
+                            }
+                            else {
+                                var comparison = {
+                                    name: name,
+                                    status: SPECTOR.CaptureComparisonStatus.OnlyInA,
+                                    valueA: valueA,
+                                    valueB: null,
+                                };
+                                groupResult.properties.push(comparison);
+                            }
+                        }
+                        processed[keyA] = true;
+                    }
+                }
+                // Checks the B leftOver.
+                for (var keyB in groupB) {
+                    if (groupB.hasOwnProperty(keyB)) {
+                        if (!processed[keyB]) {
+                            groupResult.status = SPECTOR.CaptureComparisonStatus.Different;
+                            var valueB = groupB[keyB];
+                            if (typeof valueB === "object") {
+                                var comparison = {
+                                    name: name,
+                                    status: SPECTOR.CaptureComparisonStatus.OnlyInB,
+                                    groups: [],
+                                    properties: [],
+                                };
+                                groupResult.groups.push(comparison);
+                            }
+                            else {
+                                var comparison = {
+                                    name: name,
+                                    status: SPECTOR.CaptureComparisonStatus.OnlyInB,
+                                    valueA: null,
+                                    valueB: valueB,
+                                };
+                                groupResult.properties.push(comparison);
+                            }
+                        }
+                    }
+                }
+                return groupResult;
+            };
+            CommandComparator.prototype.compareProperties = function (name, valueA, valueB) {
+                return {
+                    name: name,
+                    status: (valueA === valueB) ? SPECTOR.CaptureComparisonStatus.Equal : SPECTOR.CaptureComparisonStatus.Different,
+                    valueA: valueA,
+                    valueB: valueB,
+                };
+            };
+            return CommandComparator;
+        }());
+        Comparators.CommandComparator = CommandComparator;
+    })(Comparators = SPECTOR.Comparators || (SPECTOR.Comparators = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
 (function (SPECTOR) {
@@ -6284,9 +6464,9 @@ var SPECTOR;
                     }
                 }
                 else {
-                    var status_3 = document.createElement("span");
-                    status_3.innerText = state.capture.endState.VisualState.FrameBufferStatus;
-                    liHolder.appendChild(status_3);
+                    var status_4 = document.createElement("span");
+                    status_4.innerText = state.capture.endState.VisualState.FrameBufferStatus;
+                    liHolder.appendChild(status_4);
                 }
                 var text = document.createElement("span");
                 text.innerText = new Date(state.capture.startTime).toTimeString().split(" ")[0];
@@ -6369,9 +6549,9 @@ var SPECTOR;
                     }
                 }
                 else {
-                    var status_4 = document.createElement("span");
-                    status_4.innerText = state.VisualState.FrameBufferStatus;
-                    liHolder.appendChild(status_4);
+                    var status_5 = document.createElement("span");
+                    status_5.innerText = state.VisualState.FrameBufferStatus;
+                    liHolder.appendChild(status_5);
                 }
                 var fbo = document.createElement("span");
                 fbo.innerText = (state.VisualState.FrameBuffer) ?
@@ -6777,9 +6957,9 @@ var SPECTOR;
                     }
                 }
                 else {
-                    var status_5 = document.createElement("span");
-                    status_5.innerText = state.FrameBufferStatus;
-                    divHolder.appendChild(status_5);
+                    var status_6 = document.createElement("span");
+                    status_6.innerText = state.FrameBufferStatus;
+                    divHolder.appendChild(status_6);
                 }
                 var fbo = document.createElement("span");
                 fbo.innerText = state.FrameBuffer ? state.FrameBuffer.__SPECTOR_Object_TAG.displayText : "Canvas frame buffer";
@@ -7510,6 +7690,7 @@ var SPECTOR;
             CapabilitiesCtor: SPECTOR.States.Information.Capabilities,
             CompressedTexturesCtor: SPECTOR.States.Information.CompressedTextures,
             DefaultCommandCtor: SPECTOR.Commands.DefaultCommand,
+            CommandComparatorCtor: SPECTOR.Comparators.CommandComparator,
             CaptureMenuConstructor: SPECTOR.EmbeddedFrontend.CaptureMenu,
             ResultViewConstructor: SPECTOR.EmbeddedFrontend.ResultView,
         };

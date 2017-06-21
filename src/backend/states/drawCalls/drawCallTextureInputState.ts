@@ -45,7 +45,7 @@ namespace SPECTOR.States {
             }
 
             if (customData.type) {
-                state.type = this.getWebGlConstant(customData.type);
+                state.textureType = this.getWebGlConstant(customData.type);
             }
             if (customData.format) {
                 state.format = this.getWebGlConstant(customData.format);

@@ -37,10 +37,11 @@ Once ```npm start``` has been launched, you can access the following samples to 
 4. [Texture cube](http://localhost:1337/sample/index.html?sample=textureCube): BabylonJS scene containing a cube texture.
 5. [Render Target Texture](http://localhost:1337/sample/index.html?sample=renderTargetTexture): Test to do a capture containing render target textures.
 6. [Float Render Target Texture](http://localhost:1337/sample/index.html?sample=floatRenderTargetTexture): Test to do a capture containing float render target textures.
-7. [Buffer View Texture](http://localhost:1337/sample/index.html?sample=bufferViewTexture): Test to do a capture containing a cube texture created from bufferview data.
-8. [Buffer View Mip Texture](http://localhost:1337/sample/index.html?sample=bufferViewMipTexture): Test to do a capture containing a cube texture created from bufferview data uploading custom mips.
-9. [Instanced](http://localhost:1337/sample/index.html?sample=instanced): Test to do a capture of instanced objects.
-10. [Custom Metadata](http://localhost:1337/sample/index.html?sample=customMetadata): Test to do a capture containing custom metadata.
+7. [MSAA Render Buffer](http://localhost:1337/sample/index.html?sample=msaaRenderBuffer): Test to do a capture containing an msaa render buffer.
+8. [Buffer View Texture](http://localhost:1337/sample/index.html?sample=bufferViewTexture): Test to do a capture containing a cube texture created from bufferview data.
+9. [Buffer View Mip Texture](http://localhost:1337/sample/index.html?sample=bufferViewMipTexture): Test to do a capture containing a cube texture created from bufferview data uploading custom mips.
+10. [Instanced](http://localhost:1337/sample/index.html?sample=instanced): Test to do a capture of instanced objects.
+11. [Custom Metadata](http://localhost:1337/sample/index.html?sample=customMetadata): Test to do a capture containing custom metadata.
 
 You can also add &noSpy=1 at the end of the previous Urls to test without enabling the full spy before starting your rendering engine.
 

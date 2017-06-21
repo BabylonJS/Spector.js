@@ -203,6 +203,7 @@ namespace SPECTOR.States {
                         }
                         attachmentState.width = customData.width;
                         attachmentState.height = customData.height;
+                        attachmentState.msaaSamples = customData.samples;
                     }
                 }
             }

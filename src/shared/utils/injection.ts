@@ -26,6 +26,8 @@ namespace SPECTOR {
 
         readonly DefaultCommandCtor: CommandConstructor;
 
+        readonly CommandComparatorCtor: CommandComparatorConstructor;
+
         readonly CaptureMenuConstructor: CaptureMenuConstructor;
         readonly ResultViewConstructor: ResultViewConstructor;
     };
@@ -58,6 +60,8 @@ namespace SPECTOR.ProvidedInjection {
         CompressedTexturesCtor: States.Information.CompressedTextures,
 
         DefaultCommandCtor: Commands.DefaultCommand,
+
+        CommandComparatorCtor: Comparators.CommandComparator,
 
         CaptureMenuConstructor: EmbeddedFrontend.CaptureMenu,
         ResultViewConstructor: EmbeddedFrontend.ResultView,

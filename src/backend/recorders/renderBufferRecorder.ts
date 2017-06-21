@@ -5,6 +5,7 @@ namespace SPECTOR {
         width: number;
         height: number;
         length: number;
+        samples: number;
     }
 }
 namespace SPECTOR.Recorders {
@@ -15,7 +16,7 @@ namespace SPECTOR.Recorders {
         }
 
         protected getUpdateCommandNames(): string[] {
-            return ["renderbufferStorage"];
+            return ["renderbufferStorage", "renderbufferStorageMultisample"];
         }
 
         protected getDeleteCommandNames(): string[] {
@@ -52,12 +53,25 @@ namespace SPECTOR.Recorders {
         }
 
         protected getCustomData(functionInformation: IFunctionInformation, target: string): IRenderBufferRecorderData {
+            // renderbufferStorage
+            if (functionInformation.arguments.length === 4) {
+                return {
+                    target,
+                    internalFormat: functionInformation.arguments[1],
+                    width: functionInformation.arguments[2],
+                    height: functionInformation.arguments[3],
+                    length: 0,
+                    samples: 0,
+                };
+            }
+
             return {
                 target,
-                internalFormat: functionInformation.arguments[1],
-                width: functionInformation.arguments[2],
-                height: functionInformation.arguments[3],
+                internalFormat: functionInformation.arguments[2],
+                width: functionInformation.arguments[3],
+                height: functionInformation.arguments[4],
                 length: 0,
+                samples: functionInformation.arguments[1],
             };
         }
     }

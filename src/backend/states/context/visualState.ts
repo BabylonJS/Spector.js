@@ -99,61 +99,117 @@ namespace SPECTOR.States {
                 WebGlConstants.UNSIGNED_BYTE.value;
 
             if (type === WebGlConstants.RENDERBUFFER.value) {
-                gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
-                gl.framebufferRenderbuffer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value, WebGlConstants.RENDERBUFFER.value, storage);
-
-                // Adapt to constraints defines in the custom data if any.
-                if (storage.__SPECTOR_Object_CustomData) {
-                    const info = storage.__SPECTOR_Object_CustomData as IRenderBufferRecorderData;
-                    width = info.width;
-                    height = info.height;
-                    if (!ReadPixelsHelper.isSupportedCombination(componentType, WebGlConstants.RGBA.value, info.internalFormat)) {
-                        return;
-                    }
-                }
-
-                this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, componentType);
-                gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, frameBuffer);
+                this.readFrameBufferAttachmentFromRenderBuffer(gl, frameBuffer, webglConstant,
+                    x, y, width, height,
+                    target, componentType, storage);
             }
             else if (type === WebGlConstants.TEXTURE.value) {
-                let textureLayer = 0;
-                if (this.contextVersion > 1) {
-                    textureLayer = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER.value);
-                }
+                this.readFrameBufferAttachmentFromTexture(gl, frameBuffer, webglConstant,
+                    x, y, width, height,
+                    target, componentType, storage);
+            }
+        }
 
-                const textureLevel = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
-                const textureCubeMapFace = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
-                const textureCubeMapFaceName = textureCubeMapFace > 0 ? WebGlConstantsByValue[textureCubeMapFace].name : WebGlConstants.TEXTURE_2D.name;
+        protected readFrameBufferAttachmentFromRenderBuffer(gl: WebGLRenderingContext | WebGL2RenderingContext,
+            frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant,
+            x: number, y: number, width: number, height: number,
+            target: number, componentType: number, storage: any): void {
 
-                // Adapt to constraints defines in the custom data if any.
-                let textureType = componentType;
-                if (storage.__SPECTOR_Object_CustomData) {
-                    const info = storage.__SPECTOR_Object_CustomData as ITextureRecorderData;
-                    width = info.width;
-                    height = info.height;
-                    textureType = info.type;
-                    if (!ReadPixelsHelper.isSupportedCombination(info.type, info.format, info.internalFormat)) {
-                        return;
-                    }
+            let samples = 0;
+            let internalFormat = 0;
+            if (storage.__SPECTOR_Object_CustomData) {
+                const info = storage.__SPECTOR_Object_CustomData as IRenderBufferRecorderData;
+                width = info.width;
+                height = info.height;
+                samples = info.samples;
+                internalFormat = info.internalFormat;
+                if (!samples && !ReadPixelsHelper.isSupportedCombination(componentType, WebGlConstants.RGBA.value, internalFormat)) {
+                    return;
                 }
+            }
+
+            if (samples) {
+                const gl2 = gl as WebGL2RenderingContext; // Samples only available in WebGL 2.
+                const renderBuffer = gl.createRenderbuffer();
+                const boundRenderBuffer = gl.getParameter(gl.RENDERBUFFER_BINDING);
+                gl.bindRenderbuffer(gl.RENDERBUFFER, renderBuffer);
+                gl.renderbufferStorage(gl.RENDERBUFFER, internalFormat, width, height);
+                gl.bindRenderbuffer(gl.RENDERBUFFER, boundRenderBuffer);
 
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
-                if (textureLayer === 0) {
-                    gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
-                        textureCubeMapFace ? textureCubeMapFace : WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
-                }
-                else {
-                    (gl as WebGL2RenderingContext).framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
-                        storage, textureLevel, textureLayer);
-                }
+                gl.framebufferRenderbuffer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value, WebGlConstants.RENDERBUFFER.value, renderBuffer);
+
+                const readFrameBuffer = gl2.getParameter(gl2.READ_FRAMEBUFFER_BINDING);
+                const drawFrameBuffer = gl2.getParameter(gl2.DRAW_FRAMEBUFFER_BINDING);
+                gl2.bindFramebuffer(gl2.READ_FRAMEBUFFER, frameBuffer);
+                gl2.bindFramebuffer(gl2.DRAW_FRAMEBUFFER, this.captureFrameBuffer);
+
+                gl2.blitFramebuffer(0, 0, width, height, 0, 0, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+
+                gl2.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
+                gl2.bindFramebuffer(gl2.READ_FRAMEBUFFER, readFrameBuffer);
+                gl2.bindFramebuffer(gl2.DRAW_FRAMEBUFFER, drawFrameBuffer);
 
                 const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);
                 if (status === WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
-                    this.getCapture(gl, webglConstant.name, x, y, width, height, textureCubeMapFace, textureLayer, textureType);
+                    this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, WebGlConstants.UNSIGNED_BYTE.value);
                 }
 
                 gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, frameBuffer);
+                gl.deleteRenderbuffer(renderBuffer);
             }
+            else {
+                gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
+                gl.framebufferRenderbuffer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value, WebGlConstants.RENDERBUFFER.value, storage);
+                const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);
+                if (status === WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
+                    this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, componentType);
+                }
+                gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, frameBuffer);
+            }
+        }
+
+        protected readFrameBufferAttachmentFromTexture(gl: WebGLRenderingContext | WebGL2RenderingContext,
+            frameBuffer: WebGLFramebuffer, webglConstant: WebGlConstant,
+            x: number, y: number, width: number, height: number,
+            target: number, componentType: number, storage: any): void {
+            let textureLayer = 0;
+            if (this.contextVersion > 1) {
+                textureLayer = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER.value);
+            }
+
+            const textureLevel = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
+            const textureCubeMapFace = this.context.getFramebufferAttachmentParameter(target, webglConstant.value, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
+            const textureCubeMapFaceName = textureCubeMapFace > 0 ? WebGlConstantsByValue[textureCubeMapFace].name : WebGlConstants.TEXTURE_2D.name;
+
+            // Adapt to constraints defines in the custom data if any.
+            let textureType = componentType;
+            if (storage.__SPECTOR_Object_CustomData) {
+                const info = storage.__SPECTOR_Object_CustomData as ITextureRecorderData;
+                width = info.width;
+                height = info.height;
+                textureType = info.type;
+                if (!ReadPixelsHelper.isSupportedCombination(info.type, info.format, info.internalFormat)) {
+                    return;
+                }
+            }
+
+            gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
+            if (textureLayer === 0) {
+                gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
+                    textureCubeMapFace ? textureCubeMapFace : WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
+            }
+            else {
+                (gl as WebGL2RenderingContext).framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
+                    storage, textureLevel, textureLayer);
+            }
+
+            const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);
+            if (status === WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
+                this.getCapture(gl, webglConstant.name, x, y, width, height, textureCubeMapFace, textureLayer, textureType);
+            }
+
+            gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, frameBuffer);
         }
 
         protected getCapture(gl: WebGLRenderingContext, name: string, x: number, y: number, width: number, height: number,
