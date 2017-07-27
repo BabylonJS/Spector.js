@@ -234,7 +234,7 @@ namespace SPECTOR {
                         this.onErrorInternal("No frames with gl commands detected. Try moving the camera.");
                     }
                     else {
-                        this.onErrorInternal("No frames detected. Try moving the camera or implementing animationRequestFrame.");
+                        this.onErrorInternal("No frames detected. Try moving the camera or implementing requestAnimationFrame.");
                     }
                 }, 10 * 1000);
             }
