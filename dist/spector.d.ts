@@ -1099,6 +1099,7 @@ declare namespace SPECTOR.Commands {
         createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture;
         protected transformCapture(commandCapture: ICommandCapture): void;
         protected stringify(args: IArguments, result: any): string;
+        protected stringifyUniform(args: IArguments): string;
         protected stringifyArgs(args: IArguments): string[];
         protected stringifyResult(result: any): string;
         protected stringifyValue(value: any): string;

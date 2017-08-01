@@ -12,6 +12,7 @@ This realeas enables command comparison and fixes a couple of reported issues:
 - Add MSAA render buffer capture.
 - [Add Primitives Count per type](https://github.com/BabylonJS/Spector.js/issues/43).
 - [Allow capture of float based width/height of FrameBuffer](https://github.com/BabylonJS/Spector.js/issues/52)
+- [Fix uniform command Format](https://github.com/BabylonJS/Spector.js/issues/50)
 
 ## v0.2.3 Typos and MultiTabs
 This simply contains another quick fix concerning typos in readme and the extension popup. As a little bonus, you can now capture to a new tab.

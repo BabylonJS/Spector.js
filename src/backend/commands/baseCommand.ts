@@ -11,7 +11,7 @@ namespace SPECTOR {
     }
 
     export type CommandConstructor = {
-        new (options: ICommandOptions, stackTrace: IStackTrace, logger: ILogger): ICommand;
+        new(options: ICommandOptions, stackTrace: IStackTrace, logger: ILogger): ICommand;
     };
 }
 
@@ -29,7 +29,12 @@ namespace SPECTOR.Commands {
         public createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture {
             // Removes the spector internal calls to leave only th relevant part.
             const stackTrace = this.stackTrace.getStackTrace(4, 1);
-            const text = this.stringify(functionInformation.arguments, functionInformation.result);
+
+            // Includes uniform functions special cases to prevent lots of inheritence.
+            const text = (functionInformation.name.indexOf("uniform") === 0) ?
+                this.stringifyUniform(functionInformation.arguments) :
+                this.stringify(functionInformation.arguments, functionInformation.result);
+
             const commandCapture = {
                 id: commandCaptureId,
                 startTime: functionInformation.startTime,
@@ -89,6 +94,20 @@ namespace SPECTOR.Commands {
             }
             if (result) {
                 stringified += " -> " + this.stringifyResult(result);
+            }
+            return stringified;
+        }
+
+        protected stringifyUniform(args: IArguments): string {
+            let stringified = this.options.spiedCommandName;
+            if (args && args.length > 0) {
+                const stringifiedArgs = [];
+                stringifiedArgs.push(this.stringifyValue(args[0]));
+                for (let i = 1; i < args.length; i++) {
+                    const arg = args[i] + "";
+                    stringifiedArgs.push(arg);
+                }
+                stringified += ": " + stringifiedArgs.join(", ");
             }
             return stringified;
         }

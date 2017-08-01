@@ -1558,7 +1558,10 @@ var SPECTOR;
             BaseCommand.prototype.createCapture = function (functionInformation, commandCaptureId) {
                 // Removes the spector internal calls to leave only th relevant part.
                 var stackTrace = this.stackTrace.getStackTrace(4, 1);
-                var text = this.stringify(functionInformation.arguments, functionInformation.result);
+                // Includes uniform functions special cases to prevent lots of inheritence.
+                var text = (functionInformation.name.indexOf("uniform") === 0) ?
+                    this.stringifyUniform(functionInformation.arguments) :
+                    this.stringify(functionInformation.arguments, functionInformation.result);
                 var commandCapture = {
                     id: commandCaptureId,
                     startTime: functionInformation.startTime,
@@ -1609,6 +1612,19 @@ var SPECTOR;
                 }
                 if (result) {
                     stringified += " -> " + this.stringifyResult(result);
+                }
+                return stringified;
+            };
+            BaseCommand.prototype.stringifyUniform = function (args) {
+                var stringified = this.options.spiedCommandName;
+                if (args && args.length > 0) {
+                    var stringifiedArgs = [];
+                    stringifiedArgs.push(this.stringifyValue(args[0]));
+                    for (var i = 1; i < args.length; i++) {
+                        var arg = args[i] + "";
+                        stringifiedArgs.push(arg);
+                    }
+                    stringified += ": " + stringifiedArgs.join(", ");
                 }
                 return stringified;
             };
