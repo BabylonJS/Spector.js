@@ -228,7 +228,7 @@ namespace SPECTOR.States {
                     // Copy the pixels to a working 2D canvas same size.
                     this.workingCanvas.width = width;
                     this.workingCanvas.height = height;
-                    const imageData = this.workingContext2D.createImageData(width, height);
+                    const imageData = this.workingContext2D.createImageData(Math.ceil(width), Math.ceil(height));
                     imageData.data.set(pixels);
                     this.workingContext2D.putImageData(imageData, 0, 0);
 
@@ -264,6 +264,7 @@ namespace SPECTOR.States {
             }
             catch (e) {
                 // Do nothing in case of error at this level.
+                this.logger.warn("Spector can not capture the visual state: " + e);
             }
 
             this.currentState["Attachments"].push(attachmentVisualState);

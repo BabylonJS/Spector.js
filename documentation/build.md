@@ -41,7 +41,8 @@ Once ```npm start``` has been launched, you can access the following samples to 
 8. [Buffer View Texture](http://localhost:1337/sample/index.html?sample=bufferViewTexture): Test to do a capture containing a cube texture created from bufferview data.
 9. [Buffer View Mip Texture](http://localhost:1337/sample/index.html?sample=bufferViewMipTexture): Test to do a capture containing a cube texture created from bufferview data uploading custom mips.
 10. [Instanced](http://localhost:1337/sample/index.html?sample=instanced): Test to do a capture of instanced objects.
-11. [Custom Metadata](http://localhost:1337/sample/index.html?sample=customMetadata): Test to do a capture containing custom metadata.
+11. [Float sized FrameBuffer](http://localhost:1337/sample/index.html?sample=floatSizedFrameBuffer): Test to do a capture containing a none integer based sized FrameBuffer.
+12. [Custom Metadata](http://localhost:1337/sample/index.html?sample=customMetadata): Test to do a capture containing custom metadata.
 
 You can also add &noSpy=1 at the end of the previous Urls to test without enabling the full spy before starting your rendering engine.
 
