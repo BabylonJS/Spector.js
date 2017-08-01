@@ -101,7 +101,7 @@ var SPECTOR;
                 if (removeLastNCalls === void 0) { removeLastNCalls = 0; }
                 var callstack = [];
                 try {
-                    throw new Error();
+                    throw new Error("Errorator.");
                 }
                 catch (err) {
                     if (err.stack) {
@@ -112,6 +112,15 @@ var SPECTOR;
                             }
                             else if (lines[i].indexOf("    at ") === 0) {
                                 lines[i] = lines[i].replace("    at ", "");
+                                callstack.push(lines[i]);
+                            }
+                            else if (lines[i].indexOf("/<@http") !== -1) {
+                                lines[i] = lines[i].substring(lines[i].indexOf("/<@http") + 3);
+                                callstack.push(lines[i]);
+                            }
+                            else if (lines[i].indexOf("@http") !== -1) {
+                                lines[i] = lines[i].replace("@http", " (http");
+                                lines[i] = lines[i] + ")";
                                 callstack.push(lines[i]);
                             }
                         }
