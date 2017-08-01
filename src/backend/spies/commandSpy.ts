@@ -20,7 +20,7 @@ namespace SPECTOR {
     }
 
     export type CommandSpyConstructor = {
-        new (options: ICommandSpyOptions, time: ITime, logger: ILogger): ICommandSpy;
+        new(options: ICommandSpyOptions, time: ITime, logger: ILogger): ICommandSpy;
     };
 }
 
@@ -101,7 +101,10 @@ namespace SPECTOR.Spies {
         }
 
         private getSpy(): any {
+            // Needs both this.
+            // tslint:disable-next-line
             const self = this;
+
             // Needs arguments access.
             // tslint:disable-next-line:only-arrow-functions
             return function () {

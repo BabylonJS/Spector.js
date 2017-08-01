@@ -138,6 +138,8 @@ namespace SPECTOR.EmbeddedFrontend {
         }
 
         protected mapEventListener(domElement: Element, domEvent: string, eventName: string, state: T, stateId: number, commandCapture = false, stopPropagation = false) {
+            // Really need to keep both this in the next command.
+            // tslint:disable-next-line
             const self = this;
             if (stopPropagation) {
                 domElement.addEventListener(domEvent,

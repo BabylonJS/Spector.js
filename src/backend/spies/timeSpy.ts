@@ -19,7 +19,7 @@ namespace SPECTOR {
     }
 
     export type TimeSpyConstructor = {
-        new (options: ITimeSpyOptions, logger: ILogger): ITimeSpy;
+        new(options: ITimeSpyOptions, logger: ILogger): ITimeSpy;
     };
 }
 
@@ -105,7 +105,10 @@ namespace SPECTOR.Spies {
         }
 
         private spyRequestAnimationFrame(functionName: string): void {
+            // Needs both this.
+            // tslint:disable-next-line
             const self = this;
+
             const oldRequestAnimationFrame = this.spiedWindow[functionName];
             const spiedWindow = this.spiedWindow;
             spiedWindow[functionName] = function () {
@@ -117,7 +120,10 @@ namespace SPECTOR.Spies {
         }
 
         private spySetTimer(functionName: string): void {
+            // Needs both this.
+            // tslint:disable-next-line
             const self = this;
+
             const oldSetTimer = this.spiedWindow[functionName];
             const needsReplay = (functionName === "setTimeout");
             const spiedWindow = this.spiedWindow;

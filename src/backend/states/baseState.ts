@@ -15,7 +15,7 @@ namespace SPECTOR {
     }
 
     export type StateConstructor = {
-        new (options: IStateOptions, logger: ILogger): IState;
+        new(options: IStateOptions, logger: ILogger): IState;
     };
 }
 
@@ -163,9 +163,9 @@ namespace SPECTOR.States {
                     if (lengthM1 >= 0) {
                         if (consumeCommand) {
                             for (let i = 0; i < lengthM1; i++) {
-                                const command = commands[i];
-                                command.consumeCommandId = consumeCommand.id;
-                                this.changeCommandCaptureStatus(command, CommandCaptureStatus.Redundant);
+                                const redundantCommand = commands[i];
+                                redundantCommand.consumeCommandId = consumeCommand.id;
+                                this.changeCommandCaptureStatus(redundantCommand, CommandCaptureStatus.Redundant);
                             }
 
                             const isStateEnabled = this.isStateEnableNoSideEffects(stateName, consumeCommand.commandArguments);

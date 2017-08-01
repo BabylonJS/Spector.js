@@ -15,10 +15,10 @@ namespace SPECTOR.EmbeddedFrontend {
             for (const dirtyStateKey in dirtyStates) {
                 if (dirtyStates.hasOwnProperty(dirtyStateKey)) {
                     const dirtyStateId = dirtyStates[dirtyStateKey];
-                    const lastOperation = this.stateStore.getLastOperation(dirtyStateId);
+                    const lastOperationForDirtyState = this.stateStore.getLastOperation(dirtyStateId);
                     const componentInstance = this.stateStore.getComponentInstance(dirtyStateId);
                     const state = this.stateStore.getData(dirtyStateId);
-                    componentInstance.render(state, dirtyStateId, lastOperation);
+                    componentInstance.render(state, dirtyStateId, lastOperationForDirtyState);
                     render = true;
                 }
             }

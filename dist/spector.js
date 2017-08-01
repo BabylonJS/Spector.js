@@ -256,676 +256,676 @@ var SPECTOR;
             var webglConstant = SPECTOR.WebGlConstantsByValue[value];
             return webglConstant ? webglConstant.name : value + "";
         };
+        WebGlConstants.DEPTH_BUFFER_BIT = { name: "DEPTH_BUFFER_BIT", value: 256, description: "Passed to clear to clear the current depth buffer." };
+        WebGlConstants.STENCIL_BUFFER_BIT = { name: "STENCIL_BUFFER_BIT", value: 1024, description: "Passed to clear to clear the current stencil buffer." };
+        WebGlConstants.COLOR_BUFFER_BIT = { name: "COLOR_BUFFER_BIT", value: 16384, description: "Passed to clear to clear the current color buffer." };
+        WebGlConstants.POINTS = { name: "POINTS", value: 0, description: "Passed to drawElements or drawArrays to draw single points." };
+        WebGlConstants.LINES = { name: "LINES", value: 1, description: "Passed to drawElements or drawArrays to draw lines. Each vertex connects to the one after it." };
+        WebGlConstants.LINE_LOOP = { name: "LINE_LOOP", value: 2, description: "Passed to drawElements or drawArrays to draw lines. Each set of two vertices is treated as a separate line segment." };
+        WebGlConstants.LINE_STRIP = { name: "LINE_STRIP", value: 3, description: "Passed to drawElements or drawArrays to draw a connected group of line segments from the first vertex to the last." };
+        WebGlConstants.TRIANGLES = { name: "TRIANGLES", value: 4, description: "Passed to drawElements or drawArrays to draw triangles. Each set of three vertices creates a separate triangle." };
+        WebGlConstants.TRIANGLE_STRIP = { name: "TRIANGLE_STRIP", value: 5, description: "Passed to drawElements or drawArrays to draw a connected group of triangles." };
+        WebGlConstants.TRIANGLE_FAN = { name: "TRIANGLE_FAN", value: 6, description: "Passed to drawElements or drawArrays to draw a connected group of triangles. Each vertex connects to the previous and the first vertex in the fan." };
+        WebGlConstants.ZERO = { name: "ZERO", value: 0, description: "Passed to blendFunc or blendFuncSeparate to turn off a component." };
+        WebGlConstants.ONE = { name: "ONE", value: 1, description: "Passed to blendFunc or blendFuncSeparate to turn on a component." };
+        WebGlConstants.SRC_COLOR = { name: "SRC_COLOR", value: 768, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by the source elements color." };
+        WebGlConstants.ONE_MINUS_SRC_COLOR = { name: "ONE_MINUS_SRC_COLOR", value: 769, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by one minus the source elements color." };
+        WebGlConstants.SRC_ALPHA = { name: "SRC_ALPHA", value: 770, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by the source's alpha." };
+        WebGlConstants.ONE_MINUS_SRC_ALPHA = { name: "ONE_MINUS_SRC_ALPHA", value: 771, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by one minus the source's alpha." };
+        WebGlConstants.DST_ALPHA = { name: "DST_ALPHA", value: 772, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by the destination's alpha." };
+        WebGlConstants.ONE_MINUS_DST_ALPHA = { name: "ONE_MINUS_DST_ALPHA", value: 773, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by one minus the destination's alpha." };
+        WebGlConstants.DST_COLOR = { name: "DST_COLOR", value: 774, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by the destination's color." };
+        WebGlConstants.ONE_MINUS_DST_COLOR = { name: "ONE_MINUS_DST_COLOR", value: 775, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by one minus the destination's color." };
+        WebGlConstants.SRC_ALPHA_SATURATE = { name: "SRC_ALPHA_SATURATE", value: 776, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by the minimum of source's alpha or one minus the destination's alpha." };
+        WebGlConstants.CONSTANT_COLOR = { name: "CONSTANT_COLOR", value: 32769, description: "Passed to blendFunc or blendFuncSeparate to specify a constant color blend function." };
+        WebGlConstants.ONE_MINUS_CONSTANT_COLOR = { name: "ONE_MINUS_CONSTANT_COLOR", value: 32770, description: "Passed to blendFunc or blendFuncSeparate to specify one minus a constant color blend function." };
+        WebGlConstants.CONSTANT_ALPHA = { name: "CONSTANT_ALPHA", value: 32771, description: "Passed to blendFunc or blendFuncSeparate to specify a constant alpha blend function." };
+        WebGlConstants.ONE_MINUS_CONSTANT_ALPHA = { name: "ONE_MINUS_CONSTANT_ALPHA", value: 32772, description: "Passed to blendFunc or blendFuncSeparate to specify one minus a constant alpha blend function." };
+        WebGlConstants.FUNC_ADD = { name: "FUNC_ADD", value: 32774, description: "Passed to blendEquation or blendEquationSeparate to set an addition blend function." };
+        WebGlConstants.FUNC_SUBSTRACT = { name: "FUNC_SUBSTRACT", value: 32778, description: "Passed to blendEquation or blendEquationSeparate to specify a subtraction blend function (source - destination)." };
+        WebGlConstants.FUNC_REVERSE_SUBTRACT = { name: "FUNC_REVERSE_SUBTRACT", value: 32779, description: "Passed to blendEquation or blendEquationSeparate to specify a reverse subtraction blend function (destination - source)." };
+        WebGlConstants.BLEND_EQUATION = { name: "BLEND_EQUATION", value: 32777, description: "Passed to getParameter to get the current RGB blend function." };
+        WebGlConstants.BLEND_EQUATION_RGB = { name: "BLEND_EQUATION_RGB", value: 32777, description: "Passed to getParameter to get the current RGB blend function. Same as BLEND_EQUATION" };
+        WebGlConstants.BLEND_EQUATION_ALPHA = { name: "BLEND_EQUATION_ALPHA", value: 34877, description: "Passed to getParameter to get the current alpha blend function. Same as BLEND_EQUATION" };
+        WebGlConstants.BLEND_DST_RGB = { name: "BLEND_DST_RGB", value: 32968, description: "Passed to getParameter to get the current destination RGB blend function." };
+        WebGlConstants.BLEND_SRC_RGB = { name: "BLEND_SRC_RGB", value: 32969, description: "Passed to getParameter to get the current destination RGB blend function." };
+        WebGlConstants.BLEND_DST_ALPHA = { name: "BLEND_DST_ALPHA", value: 32970, description: "Passed to getParameter to get the current destination alpha blend function." };
+        WebGlConstants.BLEND_SRC_ALPHA = { name: "BLEND_SRC_ALPHA", value: 32971, description: "Passed to getParameter to get the current source alpha blend function." };
+        WebGlConstants.BLEND_COLOR = { name: "BLEND_COLOR", value: 32773, description: "Passed to getParameter to return a the current blend color." };
+        WebGlConstants.ARRAY_BUFFER_BINDING = { name: "ARRAY_BUFFER_BINDING", value: 34964, description: "Passed to getParameter to get the array buffer binding." };
+        WebGlConstants.ELEMENT_ARRAY_BUFFER_BINDING = { name: "ELEMENT_ARRAY_BUFFER_BINDING", value: 34965, description: "Passed to getParameter to get the current element array buffer." };
+        WebGlConstants.LINE_WIDTH = { name: "LINE_WIDTH", value: 2849, description: "Passed to getParameter to get the current lineWidth (set by the lineWidth method)." };
+        WebGlConstants.ALIASED_POINT_SIZE_RANGE = { name: "ALIASED_POINT_SIZE_RANGE", value: 33901, description: "Passed to getParameter to get the current size of a point drawn with gl.POINTS" };
+        WebGlConstants.ALIASED_LINE_WIDTH_RANGE = { name: "ALIASED_LINE_WIDTH_RANGE", value: 33902, description: "Passed to getParameter to get the range of available widths for a line. Returns a length-2 array with the lo value at 0, and hight at 1." };
+        WebGlConstants.CULL_FACE_MODE = { name: "CULL_FACE_MODE", value: 2885, description: "Passed to getParameter to get the current value of cullFace. Should return FRONT, BACK, or FRONT_AND_BACK" };
+        WebGlConstants.FRONT_FACE = { name: "FRONT_FACE", value: 2886, description: "Passed to getParameter to determine the current value of frontFace. Should return CW or CCW." };
+        WebGlConstants.DEPTH_RANGE = { name: "DEPTH_RANGE", value: 2928, description: "Passed to getParameter to return a length-2 array of floats giving the current depth range." };
+        WebGlConstants.DEPTH_WRITEMASK = { name: "DEPTH_WRITEMASK", value: 2930, description: "Passed to getParameter to determine if the depth write mask is enabled." };
+        WebGlConstants.DEPTH_CLEAR_VALUE = { name: "DEPTH_CLEAR_VALUE", value: 2931, description: "Passed to getParameter to determine the current depth clear value." };
+        WebGlConstants.DEPTH_FUNC = { name: "DEPTH_FUNC", value: 2932, description: "Passed to getParameter to get the current depth function. Returns NEVER, ALWAYS, LESS, EQUAL, LEQUAL, GREATER, GEQUAL, or NOTEQUAL." };
+        WebGlConstants.STENCIL_CLEAR_VALUE = { name: "STENCIL_CLEAR_VALUE", value: 2961, description: "Passed to getParameter to get the value the stencil will be cleared to." };
+        WebGlConstants.STENCIL_FUNC = { name: "STENCIL_FUNC", value: 2962, description: "Passed to getParameter to get the current stencil function. Returns NEVER, ALWAYS, LESS, EQUAL, LEQUAL, GREATER, GEQUAL, or NOTEQUAL." };
+        WebGlConstants.STENCIL_FAIL = { name: "STENCIL_FAIL", value: 2964, description: "Passed to getParameter to get the current stencil fail function. Should return KEEP, REPLACE, INCR, DECR, INVERT, INCR_WRAP, or DECR_WRAP." };
+        WebGlConstants.STENCIL_PASS_DEPTH_FAIL = { name: "STENCIL_PASS_DEPTH_FAIL", value: 2965, description: "Passed to getParameter to get the current stencil fail function should the depth buffer test fail. Should return KEEP, REPLACE, INCR, DECR, INVERT, INCR_WRAP, or DECR_WRAP." };
+        WebGlConstants.STENCIL_PASS_DEPTH_PASS = { name: "STENCIL_PASS_DEPTH_PASS", value: 2966, description: "Passed to getParameter to get the current stencil fail function should the depth buffer test pass. Should return KEEP, REPLACE, INCR, DECR, INVERT, INCR_WRAP, or DECR_WRAP." };
+        WebGlConstants.STENCIL_REF = { name: "STENCIL_REF", value: 2967, description: "Passed to getParameter to get the reference value used for stencil tests." };
+        WebGlConstants.STENCIL_VALUE_MASK = { name: "STENCIL_VALUE_MASK", value: 2963, description: " " };
+        WebGlConstants.STENCIL_WRITEMASK = { name: "STENCIL_WRITEMASK", value: 2968, description: " " };
+        WebGlConstants.STENCIL_BACK_FUNC = { name: "STENCIL_BACK_FUNC", value: 34816, description: " " };
+        WebGlConstants.STENCIL_BACK_FAIL = { name: "STENCIL_BACK_FAIL", value: 34817, description: " " };
+        WebGlConstants.STENCIL_BACK_PASS_DEPTH_FAIL = { name: "STENCIL_BACK_PASS_DEPTH_FAIL", value: 34818, description: " " };
+        WebGlConstants.STENCIL_BACK_PASS_DEPTH_PASS = { name: "STENCIL_BACK_PASS_DEPTH_PASS", value: 34819, description: " " };
+        WebGlConstants.STENCIL_BACK_REF = { name: "STENCIL_BACK_REF", value: 36003, description: " " };
+        WebGlConstants.STENCIL_BACK_VALUE_MASK = { name: "STENCIL_BACK_VALUE_MASK", value: 36004, description: " " };
+        WebGlConstants.STENCIL_BACK_WRITEMASK = { name: "STENCIL_BACK_WRITEMASK", value: 36005, description: " " };
+        WebGlConstants.VIEWPORT = { name: "VIEWPORT", value: 2978, description: "Returns an Int32Array with four elements for the current viewport dimensions." };
+        WebGlConstants.SCISSOR_BOX = { name: "SCISSOR_BOX", value: 3088, description: "Returns an Int32Array with four elements for the current scissor box dimensions." };
+        WebGlConstants.COLOR_CLEAR_VALUE = { name: "COLOR_CLEAR_VALUE", value: 3106, description: " " };
+        WebGlConstants.COLOR_WRITEMASK = { name: "COLOR_WRITEMASK", value: 3107, description: " " };
+        WebGlConstants.UNPACK_ALIGNMENT = { name: "UNPACK_ALIGNMENT", value: 3317, description: " " };
+        WebGlConstants.PACK_ALIGNMENT = { name: "PACK_ALIGNMENT", value: 3333, description: " " };
+        WebGlConstants.MAX_TEXTURE_SIZE = { name: "MAX_TEXTURE_SIZE", value: 3379, description: " " };
+        WebGlConstants.MAX_VIEWPORT_DIMS = { name: "MAX_VIEWPORT_DIMS", value: 3386, description: " " };
+        WebGlConstants.SUBPIXEL_BITS = { name: "SUBPIXEL_BITS", value: 3408, description: " " };
+        WebGlConstants.RED_BITS = { name: "RED_BITS", value: 3410, description: " " };
+        WebGlConstants.GREEN_BITS = { name: "GREEN_BITS", value: 3411, description: " " };
+        WebGlConstants.BLUE_BITS = { name: "BLUE_BITS", value: 3412, description: " " };
+        WebGlConstants.ALPHA_BITS = { name: "ALPHA_BITS", value: 3413, description: " " };
+        WebGlConstants.DEPTH_BITS = { name: "DEPTH_BITS", value: 3414, description: " " };
+        WebGlConstants.STENCIL_BITS = { name: "STENCIL_BITS", value: 3415, description: " " };
+        WebGlConstants.POLYGON_OFFSET_UNITS = { name: "POLYGON_OFFSET_UNITS", value: 10752, description: " " };
+        WebGlConstants.POLYGON_OFFSET_FACTOR = { name: "POLYGON_OFFSET_FACTOR", value: 32824, description: " " };
+        WebGlConstants.TEXTURE_BINDING_2D = { name: "TEXTURE_BINDING_2D", value: 32873, description: " " };
+        WebGlConstants.SAMPLE_BUFFERS = { name: "SAMPLE_BUFFERS", value: 32936, description: " " };
+        WebGlConstants.SAMPLES = { name: "SAMPLES", value: 32937, description: " " };
+        WebGlConstants.SAMPLE_COVERAGE_VALUE = { name: "SAMPLE_COVERAGE_VALUE", value: 32938, description: " " };
+        WebGlConstants.SAMPLE_COVERAGE_INVERT = { name: "SAMPLE_COVERAGE_INVERT", value: 32939, description: " " };
+        WebGlConstants.COMPRESSED_TEXTURE_FORMATS = { name: "COMPRESSED_TEXTURE_FORMATS", value: 34467, description: " " };
+        WebGlConstants.VENDOR = { name: "VENDOR", value: 7936, description: " " };
+        WebGlConstants.RENDERER = { name: "RENDERER", value: 7937, description: " " };
+        WebGlConstants.VERSION = { name: "VERSION", value: 7938, description: " " };
+        WebGlConstants.IMPLEMENTATION_COLOR_READ_TYPE = { name: "IMPLEMENTATION_COLOR_READ_TYPE", value: 35738, description: " " };
+        WebGlConstants.IMPLEMENTATION_COLOR_READ_FORMAT = { name: "IMPLEMENTATION_COLOR_READ_FORMAT", value: 35739, description: " " };
+        WebGlConstants.BROWSER_DEFAULT_WEBGL = { name: "BROWSER_DEFAULT_WEBGL", value: 37444, description: " " };
+        WebGlConstants.STATIC_DRAW = { name: "STATIC_DRAW", value: 35044, description: "Passed to bufferData as a hint about whether the contents of the buffer are likely to be used often and not change often." };
+        WebGlConstants.STREAM_DRAW = { name: "STREAM_DRAW", value: 35040, description: "Passed to bufferData as a hint about whether the contents of the buffer are likely to not be used often." };
+        WebGlConstants.DYNAMIC_DRAW = { name: "DYNAMIC_DRAW", value: 35048, description: "Passed to bufferData as a hint about whether the contents of the buffer are likely to be used often and change often." };
+        WebGlConstants.ARRAY_BUFFER = { name: "ARRAY_BUFFER", value: 34962, description: "Passed to bindBuffer or bufferData to specify the type of buffer being used." };
+        WebGlConstants.ELEMENT_ARRAY_BUFFER = { name: "ELEMENT_ARRAY_BUFFER", value: 34963, description: "Passed to bindBuffer or bufferData to specify the type of buffer being used." };
+        WebGlConstants.BUFFER_SIZE = { name: "BUFFER_SIZE", value: 34660, description: "Passed to getBufferParameter to get a buffer's size." };
+        WebGlConstants.BUFFER_USAGE = { name: "BUFFER_USAGE", value: 34661, description: "Passed to getBufferParameter to get the hint for the buffer passed in when it was created." };
+        WebGlConstants.CURRENT_VERTEX_ATTRIB = { name: "CURRENT_VERTEX_ATTRIB", value: 34342, description: "Passed to getVertexAttrib to read back the current vertex attribute." };
+        WebGlConstants.VERTEX_ATTRIB_ARRAY_ENABLED = { name: "VERTEX_ATTRIB_ARRAY_ENABLED", value: 34338, description: " " };
+        WebGlConstants.VERTEX_ATTRIB_ARRAY_SIZE = { name: "VERTEX_ATTRIB_ARRAY_SIZE", value: 34339, description: " " };
+        WebGlConstants.VERTEX_ATTRIB_ARRAY_STRIDE = { name: "VERTEX_ATTRIB_ARRAY_STRIDE", value: 34340, description: " " };
+        WebGlConstants.VERTEX_ATTRIB_ARRAY_TYPE = { name: "VERTEX_ATTRIB_ARRAY_TYPE", value: 34341, description: " " };
+        WebGlConstants.VERTEX_ATTRIB_ARRAY_NORMALIZED = { name: "VERTEX_ATTRIB_ARRAY_NORMALIZED", value: 34922, description: " " };
+        WebGlConstants.VERTEX_ATTRIB_ARRAY_POINTER = { name: "VERTEX_ATTRIB_ARRAY_POINTER", value: 34373, description: " " };
+        WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING = { name: "VERTEX_ATTRIB_ARRAY_BUFFER_BINDING", value: 34975, description: " " };
+        WebGlConstants.CULL_FACE = { name: "CULL_FACE", value: 2884, description: "Passed to enable/disable to turn on/off culling. Can also be used with getParameter to find the current culling method." };
+        WebGlConstants.FRONT = { name: "FRONT", value: 1028, description: "Passed to cullFace to specify that only front faces should be drawn." };
+        WebGlConstants.BACK = { name: "BACK", value: 1029, description: "Passed to cullFace to specify that only back faces should be drawn." };
+        WebGlConstants.FRONT_AND_BACK = { name: "FRONT_AND_BACK", value: 1032, description: "Passed to cullFace to specify that front and back faces should be drawn." };
+        WebGlConstants.BLEND = { name: "BLEND", value: 3042, description: "Passed to enable/disable to turn on/off blending. Can also be used with getParameter to find the current blending method." };
+        WebGlConstants.DEPTH_TEST = { name: "DEPTH_TEST", value: 2929, description: "Passed to enable/disable to turn on/off the depth test. Can also be used with getParameter to query the depth test." };
+        WebGlConstants.DITHER = { name: "DITHER", value: 3024, description: "Passed to enable/disable to turn on/off dithering. Can also be used with getParameter to find the current dithering method." };
+        WebGlConstants.POLYGON_OFFSET_FILL = { name: "POLYGON_OFFSET_FILL", value: 32823, description: "Passed to enable/disable to turn on/off the polygon offset. Useful for rendering hidden-line images, decals, and or solids with highlighted edges. Can also be used with getParameter to query the scissor test." };
+        WebGlConstants.SAMPLE_ALPHA_TO_COVERAGE = { name: "SAMPLE_ALPHA_TO_COVERAGE", value: 32926, description: "Passed to enable/disable to turn on/off the alpha to coverage. Used in multi-sampling alpha channels." };
+        WebGlConstants.SAMPLE_COVERAGE = { name: "SAMPLE_COVERAGE", value: 32928, description: "Passed to enable/disable to turn on/off the sample coverage. Used in multi-sampling." };
+        WebGlConstants.SCISSOR_TEST = { name: "SCISSOR_TEST", value: 3089, description: "Passed to enable/disable to turn on/off the scissor test. Can also be used with getParameter to query the scissor test." };
+        WebGlConstants.STENCIL_TEST = { name: "STENCIL_TEST", value: 2960, description: "Passed to enable/disable to turn on/off the stencil test. Can also be used with getParameter to query the stencil test." };
+        WebGlConstants.NO_ERROR = { name: "NO_ERROR", value: 0, description: "Returned from getError." };
+        WebGlConstants.INVALID_ENUM = { name: "INVALID_ENUM", value: 1280, description: "Returned from getError." };
+        WebGlConstants.INVALID_VALUE = { name: "INVALID_VALUE", value: 1281, description: "Returned from getError." };
+        WebGlConstants.INVALID_OPERATION = { name: "INVALID_OPERATION", value: 1282, description: "Returned from getError." };
+        WebGlConstants.OUT_OF_MEMORY = { name: "OUT_OF_MEMORY", value: 1285, description: "Returned from getError." };
+        WebGlConstants.CONTEXT_LOST_WEBGL = { name: "CONTEXT_LOST_WEBGL", value: 37442, description: "Returned from getError." };
+        WebGlConstants.CW = { name: "CW", value: 2304, description: "Passed to frontFace to specify the front face of a polygon is drawn in the clockwise direction" };
+        WebGlConstants.CCW = { name: "CCW", value: 2305, description: "Passed to frontFace to specify the front face of a polygon is drawn in the counter clockwise direction" };
+        WebGlConstants.DONT_CARE = { name: "DONT_CARE", value: 4352, description: "There is no preference for this behavior." };
+        WebGlConstants.FASTEST = { name: "FASTEST", value: 4353, description: "The most efficient behavior should be used." };
+        WebGlConstants.NICEST = { name: "NICEST", value: 4354, description: "The most correct or the highest quality option should be used." };
+        WebGlConstants.GENERATE_MIPMAP_HINT = { name: "GENERATE_MIPMAP_HINT", value: 33170, description: "Hint for the quality of filtering when generating mipmap images with WebGLRenderingContext.generateMipmap()." };
+        WebGlConstants.BYTE = { name: "BYTE", value: 5120, description: " " };
+        WebGlConstants.UNSIGNED_BYTE = { name: "UNSIGNED_BYTE", value: 5121, description: " " };
+        WebGlConstants.SHORT = { name: "SHORT", value: 5122, description: " " };
+        WebGlConstants.UNSIGNED_SHORT = { name: "UNSIGNED_SHORT", value: 5123, description: " " };
+        WebGlConstants.INT = { name: "INT", value: 5124, description: " " };
+        WebGlConstants.UNSIGNED_INT = { name: "UNSIGNED_INT", value: 5125, description: " " };
+        WebGlConstants.FLOAT = { name: "FLOAT", value: 5126, description: " " };
+        WebGlConstants.DEPTH_COMPONENT = { name: "DEPTH_COMPONENT", value: 6402, description: " " };
+        WebGlConstants.ALPHA = { name: "ALPHA", value: 6406, description: " " };
+        WebGlConstants.RGB = { name: "RGB", value: 6407, description: " " };
+        WebGlConstants.RGBA = { name: "RGBA", value: 6408, description: " " };
+        WebGlConstants.LUMINANCE = { name: "LUMINANCE", value: 6409, description: " " };
+        WebGlConstants.LUMINANCE_ALPHA = { name: "LUMINANCE_ALPHA", value: 6410, description: " " };
+        WebGlConstants.UNSIGNED_SHORT_4_4_4_4 = { name: "UNSIGNED_SHORT_4_4_4_4", value: 32819, description: " " };
+        WebGlConstants.UNSIGNED_SHORT_5_5_5_1 = { name: "UNSIGNED_SHORT_5_5_5_1", value: 32820, description: " " };
+        WebGlConstants.UNSIGNED_SHORT_5_6_5 = { name: "UNSIGNED_SHORT_5_6_5", value: 33635, description: " " };
+        WebGlConstants.FRAGMENT_SHADER = { name: "FRAGMENT_SHADER", value: 35632, description: "Passed to createShader to define a fragment shader." };
+        WebGlConstants.VERTEX_SHADER = { name: "VERTEX_SHADER", value: 35633, description: "Passed to createShader to define a vertex shader" };
+        WebGlConstants.COMPILE_STATUS = { name: "COMPILE_STATUS", value: 35713, description: "Passed to getShaderParamter to get the status of the compilation. Returns false if the shader was not compiled. You can then query getShaderInfoLog to find the exact error" };
+        WebGlConstants.DELETE_STATUS = { name: "DELETE_STATUS", value: 35712, description: "Passed to getShaderParamter to determine if a shader was deleted via deleteShader. Returns true if it was, false otherwise." };
+        WebGlConstants.LINK_STATUS = { name: "LINK_STATUS", value: 35714, description: "Passed to getProgramParameter after calling linkProgram to determine if a program was linked correctly. Returns false if there were errors. Use getProgramInfoLog to find the exact error." };
+        WebGlConstants.VALIDATE_STATUS = { name: "VALIDATE_STATUS", value: 35715, description: "Passed to getProgramParameter after calling validateProgram to determine if it is valid. Returns false if errors were found." };
+        WebGlConstants.ATTACHED_SHADERS = { name: "ATTACHED_SHADERS", value: 35717, description: "Passed to getProgramParameter after calling attachShader to determine if the shader was attached correctly. Returns false if errors occurred." };
+        WebGlConstants.ACTIVE_ATTRIBUTES = { name: "ACTIVE_ATTRIBUTES", value: 35721, description: "Passed to getProgramParameter to get the number of attributes active in a program." };
+        WebGlConstants.ACTIVE_UNIFORMS = { name: "ACTIVE_UNIFORMS", value: 35718, description: "Passed to getProgramParamter to get the number of uniforms active in a program." };
+        WebGlConstants.MAX_VERTEX_ATTRIBS = { name: "MAX_VERTEX_ATTRIBS", value: 34921, description: " " };
+        WebGlConstants.MAX_VERTEX_UNIFORM_VECTORS = { name: "MAX_VERTEX_UNIFORM_VECTORS", value: 36347, description: " " };
+        WebGlConstants.MAX_VARYING_VECTORS = { name: "MAX_VARYING_VECTORS", value: 36348, description: " " };
+        WebGlConstants.MAX_COMBINED_TEXTURE_IMAGE_UNITS = { name: "MAX_COMBINED_TEXTURE_IMAGE_UNITS", value: 35661, description: " " };
+        WebGlConstants.MAX_VERTEX_TEXTURE_IMAGE_UNITS = { name: "MAX_VERTEX_TEXTURE_IMAGE_UNITS", value: 35660, description: " " };
+        WebGlConstants.MAX_TEXTURE_IMAGE_UNITS = { name: "MAX_TEXTURE_IMAGE_UNITS", value: 34930, description: "Implementation dependent number of maximum texture units. At least 8." };
+        WebGlConstants.MAX_FRAGMENT_UNIFORM_VECTORS = { name: "MAX_FRAGMENT_UNIFORM_VECTORS", value: 36349, description: " " };
+        WebGlConstants.SHADER_TYPE = { name: "SHADER_TYPE", value: 35663, description: " " };
+        WebGlConstants.SHADING_LANGUAGE_VERSION = { name: "SHADING_LANGUAGE_VERSION", value: 35724, description: " " };
+        WebGlConstants.CURRENT_PROGRAM = { name: "CURRENT_PROGRAM", value: 35725, description: " " };
+        WebGlConstants.NEVER = { name: "NEVER", value: 512, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will never pass. i.e. Nothing will be drawn." };
+        WebGlConstants.ALWAYS = { name: "ALWAYS", value: 519, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will always pass. i.e. Pixels will be drawn in the order they are drawn." };
+        WebGlConstants.LESS = { name: "LESS", value: 513, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is less than the stored value." };
+        WebGlConstants.EQUAL = { name: "EQUAL", value: 514, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is equals to the stored value." };
+        WebGlConstants.LEQUAL = { name: "LEQUAL", value: 515, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is less than or equal to the stored value." };
+        WebGlConstants.GREATER = { name: "GREATER", value: 516, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is greater than the stored value." };
+        WebGlConstants.GEQUAL = { name: "GEQUAL", value: 518, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is greater than or equal to the stored value." };
+        WebGlConstants.NOTEQUAL = { name: "NOTEQUAL", value: 517, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is not equal to the stored value." };
+        WebGlConstants.KEEP = { name: "KEEP", value: 7680, description: " " };
+        WebGlConstants.REPLACE = { name: "REPLACE", value: 7681, description: " " };
+        WebGlConstants.INCR = { name: "INCR", value: 7682, description: " " };
+        WebGlConstants.DECR = { name: "DECR", value: 7683, description: " " };
+        WebGlConstants.INVERT = { name: "INVERT", value: 5386, description: " " };
+        WebGlConstants.INCR_WRAP = { name: "INCR_WRAP", value: 34055, description: " " };
+        WebGlConstants.DECR_WRAP = { name: "DECR_WRAP", value: 34056, description: " " };
+        WebGlConstants.NEAREST = { name: "NEAREST", value: 9728, description: " " };
+        WebGlConstants.LINEAR = { name: "LINEAR", value: 9729, description: " " };
+        WebGlConstants.NEAREST_MIPMAP_NEAREST = { name: "NEAREST_MIPMAP_NEAREST", value: 9984, description: " " };
+        WebGlConstants.LINEAR_MIPMAP_NEAREST = { name: "LINEAR_MIPMAP_NEAREST", value: 9985, description: " " };
+        WebGlConstants.NEAREST_MIPMAP_LINEAR = { name: "NEAREST_MIPMAP_LINEAR", value: 9986, description: " " };
+        WebGlConstants.LINEAR_MIPMAP_LINEAR = { name: "LINEAR_MIPMAP_LINEAR", value: 9987, description: " " };
+        WebGlConstants.TEXTURE_MAG_FILTER = { name: "TEXTURE_MAG_FILTER", value: 10240, description: " " };
+        WebGlConstants.TEXTURE_MIN_FILTER = { name: "TEXTURE_MIN_FILTER", value: 10241, description: " " };
+        WebGlConstants.TEXTURE_WRAP_S = { name: "TEXTURE_WRAP_S", value: 10242, description: " " };
+        WebGlConstants.TEXTURE_WRAP_T = { name: "TEXTURE_WRAP_T", value: 10243, description: " " };
+        WebGlConstants.TEXTURE_2D = { name: "TEXTURE_2D", value: 3553, description: " " };
+        WebGlConstants.TEXTURE = { name: "TEXTURE", value: 5890, description: " " };
+        WebGlConstants.TEXTURE_CUBE_MAP = { name: "TEXTURE_CUBE_MAP", value: 34067, description: " " };
+        WebGlConstants.TEXTURE_BINDING_CUBE_MAP = { name: "TEXTURE_BINDING_CUBE_MAP", value: 34068, description: " " };
+        WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_X = { name: "TEXTURE_CUBE_MAP_POSITIVE_X", value: 34069, description: " " };
+        WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_X = { name: "TEXTURE_CUBE_MAP_NEGATIVE_X", value: 34070, description: " " };
+        WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Y = { name: "TEXTURE_CUBE_MAP_POSITIVE_Y", value: 34071, description: " " };
+        WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Y = { name: "TEXTURE_CUBE_MAP_NEGATIVE_Y", value: 34072, description: " " };
+        WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Z = { name: "TEXTURE_CUBE_MAP_POSITIVE_Z", value: 34073, description: " " };
+        WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Z = { name: "TEXTURE_CUBE_MAP_NEGATIVE_Z", value: 34074, description: " " };
+        WebGlConstants.MAX_CUBE_MAP_TEXTURE_SIZE = { name: "MAX_CUBE_MAP_TEXTURE_SIZE", value: 34076, description: " " };
+        WebGlConstants.TEXTURE0 = { name: "TEXTURE0", value: 33984, description: "A texture unit." };
+        WebGlConstants.TEXTURE1 = { name: "TEXTURE1", value: 33985, description: "A texture unit." };
+        WebGlConstants.TEXTURE2 = { name: "TEXTURE2", value: 33986, description: "A texture unit." };
+        WebGlConstants.TEXTURE3 = { name: "TEXTURE3", value: 33987, description: "A texture unit." };
+        WebGlConstants.TEXTURE4 = { name: "TEXTURE4", value: 33988, description: "A texture unit." };
+        WebGlConstants.TEXTURE5 = { name: "TEXTURE5", value: 33989, description: "A texture unit." };
+        WebGlConstants.TEXTURE6 = { name: "TEXTURE6", value: 33990, description: "A texture unit." };
+        WebGlConstants.TEXTURE7 = { name: "TEXTURE7", value: 33991, description: "A texture unit." };
+        WebGlConstants.TEXTURE8 = { name: "TEXTURE8", value: 33992, description: "A texture unit." };
+        WebGlConstants.TEXTURE9 = { name: "TEXTURE9", value: 33993, description: "A texture unit." };
+        WebGlConstants.TEXTURE10 = { name: "TEXTURE10", value: 33994, description: "A texture unit." };
+        WebGlConstants.TEXTURE11 = { name: "TEXTURE11", value: 33995, description: "A texture unit." };
+        WebGlConstants.TEXTURE12 = { name: "TEXTURE12", value: 33996, description: "A texture unit." };
+        WebGlConstants.TEXTURE13 = { name: "TEXTURE13", value: 33997, description: "A texture unit." };
+        WebGlConstants.TEXTURE14 = { name: "TEXTURE14", value: 33998, description: "A texture unit." };
+        WebGlConstants.TEXTURE15 = { name: "TEXTURE15", value: 33999, description: "A texture unit." };
+        WebGlConstants.TEXTURE16 = { name: "TEXTURE16", value: 34000, description: "A texture unit." };
+        WebGlConstants.TEXTURE17 = { name: "TEXTURE17", value: 34001, description: "A texture unit." };
+        WebGlConstants.TEXTURE18 = { name: "TEXTURE18", value: 34002, description: "A texture unit." };
+        WebGlConstants.TEXTURE19 = { name: "TEXTURE19", value: 34003, description: "A texture unit." };
+        WebGlConstants.TEXTURE20 = { name: "TEXTURE20", value: 34004, description: "A texture unit." };
+        WebGlConstants.TEXTURE21 = { name: "TEXTURE21", value: 34005, description: "A texture unit." };
+        WebGlConstants.TEXTURE22 = { name: "TEXTURE22", value: 34006, description: "A texture unit." };
+        WebGlConstants.TEXTURE23 = { name: "TEXTURE23", value: 34007, description: "A texture unit." };
+        WebGlConstants.TEXTURE24 = { name: "TEXTURE24", value: 34008, description: "A texture unit." };
+        WebGlConstants.TEXTURE25 = { name: "TEXTURE25", value: 34009, description: "A texture unit." };
+        WebGlConstants.TEXTURE26 = { name: "TEXTURE26", value: 34010, description: "A texture unit." };
+        WebGlConstants.TEXTURE27 = { name: "TEXTURE27", value: 34011, description: "A texture unit." };
+        WebGlConstants.TEXTURE28 = { name: "TEXTURE28", value: 34012, description: "A texture unit." };
+        WebGlConstants.TEXTURE29 = { name: "TEXTURE29", value: 34013, description: "A texture unit." };
+        WebGlConstants.TEXTURE30 = { name: "TEXTURE30", value: 34014, description: "A texture unit." };
+        WebGlConstants.TEXTURE31 = { name: "TEXTURE31", value: 34015, description: "A texture unit." };
+        WebGlConstants.ACTIVE_TEXTURE = { name: "ACTIVE_TEXTURE", value: 34016, description: "The current active texture unit." };
+        WebGlConstants.REPEAT = { name: "REPEAT", value: 10497, description: " " };
+        WebGlConstants.CLAMP_TO_EDGE = { name: "CLAMP_TO_EDGE", value: 33071, description: " " };
+        WebGlConstants.MIRRORED_REPEAT = { name: "MIRRORED_REPEAT", value: 33648, description: " " };
+        WebGlConstants.FLOAT_VEC2 = { name: "FLOAT_VEC2", value: 35664, description: " " };
+        WebGlConstants.FLOAT_VEC3 = { name: "FLOAT_VEC3", value: 35665, description: " " };
+        WebGlConstants.FLOAT_VEC4 = { name: "FLOAT_VEC4", value: 35666, description: " " };
+        WebGlConstants.INT_VEC2 = { name: "INT_VEC2", value: 35667, description: " " };
+        WebGlConstants.INT_VEC3 = { name: "INT_VEC3", value: 35668, description: " " };
+        WebGlConstants.INT_VEC4 = { name: "INT_VEC4", value: 35669, description: " " };
+        WebGlConstants.BOOL = { name: "BOOL", value: 35670, description: " " };
+        WebGlConstants.BOOL_VEC2 = { name: "BOOL_VEC2", value: 35671, description: " " };
+        WebGlConstants.BOOL_VEC3 = { name: "BOOL_VEC3", value: 35672, description: " " };
+        WebGlConstants.BOOL_VEC4 = { name: "BOOL_VEC4", value: 35673, description: " " };
+        WebGlConstants.FLOAT_MAT2 = { name: "FLOAT_MAT2", value: 35674, description: " " };
+        WebGlConstants.FLOAT_MAT3 = { name: "FLOAT_MAT3", value: 35675, description: " " };
+        WebGlConstants.FLOAT_MAT4 = { name: "FLOAT_MAT4", value: 35676, description: " " };
+        WebGlConstants.SAMPLER_2D = { name: "SAMPLER_2D", value: 35678, description: " " };
+        WebGlConstants.SAMPLER_CUBE = { name: "SAMPLER_CUBE", value: 35680, description: " " };
+        WebGlConstants.LOW_FLOAT = { name: "LOW_FLOAT", value: 36336, description: " " };
+        WebGlConstants.MEDIUM_FLOAT = { name: "MEDIUM_FLOAT", value: 36337, description: " " };
+        WebGlConstants.HIGH_FLOAT = { name: "HIGH_FLOAT", value: 36338, description: " " };
+        WebGlConstants.LOW_INT = { name: "LOW_INT", value: 36339, description: " " };
+        WebGlConstants.MEDIUM_INT = { name: "MEDIUM_INT", value: 36340, description: " " };
+        WebGlConstants.HIGH_INT = { name: "HIGH_INT", value: 36341, description: " " };
+        WebGlConstants.FRAMEBUFFER = { name: "FRAMEBUFFER", value: 36160, description: " " };
+        WebGlConstants.RENDERBUFFER = { name: "RENDERBUFFER", value: 36161, description: " " };
+        WebGlConstants.RGBA4 = { name: "RGBA4", value: 32854, description: " " };
+        WebGlConstants.RGB5_A1 = { name: "RGB5_A1", value: 32855, description: " " };
+        WebGlConstants.RGB565 = { name: "RGB565", value: 36194, description: " " };
+        WebGlConstants.DEPTH_COMPONENT16 = { name: "DEPTH_COMPONENT16", value: 33189, description: " " };
+        WebGlConstants.STENCIL_INDEX = { name: "STENCIL_INDEX", value: 6401, description: " " };
+        WebGlConstants.STENCIL_INDEX8 = { name: "STENCIL_INDEX8", value: 36168, description: " " };
+        WebGlConstants.DEPTH_STENCIL = { name: "DEPTH_STENCIL", value: 34041, description: " " };
+        WebGlConstants.RENDERBUFFER_WIDTH = { name: "RENDERBUFFER_WIDTH", value: 36162, description: " " };
+        WebGlConstants.RENDERBUFFER_HEIGHT = { name: "RENDERBUFFER_HEIGHT", value: 36163, description: " " };
+        WebGlConstants.RENDERBUFFER_INTERNAL_FORMAT = { name: "RENDERBUFFER_INTERNAL_FORMAT", value: 36164, description: " " };
+        WebGlConstants.RENDERBUFFER_RED_SIZE = { name: "RENDERBUFFER_RED_SIZE", value: 36176, description: " " };
+        WebGlConstants.RENDERBUFFER_GREEN_SIZE = { name: "RENDERBUFFER_GREEN_SIZE", value: 36177, description: " " };
+        WebGlConstants.RENDERBUFFER_BLUE_SIZE = { name: "RENDERBUFFER_BLUE_SIZE", value: 36178, description: " " };
+        WebGlConstants.RENDERBUFFER_ALPHA_SIZE = { name: "RENDERBUFFER_ALPHA_SIZE", value: 36179, description: " " };
+        WebGlConstants.RENDERBUFFER_DEPTH_SIZE = { name: "RENDERBUFFER_DEPTH_SIZE", value: 36180, description: " " };
+        WebGlConstants.RENDERBUFFER_STENCIL_SIZE = { name: "RENDERBUFFER_STENCIL_SIZE", value: 36181, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE = { name: "FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE", value: 36048, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_NAME = { name: "FRAMEBUFFER_ATTACHMENT_OBJECT_NAME", value: 36049, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL = { name: "FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL", value: 36050, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE = { name: "FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE", value: 36051, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT0 = { name: "COLOR_ATTACHMENT0", value: 36064, description: " " };
+        WebGlConstants.DEPTH_ATTACHMENT = { name: "DEPTH_ATTACHMENT", value: 36096, description: " " };
+        WebGlConstants.STENCIL_ATTACHMENT = { name: "STENCIL_ATTACHMENT", value: 36128, description: " " };
+        WebGlConstants.DEPTH_STENCIL_ATTACHMENT = { name: "DEPTH_STENCIL_ATTACHMENT", value: 33306, description: " " };
+        WebGlConstants.NONE = { name: "NONE", value: 0, description: " " };
+        WebGlConstants.FRAMEBUFFER_COMPLETE = { name: "FRAMEBUFFER_COMPLETE", value: 36053, description: " " };
+        WebGlConstants.FRAMEBUFFER_INCOMPLETE_ATTACHMENT = { name: "FRAMEBUFFER_INCOMPLETE_ATTACHMENT", value: 36054, description: " " };
+        WebGlConstants.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = { name: "FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT", value: 36055, description: " " };
+        WebGlConstants.FRAMEBUFFER_INCOMPLETE_DIMENSIONS = { name: "FRAMEBUFFER_INCOMPLETE_DIMENSIONS", value: 36057, description: " " };
+        WebGlConstants.FRAMEBUFFER_UNSUPPORTED = { name: "FRAMEBUFFER_UNSUPPORTED", value: 36061, description: " " };
+        WebGlConstants.FRAMEBUFFER_BINDING = { name: "FRAMEBUFFER_BINDING", value: 36006, description: " " };
+        WebGlConstants.RENDERBUFFER_BINDING = { name: "RENDERBUFFER_BINDING", value: 36007, description: " " };
+        WebGlConstants.MAX_RENDERBUFFER_SIZE = { name: "MAX_RENDERBUFFER_SIZE", value: 34024, description: " " };
+        WebGlConstants.INVALID_FRAMEBUFFER_OPERATION = { name: "INVALID_FRAMEBUFFER_OPERATION", value: 1286, description: " " };
+        WebGlConstants.UNPACK_FLIP_Y_WEBGL = { name: "UNPACK_FLIP_Y_WEBGL", value: 37440, description: " " };
+        WebGlConstants.UNPACK_PREMULTIPLY_ALPHA_WEBGL = { name: "UNPACK_PREMULTIPLY_ALPHA_WEBGL", value: 37441, description: " " };
+        WebGlConstants.UNPACK_COLORSPACE_CONVERSION_WEBGL = { name: "UNPACK_COLORSPACE_CONVERSION_WEBGL", value: 37443, description: " " };
+        WebGlConstants.READ_BUFFER = { name: "READ_BUFFER", value: 3074, description: " " };
+        WebGlConstants.UNPACK_ROW_LENGTH = { name: "UNPACK_ROW_LENGTH", value: 3314, description: " " };
+        WebGlConstants.UNPACK_SKIP_ROWS = { name: "UNPACK_SKIP_ROWS", value: 3315, description: " " };
+        WebGlConstants.UNPACK_SKIP_PIXELS = { name: "UNPACK_SKIP_PIXELS", value: 3316, description: " " };
+        WebGlConstants.PACK_ROW_LENGTH = { name: "PACK_ROW_LENGTH", value: 3330, description: " " };
+        WebGlConstants.PACK_SKIP_ROWS = { name: "PACK_SKIP_ROWS", value: 3331, description: " " };
+        WebGlConstants.PACK_SKIP_PIXELS = { name: "PACK_SKIP_PIXELS", value: 3332, description: " " };
+        WebGlConstants.TEXTURE_BINDING_3D = { name: "TEXTURE_BINDING_3D", value: 32874, description: " " };
+        WebGlConstants.UNPACK_SKIP_IMAGES = { name: "UNPACK_SKIP_IMAGES", value: 32877, description: " " };
+        WebGlConstants.UNPACK_IMAGE_HEIGHT = { name: "UNPACK_IMAGE_HEIGHT", value: 32878, description: " " };
+        WebGlConstants.MAX_3D_TEXTURE_SIZE = { name: "MAX_3D_TEXTURE_SIZE", value: 32883, description: " " };
+        WebGlConstants.MAX_ELEMENTS_VERTICES = { name: "MAX_ELEMENTS_VERTICES", value: 33000, description: " " };
+        WebGlConstants.MAX_ELEMENTS_INDICES = { name: "MAX_ELEMENTS_INDICES", value: 33001, description: " " };
+        WebGlConstants.MAX_TEXTURE_LOD_BIAS = { name: "MAX_TEXTURE_LOD_BIAS", value: 34045, description: " " };
+        WebGlConstants.MAX_FRAGMENT_UNIFORM_COMPONENTS = { name: "MAX_FRAGMENT_UNIFORM_COMPONENTS", value: 35657, description: " " };
+        WebGlConstants.MAX_VERTEX_UNIFORM_COMPONENTS = { name: "MAX_VERTEX_UNIFORM_COMPONENTS", value: 35658, description: " " };
+        WebGlConstants.MAX_ARRAY_TEXTURE_LAYERS = { name: "MAX_ARRAY_TEXTURE_LAYERS", value: 35071, description: " " };
+        WebGlConstants.MIN_PROGRAM_TEXEL_OFFSET = { name: "MIN_PROGRAM_TEXEL_OFFSET", value: 35076, description: " " };
+        WebGlConstants.MAX_PROGRAM_TEXEL_OFFSET = { name: "MAX_PROGRAM_TEXEL_OFFSET", value: 35077, description: " " };
+        WebGlConstants.MAX_VARYING_COMPONENTS = { name: "MAX_VARYING_COMPONENTS", value: 35659, description: " " };
+        WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT = { name: "FRAGMENT_SHADER_DERIVATIVE_HINT", value: 35723, description: " " };
+        WebGlConstants.RASTERIZER_DISCARD = { name: "RASTERIZER_DISCARD", value: 35977, description: " " };
+        WebGlConstants.VERTEX_ARRAY_BINDING = { name: "VERTEX_ARRAY_BINDING", value: 34229, description: " " };
+        WebGlConstants.MAX_VERTEX_OUTPUT_COMPONENTS = { name: "MAX_VERTEX_OUTPUT_COMPONENTS", value: 37154, description: " " };
+        WebGlConstants.MAX_FRAGMENT_INPUT_COMPONENTS = { name: "MAX_FRAGMENT_INPUT_COMPONENTS", value: 37157, description: " " };
+        WebGlConstants.MAX_SERVER_WAIT_TIMEOUT = { name: "MAX_SERVER_WAIT_TIMEOUT", value: 37137, description: " " };
+        WebGlConstants.MAX_ELEMENT_INDEX = { name: "MAX_ELEMENT_INDEX", value: 36203, description: " " };
+        WebGlConstants.RED = { name: "RED", value: 6403, description: " " };
+        WebGlConstants.RGB8 = { name: "RGB8", value: 32849, description: " " };
+        WebGlConstants.RGBA8 = { name: "RGBA8", value: 32856, description: " " };
+        WebGlConstants.RGB10_A2 = { name: "RGB10_A2", value: 32857, description: " " };
+        WebGlConstants.TEXTURE_3D = { name: "TEXTURE_3D", value: 32879, description: " " };
+        WebGlConstants.TEXTURE_WRAP_R = { name: "TEXTURE_WRAP_R", value: 32882, description: " " };
+        WebGlConstants.TEXTURE_MIN_LOD = { name: "TEXTURE_MIN_LOD", value: 33082, description: " " };
+        WebGlConstants.TEXTURE_MAX_LOD = { name: "TEXTURE_MAX_LOD", value: 33083, description: " " };
+        WebGlConstants.TEXTURE_BASE_LEVEL = { name: "TEXTURE_BASE_LEVEL", value: 33084, description: " " };
+        WebGlConstants.TEXTURE_MAX_LEVEL = { name: "TEXTURE_MAX_LEVEL", value: 33085, description: " " };
+        WebGlConstants.TEXTURE_COMPARE_MODE = { name: "TEXTURE_COMPARE_MODE", value: 34892, description: " " };
+        WebGlConstants.TEXTURE_COMPARE_FUNC = { name: "TEXTURE_COMPARE_FUNC", value: 34893, description: " " };
+        WebGlConstants.SRGB = { name: "SRGB", value: 35904, description: " " };
+        WebGlConstants.SRGB8 = { name: "SRGB8", value: 35905, description: " " };
+        WebGlConstants.SRGB8_ALPHA8 = { name: "SRGB8_ALPHA8", value: 35907, description: " " };
+        WebGlConstants.COMPARE_REF_TO_TEXTURE = { name: "COMPARE_REF_TO_TEXTURE", value: 34894, description: " " };
+        WebGlConstants.RGBA32F = { name: "RGBA32F", value: 34836, description: " " };
+        WebGlConstants.RGB32F = { name: "RGB32F", value: 34837, description: " " };
+        WebGlConstants.RGBA16F = { name: "RGBA16F", value: 34842, description: " " };
+        WebGlConstants.RGB16F = { name: "RGB16F", value: 34843, description: " " };
+        WebGlConstants.TEXTURE_2D_ARRAY = { name: "TEXTURE_2D_ARRAY", value: 35866, description: " " };
+        WebGlConstants.TEXTURE_BINDING_2D_ARRAY = { name: "TEXTURE_BINDING_2D_ARRAY", value: 35869, description: " " };
+        WebGlConstants.R11F_G11F_B10F = { name: "R11F_G11F_B10F", value: 35898, description: " " };
+        WebGlConstants.RGB9_E5 = { name: "RGB9_E5", value: 35901, description: " " };
+        WebGlConstants.RGBA32UI = { name: "RGBA32UI", value: 36208, description: " " };
+        WebGlConstants.RGB32UI = { name: "RGB32UI", value: 36209, description: " " };
+        WebGlConstants.RGBA16UI = { name: "RGBA16UI", value: 36214, description: " " };
+        WebGlConstants.RGB16UI = { name: "RGB16UI", value: 36215, description: " " };
+        WebGlConstants.RGBA8UI = { name: "RGBA8UI", value: 36220, description: " " };
+        WebGlConstants.RGB8UI = { name: "RGB8UI", value: 36221, description: " " };
+        WebGlConstants.RGBA32I = { name: "RGBA32I", value: 36226, description: " " };
+        WebGlConstants.RGB32I = { name: "RGB32I", value: 36227, description: " " };
+        WebGlConstants.RGBA16I = { name: "RGBA16I", value: 36232, description: " " };
+        WebGlConstants.RGB16I = { name: "RGB16I", value: 36233, description: " " };
+        WebGlConstants.RGBA8I = { name: "RGBA8I", value: 36238, description: " " };
+        WebGlConstants.RGB8I = { name: "RGB8I", value: 36239, description: " " };
+        WebGlConstants.RED_INTEGER = { name: "RED_INTEGER", value: 36244, description: " " };
+        WebGlConstants.RGB_INTEGER = { name: "RGB_INTEGER", value: 36248, description: " " };
+        WebGlConstants.RGBA_INTEGER = { name: "RGBA_INTEGER", value: 36249, description: " " };
+        WebGlConstants.R8 = { name: "R8", value: 33321, description: " " };
+        WebGlConstants.RG8 = { name: "RG8", value: 33323, description: " " };
+        WebGlConstants.R16F = { name: "R16F", value: 33325, description: " " };
+        WebGlConstants.R32F = { name: "R32F", value: 33326, description: " " };
+        WebGlConstants.RG16F = { name: "RG16F", value: 33327, description: " " };
+        WebGlConstants.RG32F = { name: "RG32F", value: 33328, description: " " };
+        WebGlConstants.R8I = { name: "R8I", value: 33329, description: " " };
+        WebGlConstants.R8UI = { name: "R8UI", value: 33330, description: " " };
+        WebGlConstants.R16I = { name: "R16I", value: 33331, description: " " };
+        WebGlConstants.R16UI = { name: "R16UI", value: 33332, description: " " };
+        WebGlConstants.R32I = { name: "R32I", value: 33333, description: " " };
+        WebGlConstants.R32UI = { name: "R32UI", value: 33334, description: " " };
+        WebGlConstants.RG8I = { name: "RG8I", value: 33335, description: " " };
+        WebGlConstants.RG8UI = { name: "RG8UI", value: 33336, description: " " };
+        WebGlConstants.RG16I = { name: "RG16I", value: 33337, description: " " };
+        WebGlConstants.RG16UI = { name: "RG16UI", value: 33338, description: " " };
+        WebGlConstants.RG32I = { name: "RG32I", value: 33339, description: " " };
+        WebGlConstants.RG32UI = { name: "RG32UI", value: 33340, description: " " };
+        WebGlConstants.R8_SNORM = { name: "R8_SNORM", value: 36756, description: " " };
+        WebGlConstants.RG8_SNORM = { name: "RG8_SNORM", value: 36757, description: " " };
+        WebGlConstants.RGB8_SNORM = { name: "RGB8_SNORM", value: 36758, description: " " };
+        WebGlConstants.RGBA8_SNORM = { name: "RGBA8_SNORM", value: 36759, description: " " };
+        WebGlConstants.RGB10_A2UI = { name: "RGB10_A2UI", value: 36975, description: " " };
+        WebGlConstants.TEXTURE_IMMUTABLE_FORMAT = { name: "TEXTURE_IMMUTABLE_FORMAT", value: 37167, description: " " };
+        WebGlConstants.TEXTURE_IMMUTABLE_LEVELS = { name: "TEXTURE_IMMUTABLE_LEVELS", value: 33503, description: " " };
+        WebGlConstants.UNSIGNED_INT_2_10_10_10_REV = { name: "UNSIGNED_INT_2_10_10_10_REV", value: 33640, description: " " };
+        WebGlConstants.UNSIGNED_INT_10F_11F_11F_REV = { name: "UNSIGNED_INT_10F_11F_11F_REV", value: 35899, description: " " };
+        WebGlConstants.UNSIGNED_INT_5_9_9_9_REV = { name: "UNSIGNED_INT_5_9_9_9_REV", value: 35902, description: " " };
+        WebGlConstants.FLOAT_32_UNSIGNED_INT_24_8_REV = { name: "FLOAT_32_UNSIGNED_INT_24_8_REV", value: 36269, description: " " };
+        WebGlConstants.UNSIGNED_INT_24_8 = { name: "UNSIGNED_INT_24_8", value: 34042, description: " " };
+        WebGlConstants.HALF_FLOAT = { name: "HALF_FLOAT", value: 5131, description: " " };
+        WebGlConstants.RG = { name: "RG", value: 33319, description: " " };
+        WebGlConstants.RG_INTEGER = { name: "RG_INTEGER", value: 33320, description: " " };
+        WebGlConstants.INT_2_10_10_10_REV = { name: "INT_2_10_10_10_REV", value: 36255, description: " " };
+        WebGlConstants.CURRENT_QUERY = { name: "CURRENT_QUERY", value: 34917, description: " " };
+        WebGlConstants.QUERY_RESULT = { name: "QUERY_RESULT", value: 34918, description: " " };
+        WebGlConstants.QUERY_RESULT_AVAILABLE = { name: "QUERY_RESULT_AVAILABLE", value: 34919, description: " " };
+        WebGlConstants.ANY_SAMPLES_PASSED = { name: "ANY_SAMPLES_PASSED", value: 35887, description: " " };
+        WebGlConstants.ANY_SAMPLES_PASSED_CONSERVATIVE = { name: "ANY_SAMPLES_PASSED_CONSERVATIVE", value: 36202, description: " " };
+        WebGlConstants.MAX_DRAW_BUFFERS = { name: "MAX_DRAW_BUFFERS", value: 34852, description: " " };
+        WebGlConstants.DRAW_BUFFER0 = { name: "DRAW_BUFFER0", value: 34853, description: " " };
+        WebGlConstants.DRAW_BUFFER1 = { name: "DRAW_BUFFER1", value: 34854, description: " " };
+        WebGlConstants.DRAW_BUFFER2 = { name: "DRAW_BUFFER2", value: 34855, description: " " };
+        WebGlConstants.DRAW_BUFFER3 = { name: "DRAW_BUFFER3", value: 34856, description: " " };
+        WebGlConstants.DRAW_BUFFER4 = { name: "DRAW_BUFFER4", value: 34857, description: " " };
+        WebGlConstants.DRAW_BUFFER5 = { name: "DRAW_BUFFER5", value: 34858, description: " " };
+        WebGlConstants.DRAW_BUFFER6 = { name: "DRAW_BUFFER6", value: 34859, description: " " };
+        WebGlConstants.DRAW_BUFFER7 = { name: "DRAW_BUFFER7", value: 34860, description: " " };
+        WebGlConstants.DRAW_BUFFER8 = { name: "DRAW_BUFFER8", value: 34861, description: " " };
+        WebGlConstants.DRAW_BUFFER9 = { name: "DRAW_BUFFER9", value: 34862, description: " " };
+        WebGlConstants.DRAW_BUFFER10 = { name: "DRAW_BUFFER10", value: 34863, description: " " };
+        WebGlConstants.DRAW_BUFFER11 = { name: "DRAW_BUFFER11", value: 34864, description: " " };
+        WebGlConstants.DRAW_BUFFER12 = { name: "DRAW_BUFFER12", value: 34865, description: " " };
+        WebGlConstants.DRAW_BUFFER13 = { name: "DRAW_BUFFER13", value: 34866, description: " " };
+        WebGlConstants.DRAW_BUFFER14 = { name: "DRAW_BUFFER14", value: 34867, description: " " };
+        WebGlConstants.DRAW_BUFFER15 = { name: "DRAW_BUFFER15", value: 34868, description: " " };
+        WebGlConstants.MAX_COLOR_ATTACHMENTS = { name: "MAX_COLOR_ATTACHMENTS", value: 36063, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT1 = { name: "COLOR_ATTACHMENT1", value: 36065, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT2 = { name: "COLOR_ATTACHMENT2", value: 36066, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT3 = { name: "COLOR_ATTACHMENT3", value: 36067, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT4 = { name: "COLOR_ATTACHMENT4", value: 36068, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT5 = { name: "COLOR_ATTACHMENT5", value: 36069, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT6 = { name: "COLOR_ATTACHMENT6", value: 36070, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT7 = { name: "COLOR_ATTACHMENT7", value: 36071, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT8 = { name: "COLOR_ATTACHMENT8", value: 36072, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT9 = { name: "COLOR_ATTACHMENT9", value: 36073, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT10 = { name: "COLOR_ATTACHMENT10", value: 36074, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT11 = { name: "COLOR_ATTACHMENT11", value: 36075, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT12 = { name: "COLOR_ATTACHMENT12", value: 36076, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT13 = { name: "COLOR_ATTACHMENT13", value: 36077, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT14 = { name: "COLOR_ATTACHMENT14", value: 36078, description: " " };
+        WebGlConstants.COLOR_ATTACHMENT15 = { name: "COLOR_ATTACHMENT15", value: 36079, description: " " };
+        WebGlConstants.SAMPLER_3D = { name: "SAMPLER_3D", value: 35679, description: " " };
+        WebGlConstants.SAMPLER_2D_SHADOW = { name: "SAMPLER_2D_SHADOW", value: 35682, description: " " };
+        WebGlConstants.SAMPLER_2D_ARRAY = { name: "SAMPLER_2D_ARRAY", value: 36289, description: " " };
+        WebGlConstants.SAMPLER_2D_ARRAY_SHADOW = { name: "SAMPLER_2D_ARRAY_SHADOW", value: 36292, description: " " };
+        WebGlConstants.SAMPLER_CUBE_SHADOW = { name: "SAMPLER_CUBE_SHADOW", value: 36293, description: " " };
+        WebGlConstants.INT_SAMPLER_2D = { name: "INT_SAMPLER_2D", value: 36298, description: " " };
+        WebGlConstants.INT_SAMPLER_3D = { name: "INT_SAMPLER_3D", value: 36299, description: " " };
+        WebGlConstants.INT_SAMPLER_CUBE = { name: "INT_SAMPLER_CUBE", value: 36300, description: " " };
+        WebGlConstants.INT_SAMPLER_2D_ARRAY = { name: "INT_SAMPLER_2D_ARRAY", value: 36303, description: " " };
+        WebGlConstants.UNSIGNED_INT_SAMPLER_2D = { name: "UNSIGNED_INT_SAMPLER_2D", value: 36306, description: " " };
+        WebGlConstants.UNSIGNED_INT_SAMPLER_3D = { name: "UNSIGNED_INT_SAMPLER_3D", value: 36307, description: " " };
+        WebGlConstants.UNSIGNED_INT_SAMPLER_CUBE = { name: "UNSIGNED_INT_SAMPLER_CUBE", value: 36308, description: " " };
+        WebGlConstants.UNSIGNED_INT_SAMPLER_2D_ARRAY = { name: "UNSIGNED_INT_SAMPLER_2D_ARRAY", value: 36311, description: " " };
+        WebGlConstants.MAX_SAMPLES = { name: "MAX_SAMPLES", value: 36183, description: " " };
+        WebGlConstants.SAMPLER_BINDING = { name: "SAMPLER_BINDING", value: 35097, description: " " };
+        WebGlConstants.PIXEL_PACK_BUFFER = { name: "PIXEL_PACK_BUFFER", value: 35051, description: " " };
+        WebGlConstants.PIXEL_UNPACK_BUFFER = { name: "PIXEL_UNPACK_BUFFER", value: 35052, description: " " };
+        WebGlConstants.PIXEL_PACK_BUFFER_BINDING = { name: "PIXEL_PACK_BUFFER_BINDING", value: 35053, description: " " };
+        WebGlConstants.PIXEL_UNPACK_BUFFER_BINDING = { name: "PIXEL_UNPACK_BUFFER_BINDING", value: 35055, description: " " };
+        WebGlConstants.COPY_READ_BUFFER = { name: "COPY_READ_BUFFER", value: 36662, description: " " };
+        WebGlConstants.COPY_WRITE_BUFFER = { name: "COPY_WRITE_BUFFER", value: 36663, description: " " };
+        WebGlConstants.COPY_READ_BUFFER_BINDING = { name: "COPY_READ_BUFFER_BINDING", value: 36662, description: " " };
+        WebGlConstants.COPY_WRITE_BUFFER_BINDING = { name: "COPY_WRITE_BUFFER_BINDING", value: 36663, description: " " };
+        WebGlConstants.FLOAT_MAT2x3 = { name: "FLOAT_MAT2x3", value: 35685, description: " " };
+        WebGlConstants.FLOAT_MAT2x4 = { name: "FLOAT_MAT2x4", value: 35686, description: " " };
+        WebGlConstants.FLOAT_MAT3x2 = { name: "FLOAT_MAT3x2", value: 35687, description: " " };
+        WebGlConstants.FLOAT_MAT3x4 = { name: "FLOAT_MAT3x4", value: 35688, description: " " };
+        WebGlConstants.FLOAT_MAT4x2 = { name: "FLOAT_MAT4x2", value: 35689, description: " " };
+        WebGlConstants.FLOAT_MAT4x3 = { name: "FLOAT_MAT4x3", value: 35690, description: " " };
+        WebGlConstants.UNSIGNED_INT_VEC2 = { name: "UNSIGNED_INT_VEC2", value: 36294, description: " " };
+        WebGlConstants.UNSIGNED_INT_VEC3 = { name: "UNSIGNED_INT_VEC3", value: 36295, description: " " };
+        WebGlConstants.UNSIGNED_INT_VEC4 = { name: "UNSIGNED_INT_VEC4", value: 36296, description: " " };
+        WebGlConstants.UNSIGNED_NORMALIZED = { name: "UNSIGNED_NORMALIZED", value: 35863, description: " " };
+        WebGlConstants.SIGNED_NORMALIZED = { name: "SIGNED_NORMALIZED", value: 36764, description: " " };
+        WebGlConstants.VERTEX_ATTRIB_ARRAY_INTEGER = { name: "VERTEX_ATTRIB_ARRAY_INTEGER", value: 35069, description: " " };
+        WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR = { name: "VERTEX_ATTRIB_ARRAY_DIVISOR", value: 35070, description: " " };
+        WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_MODE = { name: "TRANSFORM_FEEDBACK_BUFFER_MODE", value: 35967, description: " " };
+        WebGlConstants.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS = { name: "MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS", value: 35968, description: " " };
+        WebGlConstants.TRANSFORM_FEEDBACK_VARYINGS = { name: "TRANSFORM_FEEDBACK_VARYINGS", value: 35971, description: " " };
+        WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_START = { name: "TRANSFORM_FEEDBACK_BUFFER_START", value: 35972, description: " " };
+        WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_SIZE = { name: "TRANSFORM_FEEDBACK_BUFFER_SIZE", value: 35973, description: " " };
+        WebGlConstants.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN = { name: "TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN", value: 35976, description: " " };
+        WebGlConstants.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS = { name: "MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS", value: 35978, description: " " };
+        WebGlConstants.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS = { name: "MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS", value: 35979, description: " " };
+        WebGlConstants.INTERLEAVED_ATTRIBS = { name: "INTERLEAVED_ATTRIBS", value: 35980, description: " " };
+        WebGlConstants.SEPARATE_ATTRIBS = { name: "SEPARATE_ATTRIBS", value: 35981, description: " " };
+        WebGlConstants.TRANSFORM_FEEDBACK_BUFFER = { name: "TRANSFORM_FEEDBACK_BUFFER", value: 35982, description: " " };
+        WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING = { name: "TRANSFORM_FEEDBACK_BUFFER_BINDING", value: 35983, description: " " };
+        WebGlConstants.TRANSFORM_FEEDBACK = { name: "TRANSFORM_FEEDBACK", value: 36386, description: " " };
+        WebGlConstants.TRANSFORM_FEEDBACK_PAUSED = { name: "TRANSFORM_FEEDBACK_PAUSED", value: 36387, description: " " };
+        WebGlConstants.TRANSFORM_FEEDBACK_ACTIVE = { name: "TRANSFORM_FEEDBACK_ACTIVE", value: 36388, description: " " };
+        WebGlConstants.TRANSFORM_FEEDBACK_BINDING = { name: "TRANSFORM_FEEDBACK_BINDING", value: 36389, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING = { name: "FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING", value: 33296, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE = { name: "FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE", value: 33297, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_RED_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_RED_SIZE", value: 33298, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_GREEN_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_GREEN_SIZE", value: 33299, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_BLUE_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_BLUE_SIZE", value: 33300, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE", value: 33301, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE", value: 33302, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE", value: 33303, description: " " };
+        WebGlConstants.FRAMEBUFFER_DEFAULT = { name: "FRAMEBUFFER_DEFAULT", value: 33304, description: " " };
+        WebGlConstants.DEPTH24_STENCIL8 = { name: "DEPTH24_STENCIL8", value: 35056, description: " " };
+        WebGlConstants.DRAW_FRAMEBUFFER_BINDING = { name: "DRAW_FRAMEBUFFER_BINDING", value: 36006, description: " " };
+        WebGlConstants.READ_FRAMEBUFFER = { name: "READ_FRAMEBUFFER", value: 36008, description: " " };
+        WebGlConstants.DRAW_FRAMEBUFFER = { name: "DRAW_FRAMEBUFFER", value: 36009, description: " " };
+        WebGlConstants.READ_FRAMEBUFFER_BINDING = { name: "READ_FRAMEBUFFER_BINDING", value: 36010, description: " " };
+        WebGlConstants.RENDERBUFFER_SAMPLES = { name: "RENDERBUFFER_SAMPLES", value: 36011, description: " " };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER = { name: "FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER", value: 36052, description: " " };
+        WebGlConstants.FRAMEBUFFER_INCOMPLETE_MULTISAMPLE = { name: "FRAMEBUFFER_INCOMPLETE_MULTISAMPLE", value: 36182, description: " " };
+        WebGlConstants.UNIFORM_BUFFER = { name: "UNIFORM_BUFFER", value: 35345, description: " " };
+        WebGlConstants.UNIFORM_BUFFER_BINDING = { name: "UNIFORM_BUFFER_BINDING", value: 35368, description: " " };
+        WebGlConstants.UNIFORM_BUFFER_START = { name: "UNIFORM_BUFFER_START", value: 35369, description: " " };
+        WebGlConstants.UNIFORM_BUFFER_SIZE = { name: "UNIFORM_BUFFER_SIZE", value: 35370, description: " " };
+        WebGlConstants.MAX_VERTEX_UNIFORM_BLOCKS = { name: "MAX_VERTEX_UNIFORM_BLOCKS", value: 35371, description: " " };
+        WebGlConstants.MAX_FRAGMENT_UNIFORM_BLOCKS = { name: "MAX_FRAGMENT_UNIFORM_BLOCKS", value: 35373, description: " " };
+        WebGlConstants.MAX_COMBINED_UNIFORM_BLOCKS = { name: "MAX_COMBINED_UNIFORM_BLOCKS", value: 35374, description: " " };
+        WebGlConstants.MAX_UNIFORM_BUFFER_BINDINGS = { name: "MAX_UNIFORM_BUFFER_BINDINGS", value: 35375, description: " " };
+        WebGlConstants.MAX_UNIFORM_BLOCK_SIZE = { name: "MAX_UNIFORM_BLOCK_SIZE", value: 35376, description: " " };
+        WebGlConstants.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS = { name: "MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS", value: 35377, description: " " };
+        WebGlConstants.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS = { name: "MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS", value: 35379, description: " " };
+        WebGlConstants.UNIFORM_BUFFER_OFFSET_ALIGNMENT = { name: "UNIFORM_BUFFER_OFFSET_ALIGNMENT", value: 35380, description: " " };
+        WebGlConstants.ACTIVE_UNIFORM_BLOCKS = { name: "ACTIVE_UNIFORM_BLOCKS", value: 35382, description: " " };
+        WebGlConstants.UNIFORM_TYPE = { name: "UNIFORM_TYPE", value: 35383, description: " " };
+        WebGlConstants.UNIFORM_SIZE = { name: "UNIFORM_SIZE", value: 35384, description: " " };
+        WebGlConstants.UNIFORM_BLOCK_INDEX = { name: "UNIFORM_BLOCK_INDEX", value: 35386, description: " " };
+        WebGlConstants.UNIFORM_OFFSET = { name: "UNIFORM_OFFSET", value: 35387, description: " " };
+        WebGlConstants.UNIFORM_ARRAY_STRIDE = { name: "UNIFORM_ARRAY_STRIDE", value: 35388, description: " " };
+        WebGlConstants.UNIFORM_MATRIX_STRIDE = { name: "UNIFORM_MATRIX_STRIDE", value: 35389, description: " " };
+        WebGlConstants.UNIFORM_IS_ROW_MAJOR = { name: "UNIFORM_IS_ROW_MAJOR", value: 35390, description: " " };
+        WebGlConstants.UNIFORM_BLOCK_BINDING = { name: "UNIFORM_BLOCK_BINDING", value: 35391, description: " " };
+        WebGlConstants.UNIFORM_BLOCK_DATA_SIZE = { name: "UNIFORM_BLOCK_DATA_SIZE", value: 35392, description: " " };
+        WebGlConstants.UNIFORM_BLOCK_ACTIVE_UNIFORMS = { name: "UNIFORM_BLOCK_ACTIVE_UNIFORMS", value: 35394, description: " " };
+        WebGlConstants.UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES = { name: "UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES", value: 35395, description: " " };
+        WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER = { name: "UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER", value: 35396, description: " " };
+        WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER = { name: "UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER", value: 35398, description: " " };
+        WebGlConstants.OBJECT_TYPE = { name: "OBJECT_TYPE", value: 37138, description: " " };
+        WebGlConstants.SYNC_CONDITION = { name: "SYNC_CONDITION", value: 37139, description: " " };
+        WebGlConstants.SYNC_STATUS = { name: "SYNC_STATUS", value: 37140, description: " " };
+        WebGlConstants.SYNC_FLAGS = { name: "SYNC_FLAGS", value: 37141, description: " " };
+        WebGlConstants.SYNC_FENCE = { name: "SYNC_FENCE", value: 37142, description: " " };
+        WebGlConstants.SYNC_GPU_COMMANDS_COMPLETE = { name: "SYNC_GPU_COMMANDS_COMPLETE", value: 37143, description: " " };
+        WebGlConstants.UNSIGNALED = { name: "UNSIGNALED", value: 37144, description: " " };
+        WebGlConstants.SIGNALED = { name: "SIGNALED", value: 37145, description: " " };
+        WebGlConstants.ALREADY_SIGNALED = { name: "ALREADY_SIGNALED", value: 37146, description: " " };
+        WebGlConstants.TIMEOUT_EXPIRED = { name: "TIMEOUT_EXPIRED", value: 37147, description: " " };
+        WebGlConstants.CONDITION_SATISFIED = { name: "CONDITION_SATISFIED", value: 37148, description: " " };
+        WebGlConstants.WAIT_FAILED = { name: "WAIT_FAILED", value: 37149, description: " " };
+        WebGlConstants.SYNC_FLUSH_COMMANDS_BIT = { name: "SYNC_FLUSH_COMMANDS_BIT", value: 1, description: " " };
+        WebGlConstants.COLOR = { name: "COLOR", value: 6144, description: " " };
+        WebGlConstants.DEPTH = { name: "DEPTH", value: 6145, description: " " };
+        WebGlConstants.STENCIL = { name: "STENCIL", value: 6146, description: " " };
+        WebGlConstants.MIN = { name: "MIN", value: 32775, description: " " };
+        WebGlConstants.MAX = { name: "MAX", value: 32776, description: " " };
+        WebGlConstants.DEPTH_COMPONENT24 = { name: "DEPTH_COMPONENT24", value: 33190, description: " " };
+        WebGlConstants.STREAM_READ = { name: "STREAM_READ", value: 35041, description: " " };
+        WebGlConstants.STREAM_COPY = { name: "STREAM_COPY", value: 35042, description: " " };
+        WebGlConstants.STATIC_READ = { name: "STATIC_READ", value: 35045, description: " " };
+        WebGlConstants.STATIC_COPY = { name: "STATIC_COPY", value: 35046, description: " " };
+        WebGlConstants.DYNAMIC_READ = { name: "DYNAMIC_READ", value: 35049, description: " " };
+        WebGlConstants.DYNAMIC_COPY = { name: "DYNAMIC_COPY", value: 35050, description: " " };
+        WebGlConstants.DEPTH_COMPONENT32F = { name: "DEPTH_COMPONENT32F", value: 36012, description: " " };
+        WebGlConstants.DEPTH32F_STENCIL8 = { name: "DEPTH32F_STENCIL8", value: 36013, description: " " };
+        WebGlConstants.INVALID_INDEX = { name: "INVALID_INDEX", value: 4294967295, description: " " };
+        WebGlConstants.TIMEOUT_IGNORED = { name: "TIMEOUT_IGNORED", value: -1, description: " " };
+        WebGlConstants.MAX_CLIENT_WAIT_TIMEOUT_WEBGL = { name: "MAX_CLIENT_WAIT_TIMEOUT_WEBGL", value: 37447, description: " " };
+        // extensions
+        WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE = { name: "VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE", value: 35070, description: "Describes the frequency divisor used for instanced rendering.", extensionName: "ANGLE_instanced_arrays" };
+        WebGlConstants.UNMASKED_VENDOR_WEBGL = { name: "UNMASKED_VENDOR_WEBGL", value: 37445, description: "Passed to getParameter to get the vendor string of the graphics driver.", extensionName: "ANGLE_instanced_arrays" };
+        WebGlConstants.UNMASKED_RENDERER_WEBGL = { name: "UNMASKED_RENDERER_WEBGL", value: 37446, description: "Passed to getParameter to get the renderer string of the graphics driver.", extensionName: "WEBGL_debug_renderer_info" };
+        WebGlConstants.MAX_TEXTURE_MAX_ANISOTROPY_EXT = { name: "MAX_TEXTURE_MAX_ANISOTROPY_EXT", value: 34047, description: "Returns the maximum available anisotropy.", extensionName: "EXT_texture_filter_anisotropic" };
+        WebGlConstants.TEXTURE_MAX_ANISOTROPY_EXT = { name: "TEXTURE_MAX_ANISOTROPY_EXT", value: 34046, description: "Passed to texParameter to set the desired maximum anisotropy for a texture.", extensionName: "EXT_texture_filter_anisotropic" };
+        WebGlConstants.COMPRESSED_RGB_S3TC_DXT1_EXT = { name: "COMPRESSED_RGB_S3TC_DXT1_EXT", value: 33776, description: "A DXT1-compressed image in an RGB image format.", extensionName: "WEBGL_compressed_texture_s3tc" };
+        WebGlConstants.COMPRESSED_RGBA_S3TC_DXT1_EXT = { name: "COMPRESSED_RGBA_S3TC_DXT1_EXT", value: 33777, description: "A DXT1-compressed image in an RGB image format with a simple on/off alpha value.", extensionName: "WEBGL_compressed_texture_s3tc" };
+        WebGlConstants.COMPRESSED_RGBA_S3TC_DXT3_EXT = { name: "COMPRESSED_RGBA_S3TC_DXT3_EXT", value: 33778, description: "A DXT3-compressed image in an RGBA image format. Compared to a 32-bit RGBA texture, it offers 4:1 compression.", extensionName: "WEBGL_compressed_texture_s3tc" };
+        WebGlConstants.COMPRESSED_RGBA_S3TC_DXT5_EXT = { name: "COMPRESSED_RGBA_S3TC_DXT5_EXT", value: 33779, description: "A DXT5-compressed image in an RGBA image format. It also provides a 4:1 compression, but differs to the DXT3 compression in how the alpha compression is done.", extensionName: "WEBGL_compressed_texture_s3tc" };
+        WebGlConstants.COMPRESSED_R11_EAC = { name: "COMPRESSED_R11_EAC", value: 37488, description: "One-channel (red) unsigned format compression.", extensionName: "WEBGL_compressed_texture_etc" };
+        WebGlConstants.COMPRESSED_SIGNED_R11_EAC = { name: "COMPRESSED_SIGNED_R11_EAC", value: 37489, description: "One-channel (red) signed format compression.", extensionName: "WEBGL_compressed_texture_etc" };
+        WebGlConstants.COMPRESSED_RG11_EAC = { name: "COMPRESSED_RG11_EAC", value: 37490, description: "Two-channel (red and green) unsigned format compression.", extensionName: "WEBGL_compressed_texture_etc" };
+        WebGlConstants.COMPRESSED_SIGNED_RG11_EAC = { name: "COMPRESSED_SIGNED_RG11_EAC", value: 37491, description: "Two-channel (red and green) signed format compression.", extensionName: "WEBGL_compressed_texture_etc" };
+        WebGlConstants.COMPRESSED_RGB8_ETC2 = { name: "COMPRESSED_RGB8_ETC2", value: 37492, description: "Compresses RBG8 data with no alpha channel.", extensionName: "WEBGL_compressed_texture_etc" };
+        WebGlConstants.COMPRESSED_RGBA8_ETC2_EAC = { name: "COMPRESSED_RGBA8_ETC2_EAC", value: 37493, description: "Compresses RGBA8 data. The RGB part is encoded the same as RGB_ETC2, but the alpha part is encoded separately.", extensionName: "WEBGL_compressed_texture_etc" };
+        WebGlConstants.COMPRESSED_SRGB8_ETC2 = { name: "COMPRESSED_SRGB8_ETC2", value: 37494, description: "Compresses sRBG8 data with no alpha channel.", extensionName: "WEBGL_compressed_texture_etc" };
+        WebGlConstants.COMPRESSED_SRGB8_ALPHA8_ETC2_EAC = { name: "COMPRESSED_SRGB8_ALPHA8_ETC2_EAC", value: 37495, description: "Compresses sRGBA8 data. The sRGB part is encoded the same as SRGB_ETC2, but the alpha part is encoded separately.", extensionName: "WEBGL_compressed_texture_etc" };
+        WebGlConstants.COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 = { name: "COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2", value: 37496, description: "Similar to RGB8_ETC, but with ability to punch through the alpha channel, which means to make it completely opaque or transparent.", extensionName: "WEBGL_compressed_texture_etc" };
+        WebGlConstants.COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2 = { name: "COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2", value: 37497, description: "Similar to SRGB8_ETC, but with ability to punch through the alpha channel, which means to make it completely opaque or transparent.", extensionName: "WEBGL_compressed_texture_etc" };
+        WebGlConstants.COMPRESSED_RGB_PVRTC_4BPPV1_IMG = { name: "COMPRESSED_RGB_PVRTC_4BPPV1_IMG", value: 35840, description: "RGB compression in 4-bit mode. One block for each 4×4 pixels.", extensionName: "WEBGL_compressed_texture_pvrtc" };
+        WebGlConstants.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG = { name: "COMPRESSED_RGBA_PVRTC_4BPPV1_IMG", value: 35842, description: "RGBA compression in 4-bit mode. One block for each 4×4 pixels.", extensionName: "WEBGL_compressed_texture_pvrtc" };
+        WebGlConstants.COMPRESSED_RGB_PVRTC_2BPPV1_IMG = { name: "COMPRESSED_RGB_PVRTC_2BPPV1_IMG", value: 35841, description: "RGB compression in 2-bit mode. One block for each 8×4 pixels.", extensionName: "WEBGL_compressed_texture_pvrtc" };
+        WebGlConstants.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG = { name: "COMPRESSED_RGBA_PVRTC_2BPPV1_IMG", value: 35843, description: "RGBA compression in 2-bit mode. One block for each 8×4 pixe", extensionName: "WEBGL_compressed_texture_pvrtc" };
+        WebGlConstants.COMPRESSED_RGB_ETC1_WEBGL = { name: "COMPRESSED_RGB_ETC1_WEBGL", value: 36196, description: "Compresses 24-bit RGB data with no alpha channel.", extensionName: "WEBGL_compressed_texture_etc1" };
+        WebGlConstants.COMPRESSED_RGB_ATC_WEBGL = { name: "COMPRESSED_RGB_ATC_WEBGL", value: 35986, description: "Compresses RGB textures with no alpha channel.", extensionName: "WEBGL_compressed_texture_atc" };
+        WebGlConstants.COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL = { name: "COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL", value: 35986, description: "Compresses RGBA textures using explicit alpha encoding (useful when alpha transitions are sharp).", extensionName: "WEBGL_compressed_texture_atc" };
+        WebGlConstants.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL = { name: "COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL", value: 34798, description: "Compresses RGBA textures using interpolated alpha encoding (useful when alpha transitions are gradient).", extensionName: "WEBGL_compressed_texture_atc" };
+        WebGlConstants.UNSIGNED_INT_24_8_WEBGL = { name: "UNSIGNED_INT_24_8_WEBGL", value: 34042, description: "Unsigned integer type for 24-bit depth texture data.", extensionName: "WEBGL_depth_texture" };
+        WebGlConstants.HALF_FLOAT_OES = { name: "HALF_FLOAT_OES", value: 36193, description: "Half floating-point type (16-bit).", extensionName: "OES_texture_half_float" };
+        // public static readonly RGBA32F_EXT: WebGlConstant = { name: "RGBA32F_EXT", value: 34836, description: "RGBA 32-bit floating-point color-renderable format.", extensionName: "WEBGL_color_buffer_float" };
+        // public static readonly RGB32F_EXT: WebGlConstant = { name: "RGB32F_EXT", value: 34837, description: "RGB 32-bit floating-point color-renderable format.", extensionName: "WEBGL_color_buffer_float" };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE_EXT = { name: "FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE_EXT", value: 33297, description: " ", extensionName: "WEBGL_color_buffer_float" };
+        WebGlConstants.UNSIGNED_NORMALIZED_EXT = { name: "UNSIGNED_NORMALIZED_EXT", value: 35863, description: " ", extensionName: "WEBGL_color_buffer_float" };
+        WebGlConstants.MIN_EXT = { name: "MIN_EXT", value: 32775, description: "Produces the minimum color components of the source and destination colors.", extensionName: "EXT_blend_minmax" };
+        WebGlConstants.MAX_EXT = { name: "MAX_EXT", value: 32776, description: "Produces the maximum color components of the source and destination colors.", extensionName: "EXT_blend_minmax" };
+        WebGlConstants.SRGB_EXT = { name: "SRGB_EXT", value: 35904, description: "Unsized sRGB format that leaves the precision up to the driver.", extensionName: "EXT_sRGB" };
+        WebGlConstants.SRGB_ALPHA_EXT = { name: "SRGB_ALPHA_EXT", value: 35906, description: "Unsized sRGB format with unsized alpha component.", extensionName: "EXT_sRGB" };
+        WebGlConstants.SRGB8_ALPHA8_EXT = { name: "SRGB8_ALPHA8_EXT", value: 35907, description: "Sized (8-bit) sRGB and alpha formats.", extensionName: "EXT_sRGB" };
+        WebGlConstants.FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT = { name: "FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT", value: 33296, description: "Returns the framebuffer color encoding.", extensionName: "EXT_sRGB" };
+        WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT_OES = { name: "FRAGMENT_SHADER_DERIVATIVE_HINT_OES", value: 35723, description: "Indicates the accuracy of the derivative calculation for the GLSL built-in functions: dFdx, dFdy, and fwidth.", extensionName: "OES_standard_derivatives" };
+        WebGlConstants.COLOR_ATTACHMENT0_WEBGL = { name: "COLOR_ATTACHMENT0_WEBGL", value: 36064, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT1_WEBGL = { name: "COLOR_ATTACHMENT1_WEBGL", value: 36065, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT2_WEBGL = { name: "COLOR_ATTACHMENT2_WEBGL", value: 36066, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT3_WEBGL = { name: "COLOR_ATTACHMENT3_WEBGL", value: 36067, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT4_WEBGL = { name: "COLOR_ATTACHMENT4_WEBGL", value: 36068, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT5_WEBGL = { name: "COLOR_ATTACHMENT5_WEBGL", value: 36069, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT6_WEBGL = { name: "COLOR_ATTACHMENT6_WEBGL", value: 36070, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT7_WEBGL = { name: "COLOR_ATTACHMENT7_WEBGL", value: 36071, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT8_WEBGL = { name: "COLOR_ATTACHMENT8_WEBGL", value: 36072, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT9_WEBGL = { name: "COLOR_ATTACHMENT9_WEBGL", value: 36073, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT10_WEBGL = { name: "COLOR_ATTACHMENT10_WEBGL", value: 36074, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT11_WEBGL = { name: "COLOR_ATTACHMENT11_WEBGL", value: 36075, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT12_WEBGL = { name: "COLOR_ATTACHMENT12_WEBGL", value: 36076, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT13_WEBGL = { name: "COLOR_ATTACHMENT13_WEBGL", value: 36077, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT14_WEBGL = { name: "COLOR_ATTACHMENT14_WEBGL", value: 36078, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.COLOR_ATTACHMENT15_WEBGL = { name: "COLOR_ATTACHMENT15_WEBGL", value: 36079, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER0_WEBGL = { name: "DRAW_BUFFER0_WEBGL", value: 34853, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER1_WEBGL = { name: "DRAW_BUFFER1_WEBGL", value: 34854, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER2_WEBGL = { name: "DRAW_BUFFER2_WEBGL", value: 34855, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER3_WEBGL = { name: "DRAW_BUFFER3_WEBGL", value: 34856, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER4_WEBGL = { name: "DRAW_BUFFER4_WEBGL", value: 34857, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER5_WEBGL = { name: "DRAW_BUFFER5_WEBGL", value: 34858, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER6_WEBGL = { name: "DRAW_BUFFER6_WEBGL", value: 34859, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER7_WEBGL = { name: "DRAW_BUFFER7_WEBGL", value: 34860, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER8_WEBGL = { name: "DRAW_BUFFER8_WEBGL", value: 34861, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER9_WEBGL = { name: "DRAW_BUFFER9_WEBGL", value: 34862, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER10_WEBGL = { name: "DRAW_BUFFER10_WEBGL", value: 34863, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER11_WEBGL = { name: "DRAW_BUFFER11_WEBGL", value: 34864, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER12_WEBGL = { name: "DRAW_BUFFER12_WEBGL", value: 34865, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER13_WEBGL = { name: "DRAW_BUFFER13_WEBGL", value: 34866, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER14_WEBGL = { name: "DRAW_BUFFER14_WEBGL", value: 34867, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.DRAW_BUFFER15_WEBGL = { name: "DRAW_BUFFER15_WEBGL", value: 34868, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.MAX_COLOR_ATTACHMENTS_WEBGL = { name: "MAX_COLOR_ATTACHMENTS_WEBGL", value: 36063, description: "Maximum number of framebuffer color attachment points", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.MAX_DRAW_BUFFERS_WEBGL = { name: "MAX_DRAW_BUFFERS_WEBGL", value: 34852, description: "Maximum number of draw buffers", extensionName: "WEBGL_draw_buffers" };
+        WebGlConstants.VERTEX_ARRAY_BINDING_OES = { name: "VERTEX_ARRAY_BINDING_OES", value: 34229, description: "The bound vertex array object (VAO).", extensionName: "VERTEX_ARRAY_BINDING_OES" };
+        WebGlConstants.QUERY_COUNTER_BITS_EXT = { name: "QUERY_COUNTER_BITS_EXT", value: 34916, description: "The number of bits used to hold the query result for the given target.", extensionName: "EXT_disjoint_timer_query" };
+        WebGlConstants.CURRENT_QUERY_EXT = { name: "CURRENT_QUERY_EXT", value: 34917, description: "The currently active query.", extensionName: "EXT_disjoint_timer_query" };
+        WebGlConstants.QUERY_RESULT_EXT = { name: "QUERY_RESULT_EXT", value: 34918, description: "The query result.", extensionName: "EXT_disjoint_timer_query" };
+        WebGlConstants.QUERY_RESULT_AVAILABLE_EXT = { name: "QUERY_RESULT_AVAILABLE_EXT", value: 34919, description: "A Boolean indicating whether or not a query result is available.", extensionName: "EXT_disjoint_timer_query" };
+        WebGlConstants.TIME_ELAPSED_EXT = { name: "TIME_ELAPSED_EXT", value: 35007, description: "Elapsed time (in nanoseconds).", extensionName: "EXT_disjoint_timer_query" };
+        WebGlConstants.TIMESTAMP_EXT = { name: "TIMESTAMP_EXT", value: 36392, description: "The current time.", extensionName: "EXT_disjoint_timer_query" };
+        WebGlConstants.GPU_DISJOINT_EXT = { name: "GPU_DISJOINT_EXT", value: 36795, description: "A Boolean indicating whether or not the GPU performed any disjoint operation.", extensionName: "EXT_disjoint_timer_query" };
+        WebGlConstants.zeroMeaningByCommand = {
+            getError: "NO_ERROR",
+            blendFunc: "ZERO",
+            blendFuncSeparate: "ZERO",
+            readBuffer: "NONE",
+            getFramebufferAttachmentParameter: "NONE",
+            texParameterf: "NONE",
+            texParameteri: "NONE",
+            drawArrays: "POINTS",
+            drawElements: "POINTS",
+            drawArraysInstanced: "POINTS",
+            drawBuffers: "POINTS",
+            drawElementsInstanced: "POINTS",
+            drawRangeElements: "POINTS",
+        };
+        WebGlConstants.oneMeaningByCommand = {
+            blendFunc: "ONE",
+            blendFuncSeparate: "ONE",
+            drawArrays: "LINES",
+            drawElements: "LINES",
+            drawArraysInstanced: "LINES",
+            drawBuffers: "LINES",
+            drawElementsInstanced: "LINES",
+            drawRangeElements: "LINES",
+        };
         return WebGlConstants;
     }());
-    WebGlConstants.DEPTH_BUFFER_BIT = { name: "DEPTH_BUFFER_BIT", value: 256, description: "Passed to clear to clear the current depth buffer." };
-    WebGlConstants.STENCIL_BUFFER_BIT = { name: "STENCIL_BUFFER_BIT", value: 1024, description: "Passed to clear to clear the current stencil buffer." };
-    WebGlConstants.COLOR_BUFFER_BIT = { name: "COLOR_BUFFER_BIT", value: 16384, description: "Passed to clear to clear the current color buffer." };
-    WebGlConstants.POINTS = { name: "POINTS", value: 0, description: "Passed to drawElements or drawArrays to draw single points." };
-    WebGlConstants.LINES = { name: "LINES", value: 1, description: "Passed to drawElements or drawArrays to draw lines. Each vertex connects to the one after it." };
-    WebGlConstants.LINE_LOOP = { name: "LINE_LOOP", value: 2, description: "Passed to drawElements or drawArrays to draw lines. Each set of two vertices is treated as a separate line segment." };
-    WebGlConstants.LINE_STRIP = { name: "LINE_STRIP", value: 3, description: "Passed to drawElements or drawArrays to draw a connected group of line segments from the first vertex to the last." };
-    WebGlConstants.TRIANGLES = { name: "TRIANGLES", value: 4, description: "Passed to drawElements or drawArrays to draw triangles. Each set of three vertices creates a separate triangle." };
-    WebGlConstants.TRIANGLE_STRIP = { name: "TRIANGLE_STRIP", value: 5, description: "Passed to drawElements or drawArrays to draw a connected group of triangles." };
-    WebGlConstants.TRIANGLE_FAN = { name: "TRIANGLE_FAN", value: 6, description: "Passed to drawElements or drawArrays to draw a connected group of triangles. Each vertex connects to the previous and the first vertex in the fan." };
-    WebGlConstants.ZERO = { name: "ZERO", value: 0, description: "Passed to blendFunc or blendFuncSeparate to turn off a component." };
-    WebGlConstants.ONE = { name: "ONE", value: 1, description: "Passed to blendFunc or blendFuncSeparate to turn on a component." };
-    WebGlConstants.SRC_COLOR = { name: "SRC_COLOR", value: 768, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by the source elements color." };
-    WebGlConstants.ONE_MINUS_SRC_COLOR = { name: "ONE_MINUS_SRC_COLOR", value: 769, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by one minus the source elements color." };
-    WebGlConstants.SRC_ALPHA = { name: "SRC_ALPHA", value: 770, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by the source's alpha." };
-    WebGlConstants.ONE_MINUS_SRC_ALPHA = { name: "ONE_MINUS_SRC_ALPHA", value: 771, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by one minus the source's alpha." };
-    WebGlConstants.DST_ALPHA = { name: "DST_ALPHA", value: 772, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by the destination's alpha." };
-    WebGlConstants.ONE_MINUS_DST_ALPHA = { name: "ONE_MINUS_DST_ALPHA", value: 773, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by one minus the destination's alpha." };
-    WebGlConstants.DST_COLOR = { name: "DST_COLOR", value: 774, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by the destination's color." };
-    WebGlConstants.ONE_MINUS_DST_COLOR = { name: "ONE_MINUS_DST_COLOR", value: 775, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by one minus the destination's color." };
-    WebGlConstants.SRC_ALPHA_SATURATE = { name: "SRC_ALPHA_SATURATE", value: 776, description: "Passed to blendFunc or blendFuncSeparate to multiply a component by the minimum of source's alpha or one minus the destination's alpha." };
-    WebGlConstants.CONSTANT_COLOR = { name: "CONSTANT_COLOR", value: 32769, description: "Passed to blendFunc or blendFuncSeparate to specify a constant color blend function." };
-    WebGlConstants.ONE_MINUS_CONSTANT_COLOR = { name: "ONE_MINUS_CONSTANT_COLOR", value: 32770, description: "Passed to blendFunc or blendFuncSeparate to specify one minus a constant color blend function." };
-    WebGlConstants.CONSTANT_ALPHA = { name: "CONSTANT_ALPHA", value: 32771, description: "Passed to blendFunc or blendFuncSeparate to specify a constant alpha blend function." };
-    WebGlConstants.ONE_MINUS_CONSTANT_ALPHA = { name: "ONE_MINUS_CONSTANT_ALPHA", value: 32772, description: "Passed to blendFunc or blendFuncSeparate to specify one minus a constant alpha blend function." };
-    WebGlConstants.FUNC_ADD = { name: "FUNC_ADD", value: 32774, description: "Passed to blendEquation or blendEquationSeparate to set an addition blend function." };
-    WebGlConstants.FUNC_SUBSTRACT = { name: "FUNC_SUBSTRACT", value: 32778, description: "Passed to blendEquation or blendEquationSeparate to specify a subtraction blend function (source - destination)." };
-    WebGlConstants.FUNC_REVERSE_SUBTRACT = { name: "FUNC_REVERSE_SUBTRACT", value: 32779, description: "Passed to blendEquation or blendEquationSeparate to specify a reverse subtraction blend function (destination - source)." };
-    WebGlConstants.BLEND_EQUATION = { name: "BLEND_EQUATION", value: 32777, description: "Passed to getParameter to get the current RGB blend function." };
-    WebGlConstants.BLEND_EQUATION_RGB = { name: "BLEND_EQUATION_RGB", value: 32777, description: "Passed to getParameter to get the current RGB blend function. Same as BLEND_EQUATION" };
-    WebGlConstants.BLEND_EQUATION_ALPHA = { name: "BLEND_EQUATION_ALPHA", value: 34877, description: "Passed to getParameter to get the current alpha blend function. Same as BLEND_EQUATION" };
-    WebGlConstants.BLEND_DST_RGB = { name: "BLEND_DST_RGB", value: 32968, description: "Passed to getParameter to get the current destination RGB blend function." };
-    WebGlConstants.BLEND_SRC_RGB = { name: "BLEND_SRC_RGB", value: 32969, description: "Passed to getParameter to get the current destination RGB blend function." };
-    WebGlConstants.BLEND_DST_ALPHA = { name: "BLEND_DST_ALPHA", value: 32970, description: "Passed to getParameter to get the current destination alpha blend function." };
-    WebGlConstants.BLEND_SRC_ALPHA = { name: "BLEND_SRC_ALPHA", value: 32971, description: "Passed to getParameter to get the current source alpha blend function." };
-    WebGlConstants.BLEND_COLOR = { name: "BLEND_COLOR", value: 32773, description: "Passed to getParameter to return a the current blend color." };
-    WebGlConstants.ARRAY_BUFFER_BINDING = { name: "ARRAY_BUFFER_BINDING", value: 34964, description: "Passed to getParameter to get the array buffer binding." };
-    WebGlConstants.ELEMENT_ARRAY_BUFFER_BINDING = { name: "ELEMENT_ARRAY_BUFFER_BINDING", value: 34965, description: "Passed to getParameter to get the current element array buffer." };
-    WebGlConstants.LINE_WIDTH = { name: "LINE_WIDTH", value: 2849, description: "Passed to getParameter to get the current lineWidth (set by the lineWidth method)." };
-    WebGlConstants.ALIASED_POINT_SIZE_RANGE = { name: "ALIASED_POINT_SIZE_RANGE", value: 33901, description: "Passed to getParameter to get the current size of a point drawn with gl.POINTS" };
-    WebGlConstants.ALIASED_LINE_WIDTH_RANGE = { name: "ALIASED_LINE_WIDTH_RANGE", value: 33902, description: "Passed to getParameter to get the range of available widths for a line. Returns a length-2 array with the lo value at 0, and hight at 1." };
-    WebGlConstants.CULL_FACE_MODE = { name: "CULL_FACE_MODE", value: 2885, description: "Passed to getParameter to get the current value of cullFace. Should return FRONT, BACK, or FRONT_AND_BACK" };
-    WebGlConstants.FRONT_FACE = { name: "FRONT_FACE", value: 2886, description: "Passed to getParameter to determine the current value of frontFace. Should return CW or CCW." };
-    WebGlConstants.DEPTH_RANGE = { name: "DEPTH_RANGE", value: 2928, description: "Passed to getParameter to return a length-2 array of floats giving the current depth range." };
-    WebGlConstants.DEPTH_WRITEMASK = { name: "DEPTH_WRITEMASK", value: 2930, description: "Passed to getParameter to determine if the depth write mask is enabled." };
-    WebGlConstants.DEPTH_CLEAR_VALUE = { name: "DEPTH_CLEAR_VALUE", value: 2931, description: "Passed to getParameter to determine the current depth clear value." };
-    WebGlConstants.DEPTH_FUNC = { name: "DEPTH_FUNC", value: 2932, description: "Passed to getParameter to get the current depth function. Returns NEVER, ALWAYS, LESS, EQUAL, LEQUAL, GREATER, GEQUAL, or NOTEQUAL." };
-    WebGlConstants.STENCIL_CLEAR_VALUE = { name: "STENCIL_CLEAR_VALUE", value: 2961, description: "Passed to getParameter to get the value the stencil will be cleared to." };
-    WebGlConstants.STENCIL_FUNC = { name: "STENCIL_FUNC", value: 2962, description: "Passed to getParameter to get the current stencil function. Returns NEVER, ALWAYS, LESS, EQUAL, LEQUAL, GREATER, GEQUAL, or NOTEQUAL." };
-    WebGlConstants.STENCIL_FAIL = { name: "STENCIL_FAIL", value: 2964, description: "Passed to getParameter to get the current stencil fail function. Should return KEEP, REPLACE, INCR, DECR, INVERT, INCR_WRAP, or DECR_WRAP." };
-    WebGlConstants.STENCIL_PASS_DEPTH_FAIL = { name: "STENCIL_PASS_DEPTH_FAIL", value: 2965, description: "Passed to getParameter to get the current stencil fail function should the depth buffer test fail. Should return KEEP, REPLACE, INCR, DECR, INVERT, INCR_WRAP, or DECR_WRAP." };
-    WebGlConstants.STENCIL_PASS_DEPTH_PASS = { name: "STENCIL_PASS_DEPTH_PASS", value: 2966, description: "Passed to getParameter to get the current stencil fail function should the depth buffer test pass. Should return KEEP, REPLACE, INCR, DECR, INVERT, INCR_WRAP, or DECR_WRAP." };
-    WebGlConstants.STENCIL_REF = { name: "STENCIL_REF", value: 2967, description: "Passed to getParameter to get the reference value used for stencil tests." };
-    WebGlConstants.STENCIL_VALUE_MASK = { name: "STENCIL_VALUE_MASK", value: 2963, description: " " };
-    WebGlConstants.STENCIL_WRITEMASK = { name: "STENCIL_WRITEMASK", value: 2968, description: " " };
-    WebGlConstants.STENCIL_BACK_FUNC = { name: "STENCIL_BACK_FUNC", value: 34816, description: " " };
-    WebGlConstants.STENCIL_BACK_FAIL = { name: "STENCIL_BACK_FAIL", value: 34817, description: " " };
-    WebGlConstants.STENCIL_BACK_PASS_DEPTH_FAIL = { name: "STENCIL_BACK_PASS_DEPTH_FAIL", value: 34818, description: " " };
-    WebGlConstants.STENCIL_BACK_PASS_DEPTH_PASS = { name: "STENCIL_BACK_PASS_DEPTH_PASS", value: 34819, description: " " };
-    WebGlConstants.STENCIL_BACK_REF = { name: "STENCIL_BACK_REF", value: 36003, description: " " };
-    WebGlConstants.STENCIL_BACK_VALUE_MASK = { name: "STENCIL_BACK_VALUE_MASK", value: 36004, description: " " };
-    WebGlConstants.STENCIL_BACK_WRITEMASK = { name: "STENCIL_BACK_WRITEMASK", value: 36005, description: " " };
-    WebGlConstants.VIEWPORT = { name: "VIEWPORT", value: 2978, description: "Returns an Int32Array with four elements for the current viewport dimensions." };
-    WebGlConstants.SCISSOR_BOX = { name: "SCISSOR_BOX", value: 3088, description: "Returns an Int32Array with four elements for the current scissor box dimensions." };
-    WebGlConstants.COLOR_CLEAR_VALUE = { name: "COLOR_CLEAR_VALUE", value: 3106, description: " " };
-    WebGlConstants.COLOR_WRITEMASK = { name: "COLOR_WRITEMASK", value: 3107, description: " " };
-    WebGlConstants.UNPACK_ALIGNMENT = { name: "UNPACK_ALIGNMENT", value: 3317, description: " " };
-    WebGlConstants.PACK_ALIGNMENT = { name: "PACK_ALIGNMENT", value: 3333, description: " " };
-    WebGlConstants.MAX_TEXTURE_SIZE = { name: "MAX_TEXTURE_SIZE", value: 3379, description: " " };
-    WebGlConstants.MAX_VIEWPORT_DIMS = { name: "MAX_VIEWPORT_DIMS", value: 3386, description: " " };
-    WebGlConstants.SUBPIXEL_BITS = { name: "SUBPIXEL_BITS", value: 3408, description: " " };
-    WebGlConstants.RED_BITS = { name: "RED_BITS", value: 3410, description: " " };
-    WebGlConstants.GREEN_BITS = { name: "GREEN_BITS", value: 3411, description: " " };
-    WebGlConstants.BLUE_BITS = { name: "BLUE_BITS", value: 3412, description: " " };
-    WebGlConstants.ALPHA_BITS = { name: "ALPHA_BITS", value: 3413, description: " " };
-    WebGlConstants.DEPTH_BITS = { name: "DEPTH_BITS", value: 3414, description: " " };
-    WebGlConstants.STENCIL_BITS = { name: "STENCIL_BITS", value: 3415, description: " " };
-    WebGlConstants.POLYGON_OFFSET_UNITS = { name: "POLYGON_OFFSET_UNITS", value: 10752, description: " " };
-    WebGlConstants.POLYGON_OFFSET_FACTOR = { name: "POLYGON_OFFSET_FACTOR", value: 32824, description: " " };
-    WebGlConstants.TEXTURE_BINDING_2D = { name: "TEXTURE_BINDING_2D", value: 32873, description: " " };
-    WebGlConstants.SAMPLE_BUFFERS = { name: "SAMPLE_BUFFERS", value: 32936, description: " " };
-    WebGlConstants.SAMPLES = { name: "SAMPLES", value: 32937, description: " " };
-    WebGlConstants.SAMPLE_COVERAGE_VALUE = { name: "SAMPLE_COVERAGE_VALUE", value: 32938, description: " " };
-    WebGlConstants.SAMPLE_COVERAGE_INVERT = { name: "SAMPLE_COVERAGE_INVERT", value: 32939, description: " " };
-    WebGlConstants.COMPRESSED_TEXTURE_FORMATS = { name: "COMPRESSED_TEXTURE_FORMATS", value: 34467, description: " " };
-    WebGlConstants.VENDOR = { name: "VENDOR", value: 7936, description: " " };
-    WebGlConstants.RENDERER = { name: "RENDERER", value: 7937, description: " " };
-    WebGlConstants.VERSION = { name: "VERSION", value: 7938, description: " " };
-    WebGlConstants.IMPLEMENTATION_COLOR_READ_TYPE = { name: "IMPLEMENTATION_COLOR_READ_TYPE", value: 35738, description: " " };
-    WebGlConstants.IMPLEMENTATION_COLOR_READ_FORMAT = { name: "IMPLEMENTATION_COLOR_READ_FORMAT", value: 35739, description: " " };
-    WebGlConstants.BROWSER_DEFAULT_WEBGL = { name: "BROWSER_DEFAULT_WEBGL", value: 37444, description: " " };
-    WebGlConstants.STATIC_DRAW = { name: "STATIC_DRAW", value: 35044, description: "Passed to bufferData as a hint about whether the contents of the buffer are likely to be used often and not change often." };
-    WebGlConstants.STREAM_DRAW = { name: "STREAM_DRAW", value: 35040, description: "Passed to bufferData as a hint about whether the contents of the buffer are likely to not be used often." };
-    WebGlConstants.DYNAMIC_DRAW = { name: "DYNAMIC_DRAW", value: 35048, description: "Passed to bufferData as a hint about whether the contents of the buffer are likely to be used often and change often." };
-    WebGlConstants.ARRAY_BUFFER = { name: "ARRAY_BUFFER", value: 34962, description: "Passed to bindBuffer or bufferData to specify the type of buffer being used." };
-    WebGlConstants.ELEMENT_ARRAY_BUFFER = { name: "ELEMENT_ARRAY_BUFFER", value: 34963, description: "Passed to bindBuffer or bufferData to specify the type of buffer being used." };
-    WebGlConstants.BUFFER_SIZE = { name: "BUFFER_SIZE", value: 34660, description: "Passed to getBufferParameter to get a buffer's size." };
-    WebGlConstants.BUFFER_USAGE = { name: "BUFFER_USAGE", value: 34661, description: "Passed to getBufferParameter to get the hint for the buffer passed in when it was created." };
-    WebGlConstants.CURRENT_VERTEX_ATTRIB = { name: "CURRENT_VERTEX_ATTRIB", value: 34342, description: "Passed to getVertexAttrib to read back the current vertex attribute." };
-    WebGlConstants.VERTEX_ATTRIB_ARRAY_ENABLED = { name: "VERTEX_ATTRIB_ARRAY_ENABLED", value: 34338, description: " " };
-    WebGlConstants.VERTEX_ATTRIB_ARRAY_SIZE = { name: "VERTEX_ATTRIB_ARRAY_SIZE", value: 34339, description: " " };
-    WebGlConstants.VERTEX_ATTRIB_ARRAY_STRIDE = { name: "VERTEX_ATTRIB_ARRAY_STRIDE", value: 34340, description: " " };
-    WebGlConstants.VERTEX_ATTRIB_ARRAY_TYPE = { name: "VERTEX_ATTRIB_ARRAY_TYPE", value: 34341, description: " " };
-    WebGlConstants.VERTEX_ATTRIB_ARRAY_NORMALIZED = { name: "VERTEX_ATTRIB_ARRAY_NORMALIZED", value: 34922, description: " " };
-    WebGlConstants.VERTEX_ATTRIB_ARRAY_POINTER = { name: "VERTEX_ATTRIB_ARRAY_POINTER", value: 34373, description: " " };
-    WebGlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING = { name: "VERTEX_ATTRIB_ARRAY_BUFFER_BINDING", value: 34975, description: " " };
-    WebGlConstants.CULL_FACE = { name: "CULL_FACE", value: 2884, description: "Passed to enable/disable to turn on/off culling. Can also be used with getParameter to find the current culling method." };
-    WebGlConstants.FRONT = { name: "FRONT", value: 1028, description: "Passed to cullFace to specify that only front faces should be drawn." };
-    WebGlConstants.BACK = { name: "BACK", value: 1029, description: "Passed to cullFace to specify that only back faces should be drawn." };
-    WebGlConstants.FRONT_AND_BACK = { name: "FRONT_AND_BACK", value: 1032, description: "Passed to cullFace to specify that front and back faces should be drawn." };
-    WebGlConstants.BLEND = { name: "BLEND", value: 3042, description: "Passed to enable/disable to turn on/off blending. Can also be used with getParameter to find the current blending method." };
-    WebGlConstants.DEPTH_TEST = { name: "DEPTH_TEST", value: 2929, description: "Passed to enable/disable to turn on/off the depth test. Can also be used with getParameter to query the depth test." };
-    WebGlConstants.DITHER = { name: "DITHER", value: 3024, description: "Passed to enable/disable to turn on/off dithering. Can also be used with getParameter to find the current dithering method." };
-    WebGlConstants.POLYGON_OFFSET_FILL = { name: "POLYGON_OFFSET_FILL", value: 32823, description: "Passed to enable/disable to turn on/off the polygon offset. Useful for rendering hidden-line images, decals, and or solids with highlighted edges. Can also be used with getParameter to query the scissor test." };
-    WebGlConstants.SAMPLE_ALPHA_TO_COVERAGE = { name: "SAMPLE_ALPHA_TO_COVERAGE", value: 32926, description: "Passed to enable/disable to turn on/off the alpha to coverage. Used in multi-sampling alpha channels." };
-    WebGlConstants.SAMPLE_COVERAGE = { name: "SAMPLE_COVERAGE", value: 32928, description: "Passed to enable/disable to turn on/off the sample coverage. Used in multi-sampling." };
-    WebGlConstants.SCISSOR_TEST = { name: "SCISSOR_TEST", value: 3089, description: "Passed to enable/disable to turn on/off the scissor test. Can also be used with getParameter to query the scissor test." };
-    WebGlConstants.STENCIL_TEST = { name: "STENCIL_TEST", value: 2960, description: "Passed to enable/disable to turn on/off the stencil test. Can also be used with getParameter to query the stencil test." };
-    WebGlConstants.NO_ERROR = { name: "NO_ERROR", value: 0, description: "Returned from getError." };
-    WebGlConstants.INVALID_ENUM = { name: "INVALID_ENUM", value: 1280, description: "Returned from getError." };
-    WebGlConstants.INVALID_VALUE = { name: "INVALID_VALUE", value: 1281, description: "Returned from getError." };
-    WebGlConstants.INVALID_OPERATION = { name: "INVALID_OPERATION", value: 1282, description: "Returned from getError." };
-    WebGlConstants.OUT_OF_MEMORY = { name: "OUT_OF_MEMORY", value: 1285, description: "Returned from getError." };
-    WebGlConstants.CONTEXT_LOST_WEBGL = { name: "CONTEXT_LOST_WEBGL", value: 37442, description: "Returned from getError." };
-    WebGlConstants.CW = { name: "CW", value: 2304, description: "Passed to frontFace to specify the front face of a polygon is drawn in the clockwise direction" };
-    WebGlConstants.CCW = { name: "CCW", value: 2305, description: "Passed to frontFace to specify the front face of a polygon is drawn in the counter clockwise direction" };
-    WebGlConstants.DONT_CARE = { name: "DONT_CARE", value: 4352, description: "There is no preference for this behavior." };
-    WebGlConstants.FASTEST = { name: "FASTEST", value: 4353, description: "The most efficient behavior should be used." };
-    WebGlConstants.NICEST = { name: "NICEST", value: 4354, description: "The most correct or the highest quality option should be used." };
-    WebGlConstants.GENERATE_MIPMAP_HINT = { name: "GENERATE_MIPMAP_HINT", value: 33170, description: "Hint for the quality of filtering when generating mipmap images with WebGLRenderingContext.generateMipmap()." };
-    WebGlConstants.BYTE = { name: "BYTE", value: 5120, description: " " };
-    WebGlConstants.UNSIGNED_BYTE = { name: "UNSIGNED_BYTE", value: 5121, description: " " };
-    WebGlConstants.SHORT = { name: "SHORT", value: 5122, description: " " };
-    WebGlConstants.UNSIGNED_SHORT = { name: "UNSIGNED_SHORT", value: 5123, description: " " };
-    WebGlConstants.INT = { name: "INT", value: 5124, description: " " };
-    WebGlConstants.UNSIGNED_INT = { name: "UNSIGNED_INT", value: 5125, description: " " };
-    WebGlConstants.FLOAT = { name: "FLOAT", value: 5126, description: " " };
-    WebGlConstants.DEPTH_COMPONENT = { name: "DEPTH_COMPONENT", value: 6402, description: " " };
-    WebGlConstants.ALPHA = { name: "ALPHA", value: 6406, description: " " };
-    WebGlConstants.RGB = { name: "RGB", value: 6407, description: " " };
-    WebGlConstants.RGBA = { name: "RGBA", value: 6408, description: " " };
-    WebGlConstants.LUMINANCE = { name: "LUMINANCE", value: 6409, description: " " };
-    WebGlConstants.LUMINANCE_ALPHA = { name: "LUMINANCE_ALPHA", value: 6410, description: " " };
-    WebGlConstants.UNSIGNED_SHORT_4_4_4_4 = { name: "UNSIGNED_SHORT_4_4_4_4", value: 32819, description: " " };
-    WebGlConstants.UNSIGNED_SHORT_5_5_5_1 = { name: "UNSIGNED_SHORT_5_5_5_1", value: 32820, description: " " };
-    WebGlConstants.UNSIGNED_SHORT_5_6_5 = { name: "UNSIGNED_SHORT_5_6_5", value: 33635, description: " " };
-    WebGlConstants.FRAGMENT_SHADER = { name: "FRAGMENT_SHADER", value: 35632, description: "Passed to createShader to define a fragment shader." };
-    WebGlConstants.VERTEX_SHADER = { name: "VERTEX_SHADER", value: 35633, description: "Passed to createShader to define a vertex shader" };
-    WebGlConstants.COMPILE_STATUS = { name: "COMPILE_STATUS", value: 35713, description: "Passed to getShaderParamter to get the status of the compilation. Returns false if the shader was not compiled. You can then query getShaderInfoLog to find the exact error" };
-    WebGlConstants.DELETE_STATUS = { name: "DELETE_STATUS", value: 35712, description: "Passed to getShaderParamter to determine if a shader was deleted via deleteShader. Returns true if it was, false otherwise." };
-    WebGlConstants.LINK_STATUS = { name: "LINK_STATUS", value: 35714, description: "Passed to getProgramParameter after calling linkProgram to determine if a program was linked correctly. Returns false if there were errors. Use getProgramInfoLog to find the exact error." };
-    WebGlConstants.VALIDATE_STATUS = { name: "VALIDATE_STATUS", value: 35715, description: "Passed to getProgramParameter after calling validateProgram to determine if it is valid. Returns false if errors were found." };
-    WebGlConstants.ATTACHED_SHADERS = { name: "ATTACHED_SHADERS", value: 35717, description: "Passed to getProgramParameter after calling attachShader to determine if the shader was attached correctly. Returns false if errors occurred." };
-    WebGlConstants.ACTIVE_ATTRIBUTES = { name: "ACTIVE_ATTRIBUTES", value: 35721, description: "Passed to getProgramParameter to get the number of attributes active in a program." };
-    WebGlConstants.ACTIVE_UNIFORMS = { name: "ACTIVE_UNIFORMS", value: 35718, description: "Passed to getProgramParamter to get the number of uniforms active in a program." };
-    WebGlConstants.MAX_VERTEX_ATTRIBS = { name: "MAX_VERTEX_ATTRIBS", value: 34921, description: " " };
-    WebGlConstants.MAX_VERTEX_UNIFORM_VECTORS = { name: "MAX_VERTEX_UNIFORM_VECTORS", value: 36347, description: " " };
-    WebGlConstants.MAX_VARYING_VECTORS = { name: "MAX_VARYING_VECTORS", value: 36348, description: " " };
-    WebGlConstants.MAX_COMBINED_TEXTURE_IMAGE_UNITS = { name: "MAX_COMBINED_TEXTURE_IMAGE_UNITS", value: 35661, description: " " };
-    WebGlConstants.MAX_VERTEX_TEXTURE_IMAGE_UNITS = { name: "MAX_VERTEX_TEXTURE_IMAGE_UNITS", value: 35660, description: " " };
-    WebGlConstants.MAX_TEXTURE_IMAGE_UNITS = { name: "MAX_TEXTURE_IMAGE_UNITS", value: 34930, description: "Implementation dependent number of maximum texture units. At least 8." };
-    WebGlConstants.MAX_FRAGMENT_UNIFORM_VECTORS = { name: "MAX_FRAGMENT_UNIFORM_VECTORS", value: 36349, description: " " };
-    WebGlConstants.SHADER_TYPE = { name: "SHADER_TYPE", value: 35663, description: " " };
-    WebGlConstants.SHADING_LANGUAGE_VERSION = { name: "SHADING_LANGUAGE_VERSION", value: 35724, description: " " };
-    WebGlConstants.CURRENT_PROGRAM = { name: "CURRENT_PROGRAM", value: 35725, description: " " };
-    WebGlConstants.NEVER = { name: "NEVER", value: 512, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will never pass. i.e. Nothing will be drawn." };
-    WebGlConstants.ALWAYS = { name: "ALWAYS", value: 519, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will always pass. i.e. Pixels will be drawn in the order they are drawn." };
-    WebGlConstants.LESS = { name: "LESS", value: 513, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is less than the stored value." };
-    WebGlConstants.EQUAL = { name: "EQUAL", value: 514, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is equals to the stored value." };
-    WebGlConstants.LEQUAL = { name: "LEQUAL", value: 515, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is less than or equal to the stored value." };
-    WebGlConstants.GREATER = { name: "GREATER", value: 516, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is greater than the stored value." };
-    WebGlConstants.GEQUAL = { name: "GEQUAL", value: 518, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is greater than or equal to the stored value." };
-    WebGlConstants.NOTEQUAL = { name: "NOTEQUAL", value: 517, description: "Passed to depthFunction or stencilFunction to specify depth or stencil tests will pass if the new depth value is not equal to the stored value." };
-    WebGlConstants.KEEP = { name: "KEEP", value: 7680, description: " " };
-    WebGlConstants.REPLACE = { name: "REPLACE", value: 7681, description: " " };
-    WebGlConstants.INCR = { name: "INCR", value: 7682, description: " " };
-    WebGlConstants.DECR = { name: "DECR", value: 7683, description: " " };
-    WebGlConstants.INVERT = { name: "INVERT", value: 5386, description: " " };
-    WebGlConstants.INCR_WRAP = { name: "INCR_WRAP", value: 34055, description: " " };
-    WebGlConstants.DECR_WRAP = { name: "DECR_WRAP", value: 34056, description: " " };
-    WebGlConstants.NEAREST = { name: "NEAREST", value: 9728, description: " " };
-    WebGlConstants.LINEAR = { name: "LINEAR", value: 9729, description: " " };
-    WebGlConstants.NEAREST_MIPMAP_NEAREST = { name: "NEAREST_MIPMAP_NEAREST", value: 9984, description: " " };
-    WebGlConstants.LINEAR_MIPMAP_NEAREST = { name: "LINEAR_MIPMAP_NEAREST", value: 9985, description: " " };
-    WebGlConstants.NEAREST_MIPMAP_LINEAR = { name: "NEAREST_MIPMAP_LINEAR", value: 9986, description: " " };
-    WebGlConstants.LINEAR_MIPMAP_LINEAR = { name: "LINEAR_MIPMAP_LINEAR", value: 9987, description: " " };
-    WebGlConstants.TEXTURE_MAG_FILTER = { name: "TEXTURE_MAG_FILTER", value: 10240, description: " " };
-    WebGlConstants.TEXTURE_MIN_FILTER = { name: "TEXTURE_MIN_FILTER", value: 10241, description: " " };
-    WebGlConstants.TEXTURE_WRAP_S = { name: "TEXTURE_WRAP_S", value: 10242, description: " " };
-    WebGlConstants.TEXTURE_WRAP_T = { name: "TEXTURE_WRAP_T", value: 10243, description: " " };
-    WebGlConstants.TEXTURE_2D = { name: "TEXTURE_2D", value: 3553, description: " " };
-    WebGlConstants.TEXTURE = { name: "TEXTURE", value: 5890, description: " " };
-    WebGlConstants.TEXTURE_CUBE_MAP = { name: "TEXTURE_CUBE_MAP", value: 34067, description: " " };
-    WebGlConstants.TEXTURE_BINDING_CUBE_MAP = { name: "TEXTURE_BINDING_CUBE_MAP", value: 34068, description: " " };
-    WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_X = { name: "TEXTURE_CUBE_MAP_POSITIVE_X", value: 34069, description: " " };
-    WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_X = { name: "TEXTURE_CUBE_MAP_NEGATIVE_X", value: 34070, description: " " };
-    WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Y = { name: "TEXTURE_CUBE_MAP_POSITIVE_Y", value: 34071, description: " " };
-    WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Y = { name: "TEXTURE_CUBE_MAP_NEGATIVE_Y", value: 34072, description: " " };
-    WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Z = { name: "TEXTURE_CUBE_MAP_POSITIVE_Z", value: 34073, description: " " };
-    WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Z = { name: "TEXTURE_CUBE_MAP_NEGATIVE_Z", value: 34074, description: " " };
-    WebGlConstants.MAX_CUBE_MAP_TEXTURE_SIZE = { name: "MAX_CUBE_MAP_TEXTURE_SIZE", value: 34076, description: " " };
-    WebGlConstants.TEXTURE0 = { name: "TEXTURE0", value: 33984, description: "A texture unit." };
-    WebGlConstants.TEXTURE1 = { name: "TEXTURE1", value: 33985, description: "A texture unit." };
-    WebGlConstants.TEXTURE2 = { name: "TEXTURE2", value: 33986, description: "A texture unit." };
-    WebGlConstants.TEXTURE3 = { name: "TEXTURE3", value: 33987, description: "A texture unit." };
-    WebGlConstants.TEXTURE4 = { name: "TEXTURE4", value: 33988, description: "A texture unit." };
-    WebGlConstants.TEXTURE5 = { name: "TEXTURE5", value: 33989, description: "A texture unit." };
-    WebGlConstants.TEXTURE6 = { name: "TEXTURE6", value: 33990, description: "A texture unit." };
-    WebGlConstants.TEXTURE7 = { name: "TEXTURE7", value: 33991, description: "A texture unit." };
-    WebGlConstants.TEXTURE8 = { name: "TEXTURE8", value: 33992, description: "A texture unit." };
-    WebGlConstants.TEXTURE9 = { name: "TEXTURE9", value: 33993, description: "A texture unit." };
-    WebGlConstants.TEXTURE10 = { name: "TEXTURE10", value: 33994, description: "A texture unit." };
-    WebGlConstants.TEXTURE11 = { name: "TEXTURE11", value: 33995, description: "A texture unit." };
-    WebGlConstants.TEXTURE12 = { name: "TEXTURE12", value: 33996, description: "A texture unit." };
-    WebGlConstants.TEXTURE13 = { name: "TEXTURE13", value: 33997, description: "A texture unit." };
-    WebGlConstants.TEXTURE14 = { name: "TEXTURE14", value: 33998, description: "A texture unit." };
-    WebGlConstants.TEXTURE15 = { name: "TEXTURE15", value: 33999, description: "A texture unit." };
-    WebGlConstants.TEXTURE16 = { name: "TEXTURE16", value: 34000, description: "A texture unit." };
-    WebGlConstants.TEXTURE17 = { name: "TEXTURE17", value: 34001, description: "A texture unit." };
-    WebGlConstants.TEXTURE18 = { name: "TEXTURE18", value: 34002, description: "A texture unit." };
-    WebGlConstants.TEXTURE19 = { name: "TEXTURE19", value: 34003, description: "A texture unit." };
-    WebGlConstants.TEXTURE20 = { name: "TEXTURE20", value: 34004, description: "A texture unit." };
-    WebGlConstants.TEXTURE21 = { name: "TEXTURE21", value: 34005, description: "A texture unit." };
-    WebGlConstants.TEXTURE22 = { name: "TEXTURE22", value: 34006, description: "A texture unit." };
-    WebGlConstants.TEXTURE23 = { name: "TEXTURE23", value: 34007, description: "A texture unit." };
-    WebGlConstants.TEXTURE24 = { name: "TEXTURE24", value: 34008, description: "A texture unit." };
-    WebGlConstants.TEXTURE25 = { name: "TEXTURE25", value: 34009, description: "A texture unit." };
-    WebGlConstants.TEXTURE26 = { name: "TEXTURE26", value: 34010, description: "A texture unit." };
-    WebGlConstants.TEXTURE27 = { name: "TEXTURE27", value: 34011, description: "A texture unit." };
-    WebGlConstants.TEXTURE28 = { name: "TEXTURE28", value: 34012, description: "A texture unit." };
-    WebGlConstants.TEXTURE29 = { name: "TEXTURE29", value: 34013, description: "A texture unit." };
-    WebGlConstants.TEXTURE30 = { name: "TEXTURE30", value: 34014, description: "A texture unit." };
-    WebGlConstants.TEXTURE31 = { name: "TEXTURE31", value: 34015, description: "A texture unit." };
-    WebGlConstants.ACTIVE_TEXTURE = { name: "ACTIVE_TEXTURE", value: 34016, description: "The current active texture unit." };
-    WebGlConstants.REPEAT = { name: "REPEAT", value: 10497, description: " " };
-    WebGlConstants.CLAMP_TO_EDGE = { name: "CLAMP_TO_EDGE", value: 33071, description: " " };
-    WebGlConstants.MIRRORED_REPEAT = { name: "MIRRORED_REPEAT", value: 33648, description: " " };
-    WebGlConstants.FLOAT_VEC2 = { name: "FLOAT_VEC2", value: 35664, description: " " };
-    WebGlConstants.FLOAT_VEC3 = { name: "FLOAT_VEC3", value: 35665, description: " " };
-    WebGlConstants.FLOAT_VEC4 = { name: "FLOAT_VEC4", value: 35666, description: " " };
-    WebGlConstants.INT_VEC2 = { name: "INT_VEC2", value: 35667, description: " " };
-    WebGlConstants.INT_VEC3 = { name: "INT_VEC3", value: 35668, description: " " };
-    WebGlConstants.INT_VEC4 = { name: "INT_VEC4", value: 35669, description: " " };
-    WebGlConstants.BOOL = { name: "BOOL", value: 35670, description: " " };
-    WebGlConstants.BOOL_VEC2 = { name: "BOOL_VEC2", value: 35671, description: " " };
-    WebGlConstants.BOOL_VEC3 = { name: "BOOL_VEC3", value: 35672, description: " " };
-    WebGlConstants.BOOL_VEC4 = { name: "BOOL_VEC4", value: 35673, description: " " };
-    WebGlConstants.FLOAT_MAT2 = { name: "FLOAT_MAT2", value: 35674, description: " " };
-    WebGlConstants.FLOAT_MAT3 = { name: "FLOAT_MAT3", value: 35675, description: " " };
-    WebGlConstants.FLOAT_MAT4 = { name: "FLOAT_MAT4", value: 35676, description: " " };
-    WebGlConstants.SAMPLER_2D = { name: "SAMPLER_2D", value: 35678, description: " " };
-    WebGlConstants.SAMPLER_CUBE = { name: "SAMPLER_CUBE", value: 35680, description: " " };
-    WebGlConstants.LOW_FLOAT = { name: "LOW_FLOAT", value: 36336, description: " " };
-    WebGlConstants.MEDIUM_FLOAT = { name: "MEDIUM_FLOAT", value: 36337, description: " " };
-    WebGlConstants.HIGH_FLOAT = { name: "HIGH_FLOAT", value: 36338, description: " " };
-    WebGlConstants.LOW_INT = { name: "LOW_INT", value: 36339, description: " " };
-    WebGlConstants.MEDIUM_INT = { name: "MEDIUM_INT", value: 36340, description: " " };
-    WebGlConstants.HIGH_INT = { name: "HIGH_INT", value: 36341, description: " " };
-    WebGlConstants.FRAMEBUFFER = { name: "FRAMEBUFFER", value: 36160, description: " " };
-    WebGlConstants.RENDERBUFFER = { name: "RENDERBUFFER", value: 36161, description: " " };
-    WebGlConstants.RGBA4 = { name: "RGBA4", value: 32854, description: " " };
-    WebGlConstants.RGB5_A1 = { name: "RGB5_A1", value: 32855, description: " " };
-    WebGlConstants.RGB565 = { name: "RGB565", value: 36194, description: " " };
-    WebGlConstants.DEPTH_COMPONENT16 = { name: "DEPTH_COMPONENT16", value: 33189, description: " " };
-    WebGlConstants.STENCIL_INDEX = { name: "STENCIL_INDEX", value: 6401, description: " " };
-    WebGlConstants.STENCIL_INDEX8 = { name: "STENCIL_INDEX8", value: 36168, description: " " };
-    WebGlConstants.DEPTH_STENCIL = { name: "DEPTH_STENCIL", value: 34041, description: " " };
-    WebGlConstants.RENDERBUFFER_WIDTH = { name: "RENDERBUFFER_WIDTH", value: 36162, description: " " };
-    WebGlConstants.RENDERBUFFER_HEIGHT = { name: "RENDERBUFFER_HEIGHT", value: 36163, description: " " };
-    WebGlConstants.RENDERBUFFER_INTERNAL_FORMAT = { name: "RENDERBUFFER_INTERNAL_FORMAT", value: 36164, description: " " };
-    WebGlConstants.RENDERBUFFER_RED_SIZE = { name: "RENDERBUFFER_RED_SIZE", value: 36176, description: " " };
-    WebGlConstants.RENDERBUFFER_GREEN_SIZE = { name: "RENDERBUFFER_GREEN_SIZE", value: 36177, description: " " };
-    WebGlConstants.RENDERBUFFER_BLUE_SIZE = { name: "RENDERBUFFER_BLUE_SIZE", value: 36178, description: " " };
-    WebGlConstants.RENDERBUFFER_ALPHA_SIZE = { name: "RENDERBUFFER_ALPHA_SIZE", value: 36179, description: " " };
-    WebGlConstants.RENDERBUFFER_DEPTH_SIZE = { name: "RENDERBUFFER_DEPTH_SIZE", value: 36180, description: " " };
-    WebGlConstants.RENDERBUFFER_STENCIL_SIZE = { name: "RENDERBUFFER_STENCIL_SIZE", value: 36181, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE = { name: "FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE", value: 36048, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_NAME = { name: "FRAMEBUFFER_ATTACHMENT_OBJECT_NAME", value: 36049, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL = { name: "FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL", value: 36050, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE = { name: "FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE", value: 36051, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT0 = { name: "COLOR_ATTACHMENT0", value: 36064, description: " " };
-    WebGlConstants.DEPTH_ATTACHMENT = { name: "DEPTH_ATTACHMENT", value: 36096, description: " " };
-    WebGlConstants.STENCIL_ATTACHMENT = { name: "STENCIL_ATTACHMENT", value: 36128, description: " " };
-    WebGlConstants.DEPTH_STENCIL_ATTACHMENT = { name: "DEPTH_STENCIL_ATTACHMENT", value: 33306, description: " " };
-    WebGlConstants.NONE = { name: "NONE", value: 0, description: " " };
-    WebGlConstants.FRAMEBUFFER_COMPLETE = { name: "FRAMEBUFFER_COMPLETE", value: 36053, description: " " };
-    WebGlConstants.FRAMEBUFFER_INCOMPLETE_ATTACHMENT = { name: "FRAMEBUFFER_INCOMPLETE_ATTACHMENT", value: 36054, description: " " };
-    WebGlConstants.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = { name: "FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT", value: 36055, description: " " };
-    WebGlConstants.FRAMEBUFFER_INCOMPLETE_DIMENSIONS = { name: "FRAMEBUFFER_INCOMPLETE_DIMENSIONS", value: 36057, description: " " };
-    WebGlConstants.FRAMEBUFFER_UNSUPPORTED = { name: "FRAMEBUFFER_UNSUPPORTED", value: 36061, description: " " };
-    WebGlConstants.FRAMEBUFFER_BINDING = { name: "FRAMEBUFFER_BINDING", value: 36006, description: " " };
-    WebGlConstants.RENDERBUFFER_BINDING = { name: "RENDERBUFFER_BINDING", value: 36007, description: " " };
-    WebGlConstants.MAX_RENDERBUFFER_SIZE = { name: "MAX_RENDERBUFFER_SIZE", value: 34024, description: " " };
-    WebGlConstants.INVALID_FRAMEBUFFER_OPERATION = { name: "INVALID_FRAMEBUFFER_OPERATION", value: 1286, description: " " };
-    WebGlConstants.UNPACK_FLIP_Y_WEBGL = { name: "UNPACK_FLIP_Y_WEBGL", value: 37440, description: " " };
-    WebGlConstants.UNPACK_PREMULTIPLY_ALPHA_WEBGL = { name: "UNPACK_PREMULTIPLY_ALPHA_WEBGL", value: 37441, description: " " };
-    WebGlConstants.UNPACK_COLORSPACE_CONVERSION_WEBGL = { name: "UNPACK_COLORSPACE_CONVERSION_WEBGL", value: 37443, description: " " };
-    WebGlConstants.READ_BUFFER = { name: "READ_BUFFER", value: 3074, description: " " };
-    WebGlConstants.UNPACK_ROW_LENGTH = { name: "UNPACK_ROW_LENGTH", value: 3314, description: " " };
-    WebGlConstants.UNPACK_SKIP_ROWS = { name: "UNPACK_SKIP_ROWS", value: 3315, description: " " };
-    WebGlConstants.UNPACK_SKIP_PIXELS = { name: "UNPACK_SKIP_PIXELS", value: 3316, description: " " };
-    WebGlConstants.PACK_ROW_LENGTH = { name: "PACK_ROW_LENGTH", value: 3330, description: " " };
-    WebGlConstants.PACK_SKIP_ROWS = { name: "PACK_SKIP_ROWS", value: 3331, description: " " };
-    WebGlConstants.PACK_SKIP_PIXELS = { name: "PACK_SKIP_PIXELS", value: 3332, description: " " };
-    WebGlConstants.TEXTURE_BINDING_3D = { name: "TEXTURE_BINDING_3D", value: 32874, description: " " };
-    WebGlConstants.UNPACK_SKIP_IMAGES = { name: "UNPACK_SKIP_IMAGES", value: 32877, description: " " };
-    WebGlConstants.UNPACK_IMAGE_HEIGHT = { name: "UNPACK_IMAGE_HEIGHT", value: 32878, description: " " };
-    WebGlConstants.MAX_3D_TEXTURE_SIZE = { name: "MAX_3D_TEXTURE_SIZE", value: 32883, description: " " };
-    WebGlConstants.MAX_ELEMENTS_VERTICES = { name: "MAX_ELEMENTS_VERTICES", value: 33000, description: " " };
-    WebGlConstants.MAX_ELEMENTS_INDICES = { name: "MAX_ELEMENTS_INDICES", value: 33001, description: " " };
-    WebGlConstants.MAX_TEXTURE_LOD_BIAS = { name: "MAX_TEXTURE_LOD_BIAS", value: 34045, description: " " };
-    WebGlConstants.MAX_FRAGMENT_UNIFORM_COMPONENTS = { name: "MAX_FRAGMENT_UNIFORM_COMPONENTS", value: 35657, description: " " };
-    WebGlConstants.MAX_VERTEX_UNIFORM_COMPONENTS = { name: "MAX_VERTEX_UNIFORM_COMPONENTS", value: 35658, description: " " };
-    WebGlConstants.MAX_ARRAY_TEXTURE_LAYERS = { name: "MAX_ARRAY_TEXTURE_LAYERS", value: 35071, description: " " };
-    WebGlConstants.MIN_PROGRAM_TEXEL_OFFSET = { name: "MIN_PROGRAM_TEXEL_OFFSET", value: 35076, description: " " };
-    WebGlConstants.MAX_PROGRAM_TEXEL_OFFSET = { name: "MAX_PROGRAM_TEXEL_OFFSET", value: 35077, description: " " };
-    WebGlConstants.MAX_VARYING_COMPONENTS = { name: "MAX_VARYING_COMPONENTS", value: 35659, description: " " };
-    WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT = { name: "FRAGMENT_SHADER_DERIVATIVE_HINT", value: 35723, description: " " };
-    WebGlConstants.RASTERIZER_DISCARD = { name: "RASTERIZER_DISCARD", value: 35977, description: " " };
-    WebGlConstants.VERTEX_ARRAY_BINDING = { name: "VERTEX_ARRAY_BINDING", value: 34229, description: " " };
-    WebGlConstants.MAX_VERTEX_OUTPUT_COMPONENTS = { name: "MAX_VERTEX_OUTPUT_COMPONENTS", value: 37154, description: " " };
-    WebGlConstants.MAX_FRAGMENT_INPUT_COMPONENTS = { name: "MAX_FRAGMENT_INPUT_COMPONENTS", value: 37157, description: " " };
-    WebGlConstants.MAX_SERVER_WAIT_TIMEOUT = { name: "MAX_SERVER_WAIT_TIMEOUT", value: 37137, description: " " };
-    WebGlConstants.MAX_ELEMENT_INDEX = { name: "MAX_ELEMENT_INDEX", value: 36203, description: " " };
-    WebGlConstants.RED = { name: "RED", value: 6403, description: " " };
-    WebGlConstants.RGB8 = { name: "RGB8", value: 32849, description: " " };
-    WebGlConstants.RGBA8 = { name: "RGBA8", value: 32856, description: " " };
-    WebGlConstants.RGB10_A2 = { name: "RGB10_A2", value: 32857, description: " " };
-    WebGlConstants.TEXTURE_3D = { name: "TEXTURE_3D", value: 32879, description: " " };
-    WebGlConstants.TEXTURE_WRAP_R = { name: "TEXTURE_WRAP_R", value: 32882, description: " " };
-    WebGlConstants.TEXTURE_MIN_LOD = { name: "TEXTURE_MIN_LOD", value: 33082, description: " " };
-    WebGlConstants.TEXTURE_MAX_LOD = { name: "TEXTURE_MAX_LOD", value: 33083, description: " " };
-    WebGlConstants.TEXTURE_BASE_LEVEL = { name: "TEXTURE_BASE_LEVEL", value: 33084, description: " " };
-    WebGlConstants.TEXTURE_MAX_LEVEL = { name: "TEXTURE_MAX_LEVEL", value: 33085, description: " " };
-    WebGlConstants.TEXTURE_COMPARE_MODE = { name: "TEXTURE_COMPARE_MODE", value: 34892, description: " " };
-    WebGlConstants.TEXTURE_COMPARE_FUNC = { name: "TEXTURE_COMPARE_FUNC", value: 34893, description: " " };
-    WebGlConstants.SRGB = { name: "SRGB", value: 35904, description: " " };
-    WebGlConstants.SRGB8 = { name: "SRGB8", value: 35905, description: " " };
-    WebGlConstants.SRGB8_ALPHA8 = { name: "SRGB8_ALPHA8", value: 35907, description: " " };
-    WebGlConstants.COMPARE_REF_TO_TEXTURE = { name: "COMPARE_REF_TO_TEXTURE", value: 34894, description: " " };
-    WebGlConstants.RGBA32F = { name: "RGBA32F", value: 34836, description: " " };
-    WebGlConstants.RGB32F = { name: "RGB32F", value: 34837, description: " " };
-    WebGlConstants.RGBA16F = { name: "RGBA16F", value: 34842, description: " " };
-    WebGlConstants.RGB16F = { name: "RGB16F", value: 34843, description: " " };
-    WebGlConstants.TEXTURE_2D_ARRAY = { name: "TEXTURE_2D_ARRAY", value: 35866, description: " " };
-    WebGlConstants.TEXTURE_BINDING_2D_ARRAY = { name: "TEXTURE_BINDING_2D_ARRAY", value: 35869, description: " " };
-    WebGlConstants.R11F_G11F_B10F = { name: "R11F_G11F_B10F", value: 35898, description: " " };
-    WebGlConstants.RGB9_E5 = { name: "RGB9_E5", value: 35901, description: " " };
-    WebGlConstants.RGBA32UI = { name: "RGBA32UI", value: 36208, description: " " };
-    WebGlConstants.RGB32UI = { name: "RGB32UI", value: 36209, description: " " };
-    WebGlConstants.RGBA16UI = { name: "RGBA16UI", value: 36214, description: " " };
-    WebGlConstants.RGB16UI = { name: "RGB16UI", value: 36215, description: " " };
-    WebGlConstants.RGBA8UI = { name: "RGBA8UI", value: 36220, description: " " };
-    WebGlConstants.RGB8UI = { name: "RGB8UI", value: 36221, description: " " };
-    WebGlConstants.RGBA32I = { name: "RGBA32I", value: 36226, description: " " };
-    WebGlConstants.RGB32I = { name: "RGB32I", value: 36227, description: " " };
-    WebGlConstants.RGBA16I = { name: "RGBA16I", value: 36232, description: " " };
-    WebGlConstants.RGB16I = { name: "RGB16I", value: 36233, description: " " };
-    WebGlConstants.RGBA8I = { name: "RGBA8I", value: 36238, description: " " };
-    WebGlConstants.RGB8I = { name: "RGB8I", value: 36239, description: " " };
-    WebGlConstants.RED_INTEGER = { name: "RED_INTEGER", value: 36244, description: " " };
-    WebGlConstants.RGB_INTEGER = { name: "RGB_INTEGER", value: 36248, description: " " };
-    WebGlConstants.RGBA_INTEGER = { name: "RGBA_INTEGER", value: 36249, description: " " };
-    WebGlConstants.R8 = { name: "R8", value: 33321, description: " " };
-    WebGlConstants.RG8 = { name: "RG8", value: 33323, description: " " };
-    WebGlConstants.R16F = { name: "R16F", value: 33325, description: " " };
-    WebGlConstants.R32F = { name: "R32F", value: 33326, description: " " };
-    WebGlConstants.RG16F = { name: "RG16F", value: 33327, description: " " };
-    WebGlConstants.RG32F = { name: "RG32F", value: 33328, description: " " };
-    WebGlConstants.R8I = { name: "R8I", value: 33329, description: " " };
-    WebGlConstants.R8UI = { name: "R8UI", value: 33330, description: " " };
-    WebGlConstants.R16I = { name: "R16I", value: 33331, description: " " };
-    WebGlConstants.R16UI = { name: "R16UI", value: 33332, description: " " };
-    WebGlConstants.R32I = { name: "R32I", value: 33333, description: " " };
-    WebGlConstants.R32UI = { name: "R32UI", value: 33334, description: " " };
-    WebGlConstants.RG8I = { name: "RG8I", value: 33335, description: " " };
-    WebGlConstants.RG8UI = { name: "RG8UI", value: 33336, description: " " };
-    WebGlConstants.RG16I = { name: "RG16I", value: 33337, description: " " };
-    WebGlConstants.RG16UI = { name: "RG16UI", value: 33338, description: " " };
-    WebGlConstants.RG32I = { name: "RG32I", value: 33339, description: " " };
-    WebGlConstants.RG32UI = { name: "RG32UI", value: 33340, description: " " };
-    WebGlConstants.R8_SNORM = { name: "R8_SNORM", value: 36756, description: " " };
-    WebGlConstants.RG8_SNORM = { name: "RG8_SNORM", value: 36757, description: " " };
-    WebGlConstants.RGB8_SNORM = { name: "RGB8_SNORM", value: 36758, description: " " };
-    WebGlConstants.RGBA8_SNORM = { name: "RGBA8_SNORM", value: 36759, description: " " };
-    WebGlConstants.RGB10_A2UI = { name: "RGB10_A2UI", value: 36975, description: " " };
-    WebGlConstants.TEXTURE_IMMUTABLE_FORMAT = { name: "TEXTURE_IMMUTABLE_FORMAT", value: 37167, description: " " };
-    WebGlConstants.TEXTURE_IMMUTABLE_LEVELS = { name: "TEXTURE_IMMUTABLE_LEVELS", value: 33503, description: " " };
-    WebGlConstants.UNSIGNED_INT_2_10_10_10_REV = { name: "UNSIGNED_INT_2_10_10_10_REV", value: 33640, description: " " };
-    WebGlConstants.UNSIGNED_INT_10F_11F_11F_REV = { name: "UNSIGNED_INT_10F_11F_11F_REV", value: 35899, description: " " };
-    WebGlConstants.UNSIGNED_INT_5_9_9_9_REV = { name: "UNSIGNED_INT_5_9_9_9_REV", value: 35902, description: " " };
-    WebGlConstants.FLOAT_32_UNSIGNED_INT_24_8_REV = { name: "FLOAT_32_UNSIGNED_INT_24_8_REV", value: 36269, description: " " };
-    WebGlConstants.UNSIGNED_INT_24_8 = { name: "UNSIGNED_INT_24_8", value: 34042, description: " " };
-    WebGlConstants.HALF_FLOAT = { name: "HALF_FLOAT", value: 5131, description: " " };
-    WebGlConstants.RG = { name: "RG", value: 33319, description: " " };
-    WebGlConstants.RG_INTEGER = { name: "RG_INTEGER", value: 33320, description: " " };
-    WebGlConstants.INT_2_10_10_10_REV = { name: "INT_2_10_10_10_REV", value: 36255, description: " " };
-    WebGlConstants.CURRENT_QUERY = { name: "CURRENT_QUERY", value: 34917, description: " " };
-    WebGlConstants.QUERY_RESULT = { name: "QUERY_RESULT", value: 34918, description: " " };
-    WebGlConstants.QUERY_RESULT_AVAILABLE = { name: "QUERY_RESULT_AVAILABLE", value: 34919, description: " " };
-    WebGlConstants.ANY_SAMPLES_PASSED = { name: "ANY_SAMPLES_PASSED", value: 35887, description: " " };
-    WebGlConstants.ANY_SAMPLES_PASSED_CONSERVATIVE = { name: "ANY_SAMPLES_PASSED_CONSERVATIVE", value: 36202, description: " " };
-    WebGlConstants.MAX_DRAW_BUFFERS = { name: "MAX_DRAW_BUFFERS", value: 34852, description: " " };
-    WebGlConstants.DRAW_BUFFER0 = { name: "DRAW_BUFFER0", value: 34853, description: " " };
-    WebGlConstants.DRAW_BUFFER1 = { name: "DRAW_BUFFER1", value: 34854, description: " " };
-    WebGlConstants.DRAW_BUFFER2 = { name: "DRAW_BUFFER2", value: 34855, description: " " };
-    WebGlConstants.DRAW_BUFFER3 = { name: "DRAW_BUFFER3", value: 34856, description: " " };
-    WebGlConstants.DRAW_BUFFER4 = { name: "DRAW_BUFFER4", value: 34857, description: " " };
-    WebGlConstants.DRAW_BUFFER5 = { name: "DRAW_BUFFER5", value: 34858, description: " " };
-    WebGlConstants.DRAW_BUFFER6 = { name: "DRAW_BUFFER6", value: 34859, description: " " };
-    WebGlConstants.DRAW_BUFFER7 = { name: "DRAW_BUFFER7", value: 34860, description: " " };
-    WebGlConstants.DRAW_BUFFER8 = { name: "DRAW_BUFFER8", value: 34861, description: " " };
-    WebGlConstants.DRAW_BUFFER9 = { name: "DRAW_BUFFER9", value: 34862, description: " " };
-    WebGlConstants.DRAW_BUFFER10 = { name: "DRAW_BUFFER10", value: 34863, description: " " };
-    WebGlConstants.DRAW_BUFFER11 = { name: "DRAW_BUFFER11", value: 34864, description: " " };
-    WebGlConstants.DRAW_BUFFER12 = { name: "DRAW_BUFFER12", value: 34865, description: " " };
-    WebGlConstants.DRAW_BUFFER13 = { name: "DRAW_BUFFER13", value: 34866, description: " " };
-    WebGlConstants.DRAW_BUFFER14 = { name: "DRAW_BUFFER14", value: 34867, description: " " };
-    WebGlConstants.DRAW_BUFFER15 = { name: "DRAW_BUFFER15", value: 34868, description: " " };
-    WebGlConstants.MAX_COLOR_ATTACHMENTS = { name: "MAX_COLOR_ATTACHMENTS", value: 36063, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT1 = { name: "COLOR_ATTACHMENT1", value: 36065, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT2 = { name: "COLOR_ATTACHMENT2", value: 36066, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT3 = { name: "COLOR_ATTACHMENT3", value: 36067, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT4 = { name: "COLOR_ATTACHMENT4", value: 36068, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT5 = { name: "COLOR_ATTACHMENT5", value: 36069, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT6 = { name: "COLOR_ATTACHMENT6", value: 36070, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT7 = { name: "COLOR_ATTACHMENT7", value: 36071, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT8 = { name: "COLOR_ATTACHMENT8", value: 36072, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT9 = { name: "COLOR_ATTACHMENT9", value: 36073, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT10 = { name: "COLOR_ATTACHMENT10", value: 36074, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT11 = { name: "COLOR_ATTACHMENT11", value: 36075, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT12 = { name: "COLOR_ATTACHMENT12", value: 36076, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT13 = { name: "COLOR_ATTACHMENT13", value: 36077, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT14 = { name: "COLOR_ATTACHMENT14", value: 36078, description: " " };
-    WebGlConstants.COLOR_ATTACHMENT15 = { name: "COLOR_ATTACHMENT15", value: 36079, description: " " };
-    WebGlConstants.SAMPLER_3D = { name: "SAMPLER_3D", value: 35679, description: " " };
-    WebGlConstants.SAMPLER_2D_SHADOW = { name: "SAMPLER_2D_SHADOW", value: 35682, description: " " };
-    WebGlConstants.SAMPLER_2D_ARRAY = { name: "SAMPLER_2D_ARRAY", value: 36289, description: " " };
-    WebGlConstants.SAMPLER_2D_ARRAY_SHADOW = { name: "SAMPLER_2D_ARRAY_SHADOW", value: 36292, description: " " };
-    WebGlConstants.SAMPLER_CUBE_SHADOW = { name: "SAMPLER_CUBE_SHADOW", value: 36293, description: " " };
-    WebGlConstants.INT_SAMPLER_2D = { name: "INT_SAMPLER_2D", value: 36298, description: " " };
-    WebGlConstants.INT_SAMPLER_3D = { name: "INT_SAMPLER_3D", value: 36299, description: " " };
-    WebGlConstants.INT_SAMPLER_CUBE = { name: "INT_SAMPLER_CUBE", value: 36300, description: " " };
-    WebGlConstants.INT_SAMPLER_2D_ARRAY = { name: "INT_SAMPLER_2D_ARRAY", value: 36303, description: " " };
-    WebGlConstants.UNSIGNED_INT_SAMPLER_2D = { name: "UNSIGNED_INT_SAMPLER_2D", value: 36306, description: " " };
-    WebGlConstants.UNSIGNED_INT_SAMPLER_3D = { name: "UNSIGNED_INT_SAMPLER_3D", value: 36307, description: " " };
-    WebGlConstants.UNSIGNED_INT_SAMPLER_CUBE = { name: "UNSIGNED_INT_SAMPLER_CUBE", value: 36308, description: " " };
-    WebGlConstants.UNSIGNED_INT_SAMPLER_2D_ARRAY = { name: "UNSIGNED_INT_SAMPLER_2D_ARRAY", value: 36311, description: " " };
-    WebGlConstants.MAX_SAMPLES = { name: "MAX_SAMPLES", value: 36183, description: " " };
-    WebGlConstants.SAMPLER_BINDING = { name: "SAMPLER_BINDING", value: 35097, description: " " };
-    WebGlConstants.PIXEL_PACK_BUFFER = { name: "PIXEL_PACK_BUFFER", value: 35051, description: " " };
-    WebGlConstants.PIXEL_UNPACK_BUFFER = { name: "PIXEL_UNPACK_BUFFER", value: 35052, description: " " };
-    WebGlConstants.PIXEL_PACK_BUFFER_BINDING = { name: "PIXEL_PACK_BUFFER_BINDING", value: 35053, description: " " };
-    WebGlConstants.PIXEL_UNPACK_BUFFER_BINDING = { name: "PIXEL_UNPACK_BUFFER_BINDING", value: 35055, description: " " };
-    WebGlConstants.COPY_READ_BUFFER = { name: "COPY_READ_BUFFER", value: 36662, description: " " };
-    WebGlConstants.COPY_WRITE_BUFFER = { name: "COPY_WRITE_BUFFER", value: 36663, description: " " };
-    WebGlConstants.COPY_READ_BUFFER_BINDING = { name: "COPY_READ_BUFFER_BINDING", value: 36662, description: " " };
-    WebGlConstants.COPY_WRITE_BUFFER_BINDING = { name: "COPY_WRITE_BUFFER_BINDING", value: 36663, description: " " };
-    WebGlConstants.FLOAT_MAT2x3 = { name: "FLOAT_MAT2x3", value: 35685, description: " " };
-    WebGlConstants.FLOAT_MAT2x4 = { name: "FLOAT_MAT2x4", value: 35686, description: " " };
-    WebGlConstants.FLOAT_MAT3x2 = { name: "FLOAT_MAT3x2", value: 35687, description: " " };
-    WebGlConstants.FLOAT_MAT3x4 = { name: "FLOAT_MAT3x4", value: 35688, description: " " };
-    WebGlConstants.FLOAT_MAT4x2 = { name: "FLOAT_MAT4x2", value: 35689, description: " " };
-    WebGlConstants.FLOAT_MAT4x3 = { name: "FLOAT_MAT4x3", value: 35690, description: " " };
-    WebGlConstants.UNSIGNED_INT_VEC2 = { name: "UNSIGNED_INT_VEC2", value: 36294, description: " " };
-    WebGlConstants.UNSIGNED_INT_VEC3 = { name: "UNSIGNED_INT_VEC3", value: 36295, description: " " };
-    WebGlConstants.UNSIGNED_INT_VEC4 = { name: "UNSIGNED_INT_VEC4", value: 36296, description: " " };
-    WebGlConstants.UNSIGNED_NORMALIZED = { name: "UNSIGNED_NORMALIZED", value: 35863, description: " " };
-    WebGlConstants.SIGNED_NORMALIZED = { name: "SIGNED_NORMALIZED", value: 36764, description: " " };
-    WebGlConstants.VERTEX_ATTRIB_ARRAY_INTEGER = { name: "VERTEX_ATTRIB_ARRAY_INTEGER", value: 35069, description: " " };
-    WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR = { name: "VERTEX_ATTRIB_ARRAY_DIVISOR", value: 35070, description: " " };
-    WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_MODE = { name: "TRANSFORM_FEEDBACK_BUFFER_MODE", value: 35967, description: " " };
-    WebGlConstants.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS = { name: "MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS", value: 35968, description: " " };
-    WebGlConstants.TRANSFORM_FEEDBACK_VARYINGS = { name: "TRANSFORM_FEEDBACK_VARYINGS", value: 35971, description: " " };
-    WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_START = { name: "TRANSFORM_FEEDBACK_BUFFER_START", value: 35972, description: " " };
-    WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_SIZE = { name: "TRANSFORM_FEEDBACK_BUFFER_SIZE", value: 35973, description: " " };
-    WebGlConstants.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN = { name: "TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN", value: 35976, description: " " };
-    WebGlConstants.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS = { name: "MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS", value: 35978, description: " " };
-    WebGlConstants.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS = { name: "MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS", value: 35979, description: " " };
-    WebGlConstants.INTERLEAVED_ATTRIBS = { name: "INTERLEAVED_ATTRIBS", value: 35980, description: " " };
-    WebGlConstants.SEPARATE_ATTRIBS = { name: "SEPARATE_ATTRIBS", value: 35981, description: " " };
-    WebGlConstants.TRANSFORM_FEEDBACK_BUFFER = { name: "TRANSFORM_FEEDBACK_BUFFER", value: 35982, description: " " };
-    WebGlConstants.TRANSFORM_FEEDBACK_BUFFER_BINDING = { name: "TRANSFORM_FEEDBACK_BUFFER_BINDING", value: 35983, description: " " };
-    WebGlConstants.TRANSFORM_FEEDBACK = { name: "TRANSFORM_FEEDBACK", value: 36386, description: " " };
-    WebGlConstants.TRANSFORM_FEEDBACK_PAUSED = { name: "TRANSFORM_FEEDBACK_PAUSED", value: 36387, description: " " };
-    WebGlConstants.TRANSFORM_FEEDBACK_ACTIVE = { name: "TRANSFORM_FEEDBACK_ACTIVE", value: 36388, description: " " };
-    WebGlConstants.TRANSFORM_FEEDBACK_BINDING = { name: "TRANSFORM_FEEDBACK_BINDING", value: 36389, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING = { name: "FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING", value: 33296, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE = { name: "FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE", value: 33297, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_RED_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_RED_SIZE", value: 33298, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_GREEN_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_GREEN_SIZE", value: 33299, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_BLUE_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_BLUE_SIZE", value: 33300, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE", value: 33301, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE", value: 33302, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE = { name: "FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE", value: 33303, description: " " };
-    WebGlConstants.FRAMEBUFFER_DEFAULT = { name: "FRAMEBUFFER_DEFAULT", value: 33304, description: " " };
-    WebGlConstants.DEPTH24_STENCIL8 = { name: "DEPTH24_STENCIL8", value: 35056, description: " " };
-    WebGlConstants.DRAW_FRAMEBUFFER_BINDING = { name: "DRAW_FRAMEBUFFER_BINDING", value: 36006, description: " " };
-    WebGlConstants.READ_FRAMEBUFFER = { name: "READ_FRAMEBUFFER", value: 36008, description: " " };
-    WebGlConstants.DRAW_FRAMEBUFFER = { name: "DRAW_FRAMEBUFFER", value: 36009, description: " " };
-    WebGlConstants.READ_FRAMEBUFFER_BINDING = { name: "READ_FRAMEBUFFER_BINDING", value: 36010, description: " " };
-    WebGlConstants.RENDERBUFFER_SAMPLES = { name: "RENDERBUFFER_SAMPLES", value: 36011, description: " " };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER = { name: "FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER", value: 36052, description: " " };
-    WebGlConstants.FRAMEBUFFER_INCOMPLETE_MULTISAMPLE = { name: "FRAMEBUFFER_INCOMPLETE_MULTISAMPLE", value: 36182, description: " " };
-    WebGlConstants.UNIFORM_BUFFER = { name: "UNIFORM_BUFFER", value: 35345, description: " " };
-    WebGlConstants.UNIFORM_BUFFER_BINDING = { name: "UNIFORM_BUFFER_BINDING", value: 35368, description: " " };
-    WebGlConstants.UNIFORM_BUFFER_START = { name: "UNIFORM_BUFFER_START", value: 35369, description: " " };
-    WebGlConstants.UNIFORM_BUFFER_SIZE = { name: "UNIFORM_BUFFER_SIZE", value: 35370, description: " " };
-    WebGlConstants.MAX_VERTEX_UNIFORM_BLOCKS = { name: "MAX_VERTEX_UNIFORM_BLOCKS", value: 35371, description: " " };
-    WebGlConstants.MAX_FRAGMENT_UNIFORM_BLOCKS = { name: "MAX_FRAGMENT_UNIFORM_BLOCKS", value: 35373, description: " " };
-    WebGlConstants.MAX_COMBINED_UNIFORM_BLOCKS = { name: "MAX_COMBINED_UNIFORM_BLOCKS", value: 35374, description: " " };
-    WebGlConstants.MAX_UNIFORM_BUFFER_BINDINGS = { name: "MAX_UNIFORM_BUFFER_BINDINGS", value: 35375, description: " " };
-    WebGlConstants.MAX_UNIFORM_BLOCK_SIZE = { name: "MAX_UNIFORM_BLOCK_SIZE", value: 35376, description: " " };
-    WebGlConstants.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS = { name: "MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS", value: 35377, description: " " };
-    WebGlConstants.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS = { name: "MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS", value: 35379, description: " " };
-    WebGlConstants.UNIFORM_BUFFER_OFFSET_ALIGNMENT = { name: "UNIFORM_BUFFER_OFFSET_ALIGNMENT", value: 35380, description: " " };
-    WebGlConstants.ACTIVE_UNIFORM_BLOCKS = { name: "ACTIVE_UNIFORM_BLOCKS", value: 35382, description: " " };
-    WebGlConstants.UNIFORM_TYPE = { name: "UNIFORM_TYPE", value: 35383, description: " " };
-    WebGlConstants.UNIFORM_SIZE = { name: "UNIFORM_SIZE", value: 35384, description: " " };
-    WebGlConstants.UNIFORM_BLOCK_INDEX = { name: "UNIFORM_BLOCK_INDEX", value: 35386, description: " " };
-    WebGlConstants.UNIFORM_OFFSET = { name: "UNIFORM_OFFSET", value: 35387, description: " " };
-    WebGlConstants.UNIFORM_ARRAY_STRIDE = { name: "UNIFORM_ARRAY_STRIDE", value: 35388, description: " " };
-    WebGlConstants.UNIFORM_MATRIX_STRIDE = { name: "UNIFORM_MATRIX_STRIDE", value: 35389, description: " " };
-    WebGlConstants.UNIFORM_IS_ROW_MAJOR = { name: "UNIFORM_IS_ROW_MAJOR", value: 35390, description: " " };
-    WebGlConstants.UNIFORM_BLOCK_BINDING = { name: "UNIFORM_BLOCK_BINDING", value: 35391, description: " " };
-    WebGlConstants.UNIFORM_BLOCK_DATA_SIZE = { name: "UNIFORM_BLOCK_DATA_SIZE", value: 35392, description: " " };
-    WebGlConstants.UNIFORM_BLOCK_ACTIVE_UNIFORMS = { name: "UNIFORM_BLOCK_ACTIVE_UNIFORMS", value: 35394, description: " " };
-    WebGlConstants.UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES = { name: "UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES", value: 35395, description: " " };
-    WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER = { name: "UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER", value: 35396, description: " " };
-    WebGlConstants.UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER = { name: "UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER", value: 35398, description: " " };
-    WebGlConstants.OBJECT_TYPE = { name: "OBJECT_TYPE", value: 37138, description: " " };
-    WebGlConstants.SYNC_CONDITION = { name: "SYNC_CONDITION", value: 37139, description: " " };
-    WebGlConstants.SYNC_STATUS = { name: "SYNC_STATUS", value: 37140, description: " " };
-    WebGlConstants.SYNC_FLAGS = { name: "SYNC_FLAGS", value: 37141, description: " " };
-    WebGlConstants.SYNC_FENCE = { name: "SYNC_FENCE", value: 37142, description: " " };
-    WebGlConstants.SYNC_GPU_COMMANDS_COMPLETE = { name: "SYNC_GPU_COMMANDS_COMPLETE", value: 37143, description: " " };
-    WebGlConstants.UNSIGNALED = { name: "UNSIGNALED", value: 37144, description: " " };
-    WebGlConstants.SIGNALED = { name: "SIGNALED", value: 37145, description: " " };
-    WebGlConstants.ALREADY_SIGNALED = { name: "ALREADY_SIGNALED", value: 37146, description: " " };
-    WebGlConstants.TIMEOUT_EXPIRED = { name: "TIMEOUT_EXPIRED", value: 37147, description: " " };
-    WebGlConstants.CONDITION_SATISFIED = { name: "CONDITION_SATISFIED", value: 37148, description: " " };
-    WebGlConstants.WAIT_FAILED = { name: "WAIT_FAILED", value: 37149, description: " " };
-    WebGlConstants.SYNC_FLUSH_COMMANDS_BIT = { name: "SYNC_FLUSH_COMMANDS_BIT", value: 1, description: " " };
-    WebGlConstants.COLOR = { name: "COLOR", value: 6144, description: " " };
-    WebGlConstants.DEPTH = { name: "DEPTH", value: 6145, description: " " };
-    WebGlConstants.STENCIL = { name: "STENCIL", value: 6146, description: " " };
-    WebGlConstants.MIN = { name: "MIN", value: 32775, description: " " };
-    WebGlConstants.MAX = { name: "MAX", value: 32776, description: " " };
-    WebGlConstants.DEPTH_COMPONENT24 = { name: "DEPTH_COMPONENT24", value: 33190, description: " " };
-    WebGlConstants.STREAM_READ = { name: "STREAM_READ", value: 35041, description: " " };
-    WebGlConstants.STREAM_COPY = { name: "STREAM_COPY", value: 35042, description: " " };
-    WebGlConstants.STATIC_READ = { name: "STATIC_READ", value: 35045, description: " " };
-    WebGlConstants.STATIC_COPY = { name: "STATIC_COPY", value: 35046, description: " " };
-    WebGlConstants.DYNAMIC_READ = { name: "DYNAMIC_READ", value: 35049, description: " " };
-    WebGlConstants.DYNAMIC_COPY = { name: "DYNAMIC_COPY", value: 35050, description: " " };
-    WebGlConstants.DEPTH_COMPONENT32F = { name: "DEPTH_COMPONENT32F", value: 36012, description: " " };
-    WebGlConstants.DEPTH32F_STENCIL8 = { name: "DEPTH32F_STENCIL8", value: 36013, description: " " };
-    WebGlConstants.INVALID_INDEX = { name: "INVALID_INDEX", value: 4294967295, description: " " };
-    WebGlConstants.TIMEOUT_IGNORED = { name: "TIMEOUT_IGNORED", value: -1, description: " " };
-    WebGlConstants.MAX_CLIENT_WAIT_TIMEOUT_WEBGL = { name: "MAX_CLIENT_WAIT_TIMEOUT_WEBGL", value: 37447, description: " " };
-    // extensions
-    WebGlConstants.VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE = { name: "VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE", value: 35070, description: "Describes the frequency divisor used for instanced rendering.", extensionName: "ANGLE_instanced_arrays" };
-    WebGlConstants.UNMASKED_VENDOR_WEBGL = { name: "UNMASKED_VENDOR_WEBGL", value: 37445, description: "Passed to getParameter to get the vendor string of the graphics driver.", extensionName: "ANGLE_instanced_arrays" };
-    WebGlConstants.UNMASKED_RENDERER_WEBGL = { name: "UNMASKED_RENDERER_WEBGL", value: 37446, description: "Passed to getParameter to get the renderer string of the graphics driver.", extensionName: "WEBGL_debug_renderer_info" };
-    WebGlConstants.MAX_TEXTURE_MAX_ANISOTROPY_EXT = { name: "MAX_TEXTURE_MAX_ANISOTROPY_EXT", value: 34047, description: "Returns the maximum available anisotropy.", extensionName: "EXT_texture_filter_anisotropic" };
-    WebGlConstants.TEXTURE_MAX_ANISOTROPY_EXT = { name: "TEXTURE_MAX_ANISOTROPY_EXT", value: 34046, description: "Passed to texParameter to set the desired maximum anisotropy for a texture.", extensionName: "EXT_texture_filter_anisotropic" };
-    WebGlConstants.COMPRESSED_RGB_S3TC_DXT1_EXT = { name: "COMPRESSED_RGB_S3TC_DXT1_EXT", value: 33776, description: "A DXT1-compressed image in an RGB image format.", extensionName: "WEBGL_compressed_texture_s3tc" };
-    WebGlConstants.COMPRESSED_RGBA_S3TC_DXT1_EXT = { name: "COMPRESSED_RGBA_S3TC_DXT1_EXT", value: 33777, description: "A DXT1-compressed image in an RGB image format with a simple on/off alpha value.", extensionName: "WEBGL_compressed_texture_s3tc" };
-    WebGlConstants.COMPRESSED_RGBA_S3TC_DXT3_EXT = { name: "COMPRESSED_RGBA_S3TC_DXT3_EXT", value: 33778, description: "A DXT3-compressed image in an RGBA image format. Compared to a 32-bit RGBA texture, it offers 4:1 compression.", extensionName: "WEBGL_compressed_texture_s3tc" };
-    WebGlConstants.COMPRESSED_RGBA_S3TC_DXT5_EXT = { name: "COMPRESSED_RGBA_S3TC_DXT5_EXT", value: 33779, description: "A DXT5-compressed image in an RGBA image format. It also provides a 4:1 compression, but differs to the DXT3 compression in how the alpha compression is done.", extensionName: "WEBGL_compressed_texture_s3tc" };
-    WebGlConstants.COMPRESSED_R11_EAC = { name: "COMPRESSED_R11_EAC", value: 37488, description: "One-channel (red) unsigned format compression.", extensionName: "WEBGL_compressed_texture_etc" };
-    WebGlConstants.COMPRESSED_SIGNED_R11_EAC = { name: "COMPRESSED_SIGNED_R11_EAC", value: 37489, description: "One-channel (red) signed format compression.", extensionName: "WEBGL_compressed_texture_etc" };
-    WebGlConstants.COMPRESSED_RG11_EAC = { name: "COMPRESSED_RG11_EAC", value: 37490, description: "Two-channel (red and green) unsigned format compression.", extensionName: "WEBGL_compressed_texture_etc" };
-    WebGlConstants.COMPRESSED_SIGNED_RG11_EAC = { name: "COMPRESSED_SIGNED_RG11_EAC", value: 37491, description: "Two-channel (red and green) signed format compression.", extensionName: "WEBGL_compressed_texture_etc" };
-    WebGlConstants.COMPRESSED_RGB8_ETC2 = { name: "COMPRESSED_RGB8_ETC2", value: 37492, description: "Compresses RBG8 data with no alpha channel.", extensionName: "WEBGL_compressed_texture_etc" };
-    WebGlConstants.COMPRESSED_RGBA8_ETC2_EAC = { name: "COMPRESSED_RGBA8_ETC2_EAC", value: 37493, description: "Compresses RGBA8 data. The RGB part is encoded the same as RGB_ETC2, but the alpha part is encoded separately.", extensionName: "WEBGL_compressed_texture_etc" };
-    WebGlConstants.COMPRESSED_SRGB8_ETC2 = { name: "COMPRESSED_SRGB8_ETC2", value: 37494, description: "Compresses sRBG8 data with no alpha channel.", extensionName: "WEBGL_compressed_texture_etc" };
-    WebGlConstants.COMPRESSED_SRGB8_ALPHA8_ETC2_EAC = { name: "COMPRESSED_SRGB8_ALPHA8_ETC2_EAC", value: 37495, description: "Compresses sRGBA8 data. The sRGB part is encoded the same as SRGB_ETC2, but the alpha part is encoded separately.", extensionName: "WEBGL_compressed_texture_etc" };
-    WebGlConstants.COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 = { name: "COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2", value: 37496, description: "Similar to RGB8_ETC, but with ability to punch through the alpha channel, which means to make it completely opaque or transparent.", extensionName: "WEBGL_compressed_texture_etc" };
-    WebGlConstants.COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2 = { name: "COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2", value: 37497, description: "Similar to SRGB8_ETC, but with ability to punch through the alpha channel, which means to make it completely opaque or transparent.", extensionName: "WEBGL_compressed_texture_etc" };
-    WebGlConstants.COMPRESSED_RGB_PVRTC_4BPPV1_IMG = { name: "COMPRESSED_RGB_PVRTC_4BPPV1_IMG", value: 35840, description: "RGB compression in 4-bit mode. One block for each 4×4 pixels.", extensionName: "WEBGL_compressed_texture_pvrtc" };
-    WebGlConstants.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG = { name: "COMPRESSED_RGBA_PVRTC_4BPPV1_IMG", value: 35842, description: "RGBA compression in 4-bit mode. One block for each 4×4 pixels.", extensionName: "WEBGL_compressed_texture_pvrtc" };
-    WebGlConstants.COMPRESSED_RGB_PVRTC_2BPPV1_IMG = { name: "COMPRESSED_RGB_PVRTC_2BPPV1_IMG", value: 35841, description: "RGB compression in 2-bit mode. One block for each 8×4 pixels.", extensionName: "WEBGL_compressed_texture_pvrtc" };
-    WebGlConstants.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG = { name: "COMPRESSED_RGBA_PVRTC_2BPPV1_IMG", value: 35843, description: "RGBA compression in 2-bit mode. One block for each 8×4 pixe", extensionName: "WEBGL_compressed_texture_pvrtc" };
-    WebGlConstants.COMPRESSED_RGB_ETC1_WEBGL = { name: "COMPRESSED_RGB_ETC1_WEBGL", value: 36196, description: "Compresses 24-bit RGB data with no alpha channel.", extensionName: "WEBGL_compressed_texture_etc1" };
-    WebGlConstants.COMPRESSED_RGB_ATC_WEBGL = { name: "COMPRESSED_RGB_ATC_WEBGL", value: 35986, description: "Compresses RGB textures with no alpha channel.", extensionName: "WEBGL_compressed_texture_atc" };
-    WebGlConstants.COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL = { name: "COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL", value: 35986, description: "Compresses RGBA textures using explicit alpha encoding (useful when alpha transitions are sharp).", extensionName: "WEBGL_compressed_texture_atc" };
-    WebGlConstants.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL = { name: "COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL", value: 34798, description: "Compresses RGBA textures using interpolated alpha encoding (useful when alpha transitions are gradient).", extensionName: "WEBGL_compressed_texture_atc" };
-    WebGlConstants.UNSIGNED_INT_24_8_WEBGL = { name: "UNSIGNED_INT_24_8_WEBGL", value: 34042, description: "Unsigned integer type for 24-bit depth texture data.", extensionName: "WEBGL_depth_texture" };
-    WebGlConstants.HALF_FLOAT_OES = { name: "HALF_FLOAT_OES", value: 36193, description: "Half floating-point type (16-bit).", extensionName: "OES_texture_half_float" };
-    // public static readonly RGBA32F_EXT: WebGlConstant = { name: "RGBA32F_EXT", value: 34836, description: "RGBA 32-bit floating-point color-renderable format.", extensionName: "WEBGL_color_buffer_float" };
-    // public static readonly RGB32F_EXT: WebGlConstant = { name: "RGB32F_EXT", value: 34837, description: "RGB 32-bit floating-point color-renderable format.", extensionName: "WEBGL_color_buffer_float" };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE_EXT = { name: "FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE_EXT", value: 33297, description: " ", extensionName: "WEBGL_color_buffer_float" };
-    WebGlConstants.UNSIGNED_NORMALIZED_EXT = { name: "UNSIGNED_NORMALIZED_EXT", value: 35863, description: " ", extensionName: "WEBGL_color_buffer_float" };
-    WebGlConstants.MIN_EXT = { name: "MIN_EXT", value: 32775, description: "Produces the minimum color components of the source and destination colors.", extensionName: "EXT_blend_minmax" };
-    WebGlConstants.MAX_EXT = { name: "MAX_EXT", value: 32776, description: "Produces the maximum color components of the source and destination colors.", extensionName: "EXT_blend_minmax" };
-    WebGlConstants.SRGB_EXT = { name: "SRGB_EXT", value: 35904, description: "Unsized sRGB format that leaves the precision up to the driver.", extensionName: "EXT_sRGB" };
-    WebGlConstants.SRGB_ALPHA_EXT = { name: "SRGB_ALPHA_EXT", value: 35906, description: "Unsized sRGB format with unsized alpha component.", extensionName: "EXT_sRGB" };
-    WebGlConstants.SRGB8_ALPHA8_EXT = { name: "SRGB8_ALPHA8_EXT", value: 35907, description: "Sized (8-bit) sRGB and alpha formats.", extensionName: "EXT_sRGB" };
-    WebGlConstants.FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT = { name: "FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT", value: 33296, description: "Returns the framebuffer color encoding.", extensionName: "EXT_sRGB" };
-    WebGlConstants.FRAGMENT_SHADER_DERIVATIVE_HINT_OES = { name: "FRAGMENT_SHADER_DERIVATIVE_HINT_OES", value: 35723, description: "Indicates the accuracy of the derivative calculation for the GLSL built-in functions: dFdx, dFdy, and fwidth.", extensionName: "OES_standard_derivatives" };
-    WebGlConstants.COLOR_ATTACHMENT0_WEBGL = { name: "COLOR_ATTACHMENT0_WEBGL", value: 36064, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT1_WEBGL = { name: "COLOR_ATTACHMENT1_WEBGL", value: 36065, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT2_WEBGL = { name: "COLOR_ATTACHMENT2_WEBGL", value: 36066, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT3_WEBGL = { name: "COLOR_ATTACHMENT3_WEBGL", value: 36067, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT4_WEBGL = { name: "COLOR_ATTACHMENT4_WEBGL", value: 36068, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT5_WEBGL = { name: "COLOR_ATTACHMENT5_WEBGL", value: 36069, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT6_WEBGL = { name: "COLOR_ATTACHMENT6_WEBGL", value: 36070, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT7_WEBGL = { name: "COLOR_ATTACHMENT7_WEBGL", value: 36071, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT8_WEBGL = { name: "COLOR_ATTACHMENT8_WEBGL", value: 36072, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT9_WEBGL = { name: "COLOR_ATTACHMENT9_WEBGL", value: 36073, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT10_WEBGL = { name: "COLOR_ATTACHMENT10_WEBGL", value: 36074, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT11_WEBGL = { name: "COLOR_ATTACHMENT11_WEBGL", value: 36075, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT12_WEBGL = { name: "COLOR_ATTACHMENT12_WEBGL", value: 36076, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT13_WEBGL = { name: "COLOR_ATTACHMENT13_WEBGL", value: 36077, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT14_WEBGL = { name: "COLOR_ATTACHMENT14_WEBGL", value: 36078, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.COLOR_ATTACHMENT15_WEBGL = { name: "COLOR_ATTACHMENT15_WEBGL", value: 36079, description: "Framebuffer color attachment point", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER0_WEBGL = { name: "DRAW_BUFFER0_WEBGL", value: 34853, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER1_WEBGL = { name: "DRAW_BUFFER1_WEBGL", value: 34854, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER2_WEBGL = { name: "DRAW_BUFFER2_WEBGL", value: 34855, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER3_WEBGL = { name: "DRAW_BUFFER3_WEBGL", value: 34856, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER4_WEBGL = { name: "DRAW_BUFFER4_WEBGL", value: 34857, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER5_WEBGL = { name: "DRAW_BUFFER5_WEBGL", value: 34858, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER6_WEBGL = { name: "DRAW_BUFFER6_WEBGL", value: 34859, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER7_WEBGL = { name: "DRAW_BUFFER7_WEBGL", value: 34860, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER8_WEBGL = { name: "DRAW_BUFFER8_WEBGL", value: 34861, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER9_WEBGL = { name: "DRAW_BUFFER9_WEBGL", value: 34862, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER10_WEBGL = { name: "DRAW_BUFFER10_WEBGL", value: 34863, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER11_WEBGL = { name: "DRAW_BUFFER11_WEBGL", value: 34864, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER12_WEBGL = { name: "DRAW_BUFFER12_WEBGL", value: 34865, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER13_WEBGL = { name: "DRAW_BUFFER13_WEBGL", value: 34866, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER14_WEBGL = { name: "DRAW_BUFFER14_WEBGL", value: 34867, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.DRAW_BUFFER15_WEBGL = { name: "DRAW_BUFFER15_WEBGL", value: 34868, description: "Draw buffer", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.MAX_COLOR_ATTACHMENTS_WEBGL = { name: "MAX_COLOR_ATTACHMENTS_WEBGL", value: 36063, description: "Maximum number of framebuffer color attachment points", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.MAX_DRAW_BUFFERS_WEBGL = { name: "MAX_DRAW_BUFFERS_WEBGL", value: 34852, description: "Maximum number of draw buffers", extensionName: "WEBGL_draw_buffers" };
-    WebGlConstants.VERTEX_ARRAY_BINDING_OES = { name: "VERTEX_ARRAY_BINDING_OES", value: 34229, description: "The bound vertex array object (VAO).", extensionName: "VERTEX_ARRAY_BINDING_OES" };
-    WebGlConstants.QUERY_COUNTER_BITS_EXT = { name: "QUERY_COUNTER_BITS_EXT", value: 34916, description: "The number of bits used to hold the query result for the given target.", extensionName: "EXT_disjoint_timer_query" };
-    WebGlConstants.CURRENT_QUERY_EXT = { name: "CURRENT_QUERY_EXT", value: 34917, description: "The currently active query.", extensionName: "EXT_disjoint_timer_query" };
-    WebGlConstants.QUERY_RESULT_EXT = { name: "QUERY_RESULT_EXT", value: 34918, description: "The query result.", extensionName: "EXT_disjoint_timer_query" };
-    WebGlConstants.QUERY_RESULT_AVAILABLE_EXT = { name: "QUERY_RESULT_AVAILABLE_EXT", value: 34919, description: "A Boolean indicating whether or not a query result is available.", extensionName: "EXT_disjoint_timer_query" };
-    WebGlConstants.TIME_ELAPSED_EXT = { name: "TIME_ELAPSED_EXT", value: 35007, description: "Elapsed time (in nanoseconds).", extensionName: "EXT_disjoint_timer_query" };
-    WebGlConstants.TIMESTAMP_EXT = { name: "TIMESTAMP_EXT", value: 36392, description: "The current time.", extensionName: "EXT_disjoint_timer_query" };
-    WebGlConstants.GPU_DISJOINT_EXT = { name: "GPU_DISJOINT_EXT", value: 36795, description: "A Boolean indicating whether or not the GPU performed any disjoint operation.", extensionName: "EXT_disjoint_timer_query" };
-    WebGlConstants.zeroMeaningByCommand = {
-        getError: "NO_ERROR",
-        blendFunc: "ZERO",
-        blendFuncSeparate: "ZERO",
-        readBuffer: "NONE",
-        getFramebufferAttachmentParameter: "NONE",
-        texParameterf: "NONE",
-        texParameteri: "NONE",
-        drawArrays: "POINTS",
-        drawElements: "POINTS",
-        drawArraysInstanced: "POINTS",
-        drawBuffers: "POINTS",
-        drawElementsInstanced: "POINTS",
-        drawRangeElements: "POINTS",
-    };
-    WebGlConstants.oneMeaningByCommand = {
-        blendFunc: "ONE",
-        blendFuncSeparate: "ONE",
-        drawArrays: "LINES",
-        drawElements: "LINES",
-        drawArraysInstanced: "LINES",
-        drawBuffers: "LINES",
-        drawElementsInstanced: "LINES",
-        drawRangeElements: "LINES",
-    };
     SPECTOR.WebGlConstants = WebGlConstants;
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
@@ -1152,6 +1152,8 @@ var SPECTOR;
                 }
             };
             TimeSpy.prototype.spyRequestAnimationFrame = function (functionName) {
+                // Needs both this.
+                // tslint:disable-next-line
                 var self = this;
                 var oldRequestAnimationFrame = this.spiedWindow[functionName];
                 var spiedWindow = this.spiedWindow;
@@ -1162,6 +1164,8 @@ var SPECTOR;
                 };
             };
             TimeSpy.prototype.spySetTimer = function (functionName) {
+                // Needs both this.
+                // tslint:disable-next-line
                 var self = this;
                 var oldSetTimer = this.spiedWindow[functionName];
                 var needsReplay = (functionName === "setTimeout");
@@ -1204,19 +1208,19 @@ var SPECTOR;
                     self.lastSixtyFramesPreviousStart = now;
                 };
             };
+            TimeSpy.requestAnimationFrameFunctions = ["requestAnimationFrame",
+                "msRequestAnimationFrame",
+                "webkitRequestAnimationFrame",
+                "mozRequestAnimationFrame",
+                "oRequestAnimationFrame",
+            ];
+            TimeSpy.setTimerFunctions = ["setTimeout",
+                "setInterval",
+            ];
+            TimeSpy.setTimerCommonValues = [0, 15, 16, 33, 32, 40];
+            TimeSpy.fpsWindowSize = 60;
             return TimeSpy;
         }());
-        TimeSpy.requestAnimationFrameFunctions = ["requestAnimationFrame",
-            "msRequestAnimationFrame",
-            "webkitRequestAnimationFrame",
-            "mozRequestAnimationFrame",
-            "oRequestAnimationFrame",
-        ];
-        TimeSpy.setTimerFunctions = ["setTimeout",
-            "setInterval",
-        ];
-        TimeSpy.setTimerCommonValues = [0, 15, 16, 33, 32, 40];
-        TimeSpy.fpsWindowSize = 60;
         Spies.TimeSpy = TimeSpy;
     })(Spies = SPECTOR.Spies || (SPECTOR.Spies = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1233,6 +1237,8 @@ var SPECTOR;
                 this.init();
             }
             CanvasSpy.prototype.init = function () {
+                // Needs both this.
+                // tslint:disable-next-line
                 var self = this;
                 var getContextSpied = function () {
                     var context = self.spiedGetContext.apply(this, arguments);
@@ -1446,13 +1452,13 @@ var SPECTOR;
             ContextSpy.prototype.tagWebGlObject = function (object) {
                 return this.webGlObjectSpy.tagWebGlObject(object);
             };
+            ContextSpy.unSpyableMembers = ["canvas",
+                "drawingBufferWidth",
+                "drawingBufferHeight",
+                "glp",
+            ];
             return ContextSpy;
         }());
-        ContextSpy.unSpyableMembers = ["canvas",
-            "drawingBufferWidth",
-            "drawingBufferHeight",
-            "glp",
-        ];
         Spies.ContextSpy = ContextSpy;
     })(Spies = SPECTOR.Spies || (SPECTOR.Spies = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1513,6 +1519,8 @@ var SPECTOR;
                 this.overloadedCommand = this.getSpy();
             };
             CommandSpy.prototype.getSpy = function () {
+                // Needs both this.
+                // tslint:disable-next-line
                 var self = this;
                 // Needs arguments access.
                 // tslint:disable-next-line:only-arrow-functions
@@ -1714,11 +1722,11 @@ var SPECTOR;
                 }
                 return stringified;
             };
+            Clear = __decorate([
+                SPECTOR.Decorators.command("clear")
+            ], Clear);
             return Clear;
         }(Commands.BaseCommand));
-        Clear = __decorate([
-            SPECTOR.Decorators.command("clear")
-        ], Clear);
         Commands.Clear = Clear;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1754,11 +1762,11 @@ var SPECTOR;
                 stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[9], "blitFrameBuffer"));
                 return stringified;
             };
+            BlitFrameBuffer = __decorate([
+                SPECTOR.Decorators.command("blitFrameBuffer")
+            ], BlitFrameBuffer);
             return BlitFrameBuffer;
         }(Commands.BaseCommand));
-        BlitFrameBuffer = __decorate([
-            SPECTOR.Decorators.command("blitFrameBuffer")
-        ], BlitFrameBuffer);
         Commands.BlitFrameBuffer = BlitFrameBuffer;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1781,11 +1789,11 @@ var SPECTOR;
                 stringified.push(args[5]);
                 return stringified;
             };
+            VertexAttribPointer = __decorate([
+                SPECTOR.Decorators.command("vertexAttribPointer")
+            ], VertexAttribPointer);
             return VertexAttribPointer;
         }(Commands.BaseCommand));
-        VertexAttribPointer = __decorate([
-            SPECTOR.Decorators.command("vertexAttribPointer")
-        ], VertexAttribPointer);
         Commands.VertexAttribPointer = VertexAttribPointer;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1804,11 +1812,11 @@ var SPECTOR;
                 }
                 return "name: " + result.name + ", size: " + result.size + ", type: " + result.type;
             };
+            GetActiveAttrib = __decorate([
+                SPECTOR.Decorators.command("getActiveAttrib")
+            ], GetActiveAttrib);
             return GetActiveAttrib;
         }(Commands.BaseCommand));
-        GetActiveAttrib = __decorate([
-            SPECTOR.Decorators.command("getActiveAttrib")
-        ], GetActiveAttrib);
         Commands.GetActiveAttrib = GetActiveAttrib;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1827,11 +1835,11 @@ var SPECTOR;
                 }
                 return "name: " + result.name + ", size: " + result.size + ", type: " + result.type;
             };
+            GetActiveUniform = __decorate([
+                SPECTOR.Decorators.command("getActiveUniform")
+            ], GetActiveUniform);
             return GetActiveUniform;
         }(Commands.BaseCommand));
-        GetActiveUniform = __decorate([
-            SPECTOR.Decorators.command("getActiveUniform")
-        ], GetActiveUniform);
         Commands.GetActiveUniform = GetActiveUniform;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1850,11 +1858,11 @@ var SPECTOR;
                 }
                 return "name: " + result.name + ", size: " + result.size + ", type: " + result.type;
             };
+            GetTransformFeedbackVarying = __decorate([
+                SPECTOR.Decorators.command("getTransformFeedbackVarying")
+            ], GetTransformFeedbackVarying);
             return GetTransformFeedbackVarying;
         }(Commands.BaseCommand));
-        GetTransformFeedbackVarying = __decorate([
-            SPECTOR.Decorators.command("getTransformFeedbackVarying")
-        ], GetTransformFeedbackVarying);
         Commands.GetTransformFeedbackVarying = GetTransformFeedbackVarying;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1870,11 +1878,11 @@ var SPECTOR;
             GetExtension.prototype.stringifyResult = function (result) {
                 return result ? "true" : "false";
             };
+            GetExtension = __decorate([
+                SPECTOR.Decorators.command("getExtension")
+            ], GetExtension);
             return GetExtension;
         }(Commands.BaseCommand));
-        GetExtension = __decorate([
-            SPECTOR.Decorators.command("getExtension")
-        ], GetExtension);
         Commands.GetExtension = GetExtension;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1893,11 +1901,11 @@ var SPECTOR;
                 }
                 return "min: " + result.rangeMin + ", max: " + result.rangeMax + ", precision: " + result.precision;
             };
+            GetShaderPrecisionFormat = __decorate([
+                SPECTOR.Decorators.command("getShaderPrecisionFormat")
+            ], GetShaderPrecisionFormat);
             return GetShaderPrecisionFormat;
         }(Commands.BaseCommand));
-        GetShaderPrecisionFormat = __decorate([
-            SPECTOR.Decorators.command("getShaderPrecisionFormat")
-        ], GetShaderPrecisionFormat);
         Commands.GetShaderPrecisionFormat = GetShaderPrecisionFormat;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1920,11 +1928,11 @@ var SPECTOR;
                 }
                 return result;
             };
+            GetParameter = __decorate([
+                SPECTOR.Decorators.command("getParameter")
+            ], GetParameter);
             return GetParameter;
         }(Commands.BaseCommand));
-        GetParameter = __decorate([
-            SPECTOR.Decorators.command("getParameter")
-        ], GetParameter);
         Commands.GetParameter = GetParameter;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1944,11 +1952,11 @@ var SPECTOR;
                 stringified.push(args[2]);
                 return stringified;
             };
+            DrawArrays = __decorate([
+                SPECTOR.Decorators.command("drawArrays")
+            ], DrawArrays);
             return DrawArrays;
         }(Commands.BaseCommand));
-        DrawArrays = __decorate([
-            SPECTOR.Decorators.command("drawArrays")
-        ], DrawArrays);
         Commands.DrawArrays = DrawArrays;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1969,11 +1977,11 @@ var SPECTOR;
                 stringified.push(args[3]);
                 return stringified;
             };
+            DrawArraysInstanced = __decorate([
+                SPECTOR.Decorators.command("drawArraysInstanced")
+            ], DrawArraysInstanced);
             return DrawArraysInstanced;
         }(Commands.BaseCommand));
-        DrawArraysInstanced = __decorate([
-            SPECTOR.Decorators.command("drawArraysInstanced")
-        ], DrawArraysInstanced);
         Commands.DrawArraysInstanced = DrawArraysInstanced;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -1993,11 +2001,11 @@ var SPECTOR;
                 }
                 return stringified;
             };
+            DrawBuffers = __decorate([
+                SPECTOR.Decorators.command("drawBuffers")
+            ], DrawBuffers);
             return DrawBuffers;
         }(Commands.BaseCommand));
-        DrawBuffers = __decorate([
-            SPECTOR.Decorators.command("drawBuffers")
-        ], DrawBuffers);
         Commands.DrawBuffers = DrawBuffers;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -2018,11 +2026,11 @@ var SPECTOR;
                 stringified.push(args[3]);
                 return stringified;
             };
+            DrawElements = __decorate([
+                SPECTOR.Decorators.command("drawElements")
+            ], DrawElements);
             return DrawElements;
         }(Commands.BaseCommand));
-        DrawElements = __decorate([
-            SPECTOR.Decorators.command("drawElements")
-        ], DrawElements);
         Commands.DrawElements = DrawElements;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -2044,11 +2052,11 @@ var SPECTOR;
                 stringified.push(args[4]);
                 return stringified;
             };
+            DrawElementsInstanced = __decorate([
+                SPECTOR.Decorators.command("drawElementsInstanced")
+            ], DrawElementsInstanced);
             return DrawElementsInstanced;
         }(Commands.BaseCommand));
-        DrawElementsInstanced = __decorate([
-            SPECTOR.Decorators.command("drawElementsInstanced")
-        ], DrawElementsInstanced);
         Commands.DrawElementsInstanced = DrawElementsInstanced;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -2070,11 +2078,11 @@ var SPECTOR;
                 stringified.push(args[4]);
                 return stringified;
             };
+            DrawElementsInstancedAngle = __decorate([
+                SPECTOR.Decorators.command("drawElementsInstancedANGLE")
+            ], DrawElementsInstancedAngle);
             return DrawElementsInstancedAngle;
         }(Commands.BaseCommand));
-        DrawElementsInstancedAngle = __decorate([
-            SPECTOR.Decorators.command("drawElementsInstancedANGLE")
-        ], DrawElementsInstancedAngle);
         Commands.DrawElementsInstancedAngle = DrawElementsInstancedAngle;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -2097,11 +2105,11 @@ var SPECTOR;
                 stringified.push(args[5]);
                 return stringified;
             };
+            DrawRangeElements = __decorate([
+                SPECTOR.Decorators.command("drawRangeElements")
+            ], DrawRangeElements);
             return DrawRangeElements;
         }(Commands.BaseCommand));
-        DrawRangeElements = __decorate([
-            SPECTOR.Decorators.command("drawRangeElements")
-        ], DrawRangeElements);
         Commands.DrawRangeElements = DrawRangeElements;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -2121,11 +2129,11 @@ var SPECTOR;
                 }
                 return stringified;
             };
+            Scissor = __decorate([
+                SPECTOR.Decorators.command("scissor")
+            ], Scissor);
             return Scissor;
         }(Commands.BaseCommand));
-        Scissor = __decorate([
-            SPECTOR.Decorators.command("scissor")
-        ], Scissor);
         Commands.Scissor = Scissor;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -2145,11 +2153,11 @@ var SPECTOR;
                 }
                 return stringified;
             };
+            Viewport = __decorate([
+                SPECTOR.Decorators.command("viewport")
+            ], Viewport);
             return Viewport;
         }(Commands.BaseCommand));
-        Viewport = __decorate([
-            SPECTOR.Decorators.command("viewport")
-        ], Viewport);
         Commands.Viewport = Viewport;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -2455,11 +2463,11 @@ var SPECTOR;
                 // else NO DATA.
                 return customData;
             };
+            Texture2DRecorder = __decorate([
+                SPECTOR.Decorators.recorder("Texture2d")
+            ], Texture2DRecorder);
             return Texture2DRecorder;
         }(Recorders.BaseRecorder));
-        Texture2DRecorder = __decorate([
-            SPECTOR.Decorators.recorder("Texture2d")
-        ], Texture2DRecorder);
         Recorders.Texture2DRecorder = Texture2DRecorder;
     })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -2590,11 +2598,11 @@ var SPECTOR;
                 // else NO DATA.
                 return customData;
             };
+            Texture3DRecorder = __decorate([
+                SPECTOR.Decorators.recorder("Texture3d")
+            ], Texture3DRecorder);
             return Texture3DRecorder;
         }(Recorders.BaseRecorder));
-        Texture3DRecorder = __decorate([
-            SPECTOR.Decorators.recorder("Texture3d")
-        ], Texture3DRecorder);
         Recorders.Texture3DRecorder = Texture3DRecorder;
     })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -2700,11 +2708,11 @@ var SPECTOR;
                 }
                 return length;
             };
+            BufferRecorder = __decorate([
+                SPECTOR.Decorators.recorder("Buffer")
+            ], BufferRecorder);
             return BufferRecorder;
         }(Recorders.BaseRecorder));
-        BufferRecorder = __decorate([
-            SPECTOR.Decorators.recorder("Buffer")
-        ], BufferRecorder);
         Recorders.BufferRecorder = BufferRecorder;
     })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -2771,11 +2779,11 @@ var SPECTOR;
                     samples: functionInformation.arguments[1],
                 };
             };
+            RenderBufferRecorder = __decorate([
+                SPECTOR.Decorators.recorder("Renderbuffer")
+            ], RenderBufferRecorder);
             return RenderBufferRecorder;
         }(Recorders.BaseRecorder));
-        RenderBufferRecorder = __decorate([
-            SPECTOR.Decorators.recorder("Renderbuffer")
-        ], RenderBufferRecorder);
         Recorders.RenderBufferRecorder = RenderBufferRecorder;
     })(Recorders = SPECTOR.Recorders || (SPECTOR.Recorders = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3121,9 +3129,9 @@ var SPECTOR;
                         if (lengthM1 >= 0) {
                             if (consumeCommand) {
                                 for (var i = 0; i < lengthM1; i++) {
-                                    var command_1 = commands[i];
-                                    command_1.consumeCommandId = consumeCommand.id;
-                                    this.changeCommandCaptureStatus(command_1, 30 /* Redundant */);
+                                    var redundantCommand = commands[i];
+                                    redundantCommand.consumeCommandId = consumeCommand.id;
+                                    this.changeCommandCaptureStatus(redundantCommand, 30 /* Redundant */);
                                 }
                                 var isStateEnabled = this.isStateEnableNoSideEffects(stateName, consumeCommand.commandArguments);
                                 var command = commands[lengthM1];
@@ -3578,11 +3586,11 @@ var SPECTOR;
             AlignmentState.prototype.isValidChangeCommand = function (command, stateName) {
                 return SPECTOR.WebGlConstantsByName[stateName].value === command.commandArguments[0];
             };
+            AlignmentState = __decorate([
+                SPECTOR.Decorators.state("AlignmentState")
+            ], AlignmentState);
             return AlignmentState;
         }(States.ParameterState));
-        AlignmentState = __decorate([
-            SPECTOR.Decorators.state("AlignmentState")
-        ], AlignmentState);
         States.AlignmentState = AlignmentState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3619,11 +3627,11 @@ var SPECTOR;
             BlendState.prototype.isStateEnable = function (stateName, args) {
                 return this.context.isEnabled(SPECTOR.WebGlConstants.BLEND.value);
             };
+            BlendState = __decorate([
+                SPECTOR.Decorators.state("BlendState")
+            ], BlendState);
             return BlendState;
         }(States.ParameterState));
-        BlendState = __decorate([
-            SPECTOR.Decorators.state("BlendState")
-        ], BlendState);
         States.BlendState = BlendState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3656,11 +3664,11 @@ var SPECTOR;
                 }
                 return false;
             };
+            ClearState = __decorate([
+                SPECTOR.Decorators.state("ClearState")
+            ], ClearState);
             return ClearState;
         }(States.ParameterState));
-        ClearState = __decorate([
-            SPECTOR.Decorators.state("ClearState")
-        ], ClearState);
         States.ClearState = ClearState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3679,11 +3687,11 @@ var SPECTOR;
             ColorState.prototype.getConsumeCommands = function () {
                 return States.drawCommands;
             };
+            ColorState = __decorate([
+                SPECTOR.Decorators.state("ColorState")
+            ], ColorState);
             return ColorState;
         }(States.ParameterState));
-        ColorState = __decorate([
-            SPECTOR.Decorators.state("ColorState")
-        ], ColorState);
         States.ColorState = ColorState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3725,11 +3733,11 @@ var SPECTOR;
                 }
                 return false;
             };
+            CoverageState = __decorate([
+                SPECTOR.Decorators.state("CoverageState")
+            ], CoverageState);
             return CoverageState;
         }(States.ParameterState));
-        CoverageState = __decorate([
-            SPECTOR.Decorators.state("CoverageState")
-        ], CoverageState);
         States.CoverageState = CoverageState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3759,11 +3767,11 @@ var SPECTOR;
             CullState.prototype.isStateEnable = function (stateName, args) {
                 return this.context.isEnabled(SPECTOR.WebGlConstants.CULL_FACE.value);
             };
+            CullState = __decorate([
+                SPECTOR.Decorators.state("CullState")
+            ], CullState);
             return CullState;
         }(States.ParameterState));
-        CullState = __decorate([
-            SPECTOR.Decorators.state("CullState")
-        ], CullState);
         States.CullState = CullState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3795,11 +3803,11 @@ var SPECTOR;
             DepthState.prototype.isStateEnable = function (stateName, args) {
                 return this.context.isEnabled(SPECTOR.WebGlConstants.DEPTH_TEST.value);
             };
+            DepthState = __decorate([
+                SPECTOR.Decorators.state("DepthState")
+            ], DepthState);
             return DepthState;
         }(States.ParameterState));
-        DepthState = __decorate([
-            SPECTOR.Decorators.state("DepthState")
-        ], DepthState);
         States.DepthState = DepthState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3856,11 +3864,11 @@ var SPECTOR;
                 }
                 return true;
             };
+            DrawState = __decorate([
+                SPECTOR.Decorators.state("DrawState")
+            ], DrawState);
             return DrawState;
         }(States.ParameterState));
-        DrawState = __decorate([
-            SPECTOR.Decorators.state("DrawState")
-        ], DrawState);
         States.DrawState = DrawState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3879,11 +3887,11 @@ var SPECTOR;
             MipmapHintState.prototype.getConsumeCommands = function () {
                 return ["generateMipmap"];
             };
+            MipmapHintState = __decorate([
+                SPECTOR.Decorators.state("MipmapHintState")
+            ], MipmapHintState);
             return MipmapHintState;
         }(States.ParameterState));
-        MipmapHintState = __decorate([
-            SPECTOR.Decorators.state("MipmapHintState")
-        ], MipmapHintState);
         States.MipmapHintState = MipmapHintState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3913,11 +3921,11 @@ var SPECTOR;
             PolygonOffsetState.prototype.isStateEnable = function (stateName, args) {
                 return this.context.isEnabled(SPECTOR.WebGlConstants.POLYGON_OFFSET_FILL.value);
             };
+            PolygonOffsetState = __decorate([
+                SPECTOR.Decorators.state("PolygonOffsetState")
+            ], PolygonOffsetState);
             return PolygonOffsetState;
         }(States.ParameterState));
-        PolygonOffsetState = __decorate([
-            SPECTOR.Decorators.state("PolygonOffsetState")
-        ], PolygonOffsetState);
         States.PolygonOffsetState = PolygonOffsetState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3946,11 +3954,11 @@ var SPECTOR;
             ScissorState.prototype.isStateEnable = function (stateName, args) {
                 return this.context.isEnabled(SPECTOR.WebGlConstants.SCISSOR_TEST.value);
             };
+            ScissorState = __decorate([
+                SPECTOR.Decorators.state("ScissorState")
+            ], ScissorState);
             return ScissorState;
         }(States.ParameterState));
-        ScissorState = __decorate([
-            SPECTOR.Decorators.state("ScissorState")
-        ], ScissorState);
         States.ScissorState = ScissorState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -3958,11 +3966,12 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var StencilState = StencilState_1 = (function (_super) {
+        var StencilState = (function (_super) {
             __extends(StencilState, _super);
             function StencilState() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            StencilState_1 = StencilState;
             StencilState.prototype.getWebgl1Parameters = function () {
                 return [{ constant: SPECTOR.WebGlConstants.STENCIL_TEST, changeCommands: ["enable", "disable"] },
                     { constant: SPECTOR.WebGlConstants.STENCIL_BACK_FAIL, returnType: 20 /* GlEnum */, changeCommands: ["stencilOp", "stencilOpSeparate"] },
@@ -4001,34 +4010,34 @@ var SPECTOR;
             StencilState.prototype.isStateEnable = function (stateName, args) {
                 return this.context.isEnabled(SPECTOR.WebGlConstants.STENCIL_TEST.value);
             };
+            StencilState.stencilOpStates = [SPECTOR.WebGlConstants.STENCIL_BACK_FAIL.value,
+                SPECTOR.WebGlConstants.STENCIL_BACK_PASS_DEPTH_FAIL.value,
+                SPECTOR.WebGlConstants.STENCIL_BACK_PASS_DEPTH_PASS.value,
+                SPECTOR.WebGlConstants.STENCIL_FAIL.value,
+                SPECTOR.WebGlConstants.STENCIL_PASS_DEPTH_FAIL.value,
+                SPECTOR.WebGlConstants.STENCIL_PASS_DEPTH_PASS.value];
+            StencilState.stencilFuncStates = [SPECTOR.WebGlConstants.STENCIL_BACK_FUNC.value,
+                SPECTOR.WebGlConstants.STENCIL_BACK_REF.value,
+                SPECTOR.WebGlConstants.STENCIL_BACK_VALUE_MASK.value,
+                SPECTOR.WebGlConstants.STENCIL_FUNC.value,
+                SPECTOR.WebGlConstants.STENCIL_REF.value,
+                SPECTOR.WebGlConstants.STENCIL_VALUE_MASK.value];
+            StencilState.stencilMaskStates = [SPECTOR.WebGlConstants.STENCIL_BACK_WRITEMASK.value,
+                SPECTOR.WebGlConstants.STENCIL_WRITEMASK.value];
+            StencilState = StencilState_1 = __decorate([
+                SPECTOR.Decorators.state("StencilState")
+            ], StencilState);
             return StencilState;
+            var StencilState_1;
         }(States.ParameterState));
-        StencilState.stencilOpStates = [SPECTOR.WebGlConstants.STENCIL_BACK_FAIL.value,
-            SPECTOR.WebGlConstants.STENCIL_BACK_PASS_DEPTH_FAIL.value,
-            SPECTOR.WebGlConstants.STENCIL_BACK_PASS_DEPTH_PASS.value,
-            SPECTOR.WebGlConstants.STENCIL_FAIL.value,
-            SPECTOR.WebGlConstants.STENCIL_PASS_DEPTH_FAIL.value,
-            SPECTOR.WebGlConstants.STENCIL_PASS_DEPTH_PASS.value];
-        StencilState.stencilFuncStates = [SPECTOR.WebGlConstants.STENCIL_BACK_FUNC.value,
-            SPECTOR.WebGlConstants.STENCIL_BACK_REF.value,
-            SPECTOR.WebGlConstants.STENCIL_BACK_VALUE_MASK.value,
-            SPECTOR.WebGlConstants.STENCIL_FUNC.value,
-            SPECTOR.WebGlConstants.STENCIL_REF.value,
-            SPECTOR.WebGlConstants.STENCIL_VALUE_MASK.value];
-        StencilState.stencilMaskStates = [SPECTOR.WebGlConstants.STENCIL_BACK_WRITEMASK.value,
-            SPECTOR.WebGlConstants.STENCIL_WRITEMASK.value];
-        StencilState = StencilState_1 = __decorate([
-            SPECTOR.Decorators.state("StencilState")
-        ], StencilState);
         States.StencilState = StencilState;
-        var StencilState_1;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var VisualState = VisualState_1 = (function (_super) {
+        var VisualState = (function (_super) {
             __extends(VisualState, _super);
             function VisualState(options, logger) {
                 var _this = _super.call(this, options, logger) || this;
@@ -4044,6 +4053,7 @@ var SPECTOR;
                 _this.captureContext2D.msImageSmoothingEnabled = true;
                 return _this;
             }
+            VisualState_1 = VisualState;
             VisualState.prototype.getConsumeCommands = function () {
                 return ["clear", "clearBufferfv", "clearBufferiv", "clearBufferuiv", "clearBufferfi"].concat(States.drawCommands);
             };
@@ -4242,21 +4252,21 @@ var SPECTOR;
             VisualState.prototype.analyse = function (consumeCommand) {
                 // Nothing to analyse on visual state.
             };
+            VisualState.captureBaseSize = 256;
+            VisualState = VisualState_1 = __decorate([
+                SPECTOR.Decorators.state("VisualState")
+            ], VisualState);
             return VisualState;
+            var VisualState_1;
         }(States.BaseState));
-        VisualState.captureBaseSize = 256;
-        VisualState = VisualState_1 = __decorate([
-            SPECTOR.Decorators.state("VisualState")
-        ], VisualState);
         States.VisualState = VisualState;
-        var VisualState_1;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var DrawCallState = DrawCallState_1 = (function (_super) {
+        var DrawCallState = (function (_super) {
             __extends(DrawCallState, _super);
             function DrawCallState(options, logger) {
                 var _this = _super.call(this, options, logger) || this;
@@ -4264,6 +4274,7 @@ var SPECTOR;
                 _this.drawCallUboInputState = new States.DrawCallUboInputState(options, logger);
                 return _this;
             }
+            DrawCallState_1 = DrawCallState;
             Object.defineProperty(DrawCallState.prototype, "requireStartAndStopStates", {
                 get: function () {
                     return false;
@@ -4661,30 +4672,30 @@ var SPECTOR;
                 var constant = SPECTOR.WebGlConstantsByValue[value];
                 return constant ? constant.name : value;
             };
+            DrawCallState.samplerTypes = (_a = {},
+                _a[SPECTOR.WebGlConstants.SAMPLER_2D.value] = SPECTOR.WebGlConstants.TEXTURE_2D,
+                _a[SPECTOR.WebGlConstants.SAMPLER_CUBE.value] = SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP,
+                _a[SPECTOR.WebGlConstants.SAMPLER_3D.value] = SPECTOR.WebGlConstants.TEXTURE_3D,
+                _a[SPECTOR.WebGlConstants.SAMPLER_2D_SHADOW.value] = SPECTOR.WebGlConstants.TEXTURE_2D,
+                _a[SPECTOR.WebGlConstants.SAMPLER_2D_ARRAY.value] = SPECTOR.WebGlConstants.TEXTURE_2D_ARRAY,
+                _a[SPECTOR.WebGlConstants.SAMPLER_2D_ARRAY_SHADOW.value] = SPECTOR.WebGlConstants.TEXTURE_2D_ARRAY,
+                _a[SPECTOR.WebGlConstants.SAMPLER_CUBE_SHADOW.value] = SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP,
+                _a[SPECTOR.WebGlConstants.INT_SAMPLER_2D.value] = SPECTOR.WebGlConstants.TEXTURE_2D,
+                _a[SPECTOR.WebGlConstants.INT_SAMPLER_3D.value] = SPECTOR.WebGlConstants.TEXTURE_3D,
+                _a[SPECTOR.WebGlConstants.INT_SAMPLER_CUBE.value] = SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP,
+                _a[SPECTOR.WebGlConstants.INT_SAMPLER_2D_ARRAY.value] = SPECTOR.WebGlConstants.TEXTURE_2D_ARRAY,
+                _a[SPECTOR.WebGlConstants.UNSIGNED_INT_SAMPLER_2D.value] = SPECTOR.WebGlConstants.TEXTURE_2D,
+                _a[SPECTOR.WebGlConstants.UNSIGNED_INT_SAMPLER_3D.value] = SPECTOR.WebGlConstants.TEXTURE_3D,
+                _a[SPECTOR.WebGlConstants.UNSIGNED_INT_SAMPLER_CUBE.value] = SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP,
+                _a[SPECTOR.WebGlConstants.UNSIGNED_INT_SAMPLER_2D_ARRAY.value] = SPECTOR.WebGlConstants.TEXTURE_2D_ARRAY,
+                _a);
+            DrawCallState = DrawCallState_1 = __decorate([
+                SPECTOR.Decorators.state("DrawCall")
+            ], DrawCallState);
             return DrawCallState;
+            var DrawCallState_1;
         }(States.BaseState));
-        DrawCallState.samplerTypes = (_a = {},
-            _a[SPECTOR.WebGlConstants.SAMPLER_2D.value] = SPECTOR.WebGlConstants.TEXTURE_2D,
-            _a[SPECTOR.WebGlConstants.SAMPLER_CUBE.value] = SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP,
-            _a[SPECTOR.WebGlConstants.SAMPLER_3D.value] = SPECTOR.WebGlConstants.TEXTURE_3D,
-            _a[SPECTOR.WebGlConstants.SAMPLER_2D_SHADOW.value] = SPECTOR.WebGlConstants.TEXTURE_2D,
-            _a[SPECTOR.WebGlConstants.SAMPLER_2D_ARRAY.value] = SPECTOR.WebGlConstants.TEXTURE_2D_ARRAY,
-            _a[SPECTOR.WebGlConstants.SAMPLER_2D_ARRAY_SHADOW.value] = SPECTOR.WebGlConstants.TEXTURE_2D_ARRAY,
-            _a[SPECTOR.WebGlConstants.SAMPLER_CUBE_SHADOW.value] = SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP,
-            _a[SPECTOR.WebGlConstants.INT_SAMPLER_2D.value] = SPECTOR.WebGlConstants.TEXTURE_2D,
-            _a[SPECTOR.WebGlConstants.INT_SAMPLER_3D.value] = SPECTOR.WebGlConstants.TEXTURE_3D,
-            _a[SPECTOR.WebGlConstants.INT_SAMPLER_CUBE.value] = SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP,
-            _a[SPECTOR.WebGlConstants.INT_SAMPLER_2D_ARRAY.value] = SPECTOR.WebGlConstants.TEXTURE_2D_ARRAY,
-            _a[SPECTOR.WebGlConstants.UNSIGNED_INT_SAMPLER_2D.value] = SPECTOR.WebGlConstants.TEXTURE_2D,
-            _a[SPECTOR.WebGlConstants.UNSIGNED_INT_SAMPLER_3D.value] = SPECTOR.WebGlConstants.TEXTURE_3D,
-            _a[SPECTOR.WebGlConstants.UNSIGNED_INT_SAMPLER_CUBE.value] = SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP,
-            _a[SPECTOR.WebGlConstants.UNSIGNED_INT_SAMPLER_2D_ARRAY.value] = SPECTOR.WebGlConstants.TEXTURE_2D_ARRAY,
-            _a);
-        DrawCallState = DrawCallState_1 = __decorate([
-            SPECTOR.Decorators.state("DrawCall")
-        ], DrawCallState);
         States.DrawCallState = DrawCallState;
-        var DrawCallState_1;
         var _a;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -4850,17 +4861,17 @@ var SPECTOR;
                 var constant = SPECTOR.WebGlConstantsByValue[value];
                 return constant ? constant.name : value + "";
             };
+            DrawCallTextureInputState.captureBaseSize = 64;
+            DrawCallTextureInputState.cubeMapFaces = [
+                SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_X,
+                SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Y,
+                SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Z,
+                SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_X,
+                SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+            ];
             return DrawCallTextureInputState;
         }());
-        DrawCallTextureInputState.captureBaseSize = 64;
-        DrawCallTextureInputState.cubeMapFaces = [
-            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_X,
-            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Y,
-            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_POSITIVE_Z,
-            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_X,
-            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-            SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP_NEGATIVE_Z,
-        ];
         States.DrawCallTextureInputState = DrawCallTextureInputState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -4897,37 +4908,37 @@ var SPECTOR;
                 }
                 return Array.prototype.slice.call(destination);
             };
+            DrawCallUboInputState.uboTypes = (_a = {},
+                _a[SPECTOR.WebGlConstants.BOOL.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 1 },
+                _a[SPECTOR.WebGlConstants.BOOL_VEC2.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 2 },
+                _a[SPECTOR.WebGlConstants.BOOL_VEC3.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 3 },
+                _a[SPECTOR.WebGlConstants.BOOL_VEC4.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 4 },
+                _a[SPECTOR.WebGlConstants.INT.value] = { arrayBufferView: Int32Array, lengthMultiplier: 1 },
+                _a[SPECTOR.WebGlConstants.INT_VEC2.value] = { arrayBufferView: Int32Array, lengthMultiplier: 2 },
+                _a[SPECTOR.WebGlConstants.INT_VEC3.value] = { arrayBufferView: Int32Array, lengthMultiplier: 3 },
+                _a[SPECTOR.WebGlConstants.INT_VEC4.value] = { arrayBufferView: Int32Array, lengthMultiplier: 4 },
+                _a[SPECTOR.WebGlConstants.UNSIGNED_INT.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 1 },
+                _a[SPECTOR.WebGlConstants.UNSIGNED_INT_VEC2.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 2 },
+                _a[SPECTOR.WebGlConstants.UNSIGNED_INT_VEC3.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 3 },
+                _a[SPECTOR.WebGlConstants.UNSIGNED_INT_VEC4.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 4 },
+                _a[SPECTOR.WebGlConstants.FLOAT.value] = { arrayBufferView: Float32Array, lengthMultiplier: 1 },
+                _a[SPECTOR.WebGlConstants.FLOAT_VEC2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 2 },
+                _a[SPECTOR.WebGlConstants.FLOAT_VEC3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 3 },
+                _a[SPECTOR.WebGlConstants.FLOAT_VEC4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 4 },
+                _a[SPECTOR.WebGlConstants.FLOAT_MAT2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 4 },
+                _a[SPECTOR.WebGlConstants.FLOAT_MAT2x3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 6 },
+                _a[SPECTOR.WebGlConstants.FLOAT_MAT2x4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 8 },
+                _a[SPECTOR.WebGlConstants.FLOAT_MAT3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 9 },
+                _a[SPECTOR.WebGlConstants.FLOAT_MAT3x2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 6 },
+                _a[SPECTOR.WebGlConstants.FLOAT_MAT3x4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 12 },
+                _a[SPECTOR.WebGlConstants.FLOAT_MAT4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 16 },
+                _a[SPECTOR.WebGlConstants.FLOAT_MAT4x2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 8 },
+                _a[SPECTOR.WebGlConstants.FLOAT_MAT4x3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 12 },
+                _a[SPECTOR.WebGlConstants.SAMPLER_2D.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 1 },
+                _a[SPECTOR.WebGlConstants.SAMPLER_CUBE.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 1 },
+                _a);
             return DrawCallUboInputState;
         }());
-        DrawCallUboInputState.uboTypes = (_a = {},
-            _a[SPECTOR.WebGlConstants.BOOL.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 1 },
-            _a[SPECTOR.WebGlConstants.BOOL_VEC2.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 2 },
-            _a[SPECTOR.WebGlConstants.BOOL_VEC3.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 3 },
-            _a[SPECTOR.WebGlConstants.BOOL_VEC4.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 4 },
-            _a[SPECTOR.WebGlConstants.INT.value] = { arrayBufferView: Int32Array, lengthMultiplier: 1 },
-            _a[SPECTOR.WebGlConstants.INT_VEC2.value] = { arrayBufferView: Int32Array, lengthMultiplier: 2 },
-            _a[SPECTOR.WebGlConstants.INT_VEC3.value] = { arrayBufferView: Int32Array, lengthMultiplier: 3 },
-            _a[SPECTOR.WebGlConstants.INT_VEC4.value] = { arrayBufferView: Int32Array, lengthMultiplier: 4 },
-            _a[SPECTOR.WebGlConstants.UNSIGNED_INT.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 1 },
-            _a[SPECTOR.WebGlConstants.UNSIGNED_INT_VEC2.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 2 },
-            _a[SPECTOR.WebGlConstants.UNSIGNED_INT_VEC3.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 3 },
-            _a[SPECTOR.WebGlConstants.UNSIGNED_INT_VEC4.value] = { arrayBufferView: Uint32Array, lengthMultiplier: 4 },
-            _a[SPECTOR.WebGlConstants.FLOAT.value] = { arrayBufferView: Float32Array, lengthMultiplier: 1 },
-            _a[SPECTOR.WebGlConstants.FLOAT_VEC2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 2 },
-            _a[SPECTOR.WebGlConstants.FLOAT_VEC3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 3 },
-            _a[SPECTOR.WebGlConstants.FLOAT_VEC4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 4 },
-            _a[SPECTOR.WebGlConstants.FLOAT_MAT2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 4 },
-            _a[SPECTOR.WebGlConstants.FLOAT_MAT2x3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 6 },
-            _a[SPECTOR.WebGlConstants.FLOAT_MAT2x4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 8 },
-            _a[SPECTOR.WebGlConstants.FLOAT_MAT3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 9 },
-            _a[SPECTOR.WebGlConstants.FLOAT_MAT3x2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 6 },
-            _a[SPECTOR.WebGlConstants.FLOAT_MAT3x4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 12 },
-            _a[SPECTOR.WebGlConstants.FLOAT_MAT4.value] = { arrayBufferView: Float32Array, lengthMultiplier: 16 },
-            _a[SPECTOR.WebGlConstants.FLOAT_MAT4x2.value] = { arrayBufferView: Float32Array, lengthMultiplier: 8 },
-            _a[SPECTOR.WebGlConstants.FLOAT_MAT4x3.value] = { arrayBufferView: Float32Array, lengthMultiplier: 12 },
-            _a[SPECTOR.WebGlConstants.SAMPLER_2D.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 1 },
-            _a[SPECTOR.WebGlConstants.SAMPLER_CUBE.value] = { arrayBufferView: Uint8Array, lengthMultiplier: 1 },
-            _a);
         States.DrawCallUboInputState = DrawCallUboInputState;
         var _a;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
@@ -5006,132 +5017,132 @@ var SPECTOR;
             function Buffer() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            Buffer = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLBuffer")
+            ], Buffer);
             return Buffer;
         }(WebGlObjects.BaseWebGlObject));
-        Buffer = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLBuffer")
-        ], Buffer);
         WebGlObjects.Buffer = Buffer;
         var FrameBuffer = (function (_super) {
             __extends(FrameBuffer, _super);
             function FrameBuffer() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            FrameBuffer = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLFramebuffer")
+            ], FrameBuffer);
             return FrameBuffer;
         }(WebGlObjects.BaseWebGlObject));
-        FrameBuffer = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLFramebuffer")
-        ], FrameBuffer);
         WebGlObjects.FrameBuffer = FrameBuffer;
         var Program = (function (_super) {
             __extends(Program, _super);
             function Program() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            Program = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLProgram")
+            ], Program);
             return Program;
         }(WebGlObjects.BaseWebGlObject));
-        Program = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLProgram")
-        ], Program);
         WebGlObjects.Program = Program;
         var Query = (function (_super) {
             __extends(Query, _super);
             function Query() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            Query = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLQuery")
+            ], Query);
             return Query;
         }(WebGlObjects.BaseWebGlObject));
-        Query = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLQuery")
-        ], Query);
         WebGlObjects.Query = Query;
         var Renderbuffer = (function (_super) {
             __extends(Renderbuffer, _super);
             function Renderbuffer() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            Renderbuffer = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLRenderbuffer")
+            ], Renderbuffer);
             return Renderbuffer;
         }(WebGlObjects.BaseWebGlObject));
-        Renderbuffer = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLRenderbuffer")
-        ], Renderbuffer);
         WebGlObjects.Renderbuffer = Renderbuffer;
         var Sampler = (function (_super) {
             __extends(Sampler, _super);
             function Sampler() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            Sampler = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLSampler")
+            ], Sampler);
             return Sampler;
         }(WebGlObjects.BaseWebGlObject));
-        Sampler = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLSampler")
-        ], Sampler);
         WebGlObjects.Sampler = Sampler;
         var Shader = (function (_super) {
             __extends(Shader, _super);
             function Shader() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            Shader = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLShader")
+            ], Shader);
             return Shader;
         }(WebGlObjects.BaseWebGlObject));
-        Shader = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLShader")
-        ], Shader);
         WebGlObjects.Shader = Shader;
         var Sync = (function (_super) {
             __extends(Sync, _super);
             function Sync() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            Sync = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLSync")
+            ], Sync);
             return Sync;
         }(WebGlObjects.BaseWebGlObject));
-        Sync = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLSync")
-        ], Sync);
         WebGlObjects.Sync = Sync;
         var Texture = (function (_super) {
             __extends(Texture, _super);
             function Texture() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            Texture = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLTexture")
+            ], Texture);
             return Texture;
         }(WebGlObjects.BaseWebGlObject));
-        Texture = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLTexture")
-        ], Texture);
         WebGlObjects.Texture = Texture;
         var TransformFeedback = (function (_super) {
             __extends(TransformFeedback, _super);
             function TransformFeedback() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            TransformFeedback = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLTransformFeedback")
+            ], TransformFeedback);
             return TransformFeedback;
         }(WebGlObjects.BaseWebGlObject));
-        TransformFeedback = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLTransformFeedback")
-        ], TransformFeedback);
         WebGlObjects.TransformFeedback = TransformFeedback;
         var UniformLocation = (function (_super) {
             __extends(UniformLocation, _super);
             function UniformLocation() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            UniformLocation = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLUniformLocation")
+            ], UniformLocation);
             return UniformLocation;
         }(WebGlObjects.BaseWebGlObject));
-        UniformLocation = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLUniformLocation")
-        ], UniformLocation);
         WebGlObjects.UniformLocation = UniformLocation;
         var VertexArrayObject = (function (_super) {
             __extends(VertexArrayObject, _super);
             function VertexArrayObject() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            VertexArrayObject = __decorate([
+                SPECTOR.Decorators.webGlObject("WebGLVertexArrayObject")
+            ], VertexArrayObject);
             return VertexArrayObject;
         }(WebGlObjects.BaseWebGlObject));
-        VertexArrayObject = __decorate([
-            SPECTOR.Decorators.webGlObject("WebGLVertexArrayObject")
-        ], VertexArrayObject);
         WebGlObjects.VertexArrayObject = VertexArrayObject;
     })(WebGlObjects = SPECTOR.WebGlObjects || (SPECTOR.WebGlObjects = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -5213,11 +5224,12 @@ var SPECTOR;
 (function (SPECTOR) {
     var Analysers;
     (function (Analysers) {
-        var CommandsSummaryAnalyser = CommandsSummaryAnalyser_1 = (function (_super) {
+        var CommandsSummaryAnalyser = (function (_super) {
             __extends(CommandsSummaryAnalyser, _super);
             function CommandsSummaryAnalyser() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            CommandsSummaryAnalyser_1 = CommandsSummaryAnalyser;
             CommandsSummaryAnalyser.prototype.appendToAnalysis = function (capture, analysis) {
                 if (!capture.commands) {
                     return;
@@ -5235,21 +5247,21 @@ var SPECTOR;
                     }
                 }
             };
+            CommandsSummaryAnalyser.drawCommands = [
+                "drawArrays",
+                "drawElements",
+                "drawArraysInstanced",
+                "drawElementsInstanced",
+                "drawElementsInstancedANGLE",
+                "drawRangeElements",
+            ];
+            CommandsSummaryAnalyser = CommandsSummaryAnalyser_1 = __decorate([
+                SPECTOR.Decorators.analyser("CommandsSummary")
+            ], CommandsSummaryAnalyser);
             return CommandsSummaryAnalyser;
+            var CommandsSummaryAnalyser_1;
         }(Analysers.BaseAnalyser));
-        CommandsSummaryAnalyser.drawCommands = [
-            "drawArrays",
-            "drawElements",
-            "drawArraysInstanced",
-            "drawElementsInstanced",
-            "drawElementsInstancedANGLE",
-            "drawRangeElements",
-        ];
-        CommandsSummaryAnalyser = CommandsSummaryAnalyser_1 = __decorate([
-            SPECTOR.Decorators.analyser("CommandsSummary")
-        ], CommandsSummaryAnalyser);
         Analysers.CommandsSummaryAnalyser = CommandsSummaryAnalyser;
-        var CommandsSummaryAnalyser_1;
     })(Analysers = SPECTOR.Analysers || (SPECTOR.Analysers = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
@@ -5291,11 +5303,11 @@ var SPECTOR;
                     analysis[commandName] = item[1];
                 }
             };
+            CommandsAnalyser = __decorate([
+                SPECTOR.Decorators.analyser("Commands")
+            ], CommandsAnalyser);
             return CommandsAnalyser;
         }(Analysers.BaseAnalyser));
-        CommandsAnalyser = __decorate([
-            SPECTOR.Decorators.analyser("Commands")
-        ], CommandsAnalyser);
         Analysers.CommandsAnalyser = CommandsAnalyser;
     })(Analysers = SPECTOR.Analysers || (SPECTOR.Analysers = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -5379,11 +5391,11 @@ var SPECTOR;
                 }
                 primitives.total += count;
             };
+            PrimitivesAnalyser = __decorate([
+                SPECTOR.Decorators.analyser("Primitives")
+            ], PrimitivesAnalyser);
             return PrimitivesAnalyser;
         }(Analysers.BaseAnalyser));
-        PrimitivesAnalyser = __decorate([
-            SPECTOR.Decorators.analyser("Primitives")
-        ], PrimitivesAnalyser);
         Analysers.PrimitivesAnalyser = PrimitivesAnalyser;
     })(Analysers = SPECTOR.Analysers || (SPECTOR.Analysers = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -5653,6 +5665,8 @@ var SPECTOR;
             BaseComponent.prototype.mapEventListener = function (domElement, domEvent, eventName, state, stateId, commandCapture, stopPropagation) {
                 if (commandCapture === void 0) { commandCapture = false; }
                 if (stopPropagation === void 0) { stopPropagation = false; }
+                // Really need to keep both this in the next command.
+                // tslint:disable-next-line
                 var self = this;
                 if (stopPropagation) {
                     domElement.addEventListener(domEvent, function (e) {
@@ -5703,10 +5717,10 @@ var SPECTOR;
                 for (var dirtyStateKey in dirtyStates) {
                     if (dirtyStates.hasOwnProperty(dirtyStateKey)) {
                         var dirtyStateId = dirtyStates[dirtyStateKey];
-                        var lastOperation_1 = this.stateStore.getLastOperation(dirtyStateId);
+                        var lastOperationForDirtyState = this.stateStore.getLastOperation(dirtyStateId);
                         var componentInstance = this.stateStore.getComponentInstance(dirtyStateId);
                         var state = this.stateStore.getData(dirtyStateId);
-                        componentInstance.render(state, dirtyStateId, lastOperation_1);
+                        componentInstance.render(state, dirtyStateId, lastOperationForDirtyState);
                         render = true;
                     }
                 }
@@ -5841,9 +5855,9 @@ var SPECTOR;
                 // Clean up the pending list of processed states.
                 this.stateStore.flushPendingOperations();
             };
+            MVX.REFRESHRATEINMILLISECONDS = 100;
             return MVX;
         }());
-        MVX.REFRESHRATEINMILLISECONDS = 100;
         EmbeddedFrontend.MVX = MVX;
     })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -5923,9 +5937,9 @@ var SPECTOR;
                     }
                 }
             };
+            ComponentInstance.idGenerator = 0;
             return ComponentInstance;
         }());
-        ComponentInstance.idGenerator = 0;
         EmbeddedFrontend.ComponentInstance = ComponentInstance;
     })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -6396,11 +6410,11 @@ var SPECTOR;
                     logVisible: menuState.logVisible,
                 });
             };
+            CaptureMenu.SelectCanvasHelpText = "Please, select a canvas in the list above.";
+            CaptureMenu.ActionsHelpText = "Record with the red button, you can also pause or continue playing the current scene.";
+            CaptureMenu.PleaseWaitHelpText = "Capturing, be patient (this can take up to 3 minutes)...";
             return CaptureMenu;
         }());
-        CaptureMenu.SelectCanvasHelpText = "Please, select a canvas in the list above.";
-        CaptureMenu.ActionsHelpText = "Record with the red button, you can also pause or continue playing the current scene.";
-        CaptureMenu.PleaseWaitHelpText = "Capturing, be patient (this can take up to 3 minutes)...";
         EmbeddedFrontend.CaptureMenu = CaptureMenu;
     })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -6719,139 +6733,139 @@ var SPECTOR;
                 }
                 return MDNCommandLinkHelper.WebGLRootUrl + commandName;
             };
+            MDNCommandLinkHelper.WebGL2RootUrl = "https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/";
+            MDNCommandLinkHelper.WebGLRootUrl = "https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/";
+            MDNCommandLinkHelper.WebGL2Functions = {
+                beginQuery: "beginQuery",
+                beginTransformFeedback: "beginTransformFeedback",
+                bindBufferBase: "bindBufferBase",
+                bindBufferRange: "bindBufferRange",
+                bindSampler: "bindSampler",
+                bindTransformFeedback: "bindTransformFeedback",
+                bindVertexArray: "bindVertexArray",
+                blitFramebuffer: "blitFramebuffer",
+                clearBufferfv: "clearBuffer",
+                clearBufferiv: "clearBuffer",
+                clearBufferuiv: "clearBuffer",
+                clearBufferfi: "clearBuffer",
+                clientWaitSync: "clientWaitSync",
+                compressedTexImage3D: "compressedTexImage3D",
+                compressedTexSubImage3D: "compressedTexSubImage3D",
+                copyBufferSubData: "copyBufferSubData",
+                copyTexSubImage3D: "copyTexSubImage3D",
+                createQuery: "createQuery",
+                createSampler: "createSampler",
+                createTransformFeedback: "createTransformFeedback",
+                createVertexArray: "createVertexArray",
+                deleteQuery: "deleteQuery",
+                deleteSampler: "deleteSampler",
+                deleteSync: "deleteSync",
+                deleteTransformFeedback: "deleteTransformFeedback",
+                deleteVertexArray: "deleteVertexArray",
+                drawArraysInstanced: "drawArraysInstanced",
+                drawBuffers: "drawBuffers",
+                drawElementsInstanced: "drawElementsInstanced",
+                drawRangeElements: "drawRangeElements",
+                endQuery: "endQuery",
+                endTransformFeedback: "endTransformFeedback",
+                fenceSync: "fenceSync",
+                framebufferTextureLayer: "framebufferTextureLayer",
+                getActiveUniformBlockName: "getActiveUniformBlockName",
+                getActiveUniformBlockParameter: "getActiveUniformBlockParameter",
+                getActiveUniforms: "getActiveUniforms",
+                getBufferSubData: "getBufferSubData",
+                getFragDataLocation: "getFragDataLocation",
+                getIndexedParameter: "getIndexedParameter",
+                getInternalformatParameter: "getInternalformatParameter",
+                getQuery: "getQuery",
+                getQueryParameter: "getQueryParameter",
+                getSamplerParameter: "getSamplerParameter",
+                getSyncParameter: "getSyncParameter",
+                getTransformFeedbackVarying: "getTransformFeedbackVarying",
+                getUniformBlockIndex: "getUniformBlockIndex",
+                getUniformIndices: "getUniformIndices",
+                invalidateFramebuffer: "invalidateFramebuffer",
+                invalidateSubFramebuffer: "invalidateSubFramebuffer",
+                isQuery: "isQuery",
+                isSampler: "isSampler",
+                isSync: "isSync",
+                isTransformFeedback: "isTransformFeedback",
+                isVertexArray: "isVertexArray",
+                pauseTransformFeedback: "pauseTransformFeedback",
+                readBuffer: "readBuffer",
+                renderbufferStorageMultisample: "renderbufferStorageMultisample",
+                resumeTransformFeedback: "resumeTransformFeedback",
+                samplerParameteri: "samplerParameter",
+                samplerParameterf: "samplerParameter",
+                texImage3D: "texImage3D",
+                texStorage2D: "texStorage2D",
+                texStorage3D: "texStorage3D",
+                texSubImage3D: "texSubImage3D",
+                transformFeedbackVaryings: "transformFeedbackVaryings",
+                uniform1ui: "uniform",
+                uniform2ui: "uniform",
+                uniform3ui: "uniform",
+                uniform4ui: "uniform",
+                uniform1fv: "uniform",
+                uniform2fv: "uniform",
+                uniform3fv: "uniform",
+                uniform4fv: "uniform",
+                uniform1iv: "uniform",
+                uniform2iv: "uniform",
+                uniform3iv: "uniform",
+                uniform4iv: "uniform",
+                uniform1uiv: "uniform",
+                uniform2uiv: "uniform",
+                uniform3uiv: "uniform",
+                uniform4uiv: "uniform",
+                uniformBlockBinding: "uniformBlockBinding",
+                uniformMatrix2fv: "uniformMatrix",
+                uniformMatrix3x2fv: "uniformMatrix",
+                uniformMatrix4x2fv: "uniformMatrix",
+                uniformMatrix2x3fv: "uniformMatrix",
+                uniformMatrix3fv: "uniformMatrix",
+                uniformMatrix4x3fv: "uniformMatrix",
+                uniformMatrix2x4fv: "uniformMatrix",
+                uniformMatrix3x4fv: "uniformMatrix",
+                uniformMatrix4fv: "uniformMatrix",
+                vertexAttribDivisor: "vertexAttribDivisor",
+                vertexAttribI4i: "vertexAttribI",
+                vertexAttribI4ui: "vertexAttribI",
+                vertexAttribI4iv: "vertexAttribI",
+                vertexAttribI4uiv: "vertexAttribI",
+                vertexAttribIPointer: "vertexAttribIPointer",
+                waitSync: "waitSync",
+            };
+            MDNCommandLinkHelper.WebGLFunctions = {
+                uniform1f: "uniform",
+                uniform1fv: "uniform",
+                uniform1i: "uniform",
+                uniform1iv: "uniform",
+                uniform2f: "uniform",
+                uniform2fv: "uniform",
+                uniform2i: "uniform",
+                uniform2iv: "uniform",
+                uniform3f: "uniform",
+                uniform3i: "uniform",
+                uniform3iv: "uniform",
+                uniform4f: "uniform",
+                uniform4fv: "uniform",
+                uniform4i: "uniform",
+                uniform4iv: "uniform",
+                uniformMatrix2fv: "uniformMatrix",
+                uniformMatrix3fv: "uniformMatrix",
+                uniformMatrix4fv: "uniformMatrix",
+                vertexAttrib1f: "vertexAttrib",
+                vertexAttrib2f: "vertexAttrib",
+                vertexAttrib3f: "vertexAttrib",
+                vertexAttrib4f: "vertexAttrib",
+                vertexAttrib1fv: "vertexAttrib",
+                vertexAttrib2fv: "vertexAttrib",
+                vertexAttrib3fv: "vertexAttrib",
+                vertexAttrib4fv: "vertexAttrib",
+            };
             return MDNCommandLinkHelper;
         }());
-        MDNCommandLinkHelper.WebGL2RootUrl = "https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/";
-        MDNCommandLinkHelper.WebGLRootUrl = "https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/";
-        MDNCommandLinkHelper.WebGL2Functions = {
-            beginQuery: "beginQuery",
-            beginTransformFeedback: "beginTransformFeedback",
-            bindBufferBase: "bindBufferBase",
-            bindBufferRange: "bindBufferRange",
-            bindSampler: "bindSampler",
-            bindTransformFeedback: "bindTransformFeedback",
-            bindVertexArray: "bindVertexArray",
-            blitFramebuffer: "blitFramebuffer",
-            clearBufferfv: "clearBuffer",
-            clearBufferiv: "clearBuffer",
-            clearBufferuiv: "clearBuffer",
-            clearBufferfi: "clearBuffer",
-            clientWaitSync: "clientWaitSync",
-            compressedTexImage3D: "compressedTexImage3D",
-            compressedTexSubImage3D: "compressedTexSubImage3D",
-            copyBufferSubData: "copyBufferSubData",
-            copyTexSubImage3D: "copyTexSubImage3D",
-            createQuery: "createQuery",
-            createSampler: "createSampler",
-            createTransformFeedback: "createTransformFeedback",
-            createVertexArray: "createVertexArray",
-            deleteQuery: "deleteQuery",
-            deleteSampler: "deleteSampler",
-            deleteSync: "deleteSync",
-            deleteTransformFeedback: "deleteTransformFeedback",
-            deleteVertexArray: "deleteVertexArray",
-            drawArraysInstanced: "drawArraysInstanced",
-            drawBuffers: "drawBuffers",
-            drawElementsInstanced: "drawElementsInstanced",
-            drawRangeElements: "drawRangeElements",
-            endQuery: "endQuery",
-            endTransformFeedback: "endTransformFeedback",
-            fenceSync: "fenceSync",
-            framebufferTextureLayer: "framebufferTextureLayer",
-            getActiveUniformBlockName: "getActiveUniformBlockName",
-            getActiveUniformBlockParameter: "getActiveUniformBlockParameter",
-            getActiveUniforms: "getActiveUniforms",
-            getBufferSubData: "getBufferSubData",
-            getFragDataLocation: "getFragDataLocation",
-            getIndexedParameter: "getIndexedParameter",
-            getInternalformatParameter: "getInternalformatParameter",
-            getQuery: "getQuery",
-            getQueryParameter: "getQueryParameter",
-            getSamplerParameter: "getSamplerParameter",
-            getSyncParameter: "getSyncParameter",
-            getTransformFeedbackVarying: "getTransformFeedbackVarying",
-            getUniformBlockIndex: "getUniformBlockIndex",
-            getUniformIndices: "getUniformIndices",
-            invalidateFramebuffer: "invalidateFramebuffer",
-            invalidateSubFramebuffer: "invalidateSubFramebuffer",
-            isQuery: "isQuery",
-            isSampler: "isSampler",
-            isSync: "isSync",
-            isTransformFeedback: "isTransformFeedback",
-            isVertexArray: "isVertexArray",
-            pauseTransformFeedback: "pauseTransformFeedback",
-            readBuffer: "readBuffer",
-            renderbufferStorageMultisample: "renderbufferStorageMultisample",
-            resumeTransformFeedback: "resumeTransformFeedback",
-            samplerParameteri: "samplerParameter",
-            samplerParameterf: "samplerParameter",
-            texImage3D: "texImage3D",
-            texStorage2D: "texStorage2D",
-            texStorage3D: "texStorage3D",
-            texSubImage3D: "texSubImage3D",
-            transformFeedbackVaryings: "transformFeedbackVaryings",
-            uniform1ui: "uniform",
-            uniform2ui: "uniform",
-            uniform3ui: "uniform",
-            uniform4ui: "uniform",
-            uniform1fv: "uniform",
-            uniform2fv: "uniform",
-            uniform3fv: "uniform",
-            uniform4fv: "uniform",
-            uniform1iv: "uniform",
-            uniform2iv: "uniform",
-            uniform3iv: "uniform",
-            uniform4iv: "uniform",
-            uniform1uiv: "uniform",
-            uniform2uiv: "uniform",
-            uniform3uiv: "uniform",
-            uniform4uiv: "uniform",
-            uniformBlockBinding: "uniformBlockBinding",
-            uniformMatrix2fv: "uniformMatrix",
-            uniformMatrix3x2fv: "uniformMatrix",
-            uniformMatrix4x2fv: "uniformMatrix",
-            uniformMatrix2x3fv: "uniformMatrix",
-            uniformMatrix3fv: "uniformMatrix",
-            uniformMatrix4x3fv: "uniformMatrix",
-            uniformMatrix2x4fv: "uniformMatrix",
-            uniformMatrix3x4fv: "uniformMatrix",
-            uniformMatrix4fv: "uniformMatrix",
-            vertexAttribDivisor: "vertexAttribDivisor",
-            vertexAttribI4i: "vertexAttribI",
-            vertexAttribI4ui: "vertexAttribI",
-            vertexAttribI4iv: "vertexAttribI",
-            vertexAttribI4uiv: "vertexAttribI",
-            vertexAttribIPointer: "vertexAttribIPointer",
-            waitSync: "waitSync",
-        };
-        MDNCommandLinkHelper.WebGLFunctions = {
-            uniform1f: "uniform",
-            uniform1fv: "uniform",
-            uniform1i: "uniform",
-            uniform1iv: "uniform",
-            uniform2f: "uniform",
-            uniform2fv: "uniform",
-            uniform2i: "uniform",
-            uniform2iv: "uniform",
-            uniform3f: "uniform",
-            uniform3i: "uniform",
-            uniform3iv: "uniform",
-            uniform4f: "uniform",
-            uniform4fv: "uniform",
-            uniform4i: "uniform",
-            uniform4iv: "uniform",
-            uniformMatrix2fv: "uniformMatrix",
-            uniformMatrix3fv: "uniformMatrix",
-            uniformMatrix4fv: "uniformMatrix",
-            vertexAttrib1f: "vertexAttrib",
-            vertexAttrib2f: "vertexAttrib",
-            vertexAttrib3f: "vertexAttrib",
-            vertexAttrib4f: "vertexAttrib",
-            vertexAttrib1fv: "vertexAttrib",
-            vertexAttrib2fv: "vertexAttrib",
-            vertexAttrib3fv: "vertexAttrib",
-            vertexAttrib4fv: "vertexAttrib",
-        };
         EmbeddedFrontend.MDNCommandLinkHelper = MDNCommandLinkHelper;
     })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
 })(SPECTOR || (SPECTOR = {}));
@@ -7922,7 +7936,7 @@ var SPECTOR;
                         _this.onErrorInternal("No frames with gl commands detected. Try moving the camera.");
                     }
                     else {
-                        _this.onErrorInternal("No frames detected. Try moving the camera or implementing animationRequestFrame.");
+                        _this.onErrorInternal("No frames detected. Try moving the camera or implementing requestAnimationFrame.");
                     }
                 }, 10 * 1000);
             }

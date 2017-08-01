@@ -9,7 +9,7 @@ namespace SPECTOR {
     }
 
     export type CanvasSpyConstructor = {
-        new (options: ICanvasSpyOptions, logger: ILogger): ICanvasSpy,
+        new(options: ICanvasSpyOptions, logger: ILogger): ICanvasSpy,
     };
 }
 
@@ -30,7 +30,10 @@ namespace SPECTOR.Spies {
         }
 
         private init(): void {
+            // Needs both this.
+            // tslint:disable-next-line
             const self = this;
+
             const getContextSpied = function (this: HTMLCanvasElement) {
                 const context = self.spiedGetContext.apply(this, arguments);
 
