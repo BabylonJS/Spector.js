@@ -4,10 +4,12 @@ namespace SPECTOR {
         context: WebGLRenderingContexts;
         version: number;
 
+        onMaxCommand: IEvent<IContextSpy>;
+
         spy(): void;
         unSpy(): void;
 
-        startCapture(): void;
+        startCapture(maxCommands?: number): void;
         stopCapture(): ICapture;
         setMarker(marker: string): void;
         clearMarker(): void;
@@ -40,6 +42,8 @@ namespace SPECTOR.Spies {
         public readonly context: WebGLRenderingContexts;
         public readonly version: number;
 
+        public readonly onMaxCommand: IEvent<IContextSpy>;
+
         private readonly contextInformation: IContextInformation;
         private readonly commandSpies: { [key: string]: ICommandSpy };
         private readonly stateSpy: IStateSpy;
@@ -55,6 +59,7 @@ namespace SPECTOR.Spies {
         private canvasCapture: ICanvasCapture;
         private contextCapture: IContextCapture;
         private analyser: ICaptureAnalyser;
+        private maxCommands: number;
 
         constructor(private readonly options: IContextSpyOptions,
             private readonly time: ITime,
@@ -63,6 +68,9 @@ namespace SPECTOR.Spies {
             this.commandId = 0;
             this.context = options.context;
             this.version = options.version;
+
+            this.onMaxCommand = new options.injection.EventCtor<IContextSpy>();
+
             this.capturing = false;
             this.globalCapturing = true;
 
@@ -121,8 +129,10 @@ namespace SPECTOR.Spies {
             }
         }
 
-        public startCapture(): void {
+        public startCapture(maxCommands = 0): void {
             const startTime = this.time.now;
+            this.maxCommands = maxCommands;
+
             if (!this.options.recordAlways) {
                 this.spy();
             }
@@ -198,6 +208,10 @@ namespace SPECTOR.Spies {
                 this.currentCapture.commands.push(commandCapture);
 
                 commandCapture.endTime = this.time.now;
+
+                if (this.maxCommands > 0 && this.currentCapture.commands.length === this.maxCommands) {
+                    this.onMaxCommand.trigger(this);
+                }
             }
         }
 

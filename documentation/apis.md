@@ -20,9 +20,12 @@ foo.onEvent.add(function(s) { console.log(s); }, context);
 This is the main entry point of the library and contains the following methods:
 - ```constructor()``` : creates a new instance.
 - ```displayUI()``` : displays the embedded ui and begins to track the pages available canvas elements.
-- ```spyCanvases()```: enables recording some extra information merged in the capture like texture memory sizes and formats. This should be launched before you update the texture objects.
+- ```spyCanvases()``` : enables recording some extra information merged in the capture like texture memory sizes and formats. This should be launched before you update the texture objects.
 - ```getFps()``` : to get the current fps of the selected canvas.
-- ```captureCanvas(canvas: HTMLCanvasElement)``` : to start a capture on a specific canvas.
+- ```captureCanvas(canvas: HTMLCanvasElement, commandCount = 0)``` : to start a capture on a specific canvas. The capture will start on the next frame by default. In order to start an immediate capture, you can specify the number of command to record in the second parameter.
+- ```stopCapture()``` : stops the current capture and return the result in json. It displays the result if the ui is displayed.
+- ```setMarker(marker: string)``` : Adds a marker displayed in the ccapture helping analysing the result.
+- ```clearMarker()``` : clears the current marker from the capture for any subsequent calls.
 
 And the following list of events:
 - ```onCaptureStarted: IEvent<any>``` : triggered when a capture starts.

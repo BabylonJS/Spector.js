@@ -1292,6 +1292,7 @@ var SPECTOR;
                 this.commandId = 0;
                 this.context = options.context;
                 this.version = options.version;
+                this.onMaxCommand = new options.injection.EventCtor();
                 this.capturing = false;
                 this.globalCapturing = true;
                 this.injection = options.injection;
@@ -1341,8 +1342,10 @@ var SPECTOR;
                     }
                 }
             };
-            ContextSpy.prototype.startCapture = function () {
+            ContextSpy.prototype.startCapture = function (maxCommands) {
+                if (maxCommands === void 0) { maxCommands = 0; }
                 var startTime = this.time.now;
+                this.maxCommands = maxCommands;
                 if (!this.options.recordAlways) {
                     this.spy();
                 }
@@ -1403,6 +1406,9 @@ var SPECTOR;
                     this.stateSpy.captureState(commandCapture);
                     this.currentCapture.commands.push(commandCapture);
                     commandCapture.endTime = this.time.now;
+                    if (this.maxCommands > 0 && this.currentCapture.commands.length === this.maxCommands) {
+                        this.onMaxCommand.trigger(this);
+                    }
                 }
             };
             ContextSpy.prototype.spyContext = function (bindingContext) {
@@ -7847,6 +7853,7 @@ var SPECTOR;
             this.noFrameTimeout = -1;
             this.injection = options.injection || SPECTOR.ProvidedInjection.DefaultInjection;
             this.captureNextFrames = 0;
+            this.captureNextCommands = 0;
             this.retry = 0;
             this.contexts = [];
             this.logger = new this.injection.LoggerCtor();
@@ -7964,22 +7971,24 @@ var SPECTOR;
         Spector.prototype.getAvailableContexts = function () {
             return this.getAvailableContexts();
         };
-        Spector.prototype.captureCanvas = function (canvas) {
+        Spector.prototype.captureCanvas = function (canvas, commandCount) {
+            if (commandCount === void 0) { commandCount = 0; }
             var contextSpy = this.getAvailableContextSpyByCanvas(canvas);
             if (!contextSpy) {
                 var context = Spector.getFirstAvailable3dContext(canvas);
                 if (context) {
-                    this.captureContext(context);
+                    this.captureContext(context, commandCount);
                 }
                 else {
                     this.logger.error("No webgl context available on the chosen canvas.");
                 }
             }
             else {
-                this.captureContextSpy(contextSpy);
+                this.captureContextSpy(contextSpy, commandCount);
             }
         };
-        Spector.prototype.captureContext = function (context) {
+        Spector.prototype.captureContext = function (context, commandCount) {
+            if (commandCount === void 0) { commandCount = 0; }
             var contextSpy = this.getAvailableContextSpyByCanvas(context.canvas);
             if (!contextSpy) {
                 if (context.getIndexedParameter) {
@@ -7998,17 +8007,19 @@ var SPECTOR;
                         injection: this.injection,
                     }, this.time, this.logger);
                 }
+                contextSpy.onMaxCommand.add(this.stopCapture, this);
                 this.contexts.push({
                     canvas: contextSpy.context.canvas,
                     contextSpy: contextSpy,
                 });
             }
             if (contextSpy) {
-                this.captureContextSpy(contextSpy);
+                this.captureContextSpy(contextSpy, commandCount);
             }
         };
-        Spector.prototype.captureContextSpy = function (contextSpy) {
+        Spector.prototype.captureContextSpy = function (contextSpy, commandCount) {
             var _this = this;
+            if (commandCount === void 0) { commandCount = 0; }
             if (this.capturingContext) {
                 this.onErrorInternal("Already capturing a context.");
             }
@@ -8016,15 +8027,41 @@ var SPECTOR;
                 this.retry = 0;
                 this.capturingContext = contextSpy;
                 this.capturingContext.setMarker(this.marker);
-                this.capture();
+                // Limit command count to 5000 record.
+                commandCount = Math.min(commandCount, 5000);
+                if (commandCount > 0) {
+                    this.captureCommands(commandCount);
+                }
+                else {
+                    // Capture only one frame.
+                    this.captureFrames(1);
+                }
                 this.noFrameTimeout = setTimeout(function () {
-                    if (_this.capturingContext && _this.retry > 1) {
+                    if (commandCount > 0) {
+                        _this.onErrorInternal("Not enough commands detected.");
+                    }
+                    else if (_this.capturingContext && _this.retry > 1) {
                         _this.onErrorInternal("No frames with gl commands detected. Try moving the camera.");
                     }
                     else {
                         _this.onErrorInternal("No frames detected. Try moving the camera or implementing requestAnimationFrame.");
                     }
                 }, 10 * 1000);
+            }
+        };
+        Spector.prototype.stopCapture = function () {
+            if (this.capturingContext) {
+                var capture = this.capturingContext.stopCapture();
+                if (capture.commands.length > 0) {
+                    if (this.noFrameTimeout > -1) {
+                        clearTimeout(this.noFrameTimeout);
+                    }
+                    this.triggerCapture(capture);
+                }
+                else if (this.captureNextCommands === 0) {
+                    this.retry++;
+                    this.captureFrames(1);
+                }
             }
         };
         Spector.prototype.setMarker = function (marker) {
@@ -8039,10 +8076,23 @@ var SPECTOR;
                 this.capturingContext.clearMarker();
             }
         };
-        Spector.prototype.capture = function (frameCount) {
-            if (frameCount === void 0) { frameCount = 1; }
+        Spector.prototype.captureFrames = function (frameCount) {
             this.captureNextFrames = frameCount;
+            this.captureNextCommands = 0;
             this.playNextFrame();
+        };
+        Spector.prototype.captureCommands = function (commandCount) {
+            this.captureNextFrames = 0;
+            this.captureNextCommands = commandCount;
+            this.play();
+            if (this.capturingContext) {
+                this.onCaptureStarted.trigger(undefined);
+                this.capturingContext.startCapture(commandCount);
+            }
+            else {
+                this.onErrorInternal("No context to capture from.");
+                this.captureNextCommands = 0;
+            }
         };
         Spector.prototype.spyContext = function (contextInformation) {
             var contextSpy = this.getAvailableContextSpyByCanvas(contextInformation.context.canvas);
@@ -8053,6 +8103,7 @@ var SPECTOR;
                     recordAlways: true,
                     injection: this.injection,
                 }, this.time, this.logger);
+                contextSpy.onMaxCommand.add(this.stopCapture, this);
                 this.contexts.push({
                     canvas: contextSpy.context.canvas,
                     contextSpy: contextSpy,
@@ -8070,7 +8121,10 @@ var SPECTOR;
             return undefined;
         };
         Spector.prototype.onFrameStart = function () {
-            if (this.captureNextFrames > 0) {
+            if (this.captureNextCommands > 0) {
+                // Nothing to do here but preventing to drop the capturing context.
+            }
+            else if (this.captureNextFrames > 0) {
                 if (this.capturingContext) {
                     this.onCaptureStarted.trigger(undefined);
                     this.capturingContext.startCapture();
@@ -8082,18 +8136,11 @@ var SPECTOR;
             }
         };
         Spector.prototype.onFrameEnd = function () {
-            if (this.capturingContext && this.captureNextFrames === 0) {
-                var capture = this.capturingContext.stopCapture();
-                if (capture.commands.length > 0) {
-                    if (this.noFrameTimeout > -1) {
-                        clearTimeout(this.noFrameTimeout);
-                    }
-                    this.triggerCapture(capture);
-                }
-                else {
-                    this.retry++;
-                    this.capture(1);
-                }
+            if (this.captureNextCommands > 0) {
+                // Nothing to do here but preventing to drop the capturing context.
+            }
+            else if (this.captureNextFrames === 0) {
+                this.stopCapture();
             }
         };
         Spector.prototype.triggerCapture = function (capture) {
@@ -8110,6 +8157,7 @@ var SPECTOR;
             if (this.capturingContext) {
                 this.capturingContext = undefined;
                 this.captureNextFrames = 0;
+                this.captureNextCommands = 0;
                 this.retry = 0;
                 if (this.captureMenu) {
                     this.captureMenu.captureComplete(error);

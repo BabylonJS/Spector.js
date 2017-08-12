@@ -983,9 +983,10 @@ declare namespace SPECTOR {
     interface IContextSpy {
         context: WebGLRenderingContexts;
         version: number;
+        onMaxCommand: IEvent<IContextSpy>;
         spy(): void;
         unSpy(): void;
-        startCapture(): void;
+        startCapture(maxCommands?: number): void;
         stopCapture(): ICapture;
         setMarker(marker: string): void;
         clearMarker(): void;
@@ -1010,6 +1011,7 @@ declare namespace SPECTOR.Spies {
         private static readonly unSpyableMembers;
         readonly context: WebGLRenderingContexts;
         readonly version: number;
+        readonly onMaxCommand: IEvent<IContextSpy>;
         private readonly contextInformation;
         private readonly commandSpies;
         private readonly stateSpy;
@@ -1024,10 +1026,11 @@ declare namespace SPECTOR.Spies {
         private canvasCapture;
         private contextCapture;
         private analyser;
+        private maxCommands;
         constructor(options: IContextSpyOptions, time: ITime, logger: ILogger);
         spy(): void;
         unSpy(): void;
-        startCapture(): void;
+        startCapture(maxCommands?: number): void;
         stopCapture(): ICapture;
         isCapturing(): boolean;
         setMarker(marker: string): void;
@@ -2444,6 +2447,7 @@ declare namespace SPECTOR {
         private readonly time;
         private canvasSpy;
         private captureNextFrames;
+        private captureNextCommands;
         private capturingContext;
         private captureMenu;
         private resultView;
@@ -2462,12 +2466,14 @@ declare namespace SPECTOR {
         spyCanvases(): void;
         spyCanvas(canvas: HTMLCanvasElement): void;
         getAvailableContexts(): IAvailableContext[];
-        captureCanvas(canvas: HTMLCanvasElement): void;
-        captureContext(context: WebGLRenderingContexts): void;
-        captureContextSpy(contextSpy: IContextSpy): void;
+        captureCanvas(canvas: HTMLCanvasElement, commandCount?: number): void;
+        captureContext(context: WebGLRenderingContexts, commandCount?: number): void;
+        captureContextSpy(contextSpy: IContextSpy, commandCount?: number): void;
+        stopCapture(): void;
         setMarker(marker: string): void;
         clearMarker(): void;
-        private capture(frameCount?);
+        private captureFrames(frameCount);
+        private captureCommands(commandCount);
         private spyContext(contextInformation);
         private getAvailableContextSpyByCanvas(canvas);
         private onFrameStart();

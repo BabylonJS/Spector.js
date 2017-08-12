@@ -51,6 +51,7 @@ namespace SPECTOR {
 
         private canvasSpy: ICanvasSpy;
         private captureNextFrames: number;
+        private captureNextCommands: number;
         private capturingContext: IContextSpy;
         private captureMenu: ICaptureMenu;
         private resultView: IResultView;
@@ -61,6 +62,7 @@ namespace SPECTOR {
         constructor(private options: ISpectorOptions = {}) {
             this.injection = options.injection || ProvidedInjection.DefaultInjection;
             this.captureNextFrames = 0;
+            this.captureNextCommands = 0;
             this.retry = 0;
             this.contexts = [];
 
@@ -173,23 +175,23 @@ namespace SPECTOR {
             return this.getAvailableContexts();
         }
 
-        public captureCanvas(canvas: HTMLCanvasElement) {
+        public captureCanvas(canvas: HTMLCanvasElement, commandCount = 0) {
             const contextSpy = this.getAvailableContextSpyByCanvas(canvas);
             if (!contextSpy) {
                 const context = Spector.getFirstAvailable3dContext(canvas);
                 if (context) {
-                    this.captureContext(context);
+                    this.captureContext(context, commandCount);
                 }
                 else {
                     this.logger.error("No webgl context available on the chosen canvas.");
                 }
             }
             else {
-                this.captureContextSpy(contextSpy);
+                this.captureContextSpy(contextSpy, commandCount);
             }
         }
 
-        public captureContext(context: WebGLRenderingContexts) {
+        public captureContext(context: WebGLRenderingContexts, commandCount = 0) {
             let contextSpy = this.getAvailableContextSpyByCanvas(context.canvas);
 
             if (!contextSpy) {
@@ -210,6 +212,8 @@ namespace SPECTOR {
                     }, this.time, this.logger);
                 }
 
+                contextSpy.onMaxCommand.add(this.stopCapture, this);
+
                 this.contexts.push({
                     canvas: contextSpy.context.canvas,
                     contextSpy,
@@ -217,11 +221,11 @@ namespace SPECTOR {
             }
 
             if (contextSpy) {
-                this.captureContextSpy(contextSpy);
+                this.captureContextSpy(contextSpy, commandCount);
             }
         }
 
-        public captureContextSpy(contextSpy: IContextSpy) {
+        public captureContextSpy(contextSpy: IContextSpy, commandCount = 0) {
             if (this.capturingContext) {
                 this.onErrorInternal("Already capturing a context.");
             }
@@ -229,16 +233,44 @@ namespace SPECTOR {
                 this.retry = 0;
                 this.capturingContext = contextSpy;
                 this.capturingContext.setMarker(this.marker);
-                this.capture();
+
+                // Limit command count to 5000 record.
+                commandCount = Math.min(commandCount, 5000);
+                if (commandCount > 0) {
+                    this.captureCommands(commandCount);
+                }
+                else {
+                    // Capture only one frame.
+                    this.captureFrames(1);
+                }
 
                 this.noFrameTimeout = setTimeout(() => {
-                    if (this.capturingContext && this.retry > 1) {
+                    if (commandCount > 0) {
+                        this.onErrorInternal("Not enough commands detected.");
+                    }
+                    else if (this.capturingContext && this.retry > 1) {
                         this.onErrorInternal("No frames with gl commands detected. Try moving the camera.");
                     }
                     else {
                         this.onErrorInternal("No frames detected. Try moving the camera or implementing requestAnimationFrame.");
                     }
                 }, 10 * 1000);
+            }
+        }
+
+        public stopCapture(): void {
+            if (this.capturingContext) {
+                const capture = this.capturingContext.stopCapture();
+                if (capture.commands.length > 0) {
+                    if (this.noFrameTimeout > -1) {
+                        clearTimeout(this.noFrameTimeout);
+                    }
+                    this.triggerCapture(capture);
+                }
+                else if (this.captureNextCommands === 0) {
+                    this.retry++;
+                    this.captureFrames(1);
+                }
             }
         }
 
@@ -256,9 +288,27 @@ namespace SPECTOR {
             }
         }
 
-        private capture(frameCount = 1): void {
+        private captureFrames(frameCount: number): void {
             this.captureNextFrames = frameCount;
+            this.captureNextCommands = 0;
+
             this.playNextFrame();
+        }
+
+        private captureCommands(commandCount: number): void {
+            this.captureNextFrames = 0;
+            this.captureNextCommands = commandCount;
+
+            this.play();
+
+            if (this.capturingContext) {
+                this.onCaptureStarted.trigger(undefined);
+                this.capturingContext.startCapture(commandCount);
+            }
+            else {
+                this.onErrorInternal("No context to capture from.");
+                this.captureNextCommands = 0;
+            }
         }
 
         private spyContext(contextInformation: IContextInformation) {
@@ -270,6 +320,9 @@ namespace SPECTOR {
                     recordAlways: true,
                     injection: this.injection,
                 }, this.time, this.logger);
+
+                contextSpy.onMaxCommand.add(this.stopCapture, this);
+
                 this.contexts.push({
                     canvas: contextSpy.context.canvas,
                     contextSpy,
@@ -289,7 +342,10 @@ namespace SPECTOR {
         }
 
         private onFrameStart(): void {
-            if (this.captureNextFrames > 0) {
+            if (this.captureNextCommands > 0) {
+                // Nothing to do here but preventing to drop the capturing context.
+            }
+            else if (this.captureNextFrames > 0) {
                 if (this.capturingContext) {
                     this.onCaptureStarted.trigger(undefined);
                     this.capturingContext.startCapture();
@@ -302,18 +358,11 @@ namespace SPECTOR {
         }
 
         private onFrameEnd(): void {
-            if (this.capturingContext && this.captureNextFrames === 0) {
-                const capture = this.capturingContext.stopCapture();
-                if (capture.commands.length > 0) {
-                    if (this.noFrameTimeout > -1) {
-                        clearTimeout(this.noFrameTimeout);
-                    }
-                    this.triggerCapture(capture);
-                }
-                else {
-                    this.retry++;
-                    this.capture(1);
-                }
+            if (this.captureNextCommands > 0) {
+                // Nothing to do here but preventing to drop the capturing context.
+            }
+            else if (this.captureNextFrames === 0) {
+                this.stopCapture();
             }
         }
 
@@ -333,6 +382,7 @@ namespace SPECTOR {
             if (this.capturingContext) {
                 this.capturingContext = undefined;
                 this.captureNextFrames = 0;
+                this.captureNextCommands = 0;
                 this.retry = 0;
 
                 if (this.captureMenu) {

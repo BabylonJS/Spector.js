@@ -45,6 +45,7 @@ Once ```npm start``` has been launched, you can access the following samples to 
 12. [Uniform Command](http://localhost:1337/sample/index.html?sample=uniformCommand): Test to do a capture a uniform with a value matching a webgl constant.
 13. [Custom Metadata](http://localhost:1337/sample/index.html?sample=customMetadata): Test to do a capture containing custom metadata.
 14. [Custom Marker](http://localhost:1337/sample/index.html?sample=customMarker): Test to do a capture containing custom marker.
+15. [Capture On Load](http://localhost:1337/sample/index.html?sample=captureOnLoad): Test to do a capture containing custom marker.
 
 You can also add &noSpy=1 at the end of the previous Urls to test without enabling the full spy before starting your rendering engine.
 
