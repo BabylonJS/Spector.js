@@ -29,7 +29,7 @@
         .filler {
             position:absolute;
             top:120px;
-            bottom:60px;
+            bottom:110px;
             left:0px;
             right:0px;
             opacity:0.15;
@@ -70,7 +70,7 @@
 
         .footer {
             position:absolute;
-            height:56px;
+            height:112px;
             bottom:0px;
             left:0px;
             right:0px;
@@ -82,7 +82,7 @@
     </style>
 </head>
 
-<body style="width:418px;height:380px;margin:0px;padding:0px;">
+<body style="width:418px;height:436px;margin:0px;padding:0px;">
     <div class="captureHint">
         <p>
             You can drag previously saved captures here to open them.
@@ -90,7 +90,10 @@
     </div>
     <div class="footer">
         <p>
-            <label><input type="checkbox" id="openInNewTab" /> Open In New Tab</label>
+            <label><input type="checkbox" id="captureOnLoad" /> Capture on reload</label>
+        </p>
+        <p>
+            <label><input type="checkbox" id="openInNewTab" checked="true" /> Open In New Tab</label>
         </p>
     </div>
     <img src="spectorjs.svg" alt="SpectorJS" class="filler" /> 

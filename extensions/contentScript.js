@@ -1,4 +1,5 @@
 var debug = false;
+var captureOnReloadCommandCount = 500;
 
 //_______________________________EXTENSION POLYFILL_____________________________________
 window.browser = (function () {
@@ -72,12 +73,22 @@ function insertHeaderNode(node) {
 //_____________________________________________________________________________________
 
 var spectorLoadedKey = "SPECTOR_LOADED";
+var spectorCaptureOnLoadKey = "SPECTOR_CAPTUREONLOAD";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
 var spectorContextTypeKey = "__spector_context_type";
 var openInNewTab = false;
+var captureOnLoad = false;
+
+if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
+    sessionStorage.setItem(spectorCaptureOnLoadKey, "false");
+    captureOnLoad = true;
+    openInNewTab = true;
+}
 
 var canvasGetContextDetection = `
+    var spector;
     var OLDGetContext = HTMLCanvasElement.prototype.getContext;
+    var captureOnLoad = ${captureOnLoad ? "true" : "false"};
     HTMLCanvasElement.prototype.getContext = function () {
         var context = OLDGetContext.apply(this, arguments);
         if (context === null) {
@@ -87,6 +98,13 @@ var canvasGetContextDetection = `
         var contextNames = ["webgl", "experimental-webgl", "webgl2", "experimental-webgl2"];
         if (contextNames.indexOf(arguments[0]) !== -1) {
             context.canvas.setAttribute("${spectorContextTypeKey}", arguments[0]);
+            if (captureOnLoad) {
+                // Ensures canvas is in the dom to capture the one we are currently tracking.
+                if (this.parentElement) {
+                    spector.captureContext(context, ${captureOnReloadCommandCount});
+                    captureOnLoad = false;
+                }
+            }
         }
 
         return context;
@@ -107,7 +125,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
 
     // Defer exec to next slot to ensure proper loading of the lib.
     setTimeout(function () {
-        var captureLib = `var spector = new SPECTOR.Spector();
+        var captureLib = `spector = new SPECTOR.Spector();
             spector.spyCanvases();
             document.addEventListener("SpectorRequestPauseEvent", function() {
                 spector.pause();
@@ -251,6 +269,14 @@ listenForMessage(function (message) {
             setTimeout(function () { window.location.reload(); }, 50);
             return;
         }
+    }
+
+    // We need to reload to inject the capture loading sequence.
+    if (action === "captureOnLoad") {
+        sessionStorage.setItem(spectorCaptureOnLoadKey, "true");
+        // Delay for all frames.
+        setTimeout(function () { window.location.reload(); }, 50);
+        return;
     }
 
     // Let the paused canvas play again. 

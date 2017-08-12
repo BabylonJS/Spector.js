@@ -137,6 +137,18 @@ var pause = function(e) {
 
 var captureCanvas = function(e) {
     if (e) {
-        sendMessage({ action: "capture", canvasRef: e.ref, openInNewTab: document.getElementById('openInNewTab').checked });
+        if (document.getElementById("captureOnLoad").checked) {
+            sendMessage({ 
+                action: "captureOnLoad"
+            });
+        }
+        else {
+            sendMessage({ 
+                action: "capture", 
+                canvasRef: e.ref, 
+                openInNewTab: document.getElementById("openInNewTab").checked
+            });
+        }
     }
 }
+
