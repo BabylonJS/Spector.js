@@ -129,6 +129,7 @@ declare namespace SPECTOR {
         stackTrace: string[];
         status: CommandCaptureStatus;
         text: string;
+        marker: string;
         consumeCommandId?: number;
         [stateName: string]: any;
     }
@@ -986,6 +987,8 @@ declare namespace SPECTOR {
         unSpy(): void;
         startCapture(): void;
         stopCapture(): ICapture;
+        setMarker(marker: string): void;
+        clearMarker(): void;
         isCapturing(): boolean;
         getNextCommandCaptureId(): number;
     }
@@ -1013,6 +1016,7 @@ declare namespace SPECTOR.Spies {
         private readonly recorderSpy;
         private readonly webGlObjectSpy;
         private readonly injection;
+        private marker;
         private capturing;
         private globalCapturing;
         private commandId;
@@ -1026,6 +1030,8 @@ declare namespace SPECTOR.Spies {
         startCapture(): void;
         stopCapture(): ICapture;
         isCapturing(): boolean;
+        setMarker(marker: string): void;
+        clearMarker(): void;
         getNextCommandCaptureId(): number;
         onCommand(commandSpy: ICommandSpy, functionInformation: IFunctionInformation): void;
         private spyContext(bindingContext);
@@ -1038,7 +1044,7 @@ declare namespace SPECTOR.Spies {
 declare namespace SPECTOR {
     interface ICommandSpy {
         readonly spiedCommandName: string;
-        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture;
+        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number, marker: string): ICommandCapture;
         spy(): void;
         unSpy(): void;
     }
@@ -1071,7 +1077,7 @@ declare namespace SPECTOR.Spies {
         constructor(options: ICommandSpyOptions, time: ITime, logger: ILogger);
         spy(): void;
         unSpy(): void;
-        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture;
+        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number, marker: string): ICommandCapture;
         private initCustomCommands(commandNamespace);
         private initCommand(defaultCommandCtor);
         private getSpy();
@@ -1080,7 +1086,7 @@ declare namespace SPECTOR.Spies {
 declare namespace SPECTOR {
     interface ICommand {
         readonly spiedCommandName: string;
-        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture;
+        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number, marker: string): ICommandCapture;
     }
     interface ICommandOptions extends IContextInformation {
         readonly spiedCommandName: string;
@@ -1096,7 +1102,7 @@ declare namespace SPECTOR.Commands {
         protected readonly logger: ILogger;
         readonly spiedCommandName: string;
         constructor(options: ICommandOptions, stackTrace: IStackTrace, logger: ILogger);
-        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture;
+        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number, marker: string): ICommandCapture;
         protected transformCapture(commandCapture: ICommandCapture): void;
         protected stringify(args: IArguments, result: any): string;
         protected stringifyUniform(args: IArguments): string;
@@ -2433,6 +2439,7 @@ declare namespace SPECTOR {
         private resultView;
         private retry;
         private noFrameTimeout;
+        private marker;
         constructor(options?: ISpectorOptions);
         displayUI(): void;
         getResultUI(): IResultView;
@@ -2448,6 +2455,8 @@ declare namespace SPECTOR {
         captureCanvas(canvas: HTMLCanvasElement): void;
         captureContext(context: WebGLRenderingContexts): void;
         captureContextSpy(contextSpy: IContextSpy): void;
+        setMarker(marker: string): void;
+        clearMarker(): void;
         private capture(frameCount?);
         private spyContext(contextInformation);
         private getAvailableContextSpyByCanvas(canvas);

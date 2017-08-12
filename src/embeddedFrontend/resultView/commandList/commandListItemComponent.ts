@@ -45,6 +45,14 @@ namespace SPECTOR.EmbeddedFrontend {
                 }, 1);
             }
 
+            if (state.capture.marker) {
+                const markerElement = document.createElement("span");
+                markerElement.className = status + " marker important";
+                markerElement.innerText = state.capture.marker + " ";
+                markerElement.style.fontWeight = "1000";
+                liHolder.appendChild(markerElement);
+            }
+
             const textElement = document.createElement("span");
             let text = state.capture.text;
             text = text.replace(state.capture.name, `<span class=" ${status} important">${state.capture.name}</span>`);

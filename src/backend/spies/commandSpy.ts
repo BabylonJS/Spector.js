@@ -2,7 +2,7 @@ namespace SPECTOR {
 
     export interface ICommandSpy {
         readonly spiedCommandName: string;
-        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture;
+        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number, marker: string): ICommandCapture;
         spy(): void;
         unSpy(): void;
     }
@@ -67,8 +67,8 @@ namespace SPECTOR.Spies {
             this.spiedCommandRunningContext[this.spiedCommandName] = this.spiedCommand;
         }
 
-        public createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture {
-            return this.command.createCapture(functionInformation, commandCaptureId);
+        public createCapture(functionInformation: IFunctionInformation, commandCaptureId: number, marker: string): ICommandCapture {
+            return this.command.createCapture(functionInformation, commandCaptureId, marker);
         }
 
         private initCustomCommands(commandNamespace: FunctionIndexer): void {

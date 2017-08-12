@@ -1,4 +1,5 @@
 var spector = new SPECTOR.Spector();
+window.spector = spector;
 spector.displayUI();
 
 var noSpy = false;

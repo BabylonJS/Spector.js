@@ -9,6 +9,8 @@ namespace SPECTOR {
 
         startCapture(): void;
         stopCapture(): ICapture;
+        setMarker(marker: string): void;
+        clearMarker(): void;
         isCapturing(): boolean;
 
         getNextCommandCaptureId(): number;
@@ -22,7 +24,7 @@ namespace SPECTOR {
     }
 
     export type ContextSpyConstructor = {
-        new (options: IContextSpyOptions, time: ITime, logger: ILogger): IContextSpy;
+        new(options: IContextSpyOptions, time: ITime, logger: ILogger): IContextSpy;
     };
 }
 
@@ -45,6 +47,7 @@ namespace SPECTOR.Spies {
         private readonly webGlObjectSpy: IWebGlObjectSpy;
         private readonly injection: InjectionType;
 
+        private marker: string;
         private capturing: boolean;
         private globalCapturing: boolean;
         private commandId: number;
@@ -169,6 +172,14 @@ namespace SPECTOR.Spies {
             return this.globalCapturing && this.capturing;
         }
 
+        public setMarker(marker: string) {
+            this.marker = marker;
+        }
+
+        public clearMarker() {
+            this.marker = null;
+        }
+
         public getNextCommandCaptureId(): number {
             return this.commandId++;
         }
@@ -182,7 +193,7 @@ namespace SPECTOR.Spies {
             this.recorderSpy.recordCommand(functionInformation);
 
             if (this.isCapturing()) {
-                const commandCapture = commandSpy.createCapture(functionInformation, this.getNextCommandCaptureId());
+                const commandCapture = commandSpy.createCapture(functionInformation, this.getNextCommandCaptureId(), this.marker);
                 this.stateSpy.captureState(commandCapture);
                 this.currentCapture.commands.push(commandCapture);
 

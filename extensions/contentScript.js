@@ -134,7 +134,8 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
             setInterval(() => {
                 var myEvent = new CustomEvent("SpectorFPSEvent", { detail: { fps: spector.getFps() } });
                 document.dispatchEvent(myEvent);
-            }, 1500);`;
+            }, 1500);
+            window.spector = spector;`;
 
         if (debug) {
             insertTextScript(`SPECTORTOOLS.Loader

@@ -3,7 +3,7 @@ namespace SPECTOR {
     export interface ICommand {
         readonly spiedCommandName: string;
 
-        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture;
+        createCapture(functionInformation: IFunctionInformation, commandCaptureId: number, marker: string): ICommandCapture;
     }
 
     export interface ICommandOptions extends IContextInformation {
@@ -26,7 +26,7 @@ namespace SPECTOR.Commands {
             this.spiedCommandName = options.spiedCommandName;
         }
 
-        public createCapture(functionInformation: IFunctionInformation, commandCaptureId: number): ICommandCapture {
+        public createCapture(functionInformation: IFunctionInformation, commandCaptureId: number, marker: string): ICommandCapture {
             // Removes the spector internal calls to leave only th relevant part.
             const stackTrace = this.stackTrace.getStackTrace(4, 1);
 
@@ -47,7 +47,7 @@ namespace SPECTOR.Commands {
 
                 stackTrace,
                 status: CommandCaptureStatus.Unknown,
-
+                marker,
                 text,
             };
 

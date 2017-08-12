@@ -458,6 +458,12 @@ $commandDetailComponentWidth: 40%;
         }
       }
 
+      .marker{
+        font-size: 16px;
+        font-weight: 900;
+        color: greenyellow;
+      }
+
       &.active {
         background: lighten($selected, 6%); 
         color:#222;

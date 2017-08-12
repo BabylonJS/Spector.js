@@ -13,6 +13,7 @@ This realeas enables command comparison and fixes a couple of reported issues:
 - [Allow capture of float based width/height of FrameBuffer](https://github.com/BabylonJS/Spector.js/issues/52)
 - [Fix uniform command Format](https://github.com/BabylonJS/Spector.js/issues/50)
 - [Better Stacktrace support on Firefox](https://github.com/BabylonJS/Spector.js/issues/47)
+- [Integrate Custom Marker](https://github.com/BabylonJS/Spector.js/issues/45)
 
 ## v0.2.3 Typos and MultiTabs
 This simply contains another quick fix concerning typos in readme and the extension popup. As a little bonus, you can now capture to a new tab.

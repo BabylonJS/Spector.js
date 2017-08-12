@@ -1383,6 +1383,12 @@ var SPECTOR;
             ContextSpy.prototype.isCapturing = function () {
                 return this.globalCapturing && this.capturing;
             };
+            ContextSpy.prototype.setMarker = function (marker) {
+                this.marker = marker;
+            };
+            ContextSpy.prototype.clearMarker = function () {
+                this.marker = null;
+            };
             ContextSpy.prototype.getNextCommandCaptureId = function () {
                 return this.commandId++;
             };
@@ -1393,7 +1399,7 @@ var SPECTOR;
                 this.webGlObjectSpy.tagWebGlObjects(functionInformation);
                 this.recorderSpy.recordCommand(functionInformation);
                 if (this.isCapturing()) {
-                    var commandCapture = commandSpy.createCapture(functionInformation, this.getNextCommandCaptureId());
+                    var commandCapture = commandSpy.createCapture(functionInformation, this.getNextCommandCaptureId(), this.marker);
                     this.stateSpy.captureState(commandCapture);
                     this.currentCapture.commands.push(commandCapture);
                     commandCapture.endTime = this.time.now;
@@ -1500,8 +1506,8 @@ var SPECTOR;
             CommandSpy.prototype.unSpy = function () {
                 this.spiedCommandRunningContext[this.spiedCommandName] = this.spiedCommand;
             };
-            CommandSpy.prototype.createCapture = function (functionInformation, commandCaptureId) {
-                return this.command.createCapture(functionInformation, commandCaptureId);
+            CommandSpy.prototype.createCapture = function (functionInformation, commandCaptureId, marker) {
+                return this.command.createCapture(functionInformation, commandCaptureId, marker);
             };
             CommandSpy.prototype.initCustomCommands = function (commandNamespace) {
                 if (CommandSpy.customCommandsConstructors) {
@@ -1564,7 +1570,7 @@ var SPECTOR;
                 this.logger = logger;
                 this.spiedCommandName = options.spiedCommandName;
             }
-            BaseCommand.prototype.createCapture = function (functionInformation, commandCaptureId) {
+            BaseCommand.prototype.createCapture = function (functionInformation, commandCaptureId, marker) {
                 // Removes the spector internal calls to leave only th relevant part.
                 var stackTrace = this.stackTrace.getStackTrace(4, 1);
                 // Includes uniform functions special cases to prevent lots of inheritence.
@@ -1581,6 +1587,7 @@ var SPECTOR;
                     result: functionInformation.result,
                     stackTrace: stackTrace,
                     status: 0 /* Unknown */,
+                    marker: marker,
                     text: text,
                 };
                 this.transformCapture(commandCapture);
@@ -6709,6 +6716,13 @@ var SPECTOR;
                         EmbeddedFrontend.ScrollIntoViewHelper.scrollIntoView(liHolder);
                     }, 1);
                 }
+                if (state.capture.marker) {
+                    var markerElement = document.createElement("span");
+                    markerElement.className = status + " marker important";
+                    markerElement.innerText = state.capture.marker + " ";
+                    markerElement.style.fontWeight = "1000";
+                    liHolder.appendChild(markerElement);
+                }
                 var textElement = document.createElement("span");
                 var text = state.capture.text;
                 text = text.replace(state.capture.name, "<span class=\" " + status + " important\">" + state.capture.name + "</span>");
@@ -7674,7 +7688,7 @@ var SPECTOR;
                 var visualStateSet = false;
                 for (var i = 0; i < capture.commands.length; i++) {
                     var commandCapture = capture.commands[i];
-                    if (this.toFilter(commandCapture.name) && commandCapture.id !== this.currentCommandId) {
+                    if (this.toFilter(commandCapture.marker) && this.toFilter(commandCapture.name) && commandCapture.id !== this.currentCommandId) {
                         continue;
                     }
                     var commandStateId = this.mvx.addChildState(this.commandListStateId, {
@@ -7715,7 +7729,8 @@ var SPECTOR;
             };
             ResultView.prototype.toFilter = function (text) {
                 text += "";
-                if (this.searchText && this.searchText.length > 2 && text.indexOf(this.searchText) === -1) {
+                text = text.toLowerCase();
+                if (this.searchText && this.searchText.length > 2 && text.indexOf(this.searchText.toLowerCase()) === -1) {
                     return true;
                 }
                 return false;
@@ -7956,6 +7971,7 @@ var SPECTOR;
             else {
                 this.retry = 0;
                 this.capturingContext = contextSpy;
+                this.capturingContext.setMarker(this.marker);
                 this.capture();
                 this.noFrameTimeout = setTimeout(function () {
                     if (_this.capturingContext && _this.retry > 1) {
@@ -7965,6 +7981,18 @@ var SPECTOR;
                         _this.onErrorInternal("No frames detected. Try moving the camera or implementing requestAnimationFrame.");
                     }
                 }, 10 * 1000);
+            }
+        };
+        Spector.prototype.setMarker = function (marker) {
+            this.marker = marker;
+            if (this.capturingContext) {
+                this.capturingContext.setMarker(marker);
+            }
+        };
+        Spector.prototype.clearMarker = function () {
+            this.marker = null;
+            if (this.capturingContext) {
+                this.capturingContext.clearMarker();
             }
         };
         Spector.prototype.capture = function (frameCount) {

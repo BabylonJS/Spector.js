@@ -14,7 +14,7 @@ namespace SPECTOR {
     }
 
     export type ResultViewConstructor = {
-        new (options: IResultViewOptions, logger: ILogger): IResultView,
+        new(options: IResultViewOptions, logger: ILogger): IResultView,
     };
 }
 
@@ -526,7 +526,7 @@ namespace SPECTOR.EmbeddedFrontend {
             let visualStateSet = false;
             for (let i = 0; i < capture.commands.length; i++) {
                 const commandCapture = capture.commands[i];
-                if (this.toFilter(commandCapture.name) && commandCapture.id !== this.currentCommandId) {
+                if (this.toFilter(commandCapture.marker) && this.toFilter(commandCapture.name) && commandCapture.id !== this.currentCommandId) {
                     continue;
                 }
 
@@ -574,7 +574,9 @@ namespace SPECTOR.EmbeddedFrontend {
 
         private toFilter(text: string): boolean {
             text += "";
-            if (this.searchText && this.searchText.length > 2 && text.indexOf(this.searchText) === -1) {
+            text = text.toLowerCase();
+
+            if (this.searchText && this.searchText.length > 2 && text.indexOf(this.searchText.toLowerCase()) === -1) {
                 return true;
             }
             return false;

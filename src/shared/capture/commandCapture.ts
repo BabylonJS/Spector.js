@@ -25,6 +25,7 @@ namespace SPECTOR {
         stackTrace: string[];
         status: CommandCaptureStatus;
         text: string;
+        marker: string;
         consumeCommandId?: number;
         [stateName: string]: any;
     }

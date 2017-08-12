@@ -346,6 +346,10 @@
           color: orange; }
         .commandListComponent ul li .important.valid {
           color: greenyellow; }
+      .commandListComponent ul li .marker {
+        font-size: 16px;
+        font-weight: 900;
+        color: greenyellow; }
       .commandListComponent ul li.active {
         background: #f37628;
         color: #222; }

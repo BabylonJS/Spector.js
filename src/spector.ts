@@ -56,6 +56,7 @@ namespace SPECTOR {
         private resultView: IResultView;
         private retry: number;
         private noFrameTimeout = -1;
+        private marker: string;
 
         constructor(private options: ISpectorOptions = {}) {
             this.injection = options.injection || ProvidedInjection.DefaultInjection;
@@ -227,6 +228,7 @@ namespace SPECTOR {
             else {
                 this.retry = 0;
                 this.capturingContext = contextSpy;
+                this.capturingContext.setMarker(this.marker);
                 this.capture();
 
                 this.noFrameTimeout = setTimeout(() => {
@@ -237,6 +239,20 @@ namespace SPECTOR {
                         this.onErrorInternal("No frames detected. Try moving the camera or implementing requestAnimationFrame.");
                     }
                 }, 10 * 1000);
+            }
+        }
+
+        public setMarker(marker: string): void {
+            this.marker = marker;
+            if (this.capturingContext) {
+                this.capturingContext.setMarker(marker);
+            }
+        }
+
+        public clearMarker(): void {
+            this.marker = null;
+            if (this.capturingContext) {
+                this.capturingContext.clearMarker();
             }
         }
 
