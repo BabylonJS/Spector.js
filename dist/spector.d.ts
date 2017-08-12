@@ -1208,6 +1208,16 @@ declare namespace SPECTOR.Commands {
         protected stringifyArgs(args: IArguments): string[];
     }
 }
+declare namespace SPECTOR.Commands {
+    class DisableVertexAttribArray extends BaseCommand {
+        protected stringifyArgs(args: IArguments): string[];
+    }
+}
+declare namespace SPECTOR.Commands {
+    class EnableVertexAttribArray extends BaseCommand {
+        protected stringifyArgs(args: IArguments): string[];
+    }
+}
 declare namespace SPECTOR {
     interface IRecorder {
         readonly objectName: string;

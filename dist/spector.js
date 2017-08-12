@@ -1594,7 +1594,7 @@ var SPECTOR;
                 for (var i = 0; i < commandCapture.commandArguments.length; i++) {
                     var argument = commandCapture.commandArguments[i];
                     if (argument && argument.length && argument.length > 50) {
-                        commandCapture.commandArguments[i] = "Array Legnth: " + argument.length;
+                        commandCapture.commandArguments[i] = "Array Length: " + argument.length;
                     }
                 }
                 if (commandCapture.commandArguments) {
@@ -2191,6 +2191,50 @@ var SPECTOR;
             return Viewport;
         }(Commands.BaseCommand));
         Commands.Viewport = Viewport;
+    })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Commands;
+    (function (Commands) {
+        var DisableVertexAttribArray = (function (_super) {
+            __extends(DisableVertexAttribArray, _super);
+            function DisableVertexAttribArray() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            DisableVertexAttribArray.prototype.stringifyArgs = function (args) {
+                var stringified = [];
+                stringified.push(args[0]);
+                return stringified;
+            };
+            DisableVertexAttribArray = __decorate([
+                SPECTOR.Decorators.command("disableVertexAttribArray")
+            ], DisableVertexAttribArray);
+            return DisableVertexAttribArray;
+        }(Commands.BaseCommand));
+        Commands.DisableVertexAttribArray = DisableVertexAttribArray;
+    })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Commands;
+    (function (Commands) {
+        var EnableVertexAttribArray = (function (_super) {
+            __extends(EnableVertexAttribArray, _super);
+            function EnableVertexAttribArray() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            EnableVertexAttribArray.prototype.stringifyArgs = function (args) {
+                var stringified = [];
+                stringified.push(args[0]);
+                return stringified;
+            };
+            EnableVertexAttribArray = __decorate([
+                SPECTOR.Decorators.command("enableVertexAttribArray")
+            ], EnableVertexAttribArray);
+            return EnableVertexAttribArray;
+        }(Commands.BaseCommand));
+        Commands.EnableVertexAttribArray = EnableVertexAttribArray;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
