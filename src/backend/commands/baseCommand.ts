@@ -56,7 +56,7 @@ namespace SPECTOR.Commands {
             for (let i = 0; i < commandCapture.commandArguments.length; i++) {
                 const argument = commandCapture.commandArguments[i];
                 if (argument && argument.length && argument.length > 50) {
-                    commandCapture.commandArguments[i] = "Array Legnth: " + argument.length;
+                    commandCapture.commandArguments[i] = "Array Length: " + argument.length;
                 }
             }
 
