@@ -7295,13 +7295,13 @@ var SPECTOR;
                 var _this = _super.call(this, eventConstructor, logger) || this;
                 _this.onVertexSourceClicked = _this.createEvent("onVertexSourceClicked");
                 _this.onFragmentSourceClicked = _this.createEvent("onFragmentSourceClicked");
-                _this.onCloseClicked = _this.createEvent("onCloseClicked");
+                _this.onSourceCodeCloseClicked = _this.createEvent("onSourceCodeCloseClicked");
                 return _this;
             }
             SourceCodeComponent.prototype.render = function (state, stateId) {
                 var source = state.fragment ? state.sourceFragment : state.sourceVertex;
                 var formattedShader = source ? this._indentIfdef(this._beautify(source)) : "";
-                var htmlString = (_a = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                <div class=\"sourceCodeComponent\">\n                    <pre class=\"language-glsl\"><code>", "</code></pre>\n                </div>\n            </div>"], _a.raw = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                <div class=\"sourceCodeComponent\">\n                    <pre class=\"language-glsl\"><code>", "</code></pre>\n                </div>\n            </div>"], this.htmlTemplate(_a, state.fragment ? "" : "active", state.fragment ? "active" : "", formattedShader));
+                var htmlString = (_a = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onSourceCodeCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                <div class=\"sourceCodeComponent\">\n                    <pre class=\"language-glsl\"><code>", "</code></pre>\n                </div>\n            </div>"], _a.raw = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onSourceCodeCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                <div class=\"sourceCodeComponent\">\n                    <pre class=\"language-glsl\"><code>", "</code></pre>\n                </div>\n            </div>"], this.htmlTemplate(_a, state.fragment ? "" : "active", state.fragment ? "active" : "", formattedShader));
                 // Pre and Prism work on the normal carriage return.
                 var element = this.renderElementFromTemplate(htmlString.replace(/<br>/g, "\n"), state, stateId);
                 Prism.highlightElement(element.querySelector("pre"));
@@ -7475,7 +7475,7 @@ var SPECTOR;
                     _this.selectCommand(commandEventArgs.stateId);
                     _this.openShader(true);
                 });
-                this.sourceCodeComponent.onCloseClicked.add(function () {
+                this.sourceCodeComponent.onSourceCodeCloseClicked.add(function () {
                     _this.displayCurrentCapture();
                 });
                 this.sourceCodeComponent.onVertexSourceClicked.add(function (sourceCodeState) {
@@ -8246,6 +8246,9 @@ var SPECTOR;
                         clearTimeout(this.noFrameTimeout);
                     }
                     this.triggerCapture(capture);
+                    this.capturingContext = undefined;
+                    this.captureNextFrames = 0;
+                    this.captureNextCommands = 0;
                 }
                 else if (this.captureNextCommands === 0) {
                     this.retry++;

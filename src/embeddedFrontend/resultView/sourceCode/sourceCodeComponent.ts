@@ -14,13 +14,13 @@ namespace SPECTOR.EmbeddedFrontend {
     export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         public onVertexSourceClicked: IStateEvent<ISourceCodeState>;
         public onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
-        public onCloseClicked: IStateEvent<ISourceCodeState>;
+        public onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;
 
         constructor(eventConstructor: EventConstructor, logger: ILogger) {
             super(eventConstructor, logger);
             this.onVertexSourceClicked = this.createEvent("onVertexSourceClicked");
             this.onFragmentSourceClicked = this.createEvent("onFragmentSourceClicked");
-            this.onCloseClicked = this.createEvent("onCloseClicked");
+            this.onSourceCodeCloseClicked = this.createEvent("onSourceCodeCloseClicked");
         }
 
         public render(state: ISourceCodeState, stateId: number): Element {
@@ -33,7 +33,7 @@ namespace SPECTOR.EmbeddedFrontend {
                     <ul class="sourceCodeMenuComponent">
                         <li><a class="${state.fragment ? "" : "active"}" href="#" role="button" commandName="onVertexSourceClicked">Vertex</a></li>
                         <li><a class="${state.fragment ? "active" : ""}" href="#" role="button" commandName="onFragmentSourceClicked">Fragment</a></li>
-                        <li><a href="#" role="button" commandName="onCloseClicked">Close</a></li>
+                        <li><a href="#" role="button" commandName="onSourceCodeCloseClicked">Close</a></li>
                     </ul>
                 </div>
                 <div class="sourceCodeComponent">

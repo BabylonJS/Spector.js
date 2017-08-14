@@ -266,6 +266,10 @@ namespace SPECTOR {
                         clearTimeout(this.noFrameTimeout);
                     }
                     this.triggerCapture(capture);
+
+                    this.capturingContext = undefined;
+                    this.captureNextFrames = 0;
+                    this.captureNextCommands = 0;
                 }
                 else if (this.captureNextCommands === 0) {
                     this.retry++;

@@ -2309,7 +2309,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
     class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         onVertexSourceClicked: IStateEvent<ISourceCodeState>;
         onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
-        onCloseClicked: IStateEvent<ISourceCodeState>;
+        onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;
         constructor(eventConstructor: EventConstructor, logger: ILogger);
         render(state: ISourceCodeState, stateId: number): Element;
         /**

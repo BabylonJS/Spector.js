@@ -130,7 +130,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 this.selectCommand(commandEventArgs.stateId);
                 this.openShader(true);
             });
-            this.sourceCodeComponent.onCloseClicked.add(() => {
+            this.sourceCodeComponent.onSourceCodeCloseClicked.add(() => {
                 this.displayCurrentCapture();
             });
             this.sourceCodeComponent.onVertexSourceClicked.add((sourceCodeState) => {
