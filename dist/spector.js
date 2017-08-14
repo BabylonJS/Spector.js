@@ -7381,6 +7381,7 @@ var SPECTOR;
                 this.menuStateId = this.mvx.addChildState(this.rootStateId, null, this.resultViewMenuComponent);
                 this.contentStateId = this.mvx.addChildState(this.rootStateId, null, this.resultViewContentComponent);
                 this.captureListStateId = this.mvx.addChildState(this.rootStateId, false, this.captureListComponent);
+                this.initKeyboardEvents();
                 this.initMenuComponent();
                 this.captureListComponent.onCaptureLoaded.add(function (capture) {
                     _this.addCapture(capture);
@@ -7464,6 +7465,56 @@ var SPECTOR;
                 }, 0, this.captureListItemComponent);
                 this.selectCapture(captureSateId);
                 return captureSateId;
+            };
+            ResultView.prototype.initKeyboardEvents = function () {
+                var _this = this;
+                this.rootPlaceHolder.addEventListener("keydown", function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (_this.mvx.getGenericState(_this.menuStateId).status !== 40 /* Commands */) {
+                        return;
+                    }
+                    if (event.keyCode === 38) {
+                        _this.selectPreviousCommand();
+                    }
+                    else if (event.keyCode === 40) {
+                        _this.selectNextCommand();
+                    }
+                    else if (event.keyCode === 33) {
+                        _this.selectPreviousVisualState();
+                    }
+                    else if (event.keyCode === 34) {
+                        _this.selectNextVisualState();
+                    }
+                });
+            };
+            ResultView.prototype.selectPreviousCommand = function () {
+                var commandState = this.mvx.getGenericState(this.currentCommandStateId);
+                if (commandState.previousCommandStateId < 0) {
+                    return;
+                }
+                this.selectCommand(commandState.previousCommandStateId);
+            };
+            ResultView.prototype.selectNextCommand = function () {
+                var commandState = this.mvx.getGenericState(this.currentCommandStateId);
+                if (commandState.nextCommandStateId < 0) {
+                    return;
+                }
+                this.selectCommand(commandState.nextCommandStateId);
+            };
+            ResultView.prototype.selectPreviousVisualState = function () {
+                var visualState = this.mvx.getGenericState(this.currentVisualStateId);
+                if (visualState.previousVisualStateId < 0) {
+                    return;
+                }
+                this.selectVisualState(visualState.previousVisualStateId);
+            };
+            ResultView.prototype.selectNextVisualState = function () {
+                var visualState = this.mvx.getGenericState(this.currentVisualStateId);
+                if (visualState.nextVisualStateId < 0) {
+                    return;
+                }
+                this.selectVisualState(visualState.nextVisualStateId);
             };
             ResultView.prototype.initMenuComponent = function () {
                 var _this = this;
@@ -7677,6 +7728,8 @@ var SPECTOR;
                 this.mvx.updateState(this.currentCommandStateId, {
                     capture: command,
                     visualStateId: commandState.visualStateId,
+                    previousCommandStateId: commandState.previousCommandStateId,
+                    nextCommandStateId: commandState.nextCommandStateId,
                     active: true,
                 });
                 return this.displayCurrentCommandDetail(commandState);
@@ -7760,35 +7813,61 @@ var SPECTOR;
                 this.mvx.removeChildrenStates(this.commandListStateId);
                 var tempVisualStateId = this.initVisualStateId;
                 var visualStateSet = false;
+                var previousCommandState = null;
+                var previousCommandStateId = -1;
+                var previousVisualState = null;
+                var previousVisualStateId = -1;
                 for (var i = 0; i < capture.commands.length; i++) {
                     var commandCapture = capture.commands[i];
                     if (this.toFilter(commandCapture.marker) && this.toFilter(commandCapture.name) && commandCapture.id !== this.currentCommandId) {
                         continue;
                     }
-                    var commandStateId = this.mvx.addChildState(this.commandListStateId, {
+                    var commandState = {
                         capture: commandCapture,
+                        previousCommandStateId: previousCommandStateId,
+                        nextCommandStateId: -1,
+                        visualStateId: undefined,
                         active: false,
-                    }, this.commandListItemComponent);
+                    };
+                    var commandStateId = this.mvx.addChildState(this.commandListStateId, commandState, this.commandListItemComponent);
+                    if (previousCommandState) {
+                        previousCommandState = this.mvx.getGenericState(previousCommandStateId);
+                        previousCommandState.nextCommandStateId = commandStateId;
+                        this.mvx.updateState(previousCommandStateId, previousCommandState);
+                    }
+                    previousCommandStateId = commandStateId;
+                    previousCommandState = commandState;
                     if (commandCapture.VisualState) {
-                        tempVisualStateId = this.mvx.addChildState(this.visualStateListStateId, {
+                        var visualState = {
                             VisualState: commandCapture.VisualState,
                             time: commandCapture.endTime,
                             commandStateId: commandStateId,
                             active: false,
-                        }, this.visualStateListItemComponent);
+                            previousVisualStateId: previousVisualStateId,
+                            nextVisualStateId: -1,
+                        };
+                        tempVisualStateId = this.mvx.addChildState(this.visualStateListStateId, visualState, this.visualStateListItemComponent);
+                        if (previousVisualState) {
+                            previousVisualState = this.mvx.getGenericState(previousVisualStateId);
+                            previousVisualState.nextVisualStateId = tempVisualStateId;
+                            this.mvx.updateState(previousVisualStateId, previousVisualState);
+                        }
+                        previousVisualState = visualState;
+                        previousVisualStateId = tempVisualStateId;
                         visualStateSet = true;
                     }
                     else if (!visualStateSet) {
                         var initVisualState = this.mvx.getGenericState(this.initVisualStateId);
                         initVisualState.commandStateId = commandStateId;
+                        initVisualState.previousVisualStateId = -1;
+                        initVisualState.nextVisualStateId = -1;
                         this.mvx.updateState(this.initVisualStateId, initVisualState);
+                        previousVisualState = initVisualState;
+                        previousVisualStateId = tempVisualStateId;
                         visualStateSet = true;
                     }
-                    this.mvx.updateState(commandStateId, {
-                        capture: commandCapture,
-                        active: false,
-                        visualStateId: tempVisualStateId,
-                    });
+                    commandState.visualStateId = tempVisualStateId;
+                    this.mvx.updateState(commandStateId, commandState);
                     if ((this.currentCommandId === -1 && i === 0)
                         || (this.currentCommandId === commandCapture.id)) {
                         this.currentCommandStateId = commandStateId;

@@ -2159,6 +2159,8 @@ declare namespace SPECTOR.EmbeddedFrontend {
         commandStateId: number;
         VisualState: any;
         active: boolean;
+        previousVisualStateId: number;
+        nextVisualStateId: number;
     }
     class VisualStateListItemComponent extends BaseComponent<IVisualStateItem> {
         onVisualStateSelected: IStateEvent<IVisualStateItem>;
@@ -2176,6 +2178,8 @@ declare namespace SPECTOR.EmbeddedFrontend {
         capture: ICommandCapture;
         active: boolean;
         visualStateId: number;
+        previousCommandStateId: number;
+        nextCommandStateId: number;
     }
     class CommandListItemComponent extends BaseComponent<ICommandListItemState> {
         onCommandSelected: IStateEvent<ICommandListItemState>;
@@ -2382,6 +2386,11 @@ declare namespace SPECTOR.EmbeddedFrontend {
         display(): void;
         hide(): void;
         addCapture(capture: ICapture): number;
+        private initKeyboardEvents();
+        private selectPreviousCommand();
+        private selectNextCommand();
+        private selectPreviousVisualState();
+        private selectNextVisualState();
         private initMenuComponent();
         private onCaptureRelatedAction(menuStatus);
         private displayCaptures();

@@ -3,6 +3,9 @@ namespace SPECTOR.EmbeddedFrontend {
         capture: ICommandCapture;
         active: boolean;
         visualStateId: number;
+
+        previousCommandStateId: number;
+        nextCommandStateId: number;
     }
 
     export class CommandListItemComponent extends BaseComponent<ICommandListItemState> {

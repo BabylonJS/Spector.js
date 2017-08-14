@@ -4,6 +4,9 @@ namespace SPECTOR.EmbeddedFrontend {
         commandStateId: number;
         VisualState: any;
         active: boolean;
+
+        previousVisualStateId: number;
+        nextVisualStateId: number;
     }
     export class VisualStateListItemComponent extends BaseComponent<IVisualStateItem> {
         public onVisualStateSelected: IStateEvent<IVisualStateItem>;
