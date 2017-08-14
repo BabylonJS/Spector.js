@@ -239,12 +239,25 @@ namespace SPECTOR.States {
         }
 
         protected readShaderFromContext(shader: WebGLShader): {} {
+            const source = this.context.getShaderSource(shader);
+            const spectorData = this.getSpectorData(shader);
+
+            const nameInMetadata = (shader && (shader as any).__SPECTOR_Metadata && (shader as any).__SPECTOR_Metadata.name);
+            let name = nameInMetadata ? (shader as any).__SPECTOR_Metadata.name :
+                this.readNameFromShaderSource(source);
+
+            if (!name) {
+                name = (this.context.getShaderParameter(shader, WebGlConstants.SHADER_TYPE.value) === WebGlConstants.FRAGMENT_SHADER.value) ?
+                    "Fragment" : "Vertex";
+            }
+
             return {
-                shader: this.getSpectorData(shader),
+                shader: spectorData,
                 COMPILE_STATUS: this.context.getShaderParameter(shader, WebGlConstants.COMPILE_STATUS.value),
                 DELETE_STATUS: this.context.getShaderParameter(shader, WebGlConstants.DELETE_STATUS.value),
                 SHADER_TYPE: this.getWebGlConstant(this.context.getShaderParameter(shader, WebGlConstants.SHADER_TYPE.value)),
-                source: this.context.getShaderSource(shader),
+                source,
+                name,
             };
         }
 
@@ -483,6 +496,47 @@ namespace SPECTOR.States {
         private getWebGlConstant(value: number) {
             const constant = WebGlConstantsByValue[value];
             return constant ? constant.name : value;
+        }
+
+        // Thx to https://github.com/spite/ShaderEditorExtension/blob/7b9483fdf5c417573906bae4139ca8bc7b8a49ca/src/panel.js#L689
+        // This helps displaying SHADER_NAME used in the extension.
+        private readNameFromShaderSource(source: string): string {
+            try {
+                let name = "";
+                let match;
+
+                const shaderNameRegex = /#define[\s]+SHADER_NAME[\s]+([\S]+)(\n|$)/gi;
+                match = shaderNameRegex.exec(source);
+                if (match !== null) {
+                    if (match.index === shaderNameRegex.lastIndex) {
+                        shaderNameRegex.lastIndex++;
+                    }
+                    name = match[1];
+                }
+
+                if (name === "") {
+                    // #define SHADER_NAME_B64 44K344Kn44O844OA44O8
+                    // #define SHADER_NAME_B64 8J+YjvCfmIE=
+                    const shaderName64Regex = /#define[\s]+SHADER_NAME_B64[\s]+([\S]+)(\n|$)/gi;
+                    match = shaderName64Regex.exec(source);
+                    if (match !== null) {
+                        if (match.index === shaderName64Regex.lastIndex) {
+                            shaderName64Regex.lastIndex++;
+                        }
+
+                        name = match[1];
+                    }
+
+                    if (name) {
+                        name = decodeURIComponent(atob(name));
+                    }
+                }
+
+                return name;
+            }
+            catch (e) {
+                return null;
+            }
         }
     }
 }

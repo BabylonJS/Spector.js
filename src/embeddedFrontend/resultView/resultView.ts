@@ -116,11 +116,19 @@ namespace SPECTOR.EmbeddedFrontend {
             this.captureListItemComponent.onSaveRequested.add((captureEventArgs) => {
                 this.saveCapture(captureEventArgs.state.capture);
             });
+            this.visualStateListItemComponent.onVisualStateSelected.add((visualStateEventArgs) => {
+                this.selectVisualState(visualStateEventArgs.stateId);
+            });
             this.commandListItemComponent.onCommandSelected.add((commandEventArgs) => {
                 this.selectCommand(commandEventArgs.stateId);
             });
-            this.visualStateListItemComponent.onVisualStateSelected.add((visualStateEventArgs) => {
-                this.selectVisualState(visualStateEventArgs.stateId);
+            this.commandListItemComponent.onVertexSelected.add((commandEventArgs) => {
+                this.selectCommand(commandEventArgs.stateId);
+                this.openShader(false);
+            });
+            this.commandListItemComponent.onFragmentSelected.add((commandEventArgs) => {
+                this.selectCommand(commandEventArgs.stateId);
+                this.openShader(true);
             });
             this.sourceCodeComponent.onCloseClicked.add(() => {
                 this.displayCurrentCapture();
@@ -136,18 +144,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 this.mvx.updateState(this.sourceCodeComponentStateId, state);
             });
             this.jsonSourceItemComponent.onOpenSourceClicked.add((sourceEventArg) => {
-                this.mvx.removeChildrenStates(this.contentStateId);
-                const commandState = this.mvx.getGenericState<ICommandListItemState>(this.currentCommandStateId);
-                this.sourceCodeComponentStateId = this.mvx.addChildState(this.contentStateId, {
-                    nameVertex: commandState.capture.DrawCall.shaders[0].name,
-                    nameFragment: commandState.capture.DrawCall.shaders[1].name,
-                    sourceVertex: commandState.capture.DrawCall.shaders[0].source,
-                    sourceFragment: commandState.capture.DrawCall.shaders[1].source,
-                    fragment: sourceEventArg.state.value === "FRAGMENT_SHADER",
-                }, this.sourceCodeComponent);
-
-                this.commandDetailStateId = this.mvx.addChildState(this.contentStateId, null, this.commandDetailComponent);
-                this.displayCurrentCommandDetail(commandState);
+                this.openShader(sourceEventArg.state.value === "FRAGMENT_SHADER");
             });
 
             this.updateViewState();
@@ -202,26 +199,46 @@ namespace SPECTOR.EmbeddedFrontend {
 
         private initKeyboardEvents(): void {
             this.rootPlaceHolder.addEventListener("keydown", (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-
                 if (this.mvx.getGenericState<IResultViewMenuState>(this.menuStateId).status !== MenuStatus.Commands) {
                     return;
                 }
 
                 if ((event as any).keyCode === 38) {
+                    event.preventDefault();
+                    event.stopPropagation();
                     this.selectPreviousCommand();
                 }
                 else if ((event as any).keyCode === 40) {
+                    event.preventDefault();
+                    event.stopPropagation();
                     this.selectNextCommand();
                 }
                 else if ((event as any).keyCode === 33) {
+                    event.preventDefault();
+                    event.stopPropagation();
                     this.selectPreviousVisualState();
                 }
                 else if ((event as any).keyCode === 34) {
+                    event.preventDefault();
+                    event.stopPropagation();
                     this.selectNextVisualState();
                 }
             });
+        }
+
+        private openShader(fragment: boolean): void {
+            this.mvx.removeChildrenStates(this.contentStateId);
+            const commandState = this.mvx.getGenericState<ICommandListItemState>(this.currentCommandStateId);
+            this.sourceCodeComponentStateId = this.mvx.addChildState(this.contentStateId, {
+                nameVertex: commandState.capture.DrawCall.shaders[0].name,
+                nameFragment: commandState.capture.DrawCall.shaders[1].name,
+                sourceVertex: commandState.capture.DrawCall.shaders[0].source,
+                sourceFragment: commandState.capture.DrawCall.shaders[1].source,
+                fragment,
+            }, this.sourceCodeComponent);
+
+            this.commandDetailStateId = this.mvx.addChildState(this.contentStateId, null, this.commandDetailComponent);
+            this.displayCurrentCommandDetail(commandState);
         }
 
         private selectPreviousCommand(): void {

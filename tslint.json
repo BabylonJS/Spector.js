@@ -20,7 +20,7 @@
     "curly": true,    
     "max-line-length": [true, 200],
     "cyclomatic-complexity": [true, 20],
-    "max-file-line-count": [true, 750],
+    "max-file-line-count": [true, 1000],
 
     "interface-over-type-literal": false,
     "prefer-for-of": false,

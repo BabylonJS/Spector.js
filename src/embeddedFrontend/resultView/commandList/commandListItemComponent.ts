@@ -10,10 +10,14 @@ namespace SPECTOR.EmbeddedFrontend {
 
     export class CommandListItemComponent extends BaseComponent<ICommandListItemState> {
         public onCommandSelected: IStateEvent<ICommandListItemState>;
+        public onVertexSelected: IStateEvent<ICommandListItemState>;
+        public onFragmentSelected: IStateEvent<ICommandListItemState>;
 
         constructor(eventConstructor: EventConstructor, logger: ILogger) {
             super(eventConstructor, logger);
             this.onCommandSelected = this.createEvent("onCommandSelected");
+            this.onVertexSelected = this.createEvent("onVertexSelected");
+            this.onFragmentSelected = this.createEvent("onFragmentSelected");
         }
 
         public render(state: ICommandListItemState, stateId: number): Element {
@@ -62,6 +66,28 @@ namespace SPECTOR.EmbeddedFrontend {
 
             textElement.innerHTML = text;
             liHolder.appendChild(textElement);
+
+            if ((state.capture as any).VisualState && state.capture.name !== "clear") {
+                try {
+                    const vertexShader = state.capture.DrawCall.shaders[0];
+                    const fragmentShader = state.capture.DrawCall.shaders[1];
+
+                    const vertexElement = document.createElement("a");
+                    vertexElement.innerText = vertexShader.name;
+                    vertexElement.href = "#";
+                    liHolder.appendChild(vertexElement);
+                    this.mapEventListener(vertexElement, "click", "onVertexSelected", state, stateId);
+
+                    const fragmentElement = document.createElement("a");
+                    fragmentElement.innerText = fragmentShader.name;
+                    fragmentElement.href = "#";
+                    liHolder.appendChild(fragmentElement);
+                    this.mapEventListener(fragmentElement, "click", "onFragmentSelected", state, stateId);
+                }
+                catch (e) {
+                    // Do nothing but prevent crashing.
+                }
+            }
 
             this.mapEventListener(liHolder, "click", "onCommandSelected", state, stateId);
 

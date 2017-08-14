@@ -4542,12 +4542,22 @@ var SPECTOR;
                 return attachmentState;
             };
             DrawCallState.prototype.readShaderFromContext = function (shader) {
+                var source = this.context.getShaderSource(shader);
+                var spectorData = this.getSpectorData(shader);
+                var nameInMetadata = (shader && shader.__SPECTOR_Metadata && shader.__SPECTOR_Metadata.name);
+                var name = nameInMetadata ? shader.__SPECTOR_Metadata.name :
+                    this.readNameFromShaderSource(source);
+                if (!name) {
+                    name = (this.context.getShaderParameter(shader, SPECTOR.WebGlConstants.SHADER_TYPE.value) === SPECTOR.WebGlConstants.FRAGMENT_SHADER.value) ?
+                        "Fragment" : "Vertex";
+                }
                 return {
-                    shader: this.getSpectorData(shader),
+                    shader: spectorData,
                     COMPILE_STATUS: this.context.getShaderParameter(shader, SPECTOR.WebGlConstants.COMPILE_STATUS.value),
                     DELETE_STATUS: this.context.getShaderParameter(shader, SPECTOR.WebGlConstants.DELETE_STATUS.value),
                     SHADER_TYPE: this.getWebGlConstant(this.context.getShaderParameter(shader, SPECTOR.WebGlConstants.SHADER_TYPE.value)),
-                    source: this.context.getShaderSource(shader),
+                    source: source,
+                    name: name,
                 };
             };
             DrawCallState.prototype.readAttributeFromContext = function (program, activeAttributeIndex) {
@@ -4754,6 +4764,41 @@ var SPECTOR;
             DrawCallState.prototype.getWebGlConstant = function (value) {
                 var constant = SPECTOR.WebGlConstantsByValue[value];
                 return constant ? constant.name : value;
+            };
+            // Thx to https://github.com/spite/ShaderEditorExtension/blob/7b9483fdf5c417573906bae4139ca8bc7b8a49ca/src/panel.js#L689
+            // This helps displaying SHADER_NAME used in the extension.
+            DrawCallState.prototype.readNameFromShaderSource = function (source) {
+                try {
+                    var name_3 = "";
+                    var match = void 0;
+                    var shaderNameRegex = /#define[\s]+SHADER_NAME[\s]+([\S]+)(\n|$)/gi;
+                    match = shaderNameRegex.exec(source);
+                    if (match !== null) {
+                        if (match.index === shaderNameRegex.lastIndex) {
+                            shaderNameRegex.lastIndex++;
+                        }
+                        name_3 = match[1];
+                    }
+                    if (name_3 === "") {
+                        // #define SHADER_NAME_B64 44K344Kn44O844OA44O8
+                        // #define SHADER_NAME_B64 8J+YjvCfmIE=
+                        var shaderName64Regex = /#define[\s]+SHADER_NAME_B64[\s]+([\S]+)(\n|$)/gi;
+                        match = shaderName64Regex.exec(source);
+                        if (match !== null) {
+                            if (match.index === shaderName64Regex.lastIndex) {
+                                shaderName64Regex.lastIndex++;
+                            }
+                            name_3 = match[1];
+                        }
+                        if (name_3) {
+                            name_3 = decodeURIComponent(atob(name_3));
+                        }
+                    }
+                    return name_3;
+                }
+                catch (e) {
+                    return null;
+                }
             };
             DrawCallState.samplerTypes = (_a = {},
                 _a[SPECTOR.WebGlConstants.SAMPLER_2D.value] = SPECTOR.WebGlConstants.TEXTURE_2D,
@@ -5612,6 +5657,9 @@ var SPECTOR;
                         break;
                     }
                     parentElement = parentElement.parentElement;
+                }
+                if (!parentElement) {
+                    return;
                 }
                 var parentRect = parentElement.getBoundingClientRect();
                 if (elementRect.top < parentRect.top) {
@@ -6541,8 +6589,8 @@ var SPECTOR;
                 // Load the files.
                 if (filesToLoad && filesToLoad.length > 0) {
                     var _loop_1 = function (i) {
-                        var name_3 = filesToLoad[i].name.toLowerCase();
-                        var extension = name_3.split(".").pop();
+                        var name_4 = filesToLoad[i].name.toLowerCase();
+                        var extension = name_4.split(".").pop();
                         var type = filesToLoad[i].type;
                         if (extension === "json") {
                             var fileToLoad_1 = filesToLoad[i];
@@ -6730,6 +6778,8 @@ var SPECTOR;
             function CommandListItemComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
                 _this.onCommandSelected = _this.createEvent("onCommandSelected");
+                _this.onVertexSelected = _this.createEvent("onVertexSelected");
+                _this.onFragmentSelected = _this.createEvent("onFragmentSelected");
                 return _this;
             }
             CommandListItemComponent.prototype.render = function (state, stateId) {
@@ -6773,6 +6823,25 @@ var SPECTOR;
                 text = text.replace(state.capture.name, "<span class=\" " + status + " important\">" + state.capture.name + "</span>");
                 textElement.innerHTML = text;
                 liHolder.appendChild(textElement);
+                if (state.capture.VisualState && state.capture.name !== "clear") {
+                    try {
+                        var vertexShader = state.capture.DrawCall.shaders[0];
+                        var fragmentShader = state.capture.DrawCall.shaders[1];
+                        var vertexElement = document.createElement("a");
+                        vertexElement.innerText = vertexShader.name;
+                        vertexElement.href = "#";
+                        liHolder.appendChild(vertexElement);
+                        this.mapEventListener(vertexElement, "click", "onVertexSelected", state, stateId);
+                        var fragmentElement = document.createElement("a");
+                        fragmentElement.innerText = fragmentShader.name;
+                        fragmentElement.href = "#";
+                        liHolder.appendChild(fragmentElement);
+                        this.mapEventListener(fragmentElement, "click", "onFragmentSelected", state, stateId);
+                    }
+                    catch (e) {
+                        // Do nothing but prevent crashing.
+                    }
+                }
                 this.mapEventListener(liHolder, "click", "onCommandSelected", state, stateId);
                 return liHolder;
             };
@@ -7392,11 +7461,19 @@ var SPECTOR;
                 this.captureListItemComponent.onSaveRequested.add(function (captureEventArgs) {
                     _this.saveCapture(captureEventArgs.state.capture);
                 });
+                this.visualStateListItemComponent.onVisualStateSelected.add(function (visualStateEventArgs) {
+                    _this.selectVisualState(visualStateEventArgs.stateId);
+                });
                 this.commandListItemComponent.onCommandSelected.add(function (commandEventArgs) {
                     _this.selectCommand(commandEventArgs.stateId);
                 });
-                this.visualStateListItemComponent.onVisualStateSelected.add(function (visualStateEventArgs) {
-                    _this.selectVisualState(visualStateEventArgs.stateId);
+                this.commandListItemComponent.onVertexSelected.add(function (commandEventArgs) {
+                    _this.selectCommand(commandEventArgs.stateId);
+                    _this.openShader(false);
+                });
+                this.commandListItemComponent.onFragmentSelected.add(function (commandEventArgs) {
+                    _this.selectCommand(commandEventArgs.stateId);
+                    _this.openShader(true);
                 });
                 this.sourceCodeComponent.onCloseClicked.add(function () {
                     _this.displayCurrentCapture();
@@ -7412,17 +7489,7 @@ var SPECTOR;
                     _this.mvx.updateState(_this.sourceCodeComponentStateId, state);
                 });
                 this.jsonSourceItemComponent.onOpenSourceClicked.add(function (sourceEventArg) {
-                    _this.mvx.removeChildrenStates(_this.contentStateId);
-                    var commandState = _this.mvx.getGenericState(_this.currentCommandStateId);
-                    _this.sourceCodeComponentStateId = _this.mvx.addChildState(_this.contentStateId, {
-                        nameVertex: commandState.capture.DrawCall.shaders[0].name,
-                        nameFragment: commandState.capture.DrawCall.shaders[1].name,
-                        sourceVertex: commandState.capture.DrawCall.shaders[0].source,
-                        sourceFragment: commandState.capture.DrawCall.shaders[1].source,
-                        fragment: sourceEventArg.state.value === "FRAGMENT_SHADER",
-                    }, _this.sourceCodeComponent);
-                    _this.commandDetailStateId = _this.mvx.addChildState(_this.contentStateId, null, _this.commandDetailComponent);
-                    _this.displayCurrentCommandDetail(commandState);
+                    _this.openShader(sourceEventArg.state.value === "FRAGMENT_SHADER");
                 });
                 this.updateViewState();
             }
@@ -7469,24 +7536,43 @@ var SPECTOR;
             ResultView.prototype.initKeyboardEvents = function () {
                 var _this = this;
                 this.rootPlaceHolder.addEventListener("keydown", function (event) {
-                    event.preventDefault();
-                    event.stopPropagation();
                     if (_this.mvx.getGenericState(_this.menuStateId).status !== 40 /* Commands */) {
                         return;
                     }
                     if (event.keyCode === 38) {
+                        event.preventDefault();
+                        event.stopPropagation();
                         _this.selectPreviousCommand();
                     }
                     else if (event.keyCode === 40) {
+                        event.preventDefault();
+                        event.stopPropagation();
                         _this.selectNextCommand();
                     }
                     else if (event.keyCode === 33) {
+                        event.preventDefault();
+                        event.stopPropagation();
                         _this.selectPreviousVisualState();
                     }
                     else if (event.keyCode === 34) {
+                        event.preventDefault();
+                        event.stopPropagation();
                         _this.selectNextVisualState();
                     }
                 });
+            };
+            ResultView.prototype.openShader = function (fragment) {
+                this.mvx.removeChildrenStates(this.contentStateId);
+                var commandState = this.mvx.getGenericState(this.currentCommandStateId);
+                this.sourceCodeComponentStateId = this.mvx.addChildState(this.contentStateId, {
+                    nameVertex: commandState.capture.DrawCall.shaders[0].name,
+                    nameFragment: commandState.capture.DrawCall.shaders[1].name,
+                    sourceVertex: commandState.capture.DrawCall.shaders[0].source,
+                    sourceFragment: commandState.capture.DrawCall.shaders[1].source,
+                    fragment: fragment,
+                }, this.sourceCodeComponent);
+                this.commandDetailStateId = this.mvx.addChildState(this.contentStateId, null, this.commandDetailComponent);
+                this.displayCurrentCommandDetail(commandState);
             };
             ResultView.prototype.selectPreviousCommand = function () {
                 var commandState = this.mvx.getGenericState(this.currentCommandStateId);

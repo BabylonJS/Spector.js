@@ -1715,6 +1715,7 @@ declare namespace SPECTOR.States {
         protected readUniformBlockFromContext(program: WebGLProgram, index: number): {};
         private appendBufferCustomData(state, buffer);
         private getWebGlConstant(value);
+        private readNameFromShaderSource(source);
     }
 }
 declare namespace SPECTOR.States {
@@ -2183,6 +2184,8 @@ declare namespace SPECTOR.EmbeddedFrontend {
     }
     class CommandListItemComponent extends BaseComponent<ICommandListItemState> {
         onCommandSelected: IStateEvent<ICommandListItemState>;
+        onVertexSelected: IStateEvent<ICommandListItemState>;
+        onFragmentSelected: IStateEvent<ICommandListItemState>;
         constructor(eventConstructor: EventConstructor, logger: ILogger);
         render(state: ICommandListItemState, stateId: number): Element;
     }
@@ -2387,6 +2390,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         hide(): void;
         addCapture(capture: ICapture): number;
         private initKeyboardEvents();
+        private openShader(fragment);
         private selectPreviousCommand();
         private selectNextCommand();
         private selectPreviousVisualState();

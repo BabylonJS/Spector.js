@@ -323,7 +323,8 @@
     .commandListComponent ul li {
       padding: 8px; }
       .commandListComponent ul li span {
-        word-wrap: break-word; }
+        word-wrap: break-word;
+        line-height: 22px; }
       .commandListComponent ul li:hover {
         color: #f9f9f9;
         cursor: pointer;
@@ -356,6 +357,14 @@
       .commandListComponent ul li.drawCall {
         background: #5db0d7;
         color: #222; }
+      .commandListComponent ul li a {
+        margin-left: 5px;
+        margin-right: 5px;
+        color: #5db0d7;
+        background: #222;
+        padding: 5px;
+        font-weight: 900;
+        display: inline-block; }
 
 .commandDetailComponent {
   position: absolute;

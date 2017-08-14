@@ -423,6 +423,7 @@ $commandDetailComponentWidth: 40%;
 
       span {
         word-wrap: break-word;
+        line-height: 22px;
       }
 
       &:hover {
@@ -472,6 +473,16 @@ $commandDetailComponentWidth: 40%;
       &.drawCall {
         background: $foreground-title;
         color:#222;
+      }
+
+      a {
+        margin-left: $margin;
+        margin-right: $margin;
+        color: $foreground-title;
+        background: $background;
+        padding: $margin;
+        font-weight: 900;
+        display: inline-block;
       }
     }
   }

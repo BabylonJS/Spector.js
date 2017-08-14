@@ -11,6 +11,10 @@ namespace SPECTOR.EmbeddedFrontend {
                 parentElement = parentElement.parentElement;
             }
 
+            if (!parentElement) {
+                return;
+            }
+
             const parentRect = parentElement.getBoundingClientRect();
             if (elementRect.top < parentRect.top) {
                 element.scrollIntoView(true);
