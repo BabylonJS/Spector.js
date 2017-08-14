@@ -55,6 +55,7 @@ namespace SPECTOR.EmbeddedFrontend {
         private currentCommandStateId: number;
         private currentVisualStateId: number;
         private initVisualStateId: number;
+        private sourceCodeComponentStateId: number;
 
         private searchText: string;
         private currentCommandId: number;
@@ -77,6 +78,7 @@ namespace SPECTOR.EmbeddedFrontend {
             this.currentVisualStateId = -1;
             this.visualStateListStateId = -1;
             this.initVisualStateId = -1;
+            this.sourceCodeComponentStateId = -1;
 
             this.captureListComponent = new CaptureListComponent(options.eventConstructor, logger);
             this.captureListItemComponent = new CaptureListItemComponent(options.eventConstructor, logger);
@@ -119,12 +121,32 @@ namespace SPECTOR.EmbeddedFrontend {
             this.visualStateListItemComponent.onVisualStateSelected.add((visualStateEventArgs) => {
                 this.selectVisualState(visualStateEventArgs.stateId);
             });
+            this.sourceCodeComponent.onCloseClicked.add(() => {
+                this.displayCurrentCapture();
+            });
+            this.sourceCodeComponent.onVertexSourceClicked.add((sourceCodeState) => {
+                const state = this.mvx.getGenericState<ISourceCodeState>(this.sourceCodeComponentStateId);
+                state.fragment = false;
+                this.mvx.updateState(this.sourceCodeComponentStateId, state);
+            });
+            this.sourceCodeComponent.onFragmentSourceClicked.add((sourceCodeState) => {
+                const state = this.mvx.getGenericState<ISourceCodeState>(this.sourceCodeComponentStateId);
+                state.fragment = true;
+                this.mvx.updateState(this.sourceCodeComponentStateId, state);
+            });
             this.jsonSourceItemComponent.onOpenSourceClicked.add((sourceEventArg) => {
                 this.mvx.removeChildrenStates(this.contentStateId);
-                const jsonContentStateId = this.mvx.addChildState(this.contentStateId, {
-                    description: "WebGl Shader Source Code:",
-                    source: sourceEventArg.state.value,
+                const commandState = this.mvx.getGenericState<ICommandListItemState>(this.currentCommandStateId);
+                this.sourceCodeComponentStateId = this.mvx.addChildState(this.contentStateId, {
+                    nameVertex: commandState.capture.DrawCall.shaders[0].name,
+                    nameFragment: commandState.capture.DrawCall.shaders[1].name,
+                    sourceVertex: commandState.capture.DrawCall.shaders[0].source,
+                    sourceFragment: commandState.capture.DrawCall.shaders[1].source,
+                    fragment: sourceEventArg.state.value === "FRAGMENT_SHADER",
                 }, this.sourceCodeComponent);
+
+                this.commandDetailStateId = this.mvx.addChildState(this.contentStateId, null, this.commandDetailComponent);
+                this.displayCurrentCommandDetail(commandState);
             });
 
             this.updateViewState();
@@ -272,7 +294,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 if (key === "source") {
                     this.mvx.addChildState(parentGroupId, {
                         key,
-                        value,
+                        value: json["SHADER_TYPE"],
                     }, this.jsonSourceItemComponent);
                 }
                 else if (key === "visual") {
@@ -432,6 +454,11 @@ namespace SPECTOR.EmbeddedFrontend {
                 active: true,
             });
 
+            return this.displayCurrentCommandDetail(commandState);
+        }
+
+        private displayCurrentCommandDetail(commandState: ICommandListItemState): number {
+            const command = commandState.capture;
             this.mvx.removeChildrenStates(this.commandDetailStateId);
 
             const visualState = this.mvx.getGenericState<any>(commandState.visualStateId);

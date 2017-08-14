@@ -2293,10 +2293,17 @@ declare namespace SPECTOR.EmbeddedFrontend {
 }
 declare namespace SPECTOR.EmbeddedFrontend {
     interface ISourceCodeState {
-        description: string;
-        source: string;
+        nameVertex: string;
+        nameFragment: string;
+        sourceVertex: string;
+        sourceFragment: string;
+        fragment: boolean;
     }
     class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
+        onVertexSourceClicked: IStateEvent<ISourceCodeState>;
+        onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
+        onCloseClicked: IStateEvent<ISourceCodeState>;
+        constructor(eventConstructor: EventConstructor, logger: ILogger);
         render(state: ISourceCodeState, stateId: number): Element;
         /**
          * Returns the position of the first "{" and the corresponding "}"
@@ -2362,6 +2369,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private currentCommandStateId;
         private currentVisualStateId;
         private initVisualStateId;
+        private sourceCodeComponentStateId;
         private searchText;
         private currentCommandId;
         private visible;
@@ -2385,6 +2393,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         private displayEndState();
         private displayCurrentCapture();
         private displayCurrentCommand();
+        private displayCurrentCommandDetail(commandState);
         private displayCurrentVisualState();
         private createVisualStates(capture);
         private createCommands(capture);

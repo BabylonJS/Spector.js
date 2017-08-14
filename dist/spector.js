@@ -6079,14 +6079,9 @@ var SPECTOR;
             StateStore.prototype.update = function (id, data) {
                 var currentState = this.store[id];
                 this.pendingOperation[id] = id;
-                this.store[id] = {
-                    data: data,
-                    id: id,
-                    parent: currentState.parent,
-                    children: currentState.children,
-                    componentInstance: currentState.componentInstance,
-                    lastOperation: 40 /* Update */,
-                };
+                // Update the state to not lose references.
+                this.store[id].data = data;
+                this.store[id].lastOperation = 40 /* Update */;
             };
             StateStore.prototype.addChild = function (parentId, data, componentInstance) {
                 var parent = this.store[parentId];
@@ -7227,12 +7222,17 @@ var SPECTOR;
     (function (EmbeddedFrontend) {
         var SourceCodeComponent = (function (_super) {
             __extends(SourceCodeComponent, _super);
-            function SourceCodeComponent() {
-                return _super !== null && _super.apply(this, arguments) || this;
+            function SourceCodeComponent(eventConstructor, logger) {
+                var _this = _super.call(this, eventConstructor, logger) || this;
+                _this.onVertexSourceClicked = _this.createEvent("onVertexSourceClicked");
+                _this.onFragmentSourceClicked = _this.createEvent("onFragmentSourceClicked");
+                _this.onCloseClicked = _this.createEvent("onCloseClicked");
+                return _this;
             }
             SourceCodeComponent.prototype.render = function (state, stateId) {
-                var formattedShader = state.source ? this._indentIfdef(this._beautify(state.source)) : "";
-                var htmlString = (_a = ["\n            <div class=\"sourceCodeComponent\">\n                <span class=\"sourceCodeComponentTitle\">", "</span>\n                <pre class=\"language-glsl\"><code>", "</code></pre>\n            </div>"], _a.raw = ["\n            <div class=\"sourceCodeComponent\">\n                <span class=\"sourceCodeComponentTitle\">", "</span>\n                <pre class=\"language-glsl\"><code>", "</code></pre>\n            </div>"], this.htmlTemplate(_a, state.description, formattedShader));
+                var source = state.fragment ? state.sourceFragment : state.sourceVertex;
+                var formattedShader = source ? this._indentIfdef(this._beautify(source)) : "";
+                var htmlString = (_a = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                <div class=\"sourceCodeComponent\">\n                    <pre class=\"language-glsl\"><code>", "</code></pre>\n                </div>\n            </div>"], _a.raw = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                <div class=\"sourceCodeComponent\">\n                    <pre class=\"language-glsl\"><code>", "</code></pre>\n                </div>\n            </div>"], this.htmlTemplate(_a, state.fragment ? "" : "active", state.fragment ? "active" : "", formattedShader));
                 // Pre and Prism work on the normal carriage return.
                 var element = this.renderElementFromTemplate(htmlString.replace(/<br>/g, "\n"), state, stateId);
                 Prism.highlightElement(element.querySelector("pre"));
@@ -7357,6 +7357,7 @@ var SPECTOR;
                 this.currentVisualStateId = -1;
                 this.visualStateListStateId = -1;
                 this.initVisualStateId = -1;
+                this.sourceCodeComponentStateId = -1;
                 this.captureListComponent = new EmbeddedFrontend.CaptureListComponent(options.eventConstructor, logger);
                 this.captureListItemComponent = new EmbeddedFrontend.CaptureListItemComponent(options.eventConstructor, logger);
                 this.visualStateListComponent = new EmbeddedFrontend.VisualStateListComponent(options.eventConstructor, logger);
@@ -7396,12 +7397,31 @@ var SPECTOR;
                 this.visualStateListItemComponent.onVisualStateSelected.add(function (visualStateEventArgs) {
                     _this.selectVisualState(visualStateEventArgs.stateId);
                 });
+                this.sourceCodeComponent.onCloseClicked.add(function () {
+                    _this.displayCurrentCapture();
+                });
+                this.sourceCodeComponent.onVertexSourceClicked.add(function (sourceCodeState) {
+                    var state = _this.mvx.getGenericState(_this.sourceCodeComponentStateId);
+                    state.fragment = false;
+                    _this.mvx.updateState(_this.sourceCodeComponentStateId, state);
+                });
+                this.sourceCodeComponent.onFragmentSourceClicked.add(function (sourceCodeState) {
+                    var state = _this.mvx.getGenericState(_this.sourceCodeComponentStateId);
+                    state.fragment = true;
+                    _this.mvx.updateState(_this.sourceCodeComponentStateId, state);
+                });
                 this.jsonSourceItemComponent.onOpenSourceClicked.add(function (sourceEventArg) {
                     _this.mvx.removeChildrenStates(_this.contentStateId);
-                    var jsonContentStateId = _this.mvx.addChildState(_this.contentStateId, {
-                        description: "WebGl Shader Source Code:",
-                        source: sourceEventArg.state.value,
+                    var commandState = _this.mvx.getGenericState(_this.currentCommandStateId);
+                    _this.sourceCodeComponentStateId = _this.mvx.addChildState(_this.contentStateId, {
+                        nameVertex: commandState.capture.DrawCall.shaders[0].name,
+                        nameFragment: commandState.capture.DrawCall.shaders[1].name,
+                        sourceVertex: commandState.capture.DrawCall.shaders[0].source,
+                        sourceFragment: commandState.capture.DrawCall.shaders[1].source,
+                        fragment: sourceEventArg.state.value === "FRAGMENT_SHADER",
                     }, _this.sourceCodeComponent);
+                    _this.commandDetailStateId = _this.mvx.addChildState(_this.contentStateId, null, _this.commandDetailComponent);
+                    _this.displayCurrentCommandDetail(commandState);
                 });
                 this.updateViewState();
             }
@@ -7531,7 +7551,7 @@ var SPECTOR;
                     if (key === "source") {
                         this.mvx.addChildState(parentGroupId, {
                             key: key,
-                            value: value,
+                            value: json["SHADER_TYPE"],
                         }, this.jsonSourceItemComponent);
                     }
                     else if (key === "visual") {
@@ -7659,6 +7679,10 @@ var SPECTOR;
                     visualStateId: commandState.visualStateId,
                     active: true,
                 });
+                return this.displayCurrentCommandDetail(commandState);
+            };
+            ResultView.prototype.displayCurrentCommandDetail = function (commandState) {
+                var command = commandState.capture;
                 this.mvx.removeChildrenStates(this.commandDetailStateId);
                 var visualState = this.mvx.getGenericState(commandState.visualStateId);
                 this.mvx.addChildState(this.commandDetailStateId, visualState.VisualState, this.jsonVisualStateItemComponent);

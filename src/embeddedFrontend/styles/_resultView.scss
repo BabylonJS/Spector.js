@@ -602,13 +602,184 @@ $commandDetailComponentWidth: 40%;
   text-decoration: underline;
 }
 
+.sourceCodeMenuComponentContainer {
+  position: absolute;
+  left: 0;
+  top: 0 - 2;
+  right: $commandDetailComponentWidth;
+}
+
+.sourceCodeMenuComponent {
+  font-family: 'Montserrat', sans-serif;
+  // text-transform: uppercase; 
+  font-size: 13px;
+  font-weight: 300;
+  line-height: $menuHeight;
+  flex: 1 100%;
+  display: flex;
+  flex-flow: row wrap;
+  height: $menuHeight;
+  outline: 0 none;
+  border-bottom:2px solid $background; 
+   box-sizing: border-box;
+  list-style: none;
+  margin: 0; 
+  
+  background: $background-even;
+  
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+
+  .resultViewMenuOpen {
+    display: none;
+    visibility: hidden;
+  }
+
+  a {
+    outline: 0 none;
+    text-decoration: none;
+    display: block;
+    padding: 0 $menuBaseHeight 0 $menuBaseHeight;
+    color: darken(white, 20%);
+    background: $background-even;
+    box-sizing: border-box;
+    height:100%;  
+
+    &.active {
+      background: $background;
+      color:white;
+      font-weight:400;
+      border-bottom:2px solid $foreground-important;
+    }
+
+    &:hover {
+      background: $background;
+      color: $foreground-focus;      
+      cursor: pointer;
+      transition: color $transition-time;
+      -webkit-transition: color $transition-time;
+      -moz-transition: color $transition-time;
+
+      &.active {
+        color: $foreground-important;
+        transition: color 0;
+        -webkit-transition: color 0;
+        -moz-transition: color 0;
+      } 
+    }
+
+    &.clearSearch {
+      display: inline-block;
+      padding: 0px; 
+      margin-left: -30px;
+      margin-right: 20px;
+      z-index: 9000;
+      color: $foreground;    
+      
+      &:hover {
+        background: $background-even;
+        color: $foreground-important; 
+      }
+    }
+  }
+
+  @media all and (max-width: 1024px) {
+    .resultViewMenuOpen {
+      display: block;
+      visibility: visible;
+    }
+
+    li:not(.resultViewMenuSmall) {
+      display: none;
+      visibility: hidden;
+    }
+
+    li {
+      background: $background-even;
+    }
+    li.searchContainer {
+      background: lighten($background-even, 10%);
+    }
+    
+    padding: 0px;
+    position: absolute;
+    overflow-y: visible;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index: 999999;
+    display: block;
+
+    a.active {
+      background: $background-even;
+    }
+  }
+
+  input {
+    border: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    padding:0 $menuBaseHeight 0 $menuBaseHeight;
+    // line-height: 20px;
+    // margin: 20px - $margin;
+    // padding: $margin;
+    background: lighten($background-even, 10%);
+    color: $foreground;
+    height:100%; 
+    position:relative;
+    top:-1px; // because of ul.border
+    box-sizing: border-box;
+
+    &:focus {
+      // border : 2px solid $background;
+      border: 0;
+      // box-shadow: 0 0px 0px $foreground inset, 0 0 2px $foreground-important;
+      outline: 0 none;
+    }
+  }
+
+  .clearSearch {
+    position:relative;
+    background:transparent;
+    display: inline;
+    padding: 0px;
+    margin-left: -30px;
+    z-index: 9000;
+    color: $foreground-important;
+    
+    &:hover {
+      background:transparent !important;
+    }
+  }
+
+  ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:  darken(white, 20%);
+  }
+  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:  darken(white, 20%); 
+  }
+  ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:  darken(white, 20%); 
+  }
+  :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color:  darken(white, 20%); 
+  }
+}
+
 .sourceCodeComponent {
   position:absolute; 
-  top: 0;
+  top: $menuHeight;
   left: 0;  
   bottom: 0;
-  right: 0;
-  height: 100%;
+  right: $commandDetailComponentWidth;
   background: $background;
   z-index: 9000;
   

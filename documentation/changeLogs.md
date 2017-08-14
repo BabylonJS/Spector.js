@@ -18,6 +18,7 @@ This realeas enables command comparison and fixes a couple of reported issues:
 - [Add Programmatic Capture](https://github.com/BabylonJS/Spector.js/issues/46)
 - Add capture on Load in the extension.
 - Open the extension by default in a new tab.
+- [Shaders + properties are visible at the same time](https://github.com/BabylonJS/Spector.js/issues/59)
 
 ## v0.2.3 Typos and MultiTabs
 This simply contains another quick fix concerning typos in readme and the extension popup. As a little bonus, you can now capture to a new tab.

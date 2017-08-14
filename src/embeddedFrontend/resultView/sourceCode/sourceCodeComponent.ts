@@ -1,7 +1,10 @@
 namespace SPECTOR.EmbeddedFrontend {
     export interface ISourceCodeState {
-        description: string;
-        source: string;
+        nameVertex: string;
+        nameFragment: string;
+        sourceVertex: string;
+        sourceFragment: string;
+        fragment: boolean;
     }
 
     // Declare Prism types here.
@@ -9,13 +12,33 @@ namespace SPECTOR.EmbeddedFrontend {
     declare const Prism: Prism;
 
     export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
+        public onVertexSourceClicked: IStateEvent<ISourceCodeState>;
+        public onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
+        public onCloseClicked: IStateEvent<ISourceCodeState>;
+
+        constructor(eventConstructor: EventConstructor, logger: ILogger) {
+            super(eventConstructor, logger);
+            this.onVertexSourceClicked = this.createEvent("onVertexSourceClicked");
+            this.onFragmentSourceClicked = this.createEvent("onFragmentSourceClicked");
+            this.onCloseClicked = this.createEvent("onCloseClicked");
+        }
+
         public render(state: ISourceCodeState, stateId: number): Element {
-            const formattedShader = state.source ? this._indentIfdef(this._beautify(state.source)) : "";
+            const source = state.fragment ? state.sourceFragment : state.sourceVertex;
+            const formattedShader = source ? this._indentIfdef(this._beautify(source)) : "";
 
             const htmlString = this.htmlTemplate`
-            <div class="sourceCodeComponent">
-                <span class="sourceCodeComponentTitle">${state.description}</span>
-                <pre class="language-glsl"><code>${formattedShader}</code></pre>
+            <div class="sourceCodeComponentContainer">
+                <div class="sourceCodeMenuComponentContainer">
+                    <ul class="sourceCodeMenuComponent">
+                        <li><a class="${state.fragment ? "" : "active"}" href="#" role="button" commandName="onVertexSourceClicked">Vertex</a></li>
+                        <li><a class="${state.fragment ? "active" : ""}" href="#" role="button" commandName="onFragmentSourceClicked">Fragment</a></li>
+                        <li><a href="#" role="button" commandName="onCloseClicked">Close</a></li>
+                    </ul>
+                </div>
+                <div class="sourceCodeComponent">
+                    <pre class="language-glsl"><code>${formattedShader}</code></pre>
+                </div>
             </div>`;
 
             // Pre and Prism work on the normal carriage return.

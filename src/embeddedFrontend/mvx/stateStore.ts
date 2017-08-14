@@ -75,14 +75,9 @@ namespace SPECTOR.EmbeddedFrontend {
         public update(id: number, data: {}): void {
             const currentState = this.store[id];
             this.pendingOperation[id] = id;
-            this.store[id] = {
-                data,
-                id,
-                parent: currentState.parent,
-                children: currentState.children,
-                componentInstance: currentState.componentInstance,
-                lastOperation: LastOperation.Update,
-            };
+            // Update the state to not lose references.
+            (this.store[id] as any).data = data;
+            this.store[id].lastOperation = LastOperation.Update;
         }
 
         public addChild(parentId: number, data: {}, componentInstance: ComponentInstance): number {

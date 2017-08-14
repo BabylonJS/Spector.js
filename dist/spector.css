@@ -464,13 +464,140 @@
   color: #5db0d7;
   text-decoration: underline; }
 
+.sourceCodeMenuComponentContainer {
+  position: absolute;
+  left: 0;
+  top: -2;
+  right: 40%; }
+
+.sourceCodeMenuComponent {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 40px;
+  flex: 1 100%;
+  display: flex;
+  flex-flow: row wrap;
+  height: 40px;
+  outline: 0 none;
+  border-bottom: 2px solid #222;
+  box-sizing: border-box;
+  list-style: none;
+  margin: 0;
+  background: #2c2c2c;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+  justify-content: flex-end; }
+  .sourceCodeMenuComponent .resultViewMenuOpen {
+    display: none;
+    visibility: hidden; }
+  .sourceCodeMenuComponent a {
+    outline: 0 none;
+    text-decoration: none;
+    display: block;
+    padding: 0 20px 0 20px;
+    color: #cccccc;
+    background: #2c2c2c;
+    box-sizing: border-box;
+    height: 100%; }
+    .sourceCodeMenuComponent a.active {
+      background: #222;
+      color: white;
+      font-weight: 400;
+      border-bottom: 2px solid #F0640D; }
+    .sourceCodeMenuComponent a:hover {
+      background: #222;
+      color: #c9c9c9;
+      cursor: pointer;
+      transition: color 0.3s;
+      -webkit-transition: color 0.3s;
+      -moz-transition: color 0.3s; }
+      .sourceCodeMenuComponent a:hover.active {
+        color: #F0640D;
+        transition: color 0;
+        -webkit-transition: color 0;
+        -moz-transition: color 0; }
+    .sourceCodeMenuComponent a.clearSearch {
+      display: inline-block;
+      padding: 0px;
+      margin-left: -30px;
+      margin-right: 20px;
+      z-index: 9000;
+      color: #f9f9f9; }
+      .sourceCodeMenuComponent a.clearSearch:hover {
+        background: #2c2c2c;
+        color: #F0640D; }
+  @media all and (max-width: 1024px) {
+    .sourceCodeMenuComponent {
+      padding: 0px;
+      position: absolute;
+      overflow-y: visible;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+      z-index: 999999;
+      display: block; }
+      .sourceCodeMenuComponent .resultViewMenuOpen {
+        display: block;
+        visibility: visible; }
+      .sourceCodeMenuComponent li:not(.resultViewMenuSmall) {
+        display: none;
+        visibility: hidden; }
+      .sourceCodeMenuComponent li {
+        background: #2c2c2c; }
+      .sourceCodeMenuComponent li.searchContainer {
+        background: #464646; }
+      .sourceCodeMenuComponent a.active {
+        background: #2c2c2c; } }
+  .sourceCodeMenuComponent input {
+    border: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    padding: 0 20px 0 20px;
+    background: #464646;
+    color: #f9f9f9;
+    height: 100%;
+    position: relative;
+    top: -1px;
+    box-sizing: border-box; }
+    .sourceCodeMenuComponent input:focus {
+      border: 0;
+      outline: 0 none; }
+  .sourceCodeMenuComponent .clearSearch {
+    position: relative;
+    background: transparent;
+    display: inline;
+    padding: 0px;
+    margin-left: -30px;
+    z-index: 9000;
+    color: #F0640D; }
+    .sourceCodeMenuComponent .clearSearch:hover {
+      background: transparent !important; }
+  .sourceCodeMenuComponent ::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    color: #cccccc; }
+  .sourceCodeMenuComponent :-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #cccccc; }
+  .sourceCodeMenuComponent ::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #cccccc; }
+  .sourceCodeMenuComponent :-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: #cccccc; }
+
 .sourceCodeComponent {
   position: absolute;
-  top: 0;
+  top: 40px;
   left: 0;
   bottom: 0;
-  right: 0;
-  height: 100%;
+  right: 40%;
   background: #222;
   z-index: 9000;
   overflow-x: visible;
