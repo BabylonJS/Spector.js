@@ -45,6 +45,7 @@ namespace SPECTOR.Spies {
             this.spiedCommandName = options.spiedCommandName;
             this.spiedCommandRunningContext = options.spiedCommandRunningContext;
             this.spiedCommand = this.spiedCommandRunningContext[this.spiedCommandName];
+            OriginFunctionHelper.storeOriginFunction(this.spiedCommandRunningContext, this.spiedCommandName);
             this.callback = options.callback;
 
             this.commandOptions = {
@@ -109,7 +110,7 @@ namespace SPECTOR.Spies {
             // tslint:disable-next-line:only-arrow-functions
             return function () {
                 const before = self.time.now;
-                const result = self.spiedCommand.apply(self.spiedCommandRunningContext, arguments);
+                const result = OriginFunctionHelper.executeOriginFunction(self.spiedCommandRunningContext, self.spiedCommandName, arguments);
                 const after = self.time.now;
 
                 const functionInformation = {

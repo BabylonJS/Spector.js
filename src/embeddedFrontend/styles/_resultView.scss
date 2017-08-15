@@ -29,6 +29,7 @@
   }
 }
 
+$border: 2px;
 $menuBaseHeight: 20px;
 $menuHeight: $menuBaseHeight * 2;
 
@@ -41,9 +42,9 @@ $menuHeight: $menuBaseHeight * 2;
   flex: 1 100%;
   display: flex;
   flex-flow: row wrap;
-  height: $menuHeight;
+  height: $menuHeight + $border;
   outline: 0 none;
-  border-bottom:2px solid $background; 
+  border-bottom: $border solid $background; 
    box-sizing: border-box;
   list-style: none;
   margin: 0; 
@@ -616,7 +617,7 @@ $commandDetailComponentWidth: 40%;
 .sourceCodeMenuComponentContainer {
   position: absolute;
   left: 0;
-  top: 0 - 2;
+  top: 0;
   right: $commandDetailComponentWidth;
 }
 
@@ -629,9 +630,9 @@ $commandDetailComponentWidth: 40%;
   flex: 1 100%;
   display: flex;
   flex-flow: row wrap;
-  height: $menuHeight;
+  height: $menuHeight + $border;
   outline: 0 none;
-  border-bottom:2px solid $background; 
+  border-bottom: $border solid $background; 
    box-sizing: border-box;
   list-style: none;
   margin: 0; 
@@ -787,7 +788,7 @@ $commandDetailComponentWidth: 40%;
 
 .sourceCodeComponent {
   position:absolute; 
-  top: $menuHeight;
+  top: $menuHeight + $border;
   left: 0;  
   bottom: 0;
   right: $commandDetailComponentWidth;

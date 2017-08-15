@@ -216,7 +216,15 @@ namespace SPECTOR.Spies {
         }
 
         private spyContext(bindingContext: any) {
+            const members: string[] = [];
             for (const member in bindingContext) {
+                if (member) {
+                    members.push(member);
+                }
+            }
+
+            for (let i = 0; i < members.length; i++) {
+                const member = members[i];
                 if (~ContextSpy.unSpyableMembers.indexOf(member)) {
                     continue;
                 }
@@ -264,6 +272,10 @@ namespace SPECTOR.Spies {
         }
 
         private spyFunction(member: string, bindingContext: any) {
+            if (member.indexOf("__SPECTOR_Origin_") === 0) {
+                return;
+            }
+
             if (!this.commandSpies[member]) {
                 const options = merge(this.contextInformation, {
                     spiedCommandName: member,

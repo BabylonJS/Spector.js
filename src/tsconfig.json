@@ -34,6 +34,7 @@
 
         "backend/utils/decorators.ts",
         "backend/utils/readPixelsHelper.ts",
+        "backend/utils/originFunctionHelper.ts",
 
         "backend/spies/timeSpy.ts",
         "backend/spies/canvasSpy.ts",

@@ -71,16 +71,26 @@ namespace SPECTOR.Commands {
                         argumentsArray.push(null);
                     }
                     else {
-                        argumentsArray.push(JSON.parse(JSON.stringify(commandArgument)));
+                        argumentsArray.push(JSON.parse(this.stringifyJSON(commandArgument)));
                     }
                 }
                 commandCapture.commandArguments = argumentsArray as any;
             }
             if (commandCapture.result) {
-                commandCapture.result = JSON.parse(JSON.stringify(commandCapture.result));
+                commandCapture.result = JSON.parse(this.stringifyJSON(commandCapture.result));
             }
 
             return commandCapture;
+        }
+
+        protected stringifyJSON(value: any): string {
+            try {
+                const str = JSON.stringify(value);
+                return str;
+            }
+            catch (e) {
+                return null;
+            }
         }
 
         protected transformCapture(commandCapture: ICommandCapture): void {

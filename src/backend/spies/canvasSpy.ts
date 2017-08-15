@@ -19,9 +19,6 @@ namespace SPECTOR.Spies {
 
         private readonly canvas: HTMLCanvasElement;
 
-        private spiedGetContext: (contextId: string, contextAttributes?: {}) =>
-            CanvasRenderingContext2D | WebGLRenderingContexts | undefined;
-
         constructor(private readonly options: ICanvasSpyOptions, private readonly logger: ILogger) {
             this.onContextRequested = new options.eventConstructor<IContextInformation>();
             this.canvas = options.canvas;
@@ -35,7 +32,9 @@ namespace SPECTOR.Spies {
             const self = this;
 
             const getContextSpied = function (this: HTMLCanvasElement) {
-                const context = self.spiedGetContext.apply(this, arguments);
+                const context = (self.canvas) ?
+                    OriginFunctionHelper.executeOriginFunction(this, "getContext", arguments) :
+                    OriginFunctionHelper.executePrototypeOriginFunction(this, HTMLCanvasElement, "getContext", arguments);
 
                 if (arguments.length > 0 && arguments[0] === "2d") {
                     return context;
@@ -58,11 +57,11 @@ namespace SPECTOR.Spies {
             };
 
             if (this.canvas) {
-                this.spiedGetContext = this.canvas.getContext;
+                OriginFunctionHelper.storeOriginFunction(this.canvas, "getContext");
                 this.canvas.getContext = getContextSpied;
             }
             else {
-                this.spiedGetContext = HTMLCanvasElement.prototype.getContext;
+                OriginFunctionHelper.storePrototypeOriginFunction(HTMLCanvasElement, "getContext");
                 (HTMLCanvasElement as any).prototype.getContext = getContextSpied;
             }
         }

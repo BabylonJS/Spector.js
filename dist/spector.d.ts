@@ -908,6 +908,17 @@ declare namespace SPECTOR {
     }
 }
 declare namespace SPECTOR {
+    class OriginFunctionHelper {
+        static storeOriginFunction(object: any, functionName: string): void;
+        static storePrototypeOriginFunction(object: any, functionName: string): void;
+        static executePrototypeOriginFunction(object: any, objectType: any, functionName: string, args: IArguments): any;
+        static executeOriginFunction(object: any, functionName: string, args: IArguments): any;
+        private static executeFunction(object, functionName, args);
+        private static originFunctionPrefix;
+        private static getOriginFunctionName(functionName);
+    }
+}
+declare namespace SPECTOR {
     interface ITimeSpy {
         onFrameStart: IEvent<ITimeSpy>;
         onFrameEnd: IEvent<ITimeSpy>;
@@ -974,7 +985,6 @@ declare namespace SPECTOR.Spies {
         private readonly logger;
         readonly onContextRequested: IEvent<IContextInformation>;
         private readonly canvas;
-        private spiedGetContext;
         constructor(options: ICanvasSpyOptions, logger: ILogger);
         private init();
     }
@@ -1106,6 +1116,7 @@ declare namespace SPECTOR.Commands {
         readonly spiedCommandName: string;
         constructor(options: ICommandOptions, stackTrace: IStackTrace, logger: ILogger);
         createCapture(functionInformation: IFunctionInformation, commandCaptureId: number, marker: string): ICommandCapture;
+        protected stringifyJSON(value: any): string;
         protected transformCapture(commandCapture: ICommandCapture): void;
         protected stringify(args: IArguments, result: any): string;
         protected stringifyUniform(args: IArguments): string;

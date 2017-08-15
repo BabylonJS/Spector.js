@@ -1,6 +1,6 @@
 {
   "name": "spectorjs",
-  "version": "0.3.0",
+  "version": "0.9.0",
   "description": "Explore and Troubleshoot your WebGL scenes easily.",
   "keywords": [
     "webgl",

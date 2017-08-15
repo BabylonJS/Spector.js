@@ -4,8 +4,13 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.0 Fix
+This realease is meant to improve the overall stability and compatibility with other extension:
+
+- [Workaround Firefox security issue relying on apply](https://github.com/BabylonJS/Spector.js/issues/37)
+
 ## v0.3.0 Fix
-This realeas enables command comparison and fixes a couple of reported issues:
+This realease enables fixes a couple of reported issues:
 
 - Fix memory usage report.
 - Add MSAA render buffer capture.

@@ -1108,6 +1108,120 @@ var SPECTOR;
     }());
     SPECTOR.ReadPixelsHelper = ReadPixelsHelper;
 })(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var OriginFunctionHelper = (function () {
+        function OriginFunctionHelper() {
+        }
+        OriginFunctionHelper.storeOriginFunction = function (object, functionName) {
+            if (!object) {
+                return;
+            }
+            if (!object[functionName]) {
+                return;
+            }
+            var originFunctionName = this.getOriginFunctionName(functionName);
+            if (object[originFunctionName]) {
+                return;
+            }
+            object[originFunctionName] = object[functionName];
+        };
+        OriginFunctionHelper.storePrototypeOriginFunction = function (object, functionName) {
+            if (!object) {
+                return;
+            }
+            if (!object.prototype[functionName]) {
+                return;
+            }
+            var originFunctionName = this.getOriginFunctionName(functionName);
+            if (object.prototype[originFunctionName]) {
+                return;
+            }
+            object.prototype[originFunctionName] = object.prototype[functionName];
+        };
+        OriginFunctionHelper.executePrototypeOriginFunction = function (object, objectType, functionName, args) {
+            if (!object) {
+                return;
+            }
+            var originFunctionName = this.getOriginFunctionName(functionName);
+            if (!objectType.prototype[originFunctionName]) {
+                return;
+            }
+            if (!object[originFunctionName]) {
+                object[originFunctionName] = objectType.prototype[originFunctionName];
+            }
+            return this.executeFunction(object, originFunctionName, args);
+        };
+        OriginFunctionHelper.executeOriginFunction = function (object, functionName, args) {
+            if (!object) {
+                return;
+            }
+            var originFunctionName = this.getOriginFunctionName(functionName);
+            if (!object[originFunctionName]) {
+                return;
+            }
+            return this.executeFunction(object, originFunctionName, args);
+        };
+        // tslint:disable
+        OriginFunctionHelper.executeFunction = function (object, functionName, args) {
+            var a = args;
+            if (a === undefined || a.length === 0) {
+                return object[functionName]();
+            }
+            var length = a.length;
+            switch (length) {
+                case 1:
+                    return object[functionName](a[0]);
+                case 2:
+                    return object[functionName](a[0], a[1]);
+                case 3:
+                    return object[functionName](a[0], a[1], a[2]);
+                case 4:
+                    return object[functionName](a[0], a[1], a[2], a[3]);
+                case 5:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4]);
+                case 6:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5]);
+                case 7:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6]);
+                case 8:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]);
+                case 9:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]);
+                case 10:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9]);
+                case 11:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10]);
+                case 12:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11]);
+                case 13:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12]);
+                case 14:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13]);
+                case 15:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14]);
+                case 16:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]);
+                case 17:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15], a[16]);
+                case 18:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15], a[16], a[17]);
+                case 19:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15], a[16], a[17], a[18]);
+                case 20:
+                    return object[functionName](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15], a[16], a[17], a[18], a[19]);
+                default:
+                    return object[functionName].apply(object, a);
+            }
+        };
+        OriginFunctionHelper.getOriginFunctionName = function (functionName) {
+            return this.originFunctionPrefix + functionName;
+        };
+        OriginFunctionHelper.originFunctionPrefix = "__SPECTOR_Origin_";
+        return OriginFunctionHelper;
+    }());
+    SPECTOR.OriginFunctionHelper = OriginFunctionHelper;
+})(SPECTOR || (SPECTOR = {}));
 // tslint:disable:ban-types
 // tslint:disable:only-arrow-functions
 var SPECTOR;
@@ -1250,7 +1364,9 @@ var SPECTOR;
                 // tslint:disable-next-line
                 var self = this;
                 var getContextSpied = function () {
-                    var context = self.spiedGetContext.apply(this, arguments);
+                    var context = (self.canvas) ?
+                        SPECTOR.OriginFunctionHelper.executeOriginFunction(this, "getContext", arguments) :
+                        SPECTOR.OriginFunctionHelper.executePrototypeOriginFunction(this, HTMLCanvasElement, "getContext", arguments);
                     if (arguments.length > 0 && arguments[0] === "2d") {
                         return context;
                     }
@@ -1267,11 +1383,11 @@ var SPECTOR;
                     return context;
                 };
                 if (this.canvas) {
-                    this.spiedGetContext = this.canvas.getContext;
+                    SPECTOR.OriginFunctionHelper.storeOriginFunction(this.canvas, "getContext");
                     this.canvas.getContext = getContextSpied;
                 }
                 else {
-                    this.spiedGetContext = HTMLCanvasElement.prototype.getContext;
+                    SPECTOR.OriginFunctionHelper.storePrototypeOriginFunction(HTMLCanvasElement, "getContext");
                     HTMLCanvasElement.prototype.getContext = getContextSpied;
                 }
             };
@@ -1412,7 +1528,14 @@ var SPECTOR;
                 }
             };
             ContextSpy.prototype.spyContext = function (bindingContext) {
+                var members = [];
                 for (var member in bindingContext) {
+                    if (member) {
+                        members.push(member);
+                    }
+                }
+                for (var i = 0; i < members.length; i++) {
+                    var member = members[i];
                     if (~ContextSpy.unSpyableMembers.indexOf(member)) {
                         continue;
                     }
@@ -1454,6 +1577,9 @@ var SPECTOR;
                 };
             };
             ContextSpy.prototype.spyFunction = function (member, bindingContext) {
+                if (member.indexOf("__SPECTOR_Origin_") === 0) {
+                    return;
+                }
                 if (!this.commandSpies[member]) {
                     var options = SPECTOR.merge(this.contextInformation, {
                         spiedCommandName: member,
@@ -1495,6 +1621,7 @@ var SPECTOR;
                 this.spiedCommandName = options.spiedCommandName;
                 this.spiedCommandRunningContext = options.spiedCommandRunningContext;
                 this.spiedCommand = this.spiedCommandRunningContext[this.spiedCommandName];
+                SPECTOR.OriginFunctionHelper.storeOriginFunction(this.spiedCommandRunningContext, this.spiedCommandName);
                 this.callback = options.callback;
                 this.commandOptions = {
                     context: options.context,
@@ -1547,7 +1674,7 @@ var SPECTOR;
                 // tslint:disable-next-line:only-arrow-functions
                 return function () {
                     var before = self.time.now;
-                    var result = self.spiedCommand.apply(self.spiedCommandRunningContext, arguments);
+                    var result = SPECTOR.OriginFunctionHelper.executeOriginFunction(self.spiedCommandRunningContext, self.spiedCommandName, arguments);
                     var after = self.time.now;
                     var functionInformation = {
                         name: self.spiedCommandName,
@@ -1614,15 +1741,24 @@ var SPECTOR;
                             argumentsArray.push(null);
                         }
                         else {
-                            argumentsArray.push(JSON.parse(JSON.stringify(commandArgument)));
+                            argumentsArray.push(JSON.parse(this.stringifyJSON(commandArgument)));
                         }
                     }
                     commandCapture.commandArguments = argumentsArray;
                 }
                 if (commandCapture.result) {
-                    commandCapture.result = JSON.parse(JSON.stringify(commandCapture.result));
+                    commandCapture.result = JSON.parse(this.stringifyJSON(commandCapture.result));
                 }
                 return commandCapture;
+            };
+            BaseCommand.prototype.stringifyJSON = function (value) {
+                try {
+                    var str = JSON.stringify(value);
+                    return str;
+                }
+                catch (e) {
+                    return null;
+                }
             };
             BaseCommand.prototype.transformCapture = function (commandCapture) {
                 // Nothing by default.

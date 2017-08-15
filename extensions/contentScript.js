@@ -87,28 +87,46 @@ if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
 
 var canvasGetContextDetection = `
     var spector;
-    var OLDGetContext = HTMLCanvasElement.prototype.getContext;
     var captureOnLoad = ${captureOnLoad ? "true" : "false"};
-    HTMLCanvasElement.prototype.getContext = function () {
-        var context = OLDGetContext.apply(this, arguments);
-        if (context === null) {
-            return null;
-        }
 
-        var contextNames = ["webgl", "experimental-webgl", "webgl2", "experimental-webgl2"];
-        if (contextNames.indexOf(arguments[0]) !== -1) {
-            context.canvas.setAttribute("${spectorContextTypeKey}", arguments[0]);
-            if (captureOnLoad) {
-                // Ensures canvas is in the dom to capture the one we are currently tracking.
-                if (this.parentElement) {
-                    spector.captureContext(context, ${captureOnReloadCommandCount});
-                    captureOnLoad = false;
+    (function() {
+        var __SPECTOR_Origin_EXTENSION_GetContext = HTMLCanvasElement.prototype.getContext;
+        HTMLCanvasElement.prototype.__SPECTOR_Origin_EXTENSION_GetContext = __SPECTOR_Origin_EXTENSION_GetContext;
+
+        HTMLCanvasElement.prototype.getContext = function () {
+            var context = null;
+            if (!arguments.length) {
+                return context;
+            }
+
+            if (arguments.length === 1) {
+                context = this.__SPECTOR_Origin_EXTENSION_GetContext(arguments[0]);
+                if (context === null) {
+                    return context;
                 }
             }
-        }
+            else if (arguments.length === 2) {
+                context = this.__SPECTOR_Origin_EXTENSION_GetContext(arguments[0], arguments[1]);
+                if (context === null) {
+                    return context;
+                }
+            }
 
-        return context;
-    }`;
+            var contextNames = ["webgl", "experimental-webgl", "webgl2", "experimental-webgl2"];
+            if (contextNames.indexOf(arguments[0]) !== -1) {
+                context.canvas.setAttribute("${spectorContextTypeKey}", arguments[0]);
+                if (captureOnLoad) {
+                    // Ensures canvas is in the dom to capture the one we are currently tracking.
+                    if (this.parentElement) {
+                        spector.captureContext(context, ${captureOnReloadCommandCount});
+                        captureOnLoad = false;
+                    }
+                }
+            }
+
+            return context;
+        }
+    })()`;
 insertTextScript(canvasGetContextDetection);
 
 // In case the spector injection has been requested, inject the library in the page.
@@ -150,7 +168,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                 document.dispatchEvent(myEvent);
             });
             setInterval(() => {
-                var myEvent = new CustomEvent("SpectorFPSEvent", { detail: { fps: spector.getFps() } });
+                var myEvent = new CustomEvent("SpectorFPSEvent", { detail: { fps: (spector ? spector.getFps() : 0) } });
                 document.dispatchEvent(myEvent);
             }, 1500);
             window.spector = spector;`;

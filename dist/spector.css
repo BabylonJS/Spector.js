@@ -31,7 +31,7 @@
   flex: 1 100%;
   display: flex;
   flex-flow: row wrap;
-  height: 40px;
+  height: 42px;
   outline: 0 none;
   border-bottom: 2px solid #222;
   box-sizing: border-box;
@@ -214,11 +214,11 @@
       border: 1px solid #606060; }
       .captureListComponent ul li img {
         width: 295px;
-        background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
         background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9));
+        background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
+        -webkit-background-size: 50px 51px;
         -moz-background-size: 50px 50px;
         background-size: 50px 50px;
-        -webkit-background-size: 50px 51px;
         background-position: 0 0, 25px 0, 25px -25px, 0px 25px;
         display: block; }
       .captureListComponent ul li span {
@@ -286,11 +286,11 @@
         margin: 0px;
         padding: 0px;
         box-sizing: border-box;
-        background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
         background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9));
+        background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
+        -webkit-background-size: 50px 51px;
         -moz-background-size: 50px 50px;
         background-size: 50px 50px;
-        -webkit-background-size: 50px 51px;
         background-position: 0 0, 25px 0, 25px -25px, 0px 25px; }
       .visualStateListComponent ul li:hover {
         cursor: pointer; }
@@ -416,11 +416,11 @@
       display: block;
       margin: auto;
       max-width: 256px;
-      background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
       background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9));
+      background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
+      -webkit-background-size: 50px 51px;
       -moz-background-size: 50px 50px;
       background-size: 50px 50px;
-      -webkit-background-size: 50px 51px;
       background-position: 0 0, 25px 0, 25px -25px, 0px 25px; }
     .jsonItemImageHolder .jsonItemImage span {
       margin: 0px;
@@ -443,11 +443,11 @@
   .jsonVisualStateItemComponent img {
     border: 1px solid #606060;
     margin: 5px;
-    background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
     background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.25, #c9c9c9), color-stop(0.25, transparent)), -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(0.75, transparent), color-stop(0.75, #c9c9c9));
+    background-image: -moz-linear-gradient(45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #d9d9d9 75%), -moz-linear-gradient(-45deg, transparent 75%, #d9d9d9 75%);
+    -webkit-background-size: 50px 51px;
     -moz-background-size: 50px 50px;
     background-size: 50px 50px;
-    -webkit-background-size: 50px 51px;
     background-position: 0 0, 25px 0, 25px -25px, 0px 25px;
     width: 100%;
     max-width: 512px; }
@@ -476,7 +476,7 @@
 .sourceCodeMenuComponentContainer {
   position: absolute;
   left: 0;
-  top: -2;
+  top: 0;
   right: 40%; }
 
 .sourceCodeMenuComponent {
@@ -487,7 +487,7 @@
   flex: 1 100%;
   display: flex;
   flex-flow: row wrap;
-  height: 40px;
+  height: 42px;
   outline: 0 none;
   border-bottom: 2px solid #222;
   box-sizing: border-box;
@@ -603,7 +603,7 @@
 
 .sourceCodeComponent {
   position: absolute;
-  top: 40px;
+  top: 42px;
   left: 0;
   bottom: 0;
   right: 40%;
