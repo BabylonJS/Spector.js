@@ -4,6 +4,8 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.1 Before V1
+
 ## v0.9.0 Fix and Style
 This realease is meant to improve the overall stability and compatibility with other extension:
 
