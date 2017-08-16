@@ -8398,6 +8398,22 @@ var SPECTOR;
                 }, 10 * 1000);
             }
         };
+        Spector.prototype.captureNextFrame = function (obj) {
+            if (obj instanceof HTMLCanvasElement) {
+                this.captureCanvas(obj);
+            }
+            else {
+                this.captureContext(obj);
+            }
+        };
+        Spector.prototype.startCapture = function (obj, commandCount) {
+            if (obj instanceof HTMLCanvasElement) {
+                this.captureCanvas(obj, commandCount);
+            }
+            else {
+                this.captureContext(obj, commandCount);
+            }
+        };
         Spector.prototype.stopCapture = function () {
             if (this.capturingContext) {
                 var capture = this.capturingContext.stopCapture();
@@ -8409,12 +8425,14 @@ var SPECTOR;
                     this.capturingContext = undefined;
                     this.captureNextFrames = 0;
                     this.captureNextCommands = 0;
+                    return capture;
                 }
                 else if (this.captureNextCommands === 0) {
                     this.retry++;
                     this.captureFrames(1);
                 }
             }
+            return undefined;
         };
         Spector.prototype.setMarker = function (marker) {
             this.marker = marker;

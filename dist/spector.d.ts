@@ -2502,7 +2502,9 @@ declare namespace SPECTOR {
         captureCanvas(canvas: HTMLCanvasElement, commandCount?: number): void;
         captureContext(context: WebGLRenderingContexts, commandCount?: number): void;
         captureContextSpy(contextSpy: IContextSpy, commandCount?: number): void;
-        stopCapture(): void;
+        captureNextFrame(obj: HTMLCanvasElement | WebGLRenderingContexts): void;
+        startCapture(obj: HTMLCanvasElement | WebGLRenderingContexts, commandCount: number): void;
+        stopCapture(): ICapture;
         setMarker(marker: string): void;
         clearMarker(): void;
         private captureFrames(frameCount);

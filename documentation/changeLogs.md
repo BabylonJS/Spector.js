@@ -12,6 +12,7 @@ This realease is meant to improve the overall stability and compatibility with o
 - [Allow Transient Context capture on reload](https://github.com/BabylonJS/Spector.js/issues/60)
 - Add number of commands to capture on reload
 - Integrate new logo
+- Add more intuitive public programmatic APIs for capture.
 
 ## v0.3.0 Fix
 This realease enables fixes a couple of reported issues:

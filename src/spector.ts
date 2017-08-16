@@ -258,7 +258,25 @@ namespace SPECTOR {
             }
         }
 
-        public stopCapture(): void {
+        public captureNextFrame(obj: HTMLCanvasElement | WebGLRenderingContexts): void {
+            if (obj instanceof HTMLCanvasElement) {
+                this.captureCanvas(obj);
+            }
+            else {
+                this.captureContext(obj);
+            }
+        }
+
+        public startCapture(obj: HTMLCanvasElement | WebGLRenderingContexts, commandCount: number): void {
+            if (obj instanceof HTMLCanvasElement) {
+                this.captureCanvas(obj, commandCount);
+            }
+            else {
+                this.captureContext(obj, commandCount);
+            }
+        }
+
+        public stopCapture(): ICapture {
             if (this.capturingContext) {
                 const capture = this.capturingContext.stopCapture();
                 if (capture.commands.length > 0) {
@@ -270,12 +288,14 @@ namespace SPECTOR {
                     this.capturingContext = undefined;
                     this.captureNextFrames = 0;
                     this.captureNextCommands = 0;
+                    return capture;
                 }
                 else if (this.captureNextCommands === 0) {
                     this.retry++;
                     this.captureFrames(1);
                 }
             }
+            return undefined;
         }
 
         public setMarker(marker: string): void {
