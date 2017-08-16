@@ -4,11 +4,14 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
-## v0.9.0 Fix
+## v0.9.0 Fix and Style
 This realease is meant to improve the overall stability and compatibility with other extension:
 
 - [Workaround Firefox security issue relying on apply](https://github.com/BabylonJS/Spector.js/issues/37)
 - Fix Uniform Array Capture
+- [Allow Transient Context capture on reload](https://github.com/BabylonJS/Spector.js/issues/60)
+- Add number of commands to capture on reload
+- Integrate new logo
 
 ## v0.3.0 Fix
 This realease enables fixes a couple of reported issues:

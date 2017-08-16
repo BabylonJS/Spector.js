@@ -8387,7 +8387,7 @@ var SPECTOR;
                 }
                 this.noFrameTimeout = setTimeout(function () {
                     if (commandCount > 0) {
-                        _this.onErrorInternal("Not enough commands detected.");
+                        _this.stopCapture();
                     }
                     else if (_this.capturingContext && _this.retry > 1) {
                         _this.onErrorInternal("No frames with gl commands detected. Try moving the camera.");

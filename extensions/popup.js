@@ -27,10 +27,31 @@ window.addEventListener("DOMContentLoaded", function() {
     openCaptureFileElement.addEventListener("dragover", (e) => { this.drag(e); return false; }, false);
     openCaptureFileElement.addEventListener("drop", (e) => { this.drop(e); }, false);
 
+    var captureOnLoadElement = document.getElementById("captureOnLoad");
+    var captureOnLoadCountInput = document.getElementById("captureOnLoadCount");
+    var captureOnLoadTransientInput = document.getElementById("captureOnLoadTransient");
+    captureOnLoadElement.addEventListener("click", (e) => { 
+        var transient = captureOnLoadTransientInput.checked;
+        var commandCount = parseInt(captureOnLoadCountInput.value);
+        if (commandCount < 0 || commandCount === Number.NaN) {
+            commandCount = 500;
+        }
+        this.captureonLoad(commandCount, transient); 
+        return false; 
+    });
+
     initUI();
     refreshCanvases();
     playAll();
 });
+
+var captureonLoad = function(commandCount, transient) {
+    sendMessage({ 
+        action: "captureOnLoad",
+        commandCount : commandCount,
+        transient: transient
+    });
+}
 
 var drag = function(e) {
     e.stopPropagation();
@@ -137,18 +158,11 @@ var pause = function(e) {
 
 var captureCanvas = function(e) {
     if (e) {
-        if (document.getElementById("captureOnLoad").checked) {
-            sendMessage({ 
-                action: "captureOnLoad"
-            });
-        }
-        else {
-            sendMessage({ 
-                action: "capture", 
-                canvasRef: e.ref, 
-                openInNewTab: document.getElementById("openInNewTab").checked
-            });
-        }
+        sendMessage({ 
+            action: "capture", 
+            canvasRef: e.ref, 
+            openInNewTab: true
+        });
     }
 }
 

@@ -1,5 +1,4 @@
 var debug = false;
-var captureOnReloadCommandCount = 500;
 
 //_______________________________EXTENSION POLYFILL_____________________________________
 window.browser = (function () {
@@ -74,15 +73,24 @@ function insertHeaderNode(node) {
 
 var spectorLoadedKey = "SPECTOR_LOADED";
 var spectorCaptureOnLoadKey = "SPECTOR_CAPTUREONLOAD";
+var spectorCaptureOnLoadCommandCountKey = "SPECTOR_CAPTUREONLOAD_COMMANDCOUNT";
+var spectorCaptureOnLoadTransientKey = "SPECTOR_CAPTUREONLOAD_TRANSIENT";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
+
 var spectorContextTypeKey = "__spector_context_type";
+
 var openInNewTab = false;
 var captureOnLoad = false;
+var captureOnLoadTransient = false;
+var captureOnLoadCommandCount = 500;
 
 if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
     sessionStorage.setItem(spectorCaptureOnLoadKey, "false");
     captureOnLoad = true;
     openInNewTab = true;
+
+    captureOnLoadTransient = (sessionStorage.getItem(spectorCaptureOnLoadTransientKey) === "true");
+    captureOnLoadCommandCount = parseInt(sessionStorage.getItem(spectorCaptureOnLoadCommandCountKey));
 }
 
 var canvasGetContextDetection = `
@@ -117,8 +125,8 @@ var canvasGetContextDetection = `
                 context.canvas.setAttribute("${spectorContextTypeKey}", arguments[0]);
                 if (captureOnLoad) {
                     // Ensures canvas is in the dom to capture the one we are currently tracking.
-                    if (this.parentElement) {
-                        spector.captureContext(context, ${captureOnReloadCommandCount});
+                    if (this.parentElement || ${captureOnLoadTransient}) {
+                        spector.captureContext(context, ${captureOnLoadCommandCount});
                         captureOnLoad = false;
                     }
                 }
@@ -291,7 +299,13 @@ listenForMessage(function (message) {
 
     // We need to reload to inject the capture loading sequence.
     if (action === "captureOnLoad") {
+        var transient = message.transient;
+        var commandCount = message.commandCount;
+
+        sessionStorage.setItem(spectorCaptureOnLoadTransientKey, transient);
+        sessionStorage.setItem(spectorCaptureOnLoadCommandCountKey, commandCount);
         sessionStorage.setItem(spectorCaptureOnLoadKey, "true");
+
         // Delay for all frames.
         setTimeout(function () { window.location.reload(); }, 50);
         return;
