@@ -41,11 +41,19 @@ You can use the library inside of your own application easily as it is transpile
 
 ## Browser extension
 ###### [Back to top](#table-of-content)
-If you are willing to use the browser extension instead, you can refer to the following documentation: [Browser Extension](https://github.com/BabylonJS/Spector.js/tree/master/documentation/extension.md).
-
-Or you can direclty install it from the store:
+If you are willing to use the browser extension, you can direclty install it from the store:
 - [Chrome](https://chrome.google.com/webstore/detail/spectorjs/denbgaamihkadbghdceggmchnflmhpmk)
 - [Firefox](https://addons.mozilla.org/en-US/firefox/addon/spector-js/)
+
+Please, refer to the [extension documentation](https://github.com/BabylonJS/Spector.js/blob/release/documentation/extension.md#how-to-use) to learn how to use it.
+
+Or you can take a look at the following documentation to load it from the source: [Browser Extension](https://github.com/BabylonJS/Spector.js/tree/master/documentation/extension.md).
+
+## Use as a Module
+###### [Back to top](#table-of-content)
+
+## Use as a Module
+###### [Back to top](#table-of-content)
 
 <p align="center">
     <img src="https://spectordoc.babylonjs.com/pictures/extensionPopup.png" style="width:256px" width="256px">

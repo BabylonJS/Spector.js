@@ -75,9 +75,33 @@ Now a click on the button will display a popup helping you capturing frames.
 </p>
 
 Following the on screen instructions and clicking the red button will trigger a capture. You can also, in this menu, if a canvas is selected pause or play frame by frame the rendered canvas. Once the capture has been completed, a result panel will be displayed containing all the information you may need.
+
+The bottom of the menu helps capturing what is happening during the page load on the first canvases present in the document. You can easily chose the number of command to capture as well as specify wether or not you would like to capture transient context (context created in the first canvas even if not part of the DOM).
 <p align="center">
     <img src="https://spectordoc.babylonjs.com/pictures/extensionResult.png" style="width:512px" width="512px">
 </p>
+
+Another interesting feature is the ability to drive the extension by code. Once the extension is enabled, you can from your browser dev tools or even your code call the following APIs on spector.:
+- ```captureNextFrame(obj: HTMLCanvasElement | RenderingContext)``` : to capture the next frame of a specific canvas or context.
+- ```startCapture(obj: HTMLCanvasElement | RenderingContext, commandCount: number)``` : to start a capture on a specific canvas or context. The capture will stop once reaching the number of commands precised in parameter or after 10 seconds.
+- ```stopCapture(): ICapture``` : stops the current capture and return the result in json. It displays the result if the ui has been displayed. This returns ```undefined``` if the capture has not been completed or did not found any commands.
+- ```setMarker(marker: string)``` : Adds a marker displayed in the ccapture helping analysing the result.
+- ```clearMarker()``` : clears the current marker from the capture for any subsequent calls.
+
+The spector object is available on the window for this purpose.
+
+This can be a tremendous help to capture the creation of your shadow maps for instance. This can also be used to trigger a capture based on a user interaction or to set markers in your code to better analyse the capture.
+
+The following example could be introduced safely in your code:
+```
+if (spector) {
+    spector.setMarker("Shadow map creation");
+}
+[your shadow creation code]
+if (spector) {
+    spector.clearMarker();
+}
+```
 
 ## Use the standalone version
 If you prefer to use the library in your own application you can find it available on npm: [spectorjs](https://www.npmjs.com/package/spectorjs)
