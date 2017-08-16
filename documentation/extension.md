@@ -59,6 +59,8 @@ As it is not currently deployed to all the browser extension store, you can easi
 6. You are all set.
 
 ### How To Use
+For a complete tutorial, you can refere to the following [Real time rendering article](http://www.realtimerendering.com/blog/debugging-webgl-with-spectorjs/).
+
 You can now on navigate to any website using webgl like the [Babylon JS playground](http://www.babylonjs-playground.com/?6) and you will notice the extension Icon turning red in the toolbar.
 <p align="center">
     <img src="https://spectordoc.babylonjs.com/pictures/extensionAvailable.png">
@@ -81,16 +83,16 @@ The bottom of the menu helps capturing what is happening during the page load on
     <img src="https://spectordoc.babylonjs.com/pictures/extensionResult.png" style="width:512px" width="512px">
 </p>
 
-Another interesting feature is the ability to drive the extension by code. Once the extension is enabled, you can from your browser dev tools or even your code call the following APIs on spector.:
-- ```captureNextFrame(obj: HTMLCanvasElement | RenderingContext)``` : to capture the next frame of a specific canvas or context.
-- ```startCapture(obj: HTMLCanvasElement | RenderingContext, commandCount: number)``` : to start a capture on a specific canvas or context. The capture will stop once reaching the number of commands precised in parameter or after 10 seconds.
-- ```stopCapture(): ICapture``` : stops the current capture and return the result in json. It displays the result if the ui has been displayed. This returns ```undefined``` if the capture has not been completed or did not found any commands.
-- ```setMarker(marker: string)``` : Adds a marker displayed in the ccapture helping analysing the result.
-- ```clearMarker()``` : clears the current marker from the capture for any subsequent calls.
+Another interesting feature is the ability to drive the extension by code. Once the extension is enabled, from your browser's dev tools, or even your code, you can call the following APIs on spector:
+- ```captureNextFrame(obj: HTMLCanvasElement | RenderingContext)``` : Call to begin a capture of the next frame of a specific canvas or context.
+- ```startCapture(obj: HTMLCanvasElement | RenderingContext, commandCount: number)``` : Start a capture on a specific canvas or context. The capture will stop once it reaches the number of commands specified as a parameter, or after 10 seconds.
+- ```stopCapture(): ICapture``` : Stop the current capture and returns the result in JSON. It displays the result if the UI has been displayed. This returns undefined if the capture has not been completed or did not find any commands.
+- ```setMarker(marker: string)``` : Adds a marker that is displayed in the capture, helping you analyze the results.
+- ```clearMarker()``` : Clears the current marker from the capture for any subsequent calls.
 
-The spector object is available on the window for this purpose.
+The ```spector``` object is available on the window for this purpose.
 
-This can be a tremendous help to capture the creation of your shadow maps for instance. This can also be used to trigger a capture based on a user interaction or to set markers in your code to better analyse the capture.
+This can be a tremendous help to capture the creation of your shadow maps, for instance. This can also be used to trigger a capture based on a user interaction or to set markers in your code to better analyse the capture.
 
 The following example could be introduced safely in your code:
 ```

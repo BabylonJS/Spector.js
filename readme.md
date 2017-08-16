@@ -45,7 +45,7 @@ If you are willing to use the browser extension, you can direclty install it fro
 - [Chrome](https://chrome.google.com/webstore/detail/spectorjs/denbgaamihkadbghdceggmchnflmhpmk)
 - [Firefox](https://addons.mozilla.org/en-US/firefox/addon/spector-js/)
 
-Please, refer to the [extension documentation](https://github.com/BabylonJS/Spector.js/blob/release/documentation/extension.md#how-to-use) to learn how to use it.
+You can find on [Real Time Rendering](http://www.realtimerendering.com/blog/debugging-webgl-with-spectorjs/) a complete tutorial about the [Spector extension](http://www.realtimerendering.com/blog/debugging-webgl-with-spectorjs/). Else, you can refer to the [extension documentation](https://github.com/BabylonJS/Spector.js/blob/release/documentation/extension.md#how-to-use) to learn how to use it.
 
 Or you can take a look at the following documentation to load it from the source: [Browser Extension](https://github.com/BabylonJS/Spector.js/tree/master/documentation/extension.md).
 
