@@ -4737,19 +4737,43 @@ var SPECTOR;
                 var info = this.context.getActiveUniform(program, activeUniformIndex);
                 var location = this.context.getUniformLocation(program, info.name);
                 if (location) {
-                    var value = this.context.getUniform(program, location);
-                    if (value.length) {
-                        value = Array.prototype.slice.call(value);
+                    if (info.size > 1 && info.name && info.name.indexOf("[0]") === info.name.length - 3) {
+                        var values = [];
+                        for (var i = 0; i < info.size; i++) {
+                            var locationInArray = this.context.getUniformLocation(program, info.name.replace("[0]", "[" + i + "]"));
+                            if (locationInArray) {
+                                var value = this.context.getUniform(program, locationInArray);
+                                if (value.length) {
+                                    value = Array.prototype.slice.call(value);
+                                }
+                                values.push({ value: value });
+                            }
+                        }
+                        var uniformState = {
+                            name: info.name.replace("[0]", ""),
+                            size: info.size,
+                            type: this.getWebGlConstant(info.type),
+                            typeValue: info.type,
+                            location: this.getSpectorData(location),
+                            values: values,
+                        };
+                        return uniformState;
                     }
-                    var uniformState = {
-                        name: info.name,
-                        size: info.size,
-                        type: this.getWebGlConstant(info.type),
-                        typeValue: info.type,
-                        location: this.getSpectorData(location),
-                        value: value,
-                    };
-                    return uniformState;
+                    else {
+                        var value = this.context.getUniform(program, location);
+                        if (value.length) {
+                            value = Array.prototype.slice.call(value);
+                        }
+                        var uniformState = {
+                            name: info.name,
+                            size: info.size,
+                            type: this.getWebGlConstant(info.type),
+                            typeValue: info.type,
+                            location: this.getSpectorData(location),
+                            value: value,
+                        };
+                        return uniformState;
+                    }
                 }
                 else {
                     var uniformState = {

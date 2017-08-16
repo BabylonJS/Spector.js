@@ -8,6 +8,7 @@ Please, find below the per release summary of the contribution added to the proj
 This realease is meant to improve the overall stability and compatibility with other extension:
 
 - [Workaround Firefox security issue relying on apply](https://github.com/BabylonJS/Spector.js/issues/37)
+- Fix Uniform Array Capture
 
 ## v0.3.0 Fix
 This realease enables fixes a couple of reported issues:

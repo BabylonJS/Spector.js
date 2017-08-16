@@ -45,6 +45,7 @@ Once ```npm start``` has been launched, you can access the following samples to 
 12. [Custom Metadata](http://localhost:1337/sample/index.html?sample=customMetadata): Test to do a capture containing custom metadata.
 13. [Custom Marker](http://localhost:1337/sample/index.html?sample=customMarker): Test to do a capture containing custom marker.
 14. [Custom Shader Name in define SHADER_NAME](http://localhost:1337/sample/index.html?sample=customShaderName): Test to do a capture containing custom marker.
+15. [Uniform Array](http://localhost:1337/sample/index.html?sample=uniformArray): Test to do a capture containing uniform array values.
 
 You can also add &noSpy=1 at the end of the previous Urls to test without enabling the full spy before starting your rendering engine.
 

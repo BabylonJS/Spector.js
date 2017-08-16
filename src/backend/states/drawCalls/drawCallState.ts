@@ -306,20 +306,46 @@ namespace SPECTOR.States {
             const info = this.context.getActiveUniform(program, activeUniformIndex);
             const location = this.context.getUniformLocation(program, info.name);
             if (location) {
-                let value = this.context.getUniform(program, location);
-                if (value.length) {
-                    value = Array.prototype.slice.call(value);
-                }
 
-                const uniformState: any = {
-                    name: info.name,
-                    size: info.size,
-                    type: this.getWebGlConstant(info.type),
-                    typeValue: info.type,
-                    location: this.getSpectorData(location),
-                    value,
-                };
-                return uniformState;
+                if (info.size > 1 && info.name && info.name.indexOf("[0]") === info.name.length - 3) {
+                    const values: any = [];
+                    for (let i = 0; i < info.size; i++) {
+                        const locationInArray = this.context.getUniformLocation(program, info.name.replace("[0]", "[" + i + "]"));
+                        if (locationInArray) {
+                            let value = this.context.getUniform(program, locationInArray);
+                            if (value.length) {
+                                value = Array.prototype.slice.call(value);
+                            }
+                            values.push({ value });
+                        }
+                    }
+
+                    const uniformState: any = {
+                        name: info.name.replace("[0]", ""),
+                        size: info.size,
+                        type: this.getWebGlConstant(info.type),
+                        typeValue: info.type,
+                        location: this.getSpectorData(location),
+                        values,
+                    };
+                    return uniformState;
+                }
+                else {
+                    let value = this.context.getUniform(program, location);
+                    if (value.length) {
+                        value = Array.prototype.slice.call(value);
+                    }
+
+                    const uniformState: any = {
+                        name: info.name,
+                        size: info.size,
+                        type: this.getWebGlConstant(info.type),
+                        typeValue: info.type,
+                        location: this.getSpectorData(location),
+                        value,
+                    };
+                    return uniformState;
+                }
             }
             else {
                 const uniformState: any = {
