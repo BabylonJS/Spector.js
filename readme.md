@@ -49,12 +49,6 @@ Please, refer to the [extension documentation](https://github.com/BabylonJS/Spec
 
 Or you can take a look at the following documentation to load it from the source: [Browser Extension](https://github.com/BabylonJS/Spector.js/tree/master/documentation/extension.md).
 
-## Use as a Module
-###### [Back to top](#table-of-content)
-
-## Use as a Module
-###### [Back to top](#table-of-content)
-
 <p align="center">
     <img src="https://spectordoc.babylonjs.com/pictures/extensionPopup.png" style="width:256px" width="256px">
 </p>
