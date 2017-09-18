@@ -14,7 +14,7 @@ namespace SPECTOR {
     }
 
     export type RecorderConstructor = {
-        new (options: IRecorderOptions, logger: ILogger): IRecorder;
+        new(options: IRecorderOptions, logger: ILogger): IRecorder;
     };
 }
 
@@ -148,12 +148,12 @@ namespace SPECTOR.Recorders {
         }
 
         protected updateWithoutSideEffects(functionInformation: IFunctionInformation): void {
-            if (!functionInformation || functionInformation.arguments.length === 0) {
+            if (!functionInformation || functionInformation.args.length === 0) {
                 return;
             }
 
             this.options.toggleCapture(false);
-            const target = functionInformation.arguments[0];
+            const target = functionInformation.args[0];
             const instance = this.getBoundInstance(target);
             if (!instance) {
                 this.options.toggleCapture(true);
@@ -173,11 +173,11 @@ namespace SPECTOR.Recorders {
         }
 
         protected deleteWithoutSideEffects(functionInformation: IFunctionInformation): void {
-            if (!functionInformation || !functionInformation.arguments || functionInformation.arguments.length < 1) {
+            if (!functionInformation || !functionInformation.args || functionInformation.args.length < 1) {
                 return;
             }
 
-            const instance = functionInformation.arguments[0] as T;
+            const instance = functionInformation.args[0] as T;
             if (!instance) {
                 return;
             }

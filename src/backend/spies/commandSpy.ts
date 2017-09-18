@@ -115,7 +115,7 @@ namespace SPECTOR.Spies {
 
                 const functionInformation = {
                     name: self.spiedCommandName,
-                    arguments,
+                    args: arguments,
                     result,
                     startTime: before,
                     endTime: after,

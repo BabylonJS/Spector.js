@@ -37,7 +37,7 @@ namespace SPECTOR.Recorders {
         }
 
         protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): number {
-            if (functionInformation.arguments.length >= 2 && functionInformation.arguments[1] !== 0) {
+            if (functionInformation.args.length >= 2 && functionInformation.args[1] !== 0) {
                 return 0;
             }
 
@@ -72,15 +72,15 @@ namespace SPECTOR.Recorders {
 
         private getTexStorage3DCustomData(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): ITextureRecorderData {
             let customData: ITextureRecorderData;
-            if (functionInformation.arguments.length === 6) {
+            if (functionInformation.args.length === 6) {
                 // Custom data required to display the texture.
                 customData = {
                     target,
-                    // level: functionInformation.arguments[1],
-                    internalFormat: functionInformation.arguments[2],
-                    width: functionInformation.arguments[3],
-                    height: functionInformation.arguments[4],
-                    depth: functionInformation.arguments[5],
+                    // level: functionInformation.args[1],
+                    internalFormat: functionInformation.args[2],
+                    width: functionInformation.args[3],
+                    height: functionInformation.args[4],
+                    depth: functionInformation.args[5],
                     length: 0,
                 };
             }
@@ -90,21 +90,21 @@ namespace SPECTOR.Recorders {
         }
 
         private getCompressedTexImage3DCustomData(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): ITextureRecorderData {
-            if (functionInformation.arguments[1] !== 0) {
+            if (functionInformation.args[1] !== 0) {
                 // Only manage main lod... so far.
                 return undefined;
             }
 
             let customData: ITextureRecorderData;
-            if (functionInformation.arguments.length >= 8) {
+            if (functionInformation.args.length >= 8) {
                 // Custom data required to display the texture.
                 customData = {
                     target,
-                    // level: functionInformation.arguments[1],
-                    internalFormat: functionInformation.arguments[2],
-                    width: functionInformation.arguments[3],
-                    height: functionInformation.arguments[4],
-                    depth: functionInformation.arguments[5],
+                    // level: functionInformation.args[1],
+                    internalFormat: functionInformation.args[2],
+                    width: functionInformation.args[3],
+                    height: functionInformation.args[4],
+                    depth: functionInformation.args[5],
                     length: 0,
                 };
             }
@@ -114,23 +114,23 @@ namespace SPECTOR.Recorders {
         }
 
         private getTexImage3DCustomData(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): ITextureRecorderData {
-            if (functionInformation.arguments[1] !== 0) {
+            if (functionInformation.args[1] !== 0) {
                 // Only manage main lod... so far.
                 return undefined;
             }
 
             let customData: ITextureRecorderData;
-            if (functionInformation.arguments.length >= 9) {
+            if (functionInformation.args.length >= 9) {
                 // Custom data required to display the texture.
                 customData = {
                     target,
-                    // level: functionInformation.arguments[1],
-                    internalFormat: functionInformation.arguments[2],
-                    width: functionInformation.arguments[3],
-                    height: functionInformation.arguments[4],
-                    depth: functionInformation.arguments[5],
-                    format: functionInformation.arguments[7],
-                    type: functionInformation.arguments[8],
+                    // level: functionInformation.args[1],
+                    internalFormat: functionInformation.args[2],
+                    width: functionInformation.args[3],
+                    height: functionInformation.args[4],
+                    depth: functionInformation.args[5],
+                    format: functionInformation.args[7],
+                    type: functionInformation.args[8],
                     length: 0,
                 };
             }

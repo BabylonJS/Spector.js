@@ -73,21 +73,21 @@ namespace SPECTOR.Recorders {
 
         protected getCustomData(target: string, functionInformation: IFunctionInformation): IBufferRecorderData {
             const length = this.getLength(functionInformation);
-            if (functionInformation.arguments.length >= 4) {
+            if (functionInformation.args.length >= 4) {
                 return {
                     target,
                     length,
-                    usage: functionInformation.arguments[2],
-                    offset: functionInformation.arguments[3],
-                    sourceLength: functionInformation.arguments[1] ? functionInformation.arguments[1].length : -1,
+                    usage: functionInformation.args[2],
+                    offset: functionInformation.args[3],
+                    sourceLength: functionInformation.args[1] ? functionInformation.args[1].length : -1,
                 };
             }
 
-            if (functionInformation.arguments.length === 3) {
+            if (functionInformation.args.length === 3) {
                 return {
                     target,
                     length,
-                    usage: functionInformation.arguments[2],
+                    usage: functionInformation.args[2],
                 };
             }
 
@@ -98,17 +98,17 @@ namespace SPECTOR.Recorders {
             /* tslint:disable */
             let length = -1;
             let offset = 0;
-            if (functionInformation.arguments.length === 5) {
-                length = functionInformation.arguments[4];
-                offset = functionInformation.arguments[3];
+            if (functionInformation.args.length === 5) {
+                length = functionInformation.args[4];
+                offset = functionInformation.args[3];
             }
 
             if (length <= 0) {
-                if (typeof functionInformation.arguments[1] === "number") {
-                    length = functionInformation.arguments[1];
+                if (typeof functionInformation.args[1] === "number") {
+                    length = functionInformation.args[1];
                 }
-                else if (functionInformation.arguments[1]) {
-                    length = functionInformation.arguments[1].byteLength || functionInformation.arguments[1].length || 0;
+                else if (functionInformation.args[1]) {
+                    length = functionInformation.args[1].byteLength || functionInformation.args[1].length || 0;
                 }
                 else {
                     length = 0;

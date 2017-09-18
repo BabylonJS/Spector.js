@@ -54,12 +54,12 @@ namespace SPECTOR.Recorders {
 
         protected getCustomData(functionInformation: IFunctionInformation, target: string): IRenderBufferRecorderData {
             // renderbufferStorage
-            if (functionInformation.arguments.length === 4) {
+            if (functionInformation.args.length === 4) {
                 return {
                     target,
-                    internalFormat: functionInformation.arguments[1],
-                    width: functionInformation.arguments[2],
-                    height: functionInformation.arguments[3],
+                    internalFormat: functionInformation.args[1],
+                    width: functionInformation.args[2],
+                    height: functionInformation.args[3],
                     length: 0,
                     samples: 0,
                 };
@@ -67,11 +67,11 @@ namespace SPECTOR.Recorders {
 
             return {
                 target,
-                internalFormat: functionInformation.arguments[2],
-                width: functionInformation.arguments[3],
-                height: functionInformation.arguments[4],
+                internalFormat: functionInformation.args[2],
+                width: functionInformation.args[3],
+                height: functionInformation.args[4],
                 length: 0,
-                samples: functionInformation.arguments[1],
+                samples: functionInformation.args[1],
             };
         }
     }

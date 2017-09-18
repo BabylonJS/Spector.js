@@ -32,8 +32,8 @@ namespace SPECTOR.Commands {
 
             // Includes uniform functions special cases to prevent lots of inheritence.
             const text = (functionInformation.name.indexOf("uniform") === 0) ?
-                this.stringifyUniform(functionInformation.arguments) :
-                this.stringify(functionInformation.arguments, functionInformation.result);
+                this.stringifyUniform(functionInformation.args) :
+                this.stringify(functionInformation.args, functionInformation.result);
 
             const commandCapture = {
                 id: commandCaptureId,
@@ -42,7 +42,7 @@ namespace SPECTOR.Commands {
                 endTime: 0, // Compute at the end
 
                 name: functionInformation.name,
-                commandArguments: functionInformation.arguments,
+                commandArguments: functionInformation.args,
                 result: functionInformation.result,
 
                 stackTrace,

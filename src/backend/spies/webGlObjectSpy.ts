@@ -16,7 +16,7 @@ namespace SPECTOR {
     }
 
     export type WebGlObjectSpyConstructor = {
-        new (options: IWebGlObjectSpyOptions, logger: ILogger): IWebGlObjectSpy,
+        new(options: IWebGlObjectSpyOptions, logger: ILogger): IWebGlObjectSpy,
     };
 }
 
@@ -42,8 +42,8 @@ namespace SPECTOR.Spies {
             for (const typeName in this.webGlObjects) {
                 if (this.webGlObjects.hasOwnProperty(typeName)) {
                     const webGlObject = this.webGlObjects[typeName];
-                    for (let i = 0; i < functionInformation.arguments.length; i++) {
-                        const arg = functionInformation.arguments[i];
+                    for (let i = 0; i < functionInformation.args.length; i++) {
+                        const arg = functionInformation.args[i];
                         if (webGlObject.tagWebGlObject(arg)) {
                             break;
                         }
