@@ -9,7 +9,7 @@
         "declaration":true,
         "experimentalDecorators": true,
         "module": "none",
-        "target": "es5"
+        "target": "es6"
     },
     "files": [
         "shared/utils/event.ts",

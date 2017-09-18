@@ -385,10 +385,28 @@ namespace SPECTOR.EmbeddedFrontend {
                 else if (key === "visual") {
                     for (const target in value) {
                         if (value.hasOwnProperty(target) && value[target]) {
-                            this.mvx.addChildState(parentGroupId, {
-                                key: target,
-                                value: value[target],
-                            }, this.jsonImageItemComponent);
+                            try {
+                                value[target].realSize.then((url: any) => {
+                                    this.mvx.addChildState(parentGroupId, {
+                                        key: target,
+                                        thumbnail: value[target].thumbnail,
+                                        realSize: url,
+                                    }, this.jsonImageItemComponent);
+                                });
+                                value[target].realSize.catch(() => {
+                                    this.mvx.addChildState(parentGroupId, {
+                                        key: target,
+                                        thumbnail: value[target].thumbnail,
+                                        realSize: null,
+                                    }, this.jsonImageItemComponent);
+                                });
+                            } catch (e) {
+                                this.mvx.addChildState(parentGroupId, {
+                                    key: target,
+                                    thumbnail: value[target].thumbnail,
+                                    realSize: null,
+                                }, this.jsonImageItemComponent);
+                            }
                         }
                     }
                 }

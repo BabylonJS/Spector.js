@@ -135,7 +135,7 @@ namespace SPECTOR.States {
             return undefined;
         }
 
-        protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number): string {
+        protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number): any {
             try {
                 // Check FBO status.
                 const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);
@@ -160,17 +160,18 @@ namespace SPECTOR.States {
 
                 // Copy the pixels to a resized capture 2D canvas.
                 const imageAspectRatio = width / height;
+                const captureBaseSize = Math.min(Math.max(width, height), VisualState.captureBaseSize);
                 if (imageAspectRatio < 1) {
-                    this.captureCanvas.width = VisualState.captureBaseSize * imageAspectRatio;
-                    this.captureCanvas.height = VisualState.captureBaseSize;
+                    this.captureCanvas.width = captureBaseSize * imageAspectRatio;
+                    this.captureCanvas.height = captureBaseSize;
                 }
                 else if (imageAspectRatio > 1) {
-                    this.captureCanvas.width = VisualState.captureBaseSize;
-                    this.captureCanvas.height = VisualState.captureBaseSize / imageAspectRatio;
+                    this.captureCanvas.width = captureBaseSize;
+                    this.captureCanvas.height = captureBaseSize / imageAspectRatio;
                 }
                 else {
-                    this.captureCanvas.width = VisualState.captureBaseSize;
-                    this.captureCanvas.height = VisualState.captureBaseSize;
+                    this.captureCanvas.width = captureBaseSize;
+                    this.captureCanvas.height = captureBaseSize;
                 }
 
                 this.captureCanvas.width = Math.max(this.captureCanvas.width, 1);
@@ -186,7 +187,31 @@ namespace SPECTOR.States {
 
                 // get the screen capture
                 const src = this.captureCanvas.toDataURL();
-                return src;
+
+                if (VisualState.captureBaseSize !== Math.max(width, height)) {
+                    this.captureCanvas.width = width;
+                    this.captureCanvas.height = height;
+
+                    // Scale and draw to flip Y to reorient readPixels.
+                    this.captureContext2D.globalCompositeOperation = "copy";
+                    this.captureContext2D.scale(1, -1); // Y flip
+                    this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
+                    this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height);
+                    this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
+                    this.captureContext2D.globalCompositeOperation = "source-over";
+                }
+
+                const promise = new Promise((resolve: (url: any) => void, reject: () => void) => {
+                    this.captureCanvas.toBlob((blob: Blob) => {
+                        resolve(URL.createObjectURL(blob));
+                    });
+                });
+
+                const result: any = {};
+                result.thumbnail = src;
+                result.realSize = promise;
+
+                return result;
             }
             catch (e) {
                 // TODO. Nothing to do here... so far.
