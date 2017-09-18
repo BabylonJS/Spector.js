@@ -10,7 +10,7 @@ module.exports = {
         libraryTarget: "umd",
         library: "SPECTOR",
         umdNamedDefine: true
-    },  
+    },
     module: {
         rules: [{
             test: /\.css$/,
@@ -20,7 +20,7 @@ module.exports = {
             use: [ 'exports-loader?Prism' ]
         }, {
             test: /spector.js$/,
-            use: [ 'exports-loader?SPECTOR' ]
+            use: ['exports-loader?SPECTOR', 'babel-loader?presets[]=es2015']
         }]
     }
 }
