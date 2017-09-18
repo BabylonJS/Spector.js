@@ -11,7 +11,7 @@ namespace SPECTOR.EmbeddedFrontend {
             <li><span class="jsonItemComponentKey">${state.key}: </span>
                 <span class="jsonItemComponentValue">${state.value} (<a href="${state.help}" target="_blank" class="jsonSourceItemComponentOpen">Open help page</a>)
                 </span>
-            <li>`;
+            </li>`;
 
             return this.renderElementFromTemplate(htmlString, state, stateId);
         }
