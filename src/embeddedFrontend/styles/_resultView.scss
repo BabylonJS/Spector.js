@@ -551,9 +551,10 @@ $commandDetailComponentWidth: 40%;
     width:100%;
 
     img {
-      width: 100%;
+      width: auto;
       display: block;
       margin: auto;
+      min-width: 20px;
       max-width: 256px;
       @include img-checkboard();
     }
