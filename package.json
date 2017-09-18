@@ -45,7 +45,7 @@
     "build:tslint": "tslint -c ./tslint.json -p ./src/tsconfig.json",
     "build": "run-s build:tscss build:tslint build:copy:vendor build:bundle build:copybuild:copy:bundle -l",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -r built/* & rm -r /dist/* & rm -r /extensions/spector.bundle.js"
+    "clean": "rm -rf built/* & rm -r ./dist/* & rm -r ./extensions/spector.bundle.js"
   },
   "devDependencies": {
     "babel": "^6.23.0",
