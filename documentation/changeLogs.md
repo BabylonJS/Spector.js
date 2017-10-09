@@ -9,6 +9,7 @@ This release is addressing the latest issues before the V1:
 
 - [Programmatic Capture do not open in a new tab](https://github.com/BabylonJS/Spector.js/issues/61)
 - [Fix memory reporting of buffers](https://github.com/BabylonJS/Spector.js/issues/64)
+- [Fix Capture Download in IE11](https://github.com/BabylonJS/Spector.js/issues/65)
 
 
 ## v0.9.0 Fix and Style

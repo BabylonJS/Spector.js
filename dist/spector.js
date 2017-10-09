@@ -7655,13 +7655,19 @@ var SPECTOR;
                 this.updateViewState();
             }
             ResultView.prototype.saveCapture = function (capture) {
-                var a = document.createElement("a");
                 var captureInString = JSON.stringify(capture, null, 4);
                 var blob = new Blob([captureInString], { type: "octet/stream" });
-                var url = window.URL.createObjectURL(blob);
-                a.setAttribute("href", url);
-                a.setAttribute("download", "capture " + new Date(capture.startTime).toTimeString().split(" ")[0] + ".json");
-                a.click();
+                var fileName = "capture " + new Date(capture.startTime).toTimeString().split(" ")[0] + ".json";
+                if (navigator.msSaveBlob) {
+                    navigator.msSaveBlob(blob, fileName);
+                }
+                else {
+                    var a = document.createElement("a");
+                    var url = window.URL.createObjectURL(blob);
+                    a.setAttribute("href", url);
+                    a.setAttribute("download", fileName);
+                    a.click();
+                }
             };
             ResultView.prototype.selectCapture = function (captureStateId) {
                 this.currentCommandId = -1;

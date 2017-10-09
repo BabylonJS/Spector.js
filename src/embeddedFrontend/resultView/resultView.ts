@@ -150,13 +150,20 @@ namespace SPECTOR.EmbeddedFrontend {
             this.updateViewState();
         }
         public saveCapture(capture: ICapture): void {
-            const a = document.createElement("a");
             const captureInString = JSON.stringify(capture, null, 4);
             const blob = new Blob([captureInString], { type: "octet/stream" });
-            const url = window.URL.createObjectURL(blob);
-            a.setAttribute("href", url);
-            a.setAttribute("download", "capture " + new Date(capture.startTime).toTimeString().split(" ")[0] + ".json");
-            a.click();
+            const fileName = "capture " + new Date(capture.startTime).toTimeString().split(" ")[0] + ".json";
+
+            if (navigator.msSaveBlob) {
+                navigator.msSaveBlob(blob, fileName);
+            }
+            else {
+                const a = document.createElement("a");
+                const url = window.URL.createObjectURL(blob);
+                a.setAttribute("href", url);
+                a.setAttribute("download", fileName);
+                a.click();
+            }
         }
 
         public selectCapture(captureStateId: number): void {
