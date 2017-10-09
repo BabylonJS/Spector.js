@@ -2,7 +2,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Utils;
     (function (Utils) {
-        var Event = (function () {
+        var Event = /** @class */ (function () {
             function Event() {
                 this.callbacks = [];
                 this.counter = -1;
@@ -46,7 +46,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Utils;
     (function (Utils) {
-        var ConsoleLogger = (function () {
+        var ConsoleLogger = /** @class */ (function () {
             function ConsoleLogger(level) {
                 if (level === void 0) { level = SPECTOR.LogLevel.warning; }
                 this.level = level;
@@ -93,7 +93,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Utils;
     (function (Utils) {
-        var StackTrace = (function () {
+        var StackTrace = /** @class */ (function () {
             function StackTrace() {
             }
             StackTrace.prototype.getStackTrace = function (removeFirstNCalls, removeLastNCalls) {
@@ -181,7 +181,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Utils;
     (function (Utils) {
-        var Time = (function () {
+        var Time = /** @class */ (function () {
             function Time() {
                 if (window.performance && window.performance.now) {
                     this.nowFunction = this.dateBasedPerformanceNow.bind(this);
@@ -241,7 +241,7 @@ var SPECTOR;
 // Generated file disable rules.
 var SPECTOR;
 (function (SPECTOR) {
-    var WebGlConstants = (function () {
+    var WebGlConstants = /** @class */ (function () {
         function WebGlConstants() {
         }
         WebGlConstants.isWebGlConstant = function (value) {
@@ -1032,7 +1032,7 @@ var SPECTOR;
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
 (function (SPECTOR) {
-    var ReadPixelsHelper = (function () {
+    var ReadPixelsHelper = /** @class */ (function () {
         function ReadPixelsHelper() {
         }
         ReadPixelsHelper.isSupportedCombination = function (type, format, internalFormat) {
@@ -1110,7 +1110,7 @@ var SPECTOR;
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
 (function (SPECTOR) {
-    var OriginFunctionHelper = (function () {
+    var OriginFunctionHelper = /** @class */ (function () {
         function OriginFunctionHelper() {
         }
         OriginFunctionHelper.storeOriginFunction = function (object, functionName) {
@@ -1228,7 +1228,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Spies;
     (function (Spies) {
-        var TimeSpy = (function () {
+        var TimeSpy = /** @class */ (function () {
             function TimeSpy(options, logger) {
                 this.options = options;
                 this.logger = logger;
@@ -1351,7 +1351,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Spies;
     (function (Spies) {
-        var CanvasSpy = (function () {
+        var CanvasSpy = /** @class */ (function () {
             function CanvasSpy(options, logger) {
                 this.options = options;
                 this.logger = logger;
@@ -1400,7 +1400,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Spies;
     (function (Spies) {
-        var ContextSpy = (function () {
+        var ContextSpy = /** @class */ (function () {
             function ContextSpy(options, time, logger) {
                 this.options = options;
                 this.time = time;
@@ -1613,7 +1613,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Spies;
     (function (Spies) {
-        var CommandSpy = (function () {
+        var CommandSpy = /** @class */ (function () {
             function CommandSpy(options, time, logger) {
                 this.time = time;
                 this.logger = logger;
@@ -1696,7 +1696,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var BaseCommand = (function () {
+        var BaseCommand = /** @class */ (function () {
             function BaseCommand(options, stackTrace, logger) {
                 this.options = options;
                 this.stackTrace = stackTrace;
@@ -1851,7 +1851,7 @@ var SPECTOR;
         var deprecatedCommands = [
             "lineWidth",
         ];
-        var DefaultCommand = (function (_super) {
+        var DefaultCommand = /** @class */ (function (_super) {
             __extends(DefaultCommand, _super);
             function DefaultCommand(options, stackTrace, logger) {
                 var _this = _super.call(this, options, stackTrace, logger) || this;
@@ -1878,7 +1878,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var Clear = (function (_super) {
+        var Clear = /** @class */ (function (_super) {
             __extends(Clear, _super);
             function Clear() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -1908,7 +1908,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var BlitFrameBuffer = (function (_super) {
+        var BlitFrameBuffer = /** @class */ (function (_super) {
             __extends(BlitFrameBuffer, _super);
             function BlitFrameBuffer() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -1948,7 +1948,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var VertexAttribPointer = (function (_super) {
+        var VertexAttribPointer = /** @class */ (function (_super) {
             __extends(VertexAttribPointer, _super);
             function VertexAttribPointer() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -1975,7 +1975,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var GetActiveAttrib = (function (_super) {
+        var GetActiveAttrib = /** @class */ (function (_super) {
             __extends(GetActiveAttrib, _super);
             function GetActiveAttrib() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -1998,7 +1998,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var GetActiveUniform = (function (_super) {
+        var GetActiveUniform = /** @class */ (function (_super) {
             __extends(GetActiveUniform, _super);
             function GetActiveUniform() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2021,7 +2021,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var GetTransformFeedbackVarying = (function (_super) {
+        var GetTransformFeedbackVarying = /** @class */ (function (_super) {
             __extends(GetTransformFeedbackVarying, _super);
             function GetTransformFeedbackVarying() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2044,7 +2044,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var GetExtension = (function (_super) {
+        var GetExtension = /** @class */ (function (_super) {
             __extends(GetExtension, _super);
             function GetExtension() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2064,7 +2064,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var GetShaderPrecisionFormat = (function (_super) {
+        var GetShaderPrecisionFormat = /** @class */ (function (_super) {
             __extends(GetShaderPrecisionFormat, _super);
             function GetShaderPrecisionFormat() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2087,7 +2087,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var GetParameter = (function (_super) {
+        var GetParameter = /** @class */ (function (_super) {
             __extends(GetParameter, _super);
             function GetParameter() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2114,7 +2114,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var DrawArrays = (function (_super) {
+        var DrawArrays = /** @class */ (function (_super) {
             __extends(DrawArrays, _super);
             function DrawArrays() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2138,7 +2138,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var DrawArraysInstanced = (function (_super) {
+        var DrawArraysInstanced = /** @class */ (function (_super) {
             __extends(DrawArraysInstanced, _super);
             function DrawArraysInstanced() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2163,7 +2163,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var DrawBuffers = (function (_super) {
+        var DrawBuffers = /** @class */ (function (_super) {
             __extends(DrawBuffers, _super);
             function DrawBuffers() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2187,7 +2187,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var DrawElements = (function (_super) {
+        var DrawElements = /** @class */ (function (_super) {
             __extends(DrawElements, _super);
             function DrawElements() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2212,7 +2212,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var DrawElementsInstanced = (function (_super) {
+        var DrawElementsInstanced = /** @class */ (function (_super) {
             __extends(DrawElementsInstanced, _super);
             function DrawElementsInstanced() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2238,7 +2238,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var DrawElementsInstancedAngle = (function (_super) {
+        var DrawElementsInstancedAngle = /** @class */ (function (_super) {
             __extends(DrawElementsInstancedAngle, _super);
             function DrawElementsInstancedAngle() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2264,7 +2264,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var DrawRangeElements = (function (_super) {
+        var DrawRangeElements = /** @class */ (function (_super) {
             __extends(DrawRangeElements, _super);
             function DrawRangeElements() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2291,7 +2291,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var Scissor = (function (_super) {
+        var Scissor = /** @class */ (function (_super) {
             __extends(Scissor, _super);
             function Scissor() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2315,7 +2315,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var Viewport = (function (_super) {
+        var Viewport = /** @class */ (function (_super) {
             __extends(Viewport, _super);
             function Viewport() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2339,7 +2339,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var DisableVertexAttribArray = (function (_super) {
+        var DisableVertexAttribArray = /** @class */ (function (_super) {
             __extends(DisableVertexAttribArray, _super);
             function DisableVertexAttribArray() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2361,7 +2361,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
-        var EnableVertexAttribArray = (function (_super) {
+        var EnableVertexAttribArray = /** @class */ (function (_super) {
             __extends(EnableVertexAttribArray, _super);
             function EnableVertexAttribArray() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2383,7 +2383,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Recorders;
     (function (Recorders) {
-        var BaseRecorder = (function () {
+        var BaseRecorder = /** @class */ (function () {
             function BaseRecorder(options, logger) {
                 this.options = options;
                 this.logger = logger;
@@ -2545,7 +2545,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Recorders;
     (function (Recorders) {
-        var Texture2DRecorder = (function (_super) {
+        var Texture2DRecorder = /** @class */ (function (_super) {
             __extends(Texture2DRecorder, _super);
             function Texture2DRecorder() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2693,7 +2693,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Recorders;
     (function (Recorders) {
-        var Texture3DRecorder = (function (_super) {
+        var Texture3DRecorder = /** @class */ (function (_super) {
             __extends(Texture3DRecorder, _super);
             function Texture3DRecorder() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2828,7 +2828,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Recorders;
     (function (Recorders) {
-        var BufferRecorder = (function (_super) {
+        var BufferRecorder = /** @class */ (function (_super) {
             __extends(BufferRecorder, _super);
             function BufferRecorder() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -2938,7 +2938,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Recorders;
     (function (Recorders) {
-        var RenderBufferRecorder = (function (_super) {
+        var RenderBufferRecorder = /** @class */ (function (_super) {
             __extends(RenderBufferRecorder, _super);
             function RenderBufferRecorder() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -3009,7 +3009,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Spies;
     (function (Spies) {
-        var RecorderSpy = (function () {
+        var RecorderSpy = /** @class */ (function () {
             function RecorderSpy(options, logger) {
                 this.options = options;
                 this.logger = logger;
@@ -3087,7 +3087,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Spies;
     (function (Spies) {
-        var StateSpy = (function () {
+        var StateSpy = /** @class */ (function () {
             function StateSpy(options, logger) {
                 this.options = options;
                 this.logger = logger;
@@ -3161,7 +3161,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Spies;
     (function (Spies) {
-        var WebGlObjectSpy = (function () {
+        var WebGlObjectSpy = /** @class */ (function () {
             function WebGlObjectSpy(options, logger) {
                 this.options = options;
                 this.logger = logger;
@@ -3243,7 +3243,7 @@ var SPECTOR;
             "drawElementsInstancedANGLE",
             "drawRangeElements",
         ];
-        var BaseState = (function () {
+        var BaseState = /** @class */ (function () {
             function BaseState(options, logger) {
                 this.options = options;
                 this.logger = logger;
@@ -3490,7 +3490,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var ParameterState = (function (_super) {
+        var ParameterState = /** @class */ (function (_super) {
             __extends(ParameterState, _super);
             function ParameterState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -3596,7 +3596,7 @@ var SPECTOR;
     (function (States) {
         var Information;
         (function (Information) {
-            var Capabilities = (function (_super) {
+            var Capabilities = /** @class */ (function (_super) {
                 __extends(Capabilities, _super);
                 function Capabilities(options, logger) {
                     var _this = _super.call(this, options, logger) || this;
@@ -3680,7 +3680,7 @@ var SPECTOR;
     (function (States) {
         var Information;
         (function (Information) {
-            var CompressedTextures = (function (_super) {
+            var CompressedTextures = /** @class */ (function (_super) {
                 __extends(CompressedTextures, _super);
                 function CompressedTextures(options, logger) {
                     var _this = _super.call(this, options, logger) || this;
@@ -3710,7 +3710,7 @@ var SPECTOR;
     (function (States) {
         var Information;
         (function (Information) {
-            var Extensions = (function (_super) {
+            var Extensions = /** @class */ (function (_super) {
                 __extends(Extensions, _super);
                 function Extensions(options, logger) {
                     var _this = _super.call(this, options, logger) || this;
@@ -3777,7 +3777,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var AlignmentState = (function (_super) {
+        var AlignmentState = /** @class */ (function (_super) {
             __extends(AlignmentState, _super);
             function AlignmentState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -3817,7 +3817,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var BlendState = (function (_super) {
+        var BlendState = /** @class */ (function (_super) {
             __extends(BlendState, _super);
             function BlendState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -3857,7 +3857,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var ClearState = (function (_super) {
+        var ClearState = /** @class */ (function (_super) {
             __extends(ClearState, _super);
             function ClearState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -3894,7 +3894,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var ColorState = (function (_super) {
+        var ColorState = /** @class */ (function (_super) {
             __extends(ColorState, _super);
             function ColorState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -3917,7 +3917,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var CoverageState = (function (_super) {
+        var CoverageState = /** @class */ (function (_super) {
             __extends(CoverageState, _super);
             function CoverageState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -3964,7 +3964,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var CullState = (function (_super) {
+        var CullState = /** @class */ (function (_super) {
             __extends(CullState, _super);
             function CullState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -3998,7 +3998,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var DepthState = (function (_super) {
+        var DepthState = /** @class */ (function (_super) {
             __extends(DepthState, _super);
             function DepthState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -4034,7 +4034,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var DrawState = (function (_super) {
+        var DrawState = /** @class */ (function (_super) {
             __extends(DrawState, _super);
             function DrawState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -4094,7 +4094,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var MipmapHintState = (function (_super) {
+        var MipmapHintState = /** @class */ (function (_super) {
             __extends(MipmapHintState, _super);
             function MipmapHintState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -4117,7 +4117,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var PolygonOffsetState = (function (_super) {
+        var PolygonOffsetState = /** @class */ (function (_super) {
             __extends(PolygonOffsetState, _super);
             function PolygonOffsetState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -4151,7 +4151,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var ScissorState = (function (_super) {
+        var ScissorState = /** @class */ (function (_super) {
             __extends(ScissorState, _super);
             function ScissorState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -4184,7 +4184,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var StencilState = (function (_super) {
+        var StencilState = /** @class */ (function (_super) {
             __extends(StencilState, _super);
             function StencilState() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -4255,7 +4255,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var VisualState = (function (_super) {
+        var VisualState = /** @class */ (function (_super) {
             __extends(VisualState, _super);
             function VisualState(options, logger) {
                 var _this = _super.call(this, options, logger) || this;
@@ -4485,7 +4485,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var DrawCallState = (function (_super) {
+        var DrawCallState = /** @class */ (function (_super) {
             __extends(DrawCallState, _super);
             function DrawCallState(options, logger) {
                 var _this = _super.call(this, options, logger) || this;
@@ -4991,7 +4991,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var DrawCallTextureInputState = (function () {
+        var DrawCallTextureInputState = /** @class */ (function () {
             function DrawCallTextureInputState(options, logger) {
                 this.logger = logger;
                 this.context = options.context;
@@ -5167,7 +5167,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
-        var DrawCallUboInputState = (function () {
+        var DrawCallUboInputState = /** @class */ (function () {
             function DrawCallUboInputState(options, logger) {
                 this.logger = logger;
                 this.context = options.context;
@@ -5257,7 +5257,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var WebGlObjects;
     (function (WebGlObjects) {
-        var BaseWebGlObject = (function () {
+        var BaseWebGlObject = /** @class */ (function () {
             function BaseWebGlObject(options, logger) {
                 this.options = options;
                 this.typeName = options.typeName;
@@ -5300,7 +5300,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var WebGlObjects;
     (function (WebGlObjects) {
-        var Buffer = (function (_super) {
+        var Buffer = /** @class */ (function (_super) {
             __extends(Buffer, _super);
             function Buffer() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5311,7 +5311,7 @@ var SPECTOR;
             return Buffer;
         }(WebGlObjects.BaseWebGlObject));
         WebGlObjects.Buffer = Buffer;
-        var FrameBuffer = (function (_super) {
+        var FrameBuffer = /** @class */ (function (_super) {
             __extends(FrameBuffer, _super);
             function FrameBuffer() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5322,7 +5322,7 @@ var SPECTOR;
             return FrameBuffer;
         }(WebGlObjects.BaseWebGlObject));
         WebGlObjects.FrameBuffer = FrameBuffer;
-        var Program = (function (_super) {
+        var Program = /** @class */ (function (_super) {
             __extends(Program, _super);
             function Program() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5333,7 +5333,7 @@ var SPECTOR;
             return Program;
         }(WebGlObjects.BaseWebGlObject));
         WebGlObjects.Program = Program;
-        var Query = (function (_super) {
+        var Query = /** @class */ (function (_super) {
             __extends(Query, _super);
             function Query() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5344,7 +5344,7 @@ var SPECTOR;
             return Query;
         }(WebGlObjects.BaseWebGlObject));
         WebGlObjects.Query = Query;
-        var Renderbuffer = (function (_super) {
+        var Renderbuffer = /** @class */ (function (_super) {
             __extends(Renderbuffer, _super);
             function Renderbuffer() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5355,7 +5355,7 @@ var SPECTOR;
             return Renderbuffer;
         }(WebGlObjects.BaseWebGlObject));
         WebGlObjects.Renderbuffer = Renderbuffer;
-        var Sampler = (function (_super) {
+        var Sampler = /** @class */ (function (_super) {
             __extends(Sampler, _super);
             function Sampler() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5366,7 +5366,7 @@ var SPECTOR;
             return Sampler;
         }(WebGlObjects.BaseWebGlObject));
         WebGlObjects.Sampler = Sampler;
-        var Shader = (function (_super) {
+        var Shader = /** @class */ (function (_super) {
             __extends(Shader, _super);
             function Shader() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5377,7 +5377,7 @@ var SPECTOR;
             return Shader;
         }(WebGlObjects.BaseWebGlObject));
         WebGlObjects.Shader = Shader;
-        var Sync = (function (_super) {
+        var Sync = /** @class */ (function (_super) {
             __extends(Sync, _super);
             function Sync() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5388,7 +5388,7 @@ var SPECTOR;
             return Sync;
         }(WebGlObjects.BaseWebGlObject));
         WebGlObjects.Sync = Sync;
-        var Texture = (function (_super) {
+        var Texture = /** @class */ (function (_super) {
             __extends(Texture, _super);
             function Texture() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5399,7 +5399,7 @@ var SPECTOR;
             return Texture;
         }(WebGlObjects.BaseWebGlObject));
         WebGlObjects.Texture = Texture;
-        var TransformFeedback = (function (_super) {
+        var TransformFeedback = /** @class */ (function (_super) {
             __extends(TransformFeedback, _super);
             function TransformFeedback() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5410,7 +5410,7 @@ var SPECTOR;
             return TransformFeedback;
         }(WebGlObjects.BaseWebGlObject));
         WebGlObjects.TransformFeedback = TransformFeedback;
-        var UniformLocation = (function (_super) {
+        var UniformLocation = /** @class */ (function (_super) {
             __extends(UniformLocation, _super);
             function UniformLocation() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5421,7 +5421,7 @@ var SPECTOR;
             return UniformLocation;
         }(WebGlObjects.BaseWebGlObject));
         WebGlObjects.UniformLocation = UniformLocation;
-        var VertexArrayObject = (function (_super) {
+        var VertexArrayObject = /** @class */ (function (_super) {
             __extends(VertexArrayObject, _super);
             function VertexArrayObject() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5438,7 +5438,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Analysers;
     (function (Analysers) {
-        var BaseAnalyser = (function () {
+        var BaseAnalyser = /** @class */ (function () {
             function BaseAnalyser(options, logger) {
                 this.options = options;
                 this.logger = logger;
@@ -5465,7 +5465,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Analysers;
     (function (Analysers) {
-        var CaptureAnalyser = (function () {
+        var CaptureAnalyser = /** @class */ (function () {
             function CaptureAnalyser(options, logger) {
                 this.options = options;
                 this.logger = logger;
@@ -5512,7 +5512,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Analysers;
     (function (Analysers) {
-        var CommandsSummaryAnalyser = (function (_super) {
+        var CommandsSummaryAnalyser = /** @class */ (function (_super) {
             __extends(CommandsSummaryAnalyser, _super);
             function CommandsSummaryAnalyser() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5556,7 +5556,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Analysers;
     (function (Analysers) {
-        var CommandsAnalyser = (function (_super) {
+        var CommandsAnalyser = /** @class */ (function (_super) {
             __extends(CommandsAnalyser, _super);
             function CommandsAnalyser() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5603,7 +5603,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Analysers;
     (function (Analysers) {
-        var PrimitivesAnalyser = (function (_super) {
+        var PrimitivesAnalyser = /** @class */ (function (_super) {
             __extends(PrimitivesAnalyser, _super);
             function PrimitivesAnalyser() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -5691,7 +5691,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var Comparators;
     (function (Comparators) {
-        var CommandComparator = (function () {
+        var CommandComparator = /** @class */ (function () {
             function CommandComparator(logger) {
                 this.logger = logger;
             }
@@ -5806,7 +5806,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var ScrollIntoViewHelper = (function () {
+        var ScrollIntoViewHelper = /** @class */ (function () {
             function ScrollIntoViewHelper() {
             }
             ScrollIntoViewHelper.scrollIntoView = function (element) {
@@ -5838,7 +5838,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var BaseNoneGenericComponent = (function () {
+        var BaseNoneGenericComponent = /** @class */ (function () {
             function BaseNoneGenericComponent(eventConstructor, logger) {
                 this.eventConstructor = eventConstructor;
                 this.logger = logger;
@@ -5908,7 +5908,7 @@ var SPECTOR;
         }());
         EmbeddedFrontend.BaseNoneGenericComponent = BaseNoneGenericComponent;
         // tslint:disable-next-line:max-classes-per-file
-        var BaseComponent = (function (_super) {
+        var BaseComponent = /** @class */ (function (_super) {
             __extends(BaseComponent, _super);
             function BaseComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
@@ -5995,7 +5995,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var Compositor = (function () {
+        var Compositor = /** @class */ (function () {
             function Compositor(placeHolder, stateStore, logger) {
                 this.logger = logger;
                 this.placeHolder = placeHolder;
@@ -6055,7 +6055,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var MVX = (function () {
+        var MVX = /** @class */ (function () {
             function MVX(placeHolder, logger) {
                 this.logger = logger;
                 this.stateStore = new EmbeddedFrontend.StateStore(logger);
@@ -6156,7 +6156,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var ComponentInstance = (function () {
+        var ComponentInstance = /** @class */ (function () {
             function ComponentInstance(component, logger) {
                 this.logger = logger;
                 this.component = component;
@@ -6238,7 +6238,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var StateStore = (function () {
+        var StateStore = /** @class */ (function () {
             function StateStore(logger) {
                 this.logger = logger;
                 this.store = {};
@@ -6394,7 +6394,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var CaptureMenuComponent = (function (_super) {
+        var CaptureMenuComponent = /** @class */ (function (_super) {
             __extends(CaptureMenuComponent, _super);
             function CaptureMenuComponent() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -6413,7 +6413,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var CaptureMenuActionsComponent = (function (_super) {
+        var CaptureMenuActionsComponent = /** @class */ (function (_super) {
             __extends(CaptureMenuActionsComponent, _super);
             function CaptureMenuActionsComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
@@ -6441,7 +6441,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var CanvasListComponent = (function (_super) {
+        var CanvasListComponent = /** @class */ (function (_super) {
             __extends(CanvasListComponent, _super);
             function CanvasListComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
@@ -6462,7 +6462,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var CanvasListItemComponent = (function (_super) {
+        var CanvasListItemComponent = /** @class */ (function (_super) {
             __extends(CanvasListItemComponent, _super);
             function CanvasListItemComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
@@ -6486,7 +6486,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var FpsCounterComponent = (function (_super) {
+        var FpsCounterComponent = /** @class */ (function (_super) {
             __extends(FpsCounterComponent, _super);
             function FpsCounterComponent() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -6506,7 +6506,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var CaptureMenu = (function () {
+        var CaptureMenu = /** @class */ (function () {
             function CaptureMenu(options, logger) {
                 var _this = this;
                 this.options = options;
@@ -6708,7 +6708,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var CaptureListComponent = (function (_super) {
+        var CaptureListComponent = /** @class */ (function (_super) {
             __extends(CaptureListComponent, _super);
             function CaptureListComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
@@ -6785,7 +6785,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var CaptureListItemComponent = (function (_super) {
+        var CaptureListItemComponent = /** @class */ (function (_super) {
             __extends(CaptureListItemComponent, _super);
             function CaptureListItemComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
@@ -6831,7 +6831,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var VisualStateListComponent = (function (_super) {
+        var VisualStateListComponent = /** @class */ (function (_super) {
             __extends(VisualStateListComponent, _super);
             function VisualStateListComponent() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -6850,7 +6850,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var VisualStateListItemComponent = (function (_super) {
+        var VisualStateListItemComponent = /** @class */ (function (_super) {
             __extends(VisualStateListItemComponent, _super);
             function VisualStateListItemComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
@@ -6913,7 +6913,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var CommandListComponent = (function (_super) {
+        var CommandListComponent = /** @class */ (function (_super) {
             __extends(CommandListComponent, _super);
             function CommandListComponent() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -6933,7 +6933,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var CommandListItemComponent = (function (_super) {
+        var CommandListItemComponent = /** @class */ (function (_super) {
             __extends(CommandListItemComponent, _super);
             function CommandListItemComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
@@ -7014,7 +7014,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var CommandDetailComponent = (function (_super) {
+        var CommandDetailComponent = /** @class */ (function (_super) {
             __extends(CommandDetailComponent, _super);
             function CommandDetailComponent() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -7033,7 +7033,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var MDNCommandLinkHelper = (function () {
+        var MDNCommandLinkHelper = /** @class */ (function () {
             function MDNCommandLinkHelper() {
             }
             MDNCommandLinkHelper.getMDNLink = function (commandName) {
@@ -7187,7 +7187,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var JSONContentComponent = (function (_super) {
+        var JSONContentComponent = /** @class */ (function (_super) {
             __extends(JSONContentComponent, _super);
             function JSONContentComponent() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -7206,7 +7206,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var JSONGroupComponent = (function (_super) {
+        var JSONGroupComponent = /** @class */ (function (_super) {
             __extends(JSONGroupComponent, _super);
             function JSONGroupComponent() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -7225,7 +7225,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var JSONItemComponent = (function (_super) {
+        var JSONItemComponent = /** @class */ (function (_super) {
             __extends(JSONItemComponent, _super);
             function JSONItemComponent() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -7244,7 +7244,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var JSONImageItemComponent = (function (_super) {
+        var JSONImageItemComponent = /** @class */ (function (_super) {
             __extends(JSONImageItemComponent, _super);
             function JSONImageItemComponent() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -7263,7 +7263,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var JSONSourceItemComponent = (function (_super) {
+        var JSONSourceItemComponent = /** @class */ (function (_super) {
             __extends(JSONSourceItemComponent, _super);
             function JSONSourceItemComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
@@ -7284,7 +7284,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var JSONHelpItemComponent = (function (_super) {
+        var JSONHelpItemComponent = /** @class */ (function (_super) {
             __extends(JSONHelpItemComponent, _super);
             function JSONHelpItemComponent() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -7303,7 +7303,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var JSONVisualStateItemComponent = (function (_super) {
+        var JSONVisualStateItemComponent = /** @class */ (function (_super) {
             __extends(JSONVisualStateItemComponent, _super);
             function JSONVisualStateItemComponent() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -7346,7 +7346,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var ResultViewMenuComponent = (function (_super) {
+        var ResultViewMenuComponent = /** @class */ (function (_super) {
             __extends(ResultViewMenuComponent, _super);
             function ResultViewMenuComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
@@ -7393,7 +7393,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var ResultViewContentComponent = (function (_super) {
+        var ResultViewContentComponent = /** @class */ (function (_super) {
             __extends(ResultViewContentComponent, _super);
             function ResultViewContentComponent(eventConstructor, logger) {
                 return _super.call(this, eventConstructor, logger) || this;
@@ -7411,7 +7411,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var InformationColumnComponent = (function (_super) {
+        var InformationColumnComponent = /** @class */ (function (_super) {
             __extends(InformationColumnComponent, _super);
             function InformationColumnComponent(eventConstructor, logger) {
                 return _super.call(this, eventConstructor, logger) || this;
@@ -7430,7 +7430,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var ResultViewComponent = (function (_super) {
+        var ResultViewComponent = /** @class */ (function (_super) {
             __extends(ResultViewComponent, _super);
             function ResultViewComponent(eventConstructor, logger) {
                 return _super.call(this, eventConstructor, logger) || this;
@@ -7449,7 +7449,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var SourceCodeComponent = (function (_super) {
+        var SourceCodeComponent = /** @class */ (function (_super) {
             __extends(SourceCodeComponent, _super);
             function SourceCodeComponent(eventConstructor, logger) {
                 var _this = _super.call(this, eventConstructor, logger) || this;
@@ -7568,7 +7568,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
     (function (EmbeddedFrontend) {
-        var ResultView = (function () {
+        var ResultView = /** @class */ (function () {
             function ResultView(options, logger) {
                 var _this = this;
                 this.options = options;
@@ -8195,7 +8195,7 @@ var SPECTOR;
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
 (function (SPECTOR) {
-    var Spector = (function () {
+    var Spector = /** @class */ (function () {
         function Spector(options) {
             if (options === void 0) { options = {}; }
             this.options = options;

@@ -79,7 +79,6 @@ var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
 
 var spectorContextTypeKey = "__spector_context_type";
 
-var openInNewTab = false;
 var captureOnLoad = false;
 var captureOnLoadTransient = false;
 var captureOnLoadCommandCount = 500;
@@ -87,7 +86,6 @@ var captureOnLoadCommandCount = 500;
 if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
     sessionStorage.setItem(spectorCaptureOnLoadKey, "false");
     captureOnLoad = true;
-    openInNewTab = true;
 
     captureOnLoadTransient = (sessionStorage.getItem(spectorCaptureOnLoadTransientKey) === "true");
     captureOnLoadCommandCount = parseInt(sessionStorage.getItem(spectorCaptureOnLoadCommandCountKey));
@@ -203,7 +201,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
     });
 
     document.addEventListener('SpectorOnCaptureEvent', function (e) {
-        sendMessage({ capture: e.detail.capture, openInNewTab: openInNewTab });
+        sendMessage({ capture: e.detail.capture });
     }, false);
 
     document.addEventListener('SpectorOnErrorEvent', function (e) {
@@ -347,7 +345,6 @@ listenForMessage(function (message) {
         var input = document.getElementById(spectorCommunicationElementId);
         if (input) {
             input.value = canvasRef.index;
-            openInNewTab = message.openInNewTab;
             var myEvent = new CustomEvent("SpectorRequestCaptureEvent");
             document.dispatchEvent(myEvent);
         }

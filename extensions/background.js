@@ -115,23 +115,11 @@ listenForMessage(function(request, sender, sendResponse) {
         // If a capture has been received,
         var tabWindows = browser.extension.getViews({type: "tab"});
         // Open the result view if not open (need to check if length == 1 that the function exists for Edge),
-        if (request.openInNewTab || tabWindows.length < 1 || !tabWindows[0].addCapture) {
-            window.browser.tabs.create({ url: "result.html", active: true }, function(tab) {
-                resultTab = tab;
-                currentCapture = request.capture;
-            });
-        }
-        // Or update if it already exists.
-        else {
-            tabWindows[0].addCapture(request.capture);
-            window.browser.tabs.update(resultTab.id, { active: true });
-            try  {
-                browser.windows.update(resultTab.windowId, { focused: true });
-            }
-            catch (e) {
-                // Bad browser support.
-            }
-        }
+        window.browser.tabs.create({ url: "result.html", active: true }, function(tab) {
+            resultTab = tab;
+            currentCapture = request.capture;
+        });
+        
 
         // Close the wait message and may display an error.
         var popup = window.browser.extension.getViews({ type: "popup" })[0];
