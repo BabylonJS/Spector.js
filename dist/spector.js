@@ -2907,24 +2907,25 @@ var SPECTOR;
                 return undefined;
             };
             BufferRecorder.prototype.getLength = function (functionInformation) {
+                /* tslint:disable */
                 var length = -1;
+                var offset = 0;
                 if (functionInformation.arguments.length === 5) {
                     length = functionInformation.arguments[4];
+                    offset = functionInformation.arguments[3];
                 }
                 if (length <= 0) {
                     if (typeof functionInformation.arguments[1] === "number") {
                         length = functionInformation.arguments[1];
                     }
                     else if (functionInformation.arguments[1]) {
-                        length = (functionInformation.arguments[1].buffer) ?
-                            functionInformation.arguments[1].buffer.byteLength :
-                            functionInformation.arguments[1].byteLength || functionInformation.arguments[1].length || 0;
+                        length = functionInformation.arguments[1].byteLength || functionInformation.arguments[1].length || 0;
                     }
                     else {
                         length = 0;
                     }
                 }
-                return length;
+                return length - offset;
             };
             BufferRecorder = __decorate([
                 SPECTOR.Decorators.recorder("Buffer")
