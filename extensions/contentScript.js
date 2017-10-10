@@ -77,7 +77,7 @@ var spectorCaptureOnLoadCommandCountKey = "SPECTOR_CAPTUREONLOAD_COMMANDCOUNT";
 var spectorCaptureOnLoadTransientKey = "SPECTOR_CAPTUREONLOAD_TRANSIENT";
 var spectorCaptureOnLoadQuickCaptureKey = "SPECTOR_CAPTUREONLOAD_QUICKCAPTURE";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
-var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATION_QUICK_CAPTURE";
+var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATIONQUICK_CAPTURE";
 
 var spectorContextTypeKey = "__spector_context_type";
 
