@@ -1265,25 +1265,32 @@ var SPECTOR;
                 return 1000 * 60 / accumulator;
             };
             TimeSpy.prototype.init = function () {
+                var _this = this;
                 for (var _i = 0, _a = TimeSpy.requestAnimationFrameFunctions; _i < _a.length; _i++) {
                     var Spy = _a[_i];
-                    this.spyRequestAnimationFrame(Spy);
+                    this.spyRequestAnimationFrame(Spy, this.spiedWindow);
                 }
                 for (var _b = 0, _c = TimeSpy.setTimerFunctions; _b < _c.length; _b++) {
                     var Spy = _c[_b];
                     this.spySetTimer(Spy);
                 }
+                if (this.spiedWindow["VRDisplay"]) {
+                    this.spiedWindow.addEventListener("vrdisplaypresentchange", function (event) {
+                        _this.spyRequestAnimationFrame("requestAnimationFrame", event.display);
+                    });
+                }
             };
-            TimeSpy.prototype.spyRequestAnimationFrame = function (functionName) {
+            TimeSpy.prototype.spyRequestAnimationFrame = function (functionName, owner) {
                 // Needs both this.
                 // tslint:disable-next-line
                 var self = this;
-                var oldRequestAnimationFrame = this.spiedWindow[functionName];
-                var spiedWindow = this.spiedWindow;
-                spiedWindow[functionName] = function () {
+                SPECTOR.OriginFunctionHelper.storeOriginFunction(owner, functionName);
+                var oldRequestAnimationFrame = owner[functionName];
+                owner[functionName] = function () {
                     var callback = arguments[0];
-                    var onCallback = self.getCallback(self, callback, function () { spiedWindow[functionName](callback); });
-                    return oldRequestAnimationFrame.apply(self.spiedWindow, [onCallback]);
+                    var onCallback = self.getCallback(self, callback, function () { SPECTOR.OriginFunctionHelper.executeOriginFunction(owner, functionName, [callback]); });
+                    var result = SPECTOR.OriginFunctionHelper.executeOriginFunction(owner, functionName, [onCallback]);
+                    return result;
                 };
             };
             TimeSpy.prototype.spySetTimer = function (functionName) {

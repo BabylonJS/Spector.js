@@ -962,7 +962,7 @@ declare namespace SPECTOR.Spies {
         changeSpeedRatio(ratio: number): void;
         getFps(): number;
         private init();
-        private spyRequestAnimationFrame(functionName);
+        private spyRequestAnimationFrame(functionName, owner);
         private spySetTimer(functionName);
         private getCallback(self, callback, skippedCalback?);
     }

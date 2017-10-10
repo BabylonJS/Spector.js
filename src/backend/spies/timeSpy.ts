@@ -97,26 +97,34 @@ namespace SPECTOR.Spies {
 
         private init(): void {
             for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
-                this.spyRequestAnimationFrame(Spy);
+                this.spyRequestAnimationFrame(Spy, this.spiedWindow);
             }
             for (const Spy of TimeSpy.setTimerFunctions) {
                 this.spySetTimer(Spy);
             }
+
+            if (this.spiedWindow["VRDisplay"]) {
+                this.spiedWindow.addEventListener("vrdisplaypresentchange", (event: any) => {
+                    this.spyRequestAnimationFrame("requestAnimationFrame", event.display);
+                });
+            }
         }
 
-        private spyRequestAnimationFrame(functionName: string): void {
+        private spyRequestAnimationFrame(functionName: string, owner: any): void {
             // Needs both this.
             // tslint:disable-next-line
             const self = this;
+            OriginFunctionHelper.storeOriginFunction(owner, functionName);
 
-            const oldRequestAnimationFrame = this.spiedWindow[functionName];
-            const spiedWindow = this.spiedWindow;
-            spiedWindow[functionName] = function () {
+            const oldRequestAnimationFrame = owner[functionName];
+            owner[functionName] = function () {
                 const callback = arguments[0];
-                const onCallback = self.getCallback(self, callback, () => { spiedWindow[functionName](callback); });
+                const onCallback = self.getCallback(self, callback, () => { OriginFunctionHelper.executeOriginFunction(owner, functionName, [callback] as any); });
 
-                return oldRequestAnimationFrame.apply(self.spiedWindow, [onCallback]);
+                const result = OriginFunctionHelper.executeOriginFunction(owner, functionName, [onCallback] as any);
+                return result;
             };
+
         }
 
         private spySetTimer(functionName: string): void {
