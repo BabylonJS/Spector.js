@@ -996,7 +996,7 @@ declare namespace SPECTOR {
         onMaxCommand: IEvent<IContextSpy>;
         spy(): void;
         unSpy(): void;
-        startCapture(maxCommands?: number): void;
+        startCapture(maxCommands?: number, quickCapture?: boolean): void;
         stopCapture(): ICapture;
         setMarker(marker: string): void;
         clearMarker(): void;
@@ -1040,7 +1040,7 @@ declare namespace SPECTOR.Spies {
         constructor(options: IContextSpyOptions, time: ITime, logger: ILogger);
         spy(): void;
         unSpy(): void;
-        startCapture(maxCommands?: number): void;
+        startCapture(maxCommands?: number, quickCapture?: boolean): void;
         stopCapture(): ICapture;
         isCapturing(): boolean;
         setMarker(marker: string): void;
@@ -1407,7 +1407,7 @@ declare namespace SPECTOR.Spies {
 declare namespace SPECTOR {
     interface IStateSpy {
         readonly contextInformation: IContextInformation;
-        startCapture(currentCapture: ICapture): void;
+        startCapture(currentCapture: ICapture, quickCapture: boolean): void;
         stopCapture(currentCapture: ICapture): void;
         captureState(commandCapture: ICommandCapture): void;
     }
@@ -1428,7 +1428,7 @@ declare namespace SPECTOR.Spies {
         private readonly stateTrackers;
         private readonly onCommandCapturedCallbacks;
         constructor(options: IStateSpyOptions, logger: ILogger);
-        startCapture(currentCapture: ICapture): void;
+        startCapture(currentCapture: ICapture, quickCapture: boolean): void;
         stopCapture(currentCapture: ICapture): void;
         captureState(commandCapture: ICommandCapture): void;
         private initAvailableStateTrackers();
@@ -1471,7 +1471,7 @@ declare namespace SPECTOR {
         readonly stateName: string;
         readonly requireStartAndStopStates: boolean;
         registerCallbacks(callbacks: CommandCapturedCallbacks): void;
-        startCapture(): State;
+        startCapture(loadFromContext: boolean, quickCapture: boolean): State;
         stopCapture(): State;
         getStateData(): StateData;
     }
@@ -1494,6 +1494,7 @@ declare namespace SPECTOR.States {
         protected readonly toggleCapture: (capture: boolean) => void;
         protected previousState: State;
         protected currentState: State;
+        protected quickCapture: boolean;
         private readonly changeCommandsByState;
         private readonly consumeCommands;
         private readonly commandNameToStates;
@@ -1501,7 +1502,7 @@ declare namespace SPECTOR.States {
         private capturedCommandsByState;
         constructor(options: IStateOptions, logger: ILogger);
         readonly requireStartAndStopStates: boolean;
-        startCapture(loadFromContext?: boolean): State;
+        startCapture(loadFromContext: boolean, quickCapture: boolean): State;
         stopCapture(): State;
         registerCallbacks(callbacks: CommandCapturedCallbacks): void;
         getStateData(): StateData;
@@ -2481,6 +2482,7 @@ declare namespace SPECTOR {
         private canvasSpy;
         private captureNextFrames;
         private captureNextCommands;
+        private quickCapture;
         private capturingContext;
         private captureMenu;
         private resultView;
@@ -2499,11 +2501,11 @@ declare namespace SPECTOR {
         spyCanvases(): void;
         spyCanvas(canvas: HTMLCanvasElement): void;
         getAvailableContexts(): IAvailableContext[];
-        captureCanvas(canvas: HTMLCanvasElement, commandCount?: number): void;
-        captureContext(context: WebGLRenderingContexts, commandCount?: number): void;
-        captureContextSpy(contextSpy: IContextSpy, commandCount?: number): void;
-        captureNextFrame(obj: HTMLCanvasElement | WebGLRenderingContexts): void;
-        startCapture(obj: HTMLCanvasElement | WebGLRenderingContexts, commandCount: number): void;
+        captureCanvas(canvas: HTMLCanvasElement, commandCount?: number, quickCapture?: boolean): void;
+        captureContext(context: WebGLRenderingContexts, commandCount?: number, quickCapture?: boolean): void;
+        captureContextSpy(contextSpy: IContextSpy, commandCount?: number, quickCapture?: boolean): void;
+        captureNextFrame(obj: HTMLCanvasElement | WebGLRenderingContexts, quickCapture?: boolean): void;
+        startCapture(obj: HTMLCanvasElement | WebGLRenderingContexts, commandCount: number, quickCapture?: boolean): void;
         stopCapture(): ICapture;
         setMarker(marker: string): void;
         clearMarker(): void;

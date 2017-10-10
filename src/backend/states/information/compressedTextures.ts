@@ -4,7 +4,7 @@ namespace SPECTOR.States.Information {
         constructor(options: IStateOptions, logger: ILogger) {
             super(options, logger);
 
-            this.currentState = this.startCapture();
+            this.currentState = this.startCapture(true, this.quickCapture);
         }
 
         protected getWebgl1Parameters(): IParameter[] {

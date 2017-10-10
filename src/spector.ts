@@ -52,6 +52,7 @@ namespace SPECTOR {
         private canvasSpy: ICanvasSpy;
         private captureNextFrames: number;
         private captureNextCommands: number;
+        private quickCapture: boolean;
         private capturingContext: IContextSpy;
         private captureMenu: ICaptureMenu;
         private resultView: IResultView;
@@ -63,6 +64,7 @@ namespace SPECTOR {
             this.injection = options.injection || ProvidedInjection.DefaultInjection;
             this.captureNextFrames = 0;
             this.captureNextCommands = 0;
+            this.quickCapture = false;
             this.retry = 0;
             this.contexts = [];
 
@@ -175,23 +177,29 @@ namespace SPECTOR {
             return this.getAvailableContexts();
         }
 
-        public captureCanvas(canvas: HTMLCanvasElement, commandCount = 0) {
+        public captureCanvas(canvas: HTMLCanvasElement,
+            commandCount = 0,
+            quickCapture: boolean = false): void {
+
             const contextSpy = this.getAvailableContextSpyByCanvas(canvas);
             if (!contextSpy) {
                 const context = Spector.getFirstAvailable3dContext(canvas);
                 if (context) {
-                    this.captureContext(context, commandCount);
+                    this.captureContext(context, commandCount, quickCapture);
                 }
                 else {
                     this.logger.error("No webgl context available on the chosen canvas.");
                 }
             }
             else {
-                this.captureContextSpy(contextSpy, commandCount);
+                this.captureContextSpy(contextSpy, commandCount, quickCapture);
             }
         }
 
-        public captureContext(context: WebGLRenderingContexts, commandCount = 0) {
+        public captureContext(context: WebGLRenderingContexts,
+            commandCount = 0,
+            quickCapture: boolean = false): void {
+
             let contextSpy = this.getAvailableContextSpyByCanvas(context.canvas);
 
             if (!contextSpy) {
@@ -221,11 +229,16 @@ namespace SPECTOR {
             }
 
             if (contextSpy) {
-                this.captureContextSpy(contextSpy, commandCount);
+                this.captureContextSpy(contextSpy, commandCount, quickCapture);
             }
         }
 
-        public captureContextSpy(contextSpy: IContextSpy, commandCount = 0) {
+        public captureContextSpy(contextSpy: IContextSpy,
+            commandCount = 0,
+            quickCapture: boolean = false): void {
+
+            this.quickCapture = quickCapture;
+
             if (this.capturingContext) {
                 this.onErrorInternal("Already capturing a context.");
             }
@@ -258,21 +271,26 @@ namespace SPECTOR {
             }
         }
 
-        public captureNextFrame(obj: HTMLCanvasElement | WebGLRenderingContexts): void {
+        public captureNextFrame(obj: HTMLCanvasElement | WebGLRenderingContexts,
+            quickCapture: boolean = false): void {
+
             if (obj instanceof HTMLCanvasElement) {
-                this.captureCanvas(obj);
+                this.captureCanvas(obj, 0, quickCapture);
             }
             else {
-                this.captureContext(obj);
+                this.captureContext(obj, 0, quickCapture);
             }
         }
 
-        public startCapture(obj: HTMLCanvasElement | WebGLRenderingContexts, commandCount: number): void {
+        public startCapture(obj: HTMLCanvasElement | WebGLRenderingContexts,
+            commandCount: number,
+            quickCapture: boolean = false): void {
+
             if (obj instanceof HTMLCanvasElement) {
-                this.captureCanvas(obj, commandCount);
+                this.captureCanvas(obj, commandCount, quickCapture);
             }
             else {
-                this.captureContext(obj, commandCount);
+                this.captureContext(obj, commandCount, quickCapture);
             }
         }
 
@@ -327,7 +345,7 @@ namespace SPECTOR {
 
             if (this.capturingContext) {
                 this.onCaptureStarted.trigger(undefined);
-                this.capturingContext.startCapture(commandCount);
+                this.capturingContext.startCapture(commandCount, this.quickCapture);
             }
             else {
                 this.onErrorInternal("No context to capture from.");
@@ -372,7 +390,7 @@ namespace SPECTOR {
             else if (this.captureNextFrames > 0) {
                 if (this.capturingContext) {
                     this.onCaptureStarted.trigger(undefined);
-                    this.capturingContext.startCapture();
+                    this.capturingContext.startCapture(0, this.quickCapture);
                 }
                 this.captureNextFrames--;
             }

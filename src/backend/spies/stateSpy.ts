@@ -3,7 +3,7 @@ namespace SPECTOR {
     export interface IStateSpy {
         readonly contextInformation: IContextInformation;
 
-        startCapture(currentCapture: ICapture): void;
+        startCapture(currentCapture: ICapture, quickCapture: boolean): void;
         stopCapture(currentCapture: ICapture): void;
         captureState(commandCapture: ICommandCapture): void;
     }
@@ -14,7 +14,7 @@ namespace SPECTOR {
     }
 
     export type StateSpyConstructor = {
-        new (options: IStateSpyOptions, logger: ILogger): IStateSpy,
+        new(options: IStateSpyOptions, logger: ILogger): IStateSpy,
     };
 }
 
@@ -37,11 +37,11 @@ namespace SPECTOR.Spies {
             this.initStateTrackers();
         }
 
-        public startCapture(currentCapture: ICapture): void {
+        public startCapture(currentCapture: ICapture, quickCapture: boolean): void {
             for (const stateTrackerName in this.stateTrackers) {
                 if (this.stateTrackers.hasOwnProperty(stateTrackerName)) {
                     const stateTracker = this.stateTrackers[stateTrackerName];
-                    const state = stateTracker.startCapture();
+                    const state = stateTracker.startCapture(true, quickCapture);
                     if (stateTracker.requireStartAndStopStates) {
                         currentCapture.initState[stateTrackerName] = state;
                     }

@@ -22,8 +22,8 @@ This is the main entry point of the library and contains the following methods:
 - ```displayUI()``` : displays the embedded ui and begins to track the pages available canvas elements.
 - ```spyCanvases()``` : enables recording some extra information merged in the capture like texture memory sizes and formats. This should be launched before you update the texture objects.
 - ```getFps()``` : to get the current fps of the selected canvas.
-- ```captureNextFrame(obj: HTMLCanvasElement | RenderingContext)``` : Call to begin a capture of the next frame of a specific canvas or context.
-- ```startCapture(obj: HTMLCanvasElement | RenderingContext, commandCount: number)``` : Start a capture on a specific canvas or context. The capture will stop once it reaches the number of commands specified as a parameter, or after 10 seconds.
+- ```captureNextFrame(obj: HTMLCanvasElement | RenderingContext, quickCapture: boolean)``` : Call to begin a capture of the next frame of a specific canvas or context. If quick capture is true, the thumbnails are not captured in order to speed up the capture.
+- ```startCapture(obj: HTMLCanvasElement | RenderingContext, commandCount: number, quickCapture: boolean)``` : Start a capture on a specific canvas or context. The capture will stop once it reaches the number of commands specified as a parameter, or after 10 seconds. If quick capture is true, the thumbnails are not captured in order to speed up the capture.
 - ```stopCapture(): ICapture``` : Stop the current capture and returns the result in JSON. It displays the result if the UI has been displayed. This returns undefined if the capture has not been completed or did not find any commands.
 - ```setMarker(marker: string)``` : Adds a marker that is displayed in the capture, helping you analyze the results.
 - ```clearMarker()``` : Clears the current marker from the capture for any subsequent calls.

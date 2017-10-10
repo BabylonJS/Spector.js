@@ -75,12 +75,15 @@ var spectorLoadedKey = "SPECTOR_LOADED";
 var spectorCaptureOnLoadKey = "SPECTOR_CAPTUREONLOAD";
 var spectorCaptureOnLoadCommandCountKey = "SPECTOR_CAPTUREONLOAD_COMMANDCOUNT";
 var spectorCaptureOnLoadTransientKey = "SPECTOR_CAPTUREONLOAD_TRANSIENT";
+var spectorCaptureOnLoadQuickCaptureKey = "SPECTOR_CAPTUREONLOAD_QUICKCAPTURE";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
+var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATION_QUICK_CAPTURE";
 
 var spectorContextTypeKey = "__spector_context_type";
 
 var captureOnLoad = false;
 var captureOnLoadTransient = false;
+var captureOnLoadQuickCapture = false;
 var captureOnLoadCommandCount = 500;
 
 if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
@@ -88,6 +91,7 @@ if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
     captureOnLoad = true;
 
     captureOnLoadTransient = (sessionStorage.getItem(spectorCaptureOnLoadTransientKey) === "true");
+    captureOnLoadQuickCapture = (sessionStorage.getItem(spectorCaptureOnLoadQuickCaptureKey) === "true");
     captureOnLoadCommandCount = parseInt(sessionStorage.getItem(spectorCaptureOnLoadCommandCountKey));
 }
 
@@ -124,7 +128,7 @@ var canvasGetContextDetection = `
                 if (captureOnLoad) {
                     // Ensures canvas is in the dom to capture the one we are currently tracking.
                     if (this.parentElement || ${captureOnLoadTransient}) {
-                        spector.captureContext(context, ${captureOnLoadCommandCount});
+                        spector.captureContext(context, ${captureOnLoadCommandCount}, ${captureOnLoadQuickCapture});
                         captureOnLoad = false;
                     }
                 }
@@ -163,7 +167,8 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
             document.addEventListener("SpectorRequestCaptureEvent", function(e) {
                 var canvasIndex = document.getElementById('${spectorCommunicationElementId}').value;
                 var canvas = document.body.querySelectorAll("canvas")[canvasIndex];
-                spector.captureCanvas(canvas);
+                var quickCapture = (document.getElementById('${spectorCommunicationQuickCaptureElementId}').value === "true");
+                spector.captureCanvas(canvas, 0, quickCapture);
             });
             spector.onError.add((error) => {
                 var myEvent = new CustomEvent("SpectorOnErrorEvent", { detail: { errorString: error } });
@@ -195,7 +200,11 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         var script = `var input = document.createElement('input');
         input.type = 'Hidden';
         input.id = '${spectorCommunicationElementId}';
-        document.body.appendChild(input);`;
+        document.body.appendChild(input);
+        var input2 = document.createElement('input');
+        input2.type = 'Hidden';
+        input2.id = '${spectorCommunicationQuickCaptureElementId}';
+        document.body.appendChild(input2);`;
 
         insertTextScript(script);
     });
@@ -299,8 +308,10 @@ listenForMessage(function (message) {
     if (action === "captureOnLoad") {
         var transient = message.transient;
         var commandCount = message.commandCount;
+        var quickCapture = message.quickCapture;
 
         sessionStorage.setItem(spectorCaptureOnLoadTransientKey, transient);
+        sessionStorage.setItem(spectorCaptureOnLoadQuickCaptureKey, quickCapture);
         sessionStorage.setItem(spectorCaptureOnLoadCommandCountKey, commandCount);
         sessionStorage.setItem(spectorCaptureOnLoadKey, "true");
 
@@ -345,6 +356,12 @@ listenForMessage(function (message) {
         var input = document.getElementById(spectorCommunicationElementId);
         if (input) {
             input.value = canvasRef.index;
+
+            var inputQuickCapture = document.getElementById(spectorCommunicationQuickCaptureElementId);
+            if (inputQuickCapture) {
+                inputQuickCapture.value = message.quickCapture ? "true" : "false";
+            }
+
             var myEvent = new CustomEvent("SpectorRequestCaptureEvent");
             document.dispatchEvent(myEvent);
         }

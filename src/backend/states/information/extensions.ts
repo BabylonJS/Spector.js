@@ -4,7 +4,7 @@ namespace SPECTOR {
     }
 
     export type ExtensionsConstructor = {
-        new (options: IStateOptions, logger: ILogger): IExtensions;
+        new(options: IStateOptions, logger: ILogger): IExtensions;
     };
 }
 
@@ -61,7 +61,7 @@ namespace SPECTOR.States.Information {
                 // []
             ];
 
-            this.currentState = this.startCapture();
+            this.currentState = this.startCapture(true, this.quickCapture);
         }
 
         public getExtensions(): ExtensionList {

@@ -1458,8 +1458,9 @@ var SPECTOR;
                     }
                 }
             };
-            ContextSpy.prototype.startCapture = function (maxCommands) {
+            ContextSpy.prototype.startCapture = function (maxCommands, quickCapture) {
                 if (maxCommands === void 0) { maxCommands = 0; }
+                if (quickCapture === void 0) { quickCapture = false; }
                 var startTime = this.time.now;
                 this.maxCommands = maxCommands;
                 if (!this.options.recordAlways) {
@@ -1481,7 +1482,7 @@ var SPECTOR;
                     frameMemory: {},
                     memory: {},
                 };
-                this.stateSpy.startCapture(this.currentCapture);
+                this.stateSpy.startCapture(this.currentCapture, quickCapture);
                 this.recorderSpy.startCapture();
                 this.currentCapture.listenCommandsStartTime = this.time.now;
             };
@@ -3099,11 +3100,11 @@ var SPECTOR;
                 this.initAvailableStateTrackers();
                 this.initStateTrackers();
             }
-            StateSpy.prototype.startCapture = function (currentCapture) {
+            StateSpy.prototype.startCapture = function (currentCapture, quickCapture) {
                 for (var stateTrackerName in this.stateTrackers) {
                     if (this.stateTrackers.hasOwnProperty(stateTrackerName)) {
                         var stateTracker = this.stateTrackers[stateTrackerName];
-                        var state = stateTracker.startCapture();
+                        var state = stateTracker.startCapture(true, quickCapture);
                         if (stateTracker.requireStartAndStopStates) {
                             currentCapture.initState[stateTrackerName] = state;
                         }
@@ -3264,8 +3265,8 @@ var SPECTOR;
                 enumerable: true,
                 configurable: true
             });
-            BaseState.prototype.startCapture = function (loadFromContext) {
-                if (loadFromContext === void 0) { loadFromContext = true; }
+            BaseState.prototype.startCapture = function (loadFromContext, quickCapture) {
+                this.quickCapture = quickCapture;
                 this.capturedCommandsByState = {};
                 if (loadFromContext && this.requireStartAndStopStates) {
                     this.currentState = {};
@@ -3335,7 +3336,7 @@ var SPECTOR;
                 this.analyse(command);
                 this.storeCommandIds();
                 command[this.stateName] = this.currentState;
-                this.startCapture(false);
+                this.startCapture(false, this.quickCapture);
             };
             BaseState.prototype.isValidConsumeCommand = function (command) {
                 return true;
@@ -3601,7 +3602,7 @@ var SPECTOR;
                 __extends(Capabilities, _super);
                 function Capabilities(options, logger) {
                     var _this = _super.call(this, options, logger) || this;
-                    _this.currentState = _this.startCapture();
+                    _this.currentState = _this.startCapture(true, _this.quickCapture);
                     return _this;
                 }
                 Capabilities.prototype.getWebgl1Parameters = function () {
@@ -3685,7 +3686,7 @@ var SPECTOR;
                 __extends(CompressedTextures, _super);
                 function CompressedTextures(options, logger) {
                     var _this = _super.call(this, options, logger) || this;
-                    _this.currentState = _this.startCapture();
+                    _this.currentState = _this.startCapture(true, _this.quickCapture);
                     return _this;
                 }
                 CompressedTextures.prototype.getWebgl1Parameters = function () {
@@ -3743,7 +3744,7 @@ var SPECTOR;
                             { name: "WEBGL_depth_texture", description: "" },
                             { name: "WEBGL_draw_buffers", description: "" }],
                     ];
-                    _this.currentState = _this.startCapture();
+                    _this.currentState = _this.startCapture(true, _this.quickCapture);
                     return _this;
                 }
                 Extensions.prototype.getExtensions = function () {
@@ -4426,46 +4427,48 @@ var SPECTOR;
                     textureCubeMapFace: textureCubeMapFace ? SPECTOR.WebGlConstantsByValue[textureCubeMapFace].name : null,
                     textureLayer: textureLayer,
                 };
-                try {
-                    // Read the pixels from the context.
-                    var pixels = SPECTOR.ReadPixelsHelper.readPixels(gl, x, y, width, height, type);
-                    if (pixels) {
-                        // Copy the pixels to a working 2D canvas same size.
-                        this.workingCanvas.width = width;
-                        this.workingCanvas.height = height;
-                        var imageData = this.workingContext2D.createImageData(Math.ceil(width), Math.ceil(height));
-                        imageData.data.set(pixels);
-                        this.workingContext2D.putImageData(imageData, 0, 0);
-                        // Copy the pixels to a resized capture 2D canvas.
-                        var imageAspectRatio = width / height;
-                        if (imageAspectRatio < 1) {
-                            this.captureCanvas.width = VisualState_1.captureBaseSize * imageAspectRatio;
-                            this.captureCanvas.height = VisualState_1.captureBaseSize;
+                if (!this.quickCapture) {
+                    try {
+                        // Read the pixels from the context.
+                        var pixels = SPECTOR.ReadPixelsHelper.readPixels(gl, x, y, width, height, type);
+                        if (pixels) {
+                            // Copy the pixels to a working 2D canvas same size.
+                            this.workingCanvas.width = width;
+                            this.workingCanvas.height = height;
+                            var imageData = this.workingContext2D.createImageData(Math.ceil(width), Math.ceil(height));
+                            imageData.data.set(pixels);
+                            this.workingContext2D.putImageData(imageData, 0, 0);
+                            // Copy the pixels to a resized capture 2D canvas.
+                            var imageAspectRatio = width / height;
+                            if (imageAspectRatio < 1) {
+                                this.captureCanvas.width = VisualState_1.captureBaseSize * imageAspectRatio;
+                                this.captureCanvas.height = VisualState_1.captureBaseSize;
+                            }
+                            else if (imageAspectRatio > 1) {
+                                this.captureCanvas.width = VisualState_1.captureBaseSize;
+                                this.captureCanvas.height = VisualState_1.captureBaseSize / imageAspectRatio;
+                            }
+                            else {
+                                this.captureCanvas.width = VisualState_1.captureBaseSize;
+                                this.captureCanvas.height = VisualState_1.captureBaseSize;
+                            }
+                            this.captureCanvas.width = Math.max(this.captureCanvas.width, 1);
+                            this.captureCanvas.height = Math.max(this.captureCanvas.height, 1);
+                            // Scale and draw to flip Y to reorient readPixels.
+                            this.captureContext2D.globalCompositeOperation = "copy";
+                            this.captureContext2D.scale(1, -1); // Y flip
+                            this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
+                            this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
+                            this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
+                            this.captureContext2D.globalCompositeOperation = "source-over";
+                            // get the screen capture
+                            attachmentVisualState.src = this.captureCanvas.toDataURL();
                         }
-                        else if (imageAspectRatio > 1) {
-                            this.captureCanvas.width = VisualState_1.captureBaseSize;
-                            this.captureCanvas.height = VisualState_1.captureBaseSize / imageAspectRatio;
-                        }
-                        else {
-                            this.captureCanvas.width = VisualState_1.captureBaseSize;
-                            this.captureCanvas.height = VisualState_1.captureBaseSize;
-                        }
-                        this.captureCanvas.width = Math.max(this.captureCanvas.width, 1);
-                        this.captureCanvas.height = Math.max(this.captureCanvas.height, 1);
-                        // Scale and draw to flip Y to reorient readPixels.
-                        this.captureContext2D.globalCompositeOperation = "copy";
-                        this.captureContext2D.scale(1, -1); // Y flip
-                        this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
-                        this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
-                        this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
-                        this.captureContext2D.globalCompositeOperation = "source-over";
-                        // get the screen capture
-                        attachmentVisualState.src = this.captureCanvas.toDataURL();
                     }
-                }
-                catch (e) {
-                    // Do nothing in case of error at this level.
-                    this.logger.warn("Spector can not capture the visual state: " + e);
+                    catch (e) {
+                        // Do nothing in case of error at this level.
+                        this.logger.warn("Spector can not capture the visual state: " + e);
+                    }
                 }
                 this.currentState["Attachments"].push(attachmentVisualState);
             };
@@ -4827,7 +4830,9 @@ var SPECTOR;
                 }
                 var storage = this.getTextureStorage(target);
                 if (storage) {
-                    this.drawCallTextureInputState.appendTextureState(textureState, storage, target);
+                    // Null will prevent the visual target to be captured.
+                    var textureStateTarget = this.quickCapture ? null : target;
+                    this.drawCallTextureInputState.appendTextureState(textureState, storage, textureStateTarget);
                 }
                 this.context.activeTexture(activeTexture);
                 return textureState;
@@ -8210,6 +8215,7 @@ var SPECTOR;
             this.injection = options.injection || SPECTOR.ProvidedInjection.DefaultInjection;
             this.captureNextFrames = 0;
             this.captureNextCommands = 0;
+            this.quickCapture = false;
             this.retry = 0;
             this.contexts = [];
             this.logger = new this.injection.LoggerCtor();
@@ -8327,24 +8333,26 @@ var SPECTOR;
         Spector.prototype.getAvailableContexts = function () {
             return this.getAvailableContexts();
         };
-        Spector.prototype.captureCanvas = function (canvas, commandCount) {
+        Spector.prototype.captureCanvas = function (canvas, commandCount, quickCapture) {
             if (commandCount === void 0) { commandCount = 0; }
+            if (quickCapture === void 0) { quickCapture = false; }
             var contextSpy = this.getAvailableContextSpyByCanvas(canvas);
             if (!contextSpy) {
                 var context = Spector.getFirstAvailable3dContext(canvas);
                 if (context) {
-                    this.captureContext(context, commandCount);
+                    this.captureContext(context, commandCount, quickCapture);
                 }
                 else {
                     this.logger.error("No webgl context available on the chosen canvas.");
                 }
             }
             else {
-                this.captureContextSpy(contextSpy, commandCount);
+                this.captureContextSpy(contextSpy, commandCount, quickCapture);
             }
         };
-        Spector.prototype.captureContext = function (context, commandCount) {
+        Spector.prototype.captureContext = function (context, commandCount, quickCapture) {
             if (commandCount === void 0) { commandCount = 0; }
+            if (quickCapture === void 0) { quickCapture = false; }
             var contextSpy = this.getAvailableContextSpyByCanvas(context.canvas);
             if (!contextSpy) {
                 if (context.getIndexedParameter) {
@@ -8370,12 +8378,14 @@ var SPECTOR;
                 });
             }
             if (contextSpy) {
-                this.captureContextSpy(contextSpy, commandCount);
+                this.captureContextSpy(contextSpy, commandCount, quickCapture);
             }
         };
-        Spector.prototype.captureContextSpy = function (contextSpy, commandCount) {
+        Spector.prototype.captureContextSpy = function (contextSpy, commandCount, quickCapture) {
             var _this = this;
             if (commandCount === void 0) { commandCount = 0; }
+            if (quickCapture === void 0) { quickCapture = false; }
+            this.quickCapture = quickCapture;
             if (this.capturingContext) {
                 this.onErrorInternal("Already capturing a context.");
             }
@@ -8405,20 +8415,22 @@ var SPECTOR;
                 }, 10 * 1000);
             }
         };
-        Spector.prototype.captureNextFrame = function (obj) {
+        Spector.prototype.captureNextFrame = function (obj, quickCapture) {
+            if (quickCapture === void 0) { quickCapture = false; }
             if (obj instanceof HTMLCanvasElement) {
-                this.captureCanvas(obj);
+                this.captureCanvas(obj, 0, quickCapture);
             }
             else {
-                this.captureContext(obj);
+                this.captureContext(obj, 0, quickCapture);
             }
         };
-        Spector.prototype.startCapture = function (obj, commandCount) {
+        Spector.prototype.startCapture = function (obj, commandCount, quickCapture) {
+            if (quickCapture === void 0) { quickCapture = false; }
             if (obj instanceof HTMLCanvasElement) {
-                this.captureCanvas(obj, commandCount);
+                this.captureCanvas(obj, commandCount, quickCapture);
             }
             else {
-                this.captureContext(obj, commandCount);
+                this.captureContext(obj, commandCount, quickCapture);
             }
         };
         Spector.prototype.stopCapture = function () {
@@ -8464,7 +8476,7 @@ var SPECTOR;
             this.play();
             if (this.capturingContext) {
                 this.onCaptureStarted.trigger(undefined);
-                this.capturingContext.startCapture(commandCount);
+                this.capturingContext.startCapture(commandCount, this.quickCapture);
             }
             else {
                 this.onErrorInternal("No context to capture from.");
@@ -8504,7 +8516,7 @@ var SPECTOR;
             else if (this.captureNextFrames > 0) {
                 if (this.capturingContext) {
                     this.onCaptureStarted.trigger(undefined);
-                    this.capturingContext.startCapture();
+                    this.capturingContext.startCapture(0, this.quickCapture);
                 }
                 this.captureNextFrames--;
             }

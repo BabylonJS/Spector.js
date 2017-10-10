@@ -9,7 +9,7 @@ namespace SPECTOR {
         spy(): void;
         unSpy(): void;
 
-        startCapture(maxCommands?: number): void;
+        startCapture(maxCommands?: number, quickCapture?: boolean): void;
         stopCapture(): ICapture;
         setMarker(marker: string): void;
         clearMarker(): void;
@@ -129,7 +129,7 @@ namespace SPECTOR.Spies {
             }
         }
 
-        public startCapture(maxCommands = 0): void {
+        public startCapture(maxCommands = 0, quickCapture = false): void {
             const startTime = this.time.now;
             this.maxCommands = maxCommands;
 
@@ -154,7 +154,7 @@ namespace SPECTOR.Spies {
                 memory: {},
             };
 
-            this.stateSpy.startCapture(this.currentCapture);
+            this.stateSpy.startCapture(this.currentCapture, quickCapture);
             this.recorderSpy.startCapture();
 
             this.currentCapture.listenCommandsStartTime = this.time.now;

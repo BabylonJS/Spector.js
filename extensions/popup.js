@@ -30,13 +30,16 @@ window.addEventListener("DOMContentLoaded", function() {
     var captureOnLoadElement = document.getElementById("captureOnLoad");
     var captureOnLoadCountInput = document.getElementById("captureOnLoadCount");
     var captureOnLoadTransientInput = document.getElementById("captureOnLoadTransient");
+    var quickCaptureInput = document.getElementById("quickCapture");
+
     captureOnLoadElement.addEventListener("click", (e) => { 
         var transient = captureOnLoadTransientInput.checked;
+        var quickCapture = quickCaptureInput.checked;
         var commandCount = parseInt(captureOnLoadCountInput.value);
         if (commandCount < 0 || commandCount === Number.NaN) {
             commandCount = 500;
         }
-        this.captureonLoad(commandCount, transient); 
+        this.captureonLoad(commandCount, transient, quickCapture); 
         return false; 
     });
 
@@ -45,11 +48,12 @@ window.addEventListener("DOMContentLoaded", function() {
     playAll();
 });
 
-var captureonLoad = function(commandCount, transient) {
+var captureonLoad = function(commandCount, transient, quickCapture) {
     sendMessage({ 
         action: "captureOnLoad",
         commandCount : commandCount,
-        transient: transient
+        transient: transient,
+        quickCapture: quickCapture
     });
 }
 
@@ -158,9 +162,12 @@ var pause = function(e) {
 
 var captureCanvas = function(e) {
     if (e) {
+        var quickCaptureInput = document.getElementById("quickCapture");
+
         sendMessage({ 
             action: "capture", 
-            canvasRef: e.ref
+            canvasRef: e.ref,
+            quickCapture: quickCaptureInput.checked
         });
     }
 }

@@ -5,7 +5,7 @@ namespace SPECTOR {
         readonly stateName: string;
         readonly requireStartAndStopStates: boolean;
         registerCallbacks(callbacks: CommandCapturedCallbacks): void;
-        startCapture(): State;
+        startCapture(loadFromContext: boolean, quickCapture: boolean): State;
         stopCapture(): State;
         getStateData(): StateData;
     }
@@ -39,6 +39,7 @@ namespace SPECTOR.States {
 
         protected previousState: State;
         protected currentState: State;
+        protected quickCapture: boolean;
 
         private readonly changeCommandsByState: { [key: string]: string[] };
         private readonly consumeCommands: string[];
@@ -63,7 +64,8 @@ namespace SPECTOR.States {
             return true;
         }
 
-        public startCapture(loadFromContext = true): State {
+        public startCapture(loadFromContext: boolean, quickCapture: boolean): State {
+            this.quickCapture = quickCapture;
             this.capturedCommandsByState = {};
             if (loadFromContext && this.requireStartAndStopStates) {
                 this.currentState = {};
@@ -148,7 +150,7 @@ namespace SPECTOR.States {
             this.storeCommandIds();
             command[this.stateName] = this.currentState;
 
-            this.startCapture(false);
+            this.startCapture(false, this.quickCapture);
         }
 
         protected isValidConsumeCommand(command: ICommandCapture): boolean {
