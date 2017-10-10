@@ -115,8 +115,6 @@ namespace SPECTOR.Spies {
             // tslint:disable-next-line
             const self = this;
             OriginFunctionHelper.storeOriginFunction(owner, functionName);
-
-            const oldRequestAnimationFrame = owner[functionName];
             owner[functionName] = function () {
                 const callback = arguments[0];
                 const onCallback = self.getCallback(self, callback, () => { OriginFunctionHelper.executeOriginFunction(owner, functionName, [callback] as any); });

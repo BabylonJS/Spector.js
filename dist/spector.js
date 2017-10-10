@@ -1285,7 +1285,6 @@ var SPECTOR;
                 // tslint:disable-next-line
                 var self = this;
                 SPECTOR.OriginFunctionHelper.storeOriginFunction(owner, functionName);
-                var oldRequestAnimationFrame = owner[functionName];
                 owner[functionName] = function () {
                     var callback = arguments[0];
                     var onCallback = self.getCallback(self, callback, function () { SPECTOR.OriginFunctionHelper.executeOriginFunction(owner, functionName, [callback]); });
