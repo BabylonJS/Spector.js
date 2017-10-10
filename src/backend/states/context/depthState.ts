@@ -8,8 +8,8 @@ namespace SPECTOR.States {
         protected getWebgl1Parameters(): IParameter[] {
             return [{ constant: WebGlConstants.DEPTH_TEST, changeCommands: ["enable", "disable"] },
             { constant: WebGlConstants.DEPTH_FUNC, returnType: ParameterReturnType.GlEnum, changeCommands: ["depthFunc"] },
-            { constant: WebGlConstants.DEPTH_RANGE, changeCommands: ["depthMask"] },
-            { constant: WebGlConstants.DEPTH_WRITEMASK, changeCommands: ["depthRange"] }];
+            { constant: WebGlConstants.DEPTH_RANGE, changeCommands: ["depthRange"] },
+            { constant: WebGlConstants.DEPTH_WRITEMASK, changeCommands: ["depthMask"] }];
         }
 
         protected getConsumeCommands(): string[] {

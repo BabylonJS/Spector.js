@@ -4008,8 +4008,8 @@ var SPECTOR;
             DepthState.prototype.getWebgl1Parameters = function () {
                 return [{ constant: SPECTOR.WebGlConstants.DEPTH_TEST, changeCommands: ["enable", "disable"] },
                     { constant: SPECTOR.WebGlConstants.DEPTH_FUNC, returnType: 20 /* GlEnum */, changeCommands: ["depthFunc"] },
-                    { constant: SPECTOR.WebGlConstants.DEPTH_RANGE, changeCommands: ["depthMask"] },
-                    { constant: SPECTOR.WebGlConstants.DEPTH_WRITEMASK, changeCommands: ["depthRange"] }];
+                    { constant: SPECTOR.WebGlConstants.DEPTH_RANGE, changeCommands: ["depthRange"] },
+                    { constant: SPECTOR.WebGlConstants.DEPTH_WRITEMASK, changeCommands: ["depthMask"] }];
             };
             DepthState.prototype.getConsumeCommands = function () {
                 return States.drawCommands;
