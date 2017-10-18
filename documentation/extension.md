@@ -106,11 +106,11 @@ if (spector) {
 ```
 
 ### Shader Editor
-Spector is embedding a live shader editor for **supporting engines**. Unfortunately managing internally in Spector all the necessary steps once a program has been rebuild (binding the old uniforms, attribs, UBO, VAO... redirecting new bound values to old location) is really unreliable and has been proved REALLY error prone. We then decided to not do it in Spector but defer to the engines the responsability of rebuilding 
+Spector is embedding a live shader editor for **supporting engines**. Unfortunately,managing in Spector all the necessary steps once a program has been rebuild (binding the old uniforms, attribs, UBO, VAO... redirecting new bound values to old location) is really **unreliable** and has been proved REALLY error prone. We then decided to not do it in Spector but **defer to the engines the responsibility of rebuilding the programs**.
 
 If, like BabylonJS, you would like to be able to integrate live shader support edition in your WebGL engine, it is pretty straightforward.
 
-At any time your linking a ```ShaderProgram``` in your engine, simply append to it a rebuild function allowing your engine to recompile the shader as well as managing all the different states associated to it. The signature of the function should be as follow to be called by Spector:
+At any time you are linking a ```ShaderProgram``` in your engine, simply append to it a **rebuild function** allowing your engine to recompile the shader as well as managing all the different states associated to it. The signature of the function should be as follow to be called by Spector:
 ```
 rebuildProgram(program: WebGLProgram, // The Program to rebuild
             vertexSourceCode: string, // The new vertex shader source
