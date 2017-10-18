@@ -3,6 +3,7 @@ module.exports = {
         "./dist/spector.css",
         "./dist/prism.css",
         "./dist/prism.js",
+        "./dist/ace.js",
         "./dist/spector.js"
     ],
     output: {
@@ -18,6 +19,9 @@ module.exports = {
         }, {
             test: /prism.js$/,
             use: [ 'exports-loader?Prism' ]
+        }, {
+            test: /ace.js$/,
+            use: [ 'exports-loader?ace' ]
         }, {
             test: /spector.js$/,
             use: [ 'exports-loader?SPECTOR' ]

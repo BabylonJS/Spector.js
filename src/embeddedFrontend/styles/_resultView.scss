@@ -702,39 +702,6 @@ $commandDetailComponentWidth: 40%;
     }
   }
 
-  @media all and (max-width: 1024px) {
-    .resultViewMenuOpen {
-      display: block;
-      visibility: visible;
-    }
-
-    li:not(.resultViewMenuSmall) {
-      display: none;
-      visibility: hidden;
-    }
-
-    li {
-      background: $background-even;
-    }
-    li.searchContainer {
-      background: lighten($background-even, 10%);
-    }
-    
-    padding: 0px;
-    position: absolute;
-    overflow-y: visible;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    z-index: 999999;
-    display: block;
-
-    a.active {
-      background: $background-even;
-    }
-  }
-
   input {
     border: 0;
     font-family: 'Montserrat', sans-serif;
@@ -786,7 +753,7 @@ $commandDetailComponentWidth: 40%;
   }
 }
 
-.sourceCodeComponent {
+.sourceCodeComponentEditable,.sourceCodeComponent {
   position:absolute; 
   top: $menuHeight + $border;
   left: 0;  

@@ -1,11 +1,21 @@
 namespace SPECTOR {
 
+    export interface ISourceCodeChangeEvent {
+        sourceVertex: string;
+        sourceFragment: string;
+        programId: number;
+    }
+
     export interface IResultView {
+        readonly onSourceCodeChanged: IEvent<ISourceCodeChangeEvent>;
+
         display(): void;
         hide(): void;
 
         addCapture(capture: ICapture): number;
         selectCapture(captureId: number): void;
+
+        showSourceCodeError(error: string): void;
     }
 
     export interface IResultViewOptions {
@@ -20,6 +30,8 @@ namespace SPECTOR {
 
 namespace SPECTOR.EmbeddedFrontend {
     export class ResultView implements IResultView {
+        public readonly onSourceCodeChanged: IEvent<ISourceCodeChangeEvent>;
+
         private readonly rootPlaceHolder: Element;
         private readonly mvx: MVX;
 
@@ -63,6 +75,8 @@ namespace SPECTOR.EmbeddedFrontend {
         private commandCount: number;
 
         constructor(private readonly options: IResultViewOptions, private readonly logger: ILogger) {
+            this.onSourceCodeChanged = new options.eventConstructor();
+
             this.rootPlaceHolder = options.rootPlaceHolder || document.body;
             this.mvx = new MVX(this.rootPlaceHolder, logger);
 
@@ -143,6 +157,13 @@ namespace SPECTOR.EmbeddedFrontend {
                 state.fragment = true;
                 this.mvx.updateState(this.sourceCodeComponentStateId, state);
             });
+            this.sourceCodeComponent.onSourceCodeChanged.add((sourceCodeState) => {
+                this.onSourceCodeChanged.trigger({
+                    programId: sourceCodeState.state.programId,
+                    sourceFragment: sourceCodeState.state.sourceFragment,
+                    sourceVertex: sourceCodeState.state.sourceVertex,
+                });
+            });
             this.jsonSourceItemComponent.onOpenSourceClicked.add((sourceEventArg) => {
                 this.openShader(sourceEventArg.state.value === "FRAGMENT_SHADER");
             });
@@ -204,6 +225,10 @@ namespace SPECTOR.EmbeddedFrontend {
             return captureSateId;
         }
 
+        public showSourceCodeError(error: string): void {
+            this.sourceCodeComponent.showError(error);
+        }
+
         private initKeyboardEvents(): void {
             this.rootPlaceHolder.addEventListener("keydown", (event) => {
                 if (this.mvx.getGenericState<IResultViewMenuState>(this.menuStateId).status !== MenuStatus.Commands) {
@@ -237,11 +262,13 @@ namespace SPECTOR.EmbeddedFrontend {
             this.mvx.removeChildrenStates(this.contentStateId);
             const commandState = this.mvx.getGenericState<ICommandListItemState>(this.currentCommandStateId);
             this.sourceCodeComponentStateId = this.mvx.addChildState(this.contentStateId, {
+                programId: commandState.capture.DrawCall.programStatus.program.__SPECTOR_Object_TAG.id,
                 nameVertex: commandState.capture.DrawCall.shaders[0].name,
                 nameFragment: commandState.capture.DrawCall.shaders[1].name,
                 sourceVertex: commandState.capture.DrawCall.shaders[0].source,
                 sourceFragment: commandState.capture.DrawCall.shaders[1].source,
                 fragment,
+                editable: commandState.capture.DrawCall.programStatus.RECOMPILABLE,
             }, this.sourceCodeComponent);
 
             this.commandDetailStateId = this.mvx.addChildState(this.contentStateId, null, this.commandDetailComponent);

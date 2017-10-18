@@ -58,7 +58,12 @@ namespace SPECTOR.States {
                 DELETE_STATUS: this.context.getProgramParameter(program, WebGlConstants.DELETE_STATUS.value),
                 LINK_STATUS: this.context.getProgramParameter(program, WebGlConstants.LINK_STATUS.value),
                 VALIDATE_STATUS: this.context.getProgramParameter(program, WebGlConstants.VALIDATE_STATUS.value),
+                RECOMPILABLE: ProgramRecompilerHelper.isBuildableProgram(program),
             };
+
+            if (this.currentState.programStatus.RECOMPILABLE) {
+                SPECTOR.WebGlObjects.Program.saveInGlobalStore(program);
+            }
 
             const shaders = this.context.getAttachedShaders(program);
             this.currentState.shaders = [];

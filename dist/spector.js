@@ -1222,6 +1222,32 @@ var SPECTOR;
     }());
     SPECTOR.OriginFunctionHelper = OriginFunctionHelper;
 })(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var ProgramRecompilerHelper = /** @class */ (function () {
+        function ProgramRecompilerHelper() {
+        }
+        ProgramRecompilerHelper.isBuildableProgram = function (program) {
+            if (!program) {
+                return false;
+            }
+            if (!program[this.rebuildProgramFunctionName]) {
+                return false;
+            }
+            return true;
+        };
+        ProgramRecompilerHelper.rebuildProgram = function (program, vertexSourceCode, fragmentSourceCode, onCompiled, onError) {
+            if (!this.isBuildableProgram(program)) {
+                return;
+            }
+            // Recompile the shader sources.
+            program[this.rebuildProgramFunctionName](vertexSourceCode, fragmentSourceCode, onCompiled, onError);
+        };
+        ProgramRecompilerHelper.rebuildProgramFunctionName = "__SPECTOR_rebuildProgram";
+        return ProgramRecompilerHelper;
+    }());
+    SPECTOR.ProgramRecompilerHelper = ProgramRecompilerHelper;
+})(SPECTOR || (SPECTOR = {}));
 // tslint:disable:ban-types
 // tslint:disable:only-arrow-functions
 var SPECTOR;
@@ -4528,7 +4554,11 @@ var SPECTOR;
                     DELETE_STATUS: this.context.getProgramParameter(program, SPECTOR.WebGlConstants.DELETE_STATUS.value),
                     LINK_STATUS: this.context.getProgramParameter(program, SPECTOR.WebGlConstants.LINK_STATUS.value),
                     VALIDATE_STATUS: this.context.getProgramParameter(program, SPECTOR.WebGlConstants.VALIDATE_STATUS.value),
+                    RECOMPILABLE: SPECTOR.ProgramRecompilerHelper.isBuildableProgram(program),
                 };
+                if (this.currentState.programStatus.RECOMPILABLE) {
+                    SPECTOR.WebGlObjects.Program.saveInGlobalStore(program);
+                }
                 var shaders = this.context.getAttachedShaders(program);
                 this.currentState.shaders = [];
                 for (var _i = 0, shaders_1 = shaders; _i < shaders_1.length; _i++) {
@@ -5336,9 +5366,35 @@ var SPECTOR;
         WebGlObjects.FrameBuffer = FrameBuffer;
         var Program = /** @class */ (function (_super) {
             __extends(Program, _super);
-            function Program() {
-                return _super !== null && _super.apply(this, arguments) || this;
+            function Program(options, logger) {
+                return _super.call(this, options, logger) || this;
             }
+            Program.saveInGlobalStore = function (object) {
+                var tag = WebGlObjects.getWebGlObjectTag(object);
+                if (!tag) {
+                    return;
+                }
+                this.store[tag.id] = object;
+            };
+            Program.getFromGlobalStore = function (id) {
+                return this.store[id];
+            };
+            Program.updateInGlobalStore = function (id, newProgram) {
+                if (!newProgram) {
+                    return;
+                }
+                var program = this.getFromGlobalStore(id);
+                if (!program) {
+                    return;
+                }
+                var tag = WebGlObjects.getWebGlObjectTag(program);
+                if (!tag) {
+                    return;
+                }
+                WebGlObjects.attachWebGlObjectTag(newProgram, tag);
+                this.store[tag.id] = newProgram;
+            };
+            Program.store = {};
             Program = __decorate([
                 SPECTOR.Decorators.webGlObject("WebGLProgram")
             ], Program);
@@ -7468,17 +7524,67 @@ var SPECTOR;
                 _this.onVertexSourceClicked = _this.createEvent("onVertexSourceClicked");
                 _this.onFragmentSourceClicked = _this.createEvent("onFragmentSourceClicked");
                 _this.onSourceCodeCloseClicked = _this.createEvent("onSourceCodeCloseClicked");
+                _this.onSourceCodeChanged = _this.createEvent("onSourceCodeChanged");
                 return _this;
             }
+            SourceCodeComponent.prototype.showError = function (errorMessage) {
+                if (!this.editor) {
+                    return;
+                }
+                errorMessage = errorMessage || "";
+                var annotations = [];
+                if (errorMessage) {
+                    var errorChecker = /^.*ERROR:\W([0-9]+):([0-9]+):(.*)$/gm;
+                    var errors = errorChecker.exec(errorMessage);
+                    while (errors != null) {
+                        annotations.push({
+                            row: +errors[2] - 1,
+                            column: errors[1],
+                            text: errors[3] || "Error",
+                            type: "error",
+                        });
+                        errors = errorChecker.exec(errorMessage);
+                    }
+                }
+                this.editor.getSession().setAnnotations(annotations);
+            };
             SourceCodeComponent.prototype.render = function (state, stateId) {
+                var _this = this;
                 var source = state.fragment ? state.sourceFragment : state.sourceVertex;
                 var formattedShader = source ? this._indentIfdef(this._beautify(source)) : "";
-                var htmlString = (_a = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onSourceCodeCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                <div class=\"sourceCodeComponent\">\n                    <pre class=\"language-glsl\"><code>", "</code></pre>\n                </div>\n            </div>"], _a.raw = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onSourceCodeCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                <div class=\"sourceCodeComponent\">\n                    <pre class=\"language-glsl\"><code>", "</code></pre>\n                </div>\n            </div>"], this.htmlTemplate(_a, state.fragment ? "" : "active", state.fragment ? "active" : "", formattedShader));
-                // Pre and Prism work on the normal carriage return.
+                var htmlString = (_a = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onSourceCodeCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                $", "\n            </div>"], _a.raw = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onSourceCodeCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                $",
+                    "\n            </div>"], this.htmlTemplate(_a, state.fragment ? "" : "active", state.fragment ? "active" : "", state.editable ? (_b = ["<div class=\"sourceCodeComponentEditable\">", "</div>"], _b.raw = ["<div class=\"sourceCodeComponentEditable\">", "</div>"], this.htmlTemplate(_b, formattedShader)) : (_c = ["<div class=\"sourceCodeComponent\">\n                        <pre class=\"language-glsl\"><code>", "</code></pre>\n                    </div>"], _c.raw = ["<div class=\"sourceCodeComponent\">\n                        <pre class=\"language-glsl\"><code>", "</code></pre>\n                    </div>"], this.htmlTemplate(_c, formattedShader))));
                 var element = this.renderElementFromTemplate(htmlString.replace(/<br>/g, "\n"), state, stateId);
-                Prism.highlightElement(element.querySelector("pre"));
+                if (state.editable) {
+                    this.editor = ace.edit(element.querySelector(".sourceCodeComponentEditable"));
+                    this.editor.setTheme("ace/theme/monokai");
+                    this.editor.getSession().setMode("ace/mode/glsl");
+                    this.editor.setShowPrintMargin(false);
+                    var timeoutId_1 = -1;
+                    this.editor.getSession().on("change", function (e) {
+                        if (timeoutId_1 !== -1) {
+                            clearTimeout(timeoutId_1);
+                        }
+                        timeoutId_1 = setTimeout(function () {
+                            _this._triggerCompilation(_this.editor, state, element, stateId);
+                        }, 1500);
+                    });
+                }
+                else {
+                    // Pre and Prism work on the normal carriage return.
+                    Prism.highlightElement(element.querySelector("pre"));
+                }
                 return element;
-                var _a;
+                var _a, _b, _c;
+            };
+            SourceCodeComponent.prototype._triggerCompilation = function (editor, state, element, stateId) {
+                if (state.fragment) {
+                    state.sourceFragment = editor.getValue();
+                }
+                else {
+                    state.sourceVertex = editor.getValue();
+                }
+                this.triggerEvent("onSourceCodeChanged", element, state, stateId);
             };
             /**
              * Returns the position of the first "{" and the corresponding "}"
@@ -7585,6 +7691,7 @@ var SPECTOR;
                 var _this = this;
                 this.options = options;
                 this.logger = logger;
+                this.onSourceCodeChanged = new options.eventConstructor();
                 this.rootPlaceHolder = options.rootPlaceHolder || document.body;
                 this.mvx = new EmbeddedFrontend.MVX(this.rootPlaceHolder, logger);
                 this.searchText = "";
@@ -7660,6 +7767,13 @@ var SPECTOR;
                     state.fragment = true;
                     _this.mvx.updateState(_this.sourceCodeComponentStateId, state);
                 });
+                this.sourceCodeComponent.onSourceCodeChanged.add(function (sourceCodeState) {
+                    _this.onSourceCodeChanged.trigger({
+                        programId: sourceCodeState.state.programId,
+                        sourceFragment: sourceCodeState.state.sourceFragment,
+                        sourceVertex: sourceCodeState.state.sourceVertex,
+                    });
+                });
                 this.jsonSourceItemComponent.onOpenSourceClicked.add(function (sourceEventArg) {
                     _this.openShader(sourceEventArg.state.value === "FRAGMENT_SHADER");
                 });
@@ -7711,6 +7825,9 @@ var SPECTOR;
                 this.selectCapture(captureSateId);
                 return captureSateId;
             };
+            ResultView.prototype.showSourceCodeError = function (error) {
+                this.sourceCodeComponent.showError(error);
+            };
             ResultView.prototype.initKeyboardEvents = function () {
                 var _this = this;
                 this.rootPlaceHolder.addEventListener("keydown", function (event) {
@@ -7743,11 +7860,13 @@ var SPECTOR;
                 this.mvx.removeChildrenStates(this.contentStateId);
                 var commandState = this.mvx.getGenericState(this.currentCommandStateId);
                 this.sourceCodeComponentStateId = this.mvx.addChildState(this.contentStateId, {
+                    programId: commandState.capture.DrawCall.programStatus.program.__SPECTOR_Object_TAG.id,
                     nameVertex: commandState.capture.DrawCall.shaders[0].name,
                     nameFragment: commandState.capture.DrawCall.shaders[1].name,
                     sourceVertex: commandState.capture.DrawCall.shaders[0].source,
                     sourceFragment: commandState.capture.DrawCall.shaders[1].source,
                     fragment: fragment,
+                    editable: commandState.capture.DrawCall.programStatus.RECOMPILABLE,
                 }, this.sourceCodeComponent);
                 this.commandDetailStateId = this.mvx.addChildState(this.contentStateId, null, this.commandDetailComponent);
                 this.displayCurrentCommandDetail(commandState);
@@ -8287,10 +8406,19 @@ var SPECTOR;
             }
         };
         Spector.prototype.getResultUI = function () {
+            var _this = this;
             if (!this.resultView) {
                 this.resultView = new this.injection.ResultViewConstructor({
                     eventConstructor: this.injection.EventCtor,
                 }, this.logger);
+                this.resultView.onSourceCodeChanged.add(function (sourceCodeEvent) {
+                    _this.rebuildProgramFromProgramId(sourceCodeEvent.programId, sourceCodeEvent.sourceVertex, sourceCodeEvent.sourceFragment, function (program) {
+                        _this.referenceNewProgram(sourceCodeEvent.programId, program);
+                        _this.resultView.showSourceCodeError(null);
+                    }, function (error) {
+                        _this.resultView.showSourceCodeError(error);
+                    });
+                });
             }
             return this.resultView;
         };
@@ -8301,6 +8429,16 @@ var SPECTOR;
                 }, this.logger);
             }
             return this.captureMenu;
+        };
+        Spector.prototype.rebuildProgramFromProgramId = function (programId, vertexSourceCode, fragmentSourceCode, onCompiled, onError) {
+            var program = SPECTOR.WebGlObjects.Program.getFromGlobalStore(programId);
+            this.rebuildProgram(program, vertexSourceCode, fragmentSourceCode, onCompiled, onError);
+        };
+        Spector.prototype.rebuildProgram = function (program, vertexSourceCode, fragmentSourceCode, onCompiled, onError) {
+            SPECTOR.ProgramRecompilerHelper.rebuildProgram(program, vertexSourceCode, fragmentSourceCode, onCompiled, onError);
+        };
+        Spector.prototype.referenceNewProgram = function (programId, program) {
+            SPECTOR.WebGlObjects.Program.updateInGlobalStore(programId, program);
         };
         Spector.prototype.pause = function () {
             this.timeSpy.changeSpeedRatio(0);

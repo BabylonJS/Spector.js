@@ -78,6 +78,7 @@ var spectorCaptureOnLoadTransientKey = "SPECTOR_CAPTUREONLOAD_TRANSIENT";
 var spectorCaptureOnLoadQuickCaptureKey = "SPECTOR_CAPTUREONLOAD_QUICKCAPTURE";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
 var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATION_QUICKCAPTURE";
+var spectorCommunicationRebuildProgramElementId = "SPECTOR_COMMUNICATION_REBUILDPROGRAM";
 
 var spectorContextTypeKey = "__spector_context_type";
 
@@ -170,6 +171,28 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                 var quickCapture = (document.getElementById('${spectorCommunicationQuickCaptureElementId}').value === "true");
                 spector.captureCanvas(canvas, 0, quickCapture);
             });
+            document.addEventListener("SpectorRequestRebuildProgramEvent", function(e) {
+                var buildInfoInText = document.getElementById('${spectorCommunicationRebuildProgramElementId}').value;
+                var buildInfo = JSON.parse(buildInfoInText);
+                var tabId = document.getElementById('${spectorCommunicationElementId}').value;
+
+                var programId = buildInfo.programId;
+                var sourceVertex = buildInfo.sourceVertex;
+                var sourceFragment = buildInfo.sourceFragment;
+                spector.rebuildProgramFromProgramId(programId,
+                    sourceVertex,
+                    sourceFragment,
+                    (program) => {
+                        SPECTOR.WebGlObjects.Program.updateInGlobalStore(programId, program);
+
+                        var myEvent = new CustomEvent("SpectorOnProgramRebuilt", { detail: { programId: programId, errorString: null, tabId: tabId } });
+                        document.dispatchEvent(myEvent);
+                    },
+                    (error) => {
+                        var myEvent = new CustomEvent("SpectorOnProgramRebuilt", { detail: { programId: programId, errorString: error, tabId: tabId } });
+                        document.dispatchEvent(myEvent);
+                    });
+            });
             spector.onError.add((error) => {
                 var myEvent = new CustomEvent("SpectorOnErrorEvent", { detail: { errorString: error } });
                 document.dispatchEvent(myEvent);
@@ -204,7 +227,11 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         var input2 = document.createElement('input');
         input2.type = 'Hidden';
         input2.id = '${spectorCommunicationQuickCaptureElementId}';
-        document.body.appendChild(input2);`;
+        document.body.appendChild(input2);
+        var input3 = document.createElement('input');
+        input3.type = 'Hidden';
+        input3.id = '${spectorCommunicationRebuildProgramElementId}';
+        document.body.appendChild(input3);`;
 
         insertTextScript(script);
     });
@@ -219,6 +246,16 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
 
     document.addEventListener('SpectorFPSEvent', function (e) {
         sendMessage({ fps: e.detail.fps });
+    }, false);
+
+    document.addEventListener('SpectorOnProgramRebuilt', function (e) {
+        sendMessage({ 
+            programRebuilt: {
+                programId: e.detail.programId, 
+                errorString: e.detail.errorString 
+            },
+            tabId: e.detail.tabId
+        });
     }, false);
 }
 
@@ -363,6 +400,19 @@ listenForMessage(function (message) {
             }
 
             var myEvent = new CustomEvent("SpectorRequestCaptureEvent");
+            document.dispatchEvent(myEvent);
+        }
+    }
+    else if (action === "rebuildProgram") {
+        var input = document.getElementById(spectorCommunicationRebuildProgramElementId);
+        var tabIdInput = document.getElementById(spectorCommunicationElementId);
+        if (input && tabIdInput) {
+            var buildInfo = message.buildInfo;
+            var buildInfoInText = JSON.stringify(buildInfo);
+            input.value = buildInfoInText;
+            tabIdInput.value = canvasRef.tabId;
+
+            var myEvent = new CustomEvent("SpectorRequestRebuildProgramEvent");
             document.dispatchEvent(myEvent);
         }
     }

@@ -919,6 +919,17 @@ declare namespace SPECTOR {
     }
 }
 declare namespace SPECTOR {
+    interface IProgramCompilationError {
+        readonly errorMessage: string;
+        readonly linking: boolean;
+    }
+    class ProgramRecompilerHelper {
+        static readonly rebuildProgramFunctionName: string;
+        static isBuildableProgram(program: WebGLProgram): boolean;
+        static rebuildProgram(program: WebGLProgram, vertexSourceCode: string, fragmentSourceCode: string, onCompiled: (program: WebGLProgram) => void, onError: (message: string) => void): void;
+    }
+}
+declare namespace SPECTOR {
     interface ITimeSpy {
         onFrameStart: IEvent<ITimeSpy>;
         onFrameEnd: IEvent<ITimeSpy>;
@@ -1799,6 +1810,11 @@ declare namespace SPECTOR.WebGlObjects {
     class FrameBuffer extends BaseWebGlObject {
     }
     class Program extends BaseWebGlObject {
+        static saveInGlobalStore(object: WebGLProgram): void;
+        static getFromGlobalStore(id: number): WebGLProgram;
+        static updateInGlobalStore(id: number, newProgram: WebGLProgram): void;
+        private static store;
+        constructor(options: IWebGlObjectOptions, logger: ILogger);
     }
     class Query extends BaseWebGlObject {
     }
@@ -2311,19 +2327,22 @@ declare namespace SPECTOR.EmbeddedFrontend {
     }
 }
 declare namespace SPECTOR.EmbeddedFrontend {
-    interface ISourceCodeState {
+    interface ISourceCodeState extends ISourceCodeChangeEvent {
         nameVertex: string;
         nameFragment: string;
-        sourceVertex: string;
-        sourceFragment: string;
         fragment: boolean;
+        editable: boolean;
     }
     class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         onVertexSourceClicked: IStateEvent<ISourceCodeState>;
         onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
         onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;
+        onSourceCodeChanged: IStateEvent<ISourceCodeState>;
+        private editor;
         constructor(eventConstructor: EventConstructor, logger: ILogger);
+        showError(errorMessage: string): void;
         render(state: ISourceCodeState, stateId: number): Element;
+        private _triggerCompilation(editor, state, element, stateId);
         /**
          * Returns the position of the first "{" and the corresponding "}"
          * @param str the Shader source code as a string
@@ -2338,11 +2357,18 @@ declare namespace SPECTOR.EmbeddedFrontend {
     }
 }
 declare namespace SPECTOR {
+    interface ISourceCodeChangeEvent {
+        sourceVertex: string;
+        sourceFragment: string;
+        programId: number;
+    }
     interface IResultView {
+        readonly onSourceCodeChanged: IEvent<ISourceCodeChangeEvent>;
         display(): void;
         hide(): void;
         addCapture(capture: ICapture): number;
         selectCapture(captureId: number): void;
+        showSourceCodeError(error: string): void;
     }
     interface IResultViewOptions {
         readonly eventConstructor: EventConstructor;
@@ -2356,6 +2382,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
     class ResultView implements IResultView {
         private readonly options;
         private readonly logger;
+        readonly onSourceCodeChanged: IEvent<ISourceCodeChangeEvent>;
         private readonly rootPlaceHolder;
         private readonly mvx;
         private readonly captureListComponent;
@@ -2401,6 +2428,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         display(): void;
         hide(): void;
         addCapture(capture: ICapture): number;
+        showSourceCodeError(error: string): void;
         private initKeyboardEvents();
         private openShader(fragment);
         private selectPreviousCommand();
@@ -2493,6 +2521,9 @@ declare namespace SPECTOR {
         displayUI(): void;
         getResultUI(): IResultView;
         getCaptureUI(): ICaptureMenu;
+        rebuildProgramFromProgramId(programId: number, vertexSourceCode: string, fragmentSourceCode: string, onCompiled: (program: WebGLProgram) => void, onError: (message: string) => void): void;
+        rebuildProgram(program: WebGLProgram, vertexSourceCode: string, fragmentSourceCode: string, onCompiled: (program: WebGLProgram) => void, onError: (message: string) => void): void;
+        referenceNewProgram(programId: number, program: WebGLProgram): void;
         pause(): void;
         play(): void;
         playNextFrame(): void;

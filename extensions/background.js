@@ -20,6 +20,8 @@ function listenForMessage(callback) {
 var tabInfo = {}
 var resultTab = null;
 var currentCapture = null;
+var currentFrameId = null;
+var currentTabId = null;
 
 var refreshCanvases = function() {
     var popup = window.browser.extension.getViews({ type: "popup" })[0];
@@ -118,6 +120,8 @@ listenForMessage(function(request, sender, sendResponse) {
         window.browser.tabs.create({ url: "result.html", active: true }, function(tab) {
             resultTab = tab;
             currentCapture = request.capture;
+            currentFrameId = frameId;
+            currentTabId = sender.tab.id;
         });
         
 

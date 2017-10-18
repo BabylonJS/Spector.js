@@ -541,29 +541,6 @@
       .sourceCodeMenuComponent a.clearSearch:hover {
         background: #2c2c2c;
         color: #F0640D; }
-  @media all and (max-width: 1024px) {
-    .sourceCodeMenuComponent {
-      padding: 0px;
-      position: absolute;
-      overflow-y: visible;
-      top: 0px;
-      left: 0px;
-      right: 0px;
-      bottom: 0px;
-      z-index: 999999;
-      display: block; }
-      .sourceCodeMenuComponent .resultViewMenuOpen {
-        display: block;
-        visibility: visible; }
-      .sourceCodeMenuComponent li:not(.resultViewMenuSmall) {
-        display: none;
-        visibility: hidden; }
-      .sourceCodeMenuComponent li {
-        background: #2c2c2c; }
-      .sourceCodeMenuComponent li.searchContainer {
-        background: #464646; }
-      .sourceCodeMenuComponent a.active {
-        background: #2c2c2c; } }
   .sourceCodeMenuComponent input {
     border: 0;
     font-family: 'Montserrat', sans-serif;
@@ -601,7 +578,7 @@
     /* Internet Explorer 10-11 */
     color: #cccccc; }
 
-.sourceCodeComponent {
+.sourceCodeComponentEditable, .sourceCodeComponent {
   position: absolute;
   top: 42px;
   left: 0;
@@ -611,7 +588,7 @@
   z-index: 9000;
   overflow-x: visible;
   overflow: auto; }
-  .sourceCodeComponent .sourceCodeComponentTitle {
+  .sourceCodeComponentEditable .sourceCodeComponentTitle, .sourceCodeComponent .sourceCodeComponentTitle {
     font-size: 16px;
     font-weight: 800;
     line-height: 50px;

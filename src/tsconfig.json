@@ -17,7 +17,7 @@
         "shared/utils/stackTrace.ts",
         "shared/utils/time.ts",
         "shared/utils/merge.ts",
-
+        
         "shared/capture/canvasCapture.ts",
         "shared/capture/contextCapture.ts",
         "shared/capture/commandCapture.ts",
@@ -31,10 +31,11 @@
         "backend/types/webglConstants.ts",
         "backend/types/webglConstantsByName.ts",
         "backend/types/webglConstantsByValue.ts",
-
+        
         "backend/utils/decorators.ts",
         "backend/utils/readPixelsHelper.ts",
         "backend/utils/originFunctionHelper.ts",
+        "backend/utils/programRecompilerHelper.ts",
 
         "backend/spies/timeSpy.ts",
         "backend/spies/canvasSpy.ts",

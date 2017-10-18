@@ -117,6 +117,18 @@ namespace SPECTOR {
                 this.resultView = new this.injection.ResultViewConstructor({
                     eventConstructor: this.injection.EventCtor,
                 }, this.logger);
+                this.resultView.onSourceCodeChanged.add((sourceCodeEvent) => {
+                    this.rebuildProgramFromProgramId(sourceCodeEvent.programId,
+                        sourceCodeEvent.sourceVertex,
+                        sourceCodeEvent.sourceFragment,
+                        (program) => {
+                            this.referenceNewProgram(sourceCodeEvent.programId, program);
+                            this.resultView.showSourceCodeError(null);
+                        },
+                        (error) => {
+                            this.resultView.showSourceCodeError(error);
+                        });
+                });
             }
             return this.resultView;
         }
@@ -128,6 +140,39 @@ namespace SPECTOR {
                 }, this.logger);
             }
             return this.captureMenu;
+        }
+
+        public rebuildProgramFromProgramId(programId: number,
+            vertexSourceCode: string,
+            fragmentSourceCode: string,
+            onCompiled: (program: WebGLProgram) => void,
+            onError: (message: string) => void) {
+
+            const program = SPECTOR.WebGlObjects.Program.getFromGlobalStore(programId);
+
+            this.rebuildProgram(program,
+                vertexSourceCode,
+                fragmentSourceCode,
+                onCompiled,
+                onError,
+            );
+        }
+
+        public rebuildProgram(program: WebGLProgram,
+            vertexSourceCode: string,
+            fragmentSourceCode: string,
+            onCompiled: (program: WebGLProgram) => void,
+            onError: (message: string) => void) {
+            ProgramRecompilerHelper.rebuildProgram(program,
+                vertexSourceCode,
+                fragmentSourceCode,
+                onCompiled,
+                onError,
+            );
+        }
+
+        public referenceNewProgram(programId: number, program: WebGLProgram): void {
+            SPECTOR.WebGlObjects.Program.updateInGlobalStore(programId, program);
         }
 
         public pause(): void {

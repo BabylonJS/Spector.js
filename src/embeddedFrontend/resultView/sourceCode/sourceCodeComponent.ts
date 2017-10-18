@@ -1,26 +1,72 @@
 namespace SPECTOR.EmbeddedFrontend {
-    export interface ISourceCodeState {
+    export interface ISourceCodeState extends ISourceCodeChangeEvent {
         nameVertex: string;
         nameFragment: string;
-        sourceVertex: string;
-        sourceFragment: string;
         fragment: boolean;
+        editable: boolean;
     }
 
     // Declare Prism types here.
     type Prism = { highlightElement(element: HTMLElement): void; };
     declare const Prism: Prism;
 
+    // Declare Ace types here.
+    interface IAceEditorSession {
+        setMode(mode: string): void;
+        on(eventName: string, callback: (e: any) => void): void;
+        setAnnotations(annotations: any[]): void;
+    }
+    interface IAceEditor {
+        getValue(): string;
+        setTheme(theme: string): void;
+        getSession(): IAceEditorSession;
+        setShowPrintMargin(show: boolean): void;
+    }
+    type ace = {
+        edit(sourceCodeComponent: Element): IAceEditor;
+    };
+    declare const ace: ace;
+
     export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         public onVertexSourceClicked: IStateEvent<ISourceCodeState>;
         public onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
         public onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;
+        public onSourceCodeChanged: IStateEvent<ISourceCodeState>;
+
+        private editor: IAceEditor;
 
         constructor(eventConstructor: EventConstructor, logger: ILogger) {
             super(eventConstructor, logger);
             this.onVertexSourceClicked = this.createEvent("onVertexSourceClicked");
             this.onFragmentSourceClicked = this.createEvent("onFragmentSourceClicked");
             this.onSourceCodeCloseClicked = this.createEvent("onSourceCodeCloseClicked");
+            this.onSourceCodeChanged = this.createEvent("onSourceCodeChanged");
+        }
+
+        public showError(errorMessage: string) {
+            if (!this.editor) {
+                return;
+            }
+
+            errorMessage = errorMessage || "";
+
+            const annotations = [];
+
+            if (errorMessage) {
+                const errorChecker = /^.*ERROR:\W([0-9]+):([0-9]+):(.*)$/gm;
+                let errors = errorChecker.exec(errorMessage);
+                while (errors != null) {
+                    annotations.push({
+                        row: +errors[2] - 1,
+                        column: errors[1],
+                        text: errors[3] || "Error",
+                        type: "error", // also warning and information
+                    });
+                    errors = errorChecker.exec(errorMessage);
+                }
+            }
+
+            this.editor.getSession().setAnnotations(annotations);
         }
 
         public render(state: ISourceCodeState, stateId: number): Element {
@@ -36,16 +82,49 @@ namespace SPECTOR.EmbeddedFrontend {
                         <li><a href="#" role="button" commandName="onSourceCodeCloseClicked">Close</a></li>
                     </ul>
                 </div>
-                <div class="sourceCodeComponent">
-                    <pre class="language-glsl"><code>${formattedShader}</code></pre>
-                </div>
+                $${state.editable ?
+                    this.htmlTemplate`<div class="sourceCodeComponentEditable">${formattedShader}</div>`
+                    :
+                    this.htmlTemplate`<div class="sourceCodeComponent">
+                        <pre class="language-glsl"><code>${formattedShader}</code></pre>
+                    </div>`
+                }
             </div>`;
 
-            // Pre and Prism work on the normal carriage return.
             const element = this.renderElementFromTemplate(htmlString.replace(/<br>/g, "\n"), state, stateId);
 
-            Prism.highlightElement(element.querySelector("pre"));
+            if (state.editable) {
+                this.editor = ace.edit(element.querySelector(".sourceCodeComponentEditable"));
+                this.editor.setTheme("ace/theme/monokai");
+                this.editor.getSession().setMode("ace/mode/glsl");
+                this.editor.setShowPrintMargin(false);
+                let timeoutId = -1;
+                this.editor.getSession().on("change", (e) => {
+                    if (timeoutId !== -1) {
+                        clearTimeout(timeoutId);
+                    }
+
+                    timeoutId = setTimeout(() => {
+                        this._triggerCompilation(this.editor, state, element, stateId);
+                    }, 1500);
+                });
+            }
+            else {
+                // Pre and Prism work on the normal carriage return.
+                Prism.highlightElement(element.querySelector("pre"));
+            }
+
             return element;
+        }
+
+        private _triggerCompilation(editor: IAceEditor, state: ISourceCodeState, element: Element, stateId: number) {
+            if (state.fragment) {
+                state.sourceFragment = editor.getValue();
+            }
+            else {
+                state.sourceVertex = editor.getValue();
+            }
+            this.triggerEvent("onSourceCodeChanged", element, state, stateId);
         }
 
         /**

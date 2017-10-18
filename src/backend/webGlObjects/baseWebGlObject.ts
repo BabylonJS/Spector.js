@@ -21,7 +21,7 @@ namespace SPECTOR {
     }
 
     export type WebGlObjectConstructor = {
-        new (options: IWebGlObjectOptions, logger: ILogger): IWebGlObject;
+        new(options: IWebGlObjectOptions, logger: ILogger): IWebGlObject;
     };
 }
 
