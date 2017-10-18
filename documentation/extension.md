@@ -105,5 +105,27 @@ if (spector) {
 }
 ```
 
+### Shader Editor
+Spector is embedding a live shader editor for **supporting engines**. Unfortunately managing internally in Spector all the necessary steps once a program has been rebuild (binding the old uniforms, attribs, UBO, VAO... redirecting new bound values to old location) is really unreliable and has been proved REALLY error prone. We then decided to not do it in Spector but defer to the engines the responsability of rebuilding 
+
+If, like BabylonJS, you would like to be able to integrate live shader support edition in your WebGL engine, it is pretty straightforward.
+
+At any time your linking a ```ShaderProgram``` in your engine, simply append to it a rebuild function allowing your engine to recompile the shader as well as managing all the different states associated to it. The signature of the function should be as follow to be called by Spector:
+```
+rebuildProgram(program: WebGLProgram, // The Program to rebuild
+            vertexSourceCode: string, // The new vertex shader source
+            fragmentSourceCode: string, // The new fragment shader source
+            onCompiled: (program: WebGLProgram) => void, // Callback triggered by your engine when the compilation is successful. It needs to send back the new linked program.
+            onError: (message: string) => void): void; // Callback triggered by your engine in case of error. It needs to send the WebGL error to allow the editor to display the error in the gutter.
+```
+
+Once the function has been defined simply append it to your freshly linked WebGLPrograms:
+```
+// program is the linked WebglProgram that Babylon is expanding
+// with a custom rebuild function.
+// Noticed we bind the context to ensure it runs as part of your engine and not the program itself.
+program.__SPECTOR_rebuildProgram = this._rebuildProgram.bind(this);
+```
+
 ## Use the standalone version
 If you prefer to use the library in your own application you can find it available on npm: [spectorjs](https://www.npmjs.com/package/spectorjs)

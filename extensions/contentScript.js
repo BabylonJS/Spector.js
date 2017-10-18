@@ -183,8 +183,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                     sourceVertex,
                     sourceFragment,
                     (program) => {
-                        SPECTOR.WebGlObjects.Program.updateInGlobalStore(programId, program);
-
+                        spector.referenceNewProgram(programId, program);
                         var myEvent = new CustomEvent("SpectorOnProgramRebuilt", { detail: { programId: programId, errorString: null, tabId: tabId } });
                         document.dispatchEvent(myEvent);
                     },

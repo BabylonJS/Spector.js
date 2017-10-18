@@ -5,7 +5,7 @@
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
 ## v0.9.1 Before V1
-This release is addressing the latest issues before the V1:
+This release is addressing the latest issues before the V1 as well as embedding a shader editor:
 
 - [Programmatic Capture do not open in a new tab](https://github.com/BabylonJS/Spector.js/issues/61)
 - [Fix memory reporting of buffers](https://github.com/BabylonJS/Spector.js/issues/64)
@@ -13,6 +13,8 @@ This release is addressing the latest issues before the V1:
 - [Workaround perf and memory issue with a quick capture mode](https://github.com/BabylonJS/Spector.js/issues/67)
 - [Fix Depth Range comparison](https://github.com/BabylonJS/Spector.js/issues/68)
 - [Hook on WebVR Display RAF](https://github.com/BabylonJS/Spector.js/issues/62)
+- [Fix Firefox Linux Charset Issue](https://github.com/BabylonJS/Spector.js/issues/70
+- [Embedded Live Shader Editor](https://github.com/BabylonJS/Spector.js/blob/release/documentation/extension.md#shader-editor)
 
 ## v0.9.0 Fix and Style
 This realease is meant to improve the overall stability and compatibility with other extension:
