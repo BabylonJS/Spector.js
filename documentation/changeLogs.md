@@ -13,7 +13,7 @@ This release is addressing the latest issues before the V1 as well as embedding 
 - [Workaround perf and memory issue with a quick capture mode](https://github.com/BabylonJS/Spector.js/issues/67)
 - [Fix Depth Range comparison](https://github.com/BabylonJS/Spector.js/issues/68)
 - [Hook on WebVR Display RAF](https://github.com/BabylonJS/Spector.js/issues/62)
-- [Fix Firefox Linux Charset Issue](https://github.com/BabylonJS/Spector.js/issues/70
+- [Fix Firefox Linux Charset Issue](https://github.com/BabylonJS/Spector.js/issues/70)
 - [Embedded Live Shader Editor](https://github.com/BabylonJS/Spector.js/blob/release/documentation/extension.md#shader-editor)
 
 ## v0.9.0 Fix and Style
