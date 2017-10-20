@@ -114,8 +114,14 @@ namespace SPECTOR.Commands {
                 const stringifiedArgs = [];
                 stringifiedArgs.push(this.stringifyValue(args[0]));
                 for (let i = 1; i < args.length; i++) {
-                    const arg = args[i] + "";
-                    stringifiedArgs.push(arg);
+                    if (typeof args[i] === "number") {
+                        const arg = args[i] + "";
+                        stringifiedArgs.push(arg);
+                    }
+                    else {
+                        const arg = this.stringifyValue(args[i]);
+                        stringifiedArgs.push(arg);
+                    }
                 }
                 stringified += ": " + stringifiedArgs.join(", ");
             }
