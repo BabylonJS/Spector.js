@@ -1812,8 +1812,14 @@ var SPECTOR;
                     var stringifiedArgs = [];
                     stringifiedArgs.push(this.stringifyValue(args[0]));
                     for (var i = 1; i < args.length; i++) {
-                        var arg = args[i] + "";
-                        stringifiedArgs.push(arg);
+                        if (typeof args[i] === "number") {
+                            var arg = args[i] + "";
+                            stringifiedArgs.push(arg);
+                        }
+                        else {
+                            var arg = this.stringifyValue(args[i]);
+                            stringifiedArgs.push(arg);
+                        }
                     }
                     stringified += ": " + stringifiedArgs.join(", ");
                 }
