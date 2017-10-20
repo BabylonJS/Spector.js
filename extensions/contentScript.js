@@ -236,7 +236,27 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
     });
 
     document.addEventListener('SpectorOnCaptureEvent', function (e) {
-        sendMessage({ capture: e.detail.capture });
+        // The browser imposes limits on the size of the serialized JSON
+        // associated with these messages. To avoid running into these limits,
+        // and not have to introspect too deeply into the ICapture structure, we
+        // manually serialize to JSON and chop up the resulting string.
+        //
+        // Note for future reference: the object that comes in via
+        // e.detail.capture is actually immutable, because of the way it's
+        // serialized from the main world to the content script. If the goal
+        // were to stub out certain fields and send them separately,
+        // Object.assign would have to be used to create a new top-level object.
+        var serialized = JSON.stringify(e.detail.capture);
+        var len = serialized.length;
+        var ii = 0;
+        var step = 32 * 1024 * 1024; // 32 MB
+        while (ii < len) {
+            var nextIndex = Math.min(ii + step, len);
+            var substr = serialized.substring(ii, nextIndex);
+            sendMessage({ captureChunk: substr });
+            ii = nextIndex;
+        }
+        sendMessage({ captureDone: true });
     }, false);
 
     document.addEventListener('SpectorOnErrorEvent', function (e) {
