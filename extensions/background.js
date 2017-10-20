@@ -20,6 +20,7 @@ function listenForMessage(callback) {
 var tabInfo = {}
 var resultTab = null;
 var currentCapture = null;
+var currentCaptureChunks = [];
 var currentFrameId = null;
 var currentTabId = null;
 
@@ -113,13 +114,21 @@ listenForMessage(function(request, sender, sendResponse) {
             popup.captureComplete(request.errorString);
         }
     }
-    else if (request.capture) {
+    else if (request.captureChunk) {
+        currentCaptureChunks.push(request.captureChunk);
+    }
+    else if (request.captureDone) {
+        // Concatenate the current capture chunks and reset the array.
+        var allChunks = currentCaptureChunks;
+        currentCaptureChunks = [];
+        var fullJSON = "".concat.apply("", allChunks);
+        var capture = JSON.parse(fullJSON);
         // If a capture has been received,
         var tabWindows = browser.extension.getViews({type: "tab"});
         // Open the result view if not open (need to check if length == 1 that the function exists for Edge),
         window.browser.tabs.create({ url: "result.html", active: true }, function(tab) {
             resultTab = tab;
-            currentCapture = request.capture;
+            currentCapture = capture;
             currentFrameId = frameId;
             currentTabId = sender.tab.id;
         });
