@@ -2344,15 +2344,16 @@ declare namespace SPECTOR.EmbeddedFrontend {
         render(state: ISourceCodeState, stateId: number): Element;
         private _triggerCompilation(editor, state, element, stateId);
         /**
+         * Beautify the given string : correct indentation according to brackets
+         */
+        private _beautify(glsl, level?);
+        private _removeReturnInComments(str);
+        /**
          * Returns the position of the first "{" and the corresponding "}"
          * @param str the Shader source code as a string
          * @param searchFrom Search open brackets from this position
          */
         private _getBracket(str, searchFrom?);
-        /**
-         * Beautify the given string : correct indentation according to brackets
-         */
-        private _beautify(glsl, level?);
         private _indentIfdef(str);
     }
 }
