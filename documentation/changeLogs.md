@@ -8,6 +8,7 @@ Please, find below the per release summary of the contribution added to the proj
 This release is addressing an issue with the post message size limit in Chrome Canary:
 - [Chrome canary post message Size Limit](https://github.com/BabylonJS/Spector.js/issues/71)
 - [Uniform capture with native array](https://github.com/BabylonJS/Spector.js/issues/72)
+- Shader Editor Style Fix.
 
 ## v0.9.1 Before V1
 This release is addressing the latest issues before the V1 as well as embedding a shader editor:
