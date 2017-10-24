@@ -117,7 +117,7 @@ namespace SPECTOR.Spies {
             OriginFunctionHelper.storeOriginFunction(owner, functionName);
             owner[functionName] = function () {
                 const callback = arguments[0];
-                const onCallback = self.getCallback(self, callback, () => { OriginFunctionHelper.executeOriginFunction(owner, functionName, [callback] as any); });
+                const onCallback = self.getCallback(self, callback, () => { self.spiedWindow[functionName](callback); });
 
                 const result = OriginFunctionHelper.executeOriginFunction(owner, functionName, [onCallback] as any);
                 return result;

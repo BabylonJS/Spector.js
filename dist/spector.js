@@ -1313,7 +1313,7 @@ var SPECTOR;
                 SPECTOR.OriginFunctionHelper.storeOriginFunction(owner, functionName);
                 owner[functionName] = function () {
                     var callback = arguments[0];
-                    var onCallback = self.getCallback(self, callback, function () { SPECTOR.OriginFunctionHelper.executeOriginFunction(owner, functionName, [callback]); });
+                    var onCallback = self.getCallback(self, callback, function () { self.spiedWindow[functionName](callback); });
                     var result = SPECTOR.OriginFunctionHelper.executeOriginFunction(owner, functionName, [onCallback]);
                     return result;
                 };
