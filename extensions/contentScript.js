@@ -147,7 +147,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         insertScript("http://localhost:1337/tools/loader.js");
     }
     else {
-        insertTextScript( '(' + spectorBundleHook.toString() + ' )();';);
+        insertTextScript( '(' + spectorBundleHook.toString() + ' )();');
     }
 
     // Defer exec to next slot to ensure proper loading of the lib.
