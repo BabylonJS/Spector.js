@@ -1514,6 +1514,11 @@ var SPECTOR;
                     frameMemory: {},
                     memory: {},
                 };
+                // Refreshes canvas info in case it changed beffore the capture.
+                this.currentCapture.canvas.width = this.context.canvas.width;
+                this.currentCapture.canvas.height = this.context.canvas.height;
+                this.currentCapture.canvas.clientWidth = this.context.canvas.clientWidth;
+                this.currentCapture.canvas.clientHeight = this.context.canvas.clientHeight;
                 this.stateSpy.startCapture(this.currentCapture, quickCapture);
                 this.recorderSpy.startCapture();
                 this.currentCapture.listenCommandsStartTime = this.time.now;
@@ -7629,6 +7634,7 @@ var SPECTOR;
                     var prettyInside = this._beautify(inside, level + 1);
                     result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
                     result = result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
+                    result = result.replace(/#endif[\t \f\v]*{/g, "\n {"); // Curly after #Endig
                 }
                 result = result.replace(SourceCodeComponent.semicolonReplacementKey, ";");
                 return result;

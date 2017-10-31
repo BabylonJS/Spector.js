@@ -168,6 +168,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 const prettyInside = this._beautify(inside, level + 1);
                 result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
                 result = result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
+                result = result.replace(/#endif[\t \f\v]*{/g, "\n {"); // Curly after #Endig
             }
 
             result = result.replace(SourceCodeComponent.semicolonReplacementKey, ";");
