@@ -142,14 +142,12 @@ insertTextScript(canvasGetContextDetection);
 
 // In case the spector injection has been requested, inject the library in the page.
 if (sessionStorage.getItem(spectorLoadedKey)) {
-    var pathRoot = getExtensionURL();
-    var jsurl = pathRoot + "spector.bundle.js";
-
+    
     if (debug) {
         insertScript("http://localhost:1337/tools/loader.js");
     }
     else {
-        insertScript(jsurl);
+        insertTextScript( '(' + spectorBundleHook.toString() + ' )();';);
     }
 
     // Defer exec to next slot to ensure proper loading of the lib.
