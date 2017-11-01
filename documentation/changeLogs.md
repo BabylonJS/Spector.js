@@ -8,6 +8,7 @@ Please, find below the per release summary of the contribution added to the proj
 This release is meant to address the few bugs found during a bug bash session:
 - Semicolon replaced by dot in Shader comment.
 - Fix Pause/Replay buttons.
+- Fix XHR Warning in the extension.
 
 ## v0.9.2 Chrome Canary
 This release is addressing an issue with the post message size limit in Chrome Canary:
