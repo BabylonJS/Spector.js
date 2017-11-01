@@ -154,6 +154,12 @@ namespace SPECTOR.Spies {
                 memory: {},
             };
 
+            // Refreshes canvas info in case it changed beffore the capture.
+            this.currentCapture.canvas.width = this.context.canvas.width;
+            this.currentCapture.canvas.height = this.context.canvas.height;
+            this.currentCapture.canvas.clientWidth = this.context.canvas.clientWidth;
+            this.currentCapture.canvas.clientHeight = this.context.canvas.clientHeight;
+
             this.stateSpy.startCapture(this.currentCapture, quickCapture);
             this.recorderSpy.startCapture();
 

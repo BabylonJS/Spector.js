@@ -29,6 +29,10 @@ var vertexShaderSource = "attribute vec3 aVertexPosition;" +
 "uniform mat4 uMVMatrix;" +
 "uniform mat4 uPMatrix;" +
 
+"\n" +
+"//test;test\n" +
+"\n" +
+
 "varying lowp vec4 vColor;" +
 
 "void main(void) {" +
@@ -311,7 +315,7 @@ function initShaders() {
   gl.attachShader(shaderProgram, vertexShader);
   gl.attachShader(shaderProgram, fragmentShader);
   gl.linkProgram(shaderProgram);
-
+shaderProgram.__SPECTOR_rebuildProgram = true;
   // If creating the shader program failed, alert
 
   if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {

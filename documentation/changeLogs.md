@@ -4,6 +4,17 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.3 Fixes
+This release is meant to address the few bugs found during a bug bash session:
+- Semicolon replaced by dot in Shader comment.
+- Fix Pause/Replay buttons.
+
+## v0.9.2 Chrome Canary
+This release is addressing an issue with the post message size limit in Chrome Canary:
+- [Chrome canary post message Size Limit](https://github.com/BabylonJS/Spector.js/issues/71)
+- [Uniform capture with native array](https://github.com/BabylonJS/Spector.js/issues/72)
+- Shader Editor Style Fix.
+
 ## v0.9.1 Before V1
 This release is addressing the latest issues before the V1 as well as embedding a shader editor:
 

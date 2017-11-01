@@ -1313,7 +1313,7 @@ var SPECTOR;
                 SPECTOR.OriginFunctionHelper.storeOriginFunction(owner, functionName);
                 owner[functionName] = function () {
                     var callback = arguments[0];
-                    var onCallback = self.getCallback(self, callback, function () { SPECTOR.OriginFunctionHelper.executeOriginFunction(owner, functionName, [callback]); });
+                    var onCallback = self.getCallback(self, callback, function () { self.spiedWindow[functionName](callback); });
                     var result = SPECTOR.OriginFunctionHelper.executeOriginFunction(owner, functionName, [onCallback]);
                     return result;
                 };
@@ -1514,6 +1514,11 @@ var SPECTOR;
                     frameMemory: {},
                     memory: {},
                 };
+                // Refreshes canvas info in case it changed beffore the capture.
+                this.currentCapture.canvas.width = this.context.canvas.width;
+                this.currentCapture.canvas.height = this.context.canvas.height;
+                this.currentCapture.canvas.clientWidth = this.context.canvas.clientWidth;
+                this.currentCapture.canvas.clientHeight = this.context.canvas.clientHeight;
                 this.stateSpy.startCapture(this.currentCapture, quickCapture);
                 this.recorderSpy.startCapture();
                 this.currentCapture.listenCommandsStartTime = this.time.now;
@@ -1812,8 +1817,14 @@ var SPECTOR;
                     var stringifiedArgs = [];
                     stringifiedArgs.push(this.stringifyValue(args[0]));
                     for (var i = 1; i < args.length; i++) {
-                        var arg = args[i] + "";
-                        stringifiedArgs.push(arg);
+                        if (typeof args[i] === "number") {
+                            var arg = args[i] + "";
+                            stringifiedArgs.push(arg);
+                        }
+                        else {
+                            var arg = this.stringifyValue(args[i]);
+                            stringifiedArgs.push(arg);
+                        }
                     }
                     stringified += ": " + stringifiedArgs.join(", ");
                 }
@@ -7587,6 +7598,81 @@ var SPECTOR;
                 this.triggerEvent("onSourceCodeChanged", element, state, stateId);
             };
             /**
+             * Beautify the given string : correct indentation according to brackets
+             */
+            SourceCodeComponent.prototype._beautify = function (glsl, level) {
+                if (level === void 0) { level = 0; }
+                // return condition : no brackets at all
+                glsl = glsl.trim();
+                glsl = this._removeReturnInComments(glsl);
+                var brackets = this._getBracket(glsl);
+                var firstBracket = brackets.firstIteration;
+                var lastBracket = brackets.lastIteration;
+                var spaces = "";
+                for (var i = 0; i < level; i++) {
+                    spaces += "    "; // 4 spaces
+                }
+                var result;
+                // If no brackets, return the indented string
+                if (firstBracket === -1) {
+                    glsl = spaces + glsl; // indent first line
+                    glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
+                    glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, function (x) { return " " + x.trim() + " "; }); // space around =, *=, +=, -=, /=, ==, >=, <=
+                    glsl = glsl.replace(/\s*(,)\s*/g, function (x) { return x.trim() + " "; }); // space after ,
+                    glsl = glsl.replace(/\n[ \t]+/g, "\n"); // trim Start
+                    glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
+                    glsl = glsl.replace(/\s+$/g, "");
+                    glsl = glsl.replace(/\n+$/g, "");
+                    result = glsl;
+                }
+                else {
+                    // if brackets, beautify the inside
+                    // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
+                    var left = glsl.substr(0, firstBracket);
+                    var right = glsl.substr(lastBracket + 1, glsl.length);
+                    var inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
+                    var prettyInside = this._beautify(inside, level + 1);
+                    result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
+                    result = result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
+                    result = result.replace(/#endif[\t \f\v]*{/g, "\n {"); // Curly after #Endig
+                }
+                result = result.replace(SourceCodeComponent.semicolonReplacementKey, ";");
+                return result;
+            };
+            SourceCodeComponent.prototype._removeReturnInComments = function (str) {
+                var singleLineComment = false;
+                var multiLineComment = false;
+                for (var index = 0; index < str.length; index++) {
+                    var char = str[index];
+                    if (char === "/") {
+                        if (str[index - 1] === "*") {
+                            multiLineComment = false;
+                        }
+                        else if (str[index + 1] === "*") {
+                            if (!singleLineComment) {
+                                multiLineComment = true;
+                                index++;
+                            }
+                        }
+                        else if (str[index + 1] === "/") {
+                            if (!multiLineComment) {
+                                singleLineComment = true;
+                                index++;
+                            }
+                        }
+                    }
+                    else if (char === "\n") {
+                        singleLineComment = false;
+                    }
+                    else if (char === ";") {
+                        if (singleLineComment || multiLineComment) {
+                            str = str.substr(0, index) + SourceCodeComponent.semicolonReplacementKey + str.substr(index + 1);
+                        }
+                    }
+                }
+                return str;
+            };
+            /**
              * Returns the position of the first "{" and the corresponding "}"
              * @param str the Shader source code as a string
              * @param searchFrom Search open brackets from this position
@@ -7618,43 +7704,6 @@ var SPECTOR;
                 }
                 return { firstIteration: fb, lastIteration: lastBracketIndex };
             };
-            /**
-             * Beautify the given string : correct indentation according to brackets
-             */
-            SourceCodeComponent.prototype._beautify = function (glsl, level) {
-                if (level === void 0) { level = 0; }
-                // return condition : no brackets at all
-                glsl = glsl.trim();
-                var brackets = this._getBracket(glsl);
-                var firstBracket = brackets.firstIteration;
-                var lastBracket = brackets.lastIteration;
-                var spaces = "";
-                for (var i = 0; i < level; i++) {
-                    spaces += "    "; // 4 spaces
-                }
-                // If no brackets, return the indented string
-                if (firstBracket === -1) {
-                    glsl = spaces + glsl; // indent first line
-                    glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
-                    glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, function (x) { return " " + x.trim() + " "; }); // space around =, *=, +=, -=, /=, ==, >=, <=
-                    glsl = glsl.replace(/\s*(,)\s*/g, function (x) { return x.trim() + " "; }); // space after ,
-                    glsl = glsl.replace(/\n[ \t]+/g, "\n"); // trim Start
-                    glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
-                    glsl = glsl.replace(/\s+$/g, "");
-                    glsl = glsl.replace(/\n+$/g, "");
-                    return glsl;
-                }
-                else {
-                    // if brackets, beautify the inside
-                    // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
-                    var left = glsl.substr(0, firstBracket);
-                    var right = glsl.substr(lastBracket + 1, glsl.length);
-                    var inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
-                    var prettyInside = this._beautify(inside, level + 1);
-                    var result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
-                    return result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
-                }
-            };
             SourceCodeComponent.prototype._indentIfdef = function (str) {
                 var level = 0;
                 var arr2 = str.split("\n");
@@ -7677,6 +7726,7 @@ var SPECTOR;
                 }
                 return arr2.join("\n");
             };
+            SourceCodeComponent.semicolonReplacementKey = "[[[semicolonReplacementKey]]]";
             return SourceCodeComponent;
         }(EmbeddedFrontend.BaseComponent));
         EmbeddedFrontend.SourceCodeComponent = SourceCodeComponent;

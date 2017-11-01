@@ -19574,13 +19574,14 @@ ace.define("ace/theme/monokai",["require","exports","module","ace/lib/dom"], fun
     }\
     .ace-monokai {\
     background-color: #222;\
-    color: #f9f9f9\
+    color: #f9f9f9;\
+    font-size: 14px;\
     }\
     .ace-monokai .ace_cursor {\
     color: #F8F8F0\
     }\
     .ace-monokai .ace_marker-layer .ace_selection {\
-    background: #red\
+    background: #a6e22e\
     }\
     .ace-monokai.ace_multiselect .ace_selection.ace_start {\
     box-shadow: 0 0 3px 0px #272822;\
@@ -19590,16 +19591,16 @@ ace.define("ace/theme/monokai",["require","exports","module","ace/lib/dom"], fun
     }\
     .ace-monokai .ace_marker-layer .ace_bracket {\
     margin: -1px 0 0 -1px;\
-    border: 1px solid #49483E\
+    border: 1px solid #a6e22e\
     }\
     .ace-monokai .ace_marker-layer .ace_active-line {\
-    background: #202020\
+    background: #2c2c2c\
     }\
     .ace-monokai .ace_gutter-active-line {\
-    background-color: #272727\
+    background-color: #2c2c2c\
     }\
     .ace-monokai .ace_marker-layer .ace_selected-word {\
-    border: 1px solid #49483E\
+    border: 1px solid #a6e22e\
     }\
     .ace-monokai .ace_invisible {\
     color: #52524d\
@@ -19615,10 +19616,14 @@ ace.define("ace/theme/monokai",["require","exports","module","ace/lib/dom"], fun
     color: #fff\
     }\
     .ace-monokai .ace_constant.ace_character,\
-    .ace-monokai .ace_constant.ace_language,\
-    .ace-monokai .ace_constant.ace_numeric,\
     .ace-monokai .ace_constant.ace_other {\
     color: #5db0d7\
+    }\
+    .ace-monokai .ace_constant.ace_language {\
+        color: #e6db74\
+    }\
+    .ace-monokai .ace_constant.ace_numeric {\
+    color: #ae81ff\
     }\
     .ace-monokai .ace_invalid {\
     color: #F8F8F0;\

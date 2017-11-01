@@ -28,6 +28,8 @@ namespace SPECTOR.EmbeddedFrontend {
     declare const ace: ace;
 
     export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
+        private static readonly semicolonReplacementKey = "[[[semicolonReplacementKey]]]";
+
         public onVertexSourceClicked: IStateEvent<ISourceCodeState>;
         public onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
         public onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;
@@ -128,6 +130,89 @@ namespace SPECTOR.EmbeddedFrontend {
         }
 
         /**
+         * Beautify the given string : correct indentation according to brackets
+         */
+        private _beautify(glsl: string, level: number = 0): string {
+
+            // return condition : no brackets at all
+            glsl = glsl.trim();
+            glsl = this._removeReturnInComments(glsl);
+            const brackets = this._getBracket(glsl);
+            const firstBracket = brackets.firstIteration;
+            const lastBracket = brackets.lastIteration;
+
+            let spaces = "";
+            for (let i = 0; i < level; i++) {
+                spaces += "    "; // 4 spaces
+            }
+
+            let result: string;
+            // If no brackets, return the indented string
+            if (firstBracket === -1) {
+                glsl = spaces + glsl; // indent first line
+                glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
+                glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, (x) => " " + x.trim() + " "); // space around =, *=, +=, -=, /=, ==, >=, <=
+                glsl = glsl.replace(/\s*(,)\s*/g, (x) => x.trim() + " "); // space after ,
+                glsl = glsl.replace(/\n[ \t]+/g, "\n"); // trim Start
+                glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
+                glsl = glsl.replace(/\s+$/g, "");
+                glsl = glsl.replace(/\n+$/g, "");
+                result = glsl;
+            }
+            else {
+                // if brackets, beautify the inside
+                // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
+                const left = glsl.substr(0, firstBracket);
+                const right = glsl.substr(lastBracket + 1, glsl.length);
+                const inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
+                const prettyInside = this._beautify(inside, level + 1);
+                result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
+                result = result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
+                result = result.replace(/#endif[\t \f\v]*{/g, "\n {"); // Curly after #Endig
+            }
+
+            result = result.replace(SourceCodeComponent.semicolonReplacementKey, ";");
+
+            return result;
+        }
+
+        private _removeReturnInComments(str: string): string {
+            let singleLineComment = false;
+            let multiLineComment = false;
+
+            for (let index = 0; index < str.length; index++) {
+                const char = str[index];
+                if (char === "/") {
+                    if (str[index - 1] === "*") {
+                        multiLineComment = false;
+                    }
+                    else if (str[index + 1] === "*") {
+                        if (!singleLineComment) {
+                            multiLineComment = true;
+                            index++;
+                        }
+                    }
+                    else if (str[index + 1] === "/") {
+                        if (!multiLineComment) {
+                            singleLineComment = true;
+                            index++;
+                        }
+                    }
+                }
+                else if (char === "\n") {
+                    singleLineComment = false;
+                }
+                else if (char === ";") {
+                    if (singleLineComment || multiLineComment) {
+                        str = str.substr(0, index) + SourceCodeComponent.semicolonReplacementKey + str.substr(index + 1);
+                    }
+                }
+            }
+
+            return str;
+        }
+
+        /**
          * Returns the position of the first "{" and the corresponding "}"
          * @param str the Shader source code as a string
          * @param searchFrom Search open brackets from this position
@@ -159,45 +244,6 @@ namespace SPECTOR.EmbeddedFrontend {
             }
 
             return { firstIteration: fb, lastIteration: lastBracketIndex };
-        }
-
-        /**
-         * Beautify the given string : correct indentation according to brackets
-         */
-        private _beautify(glsl: string, level: number = 0): string {
-
-            // return condition : no brackets at all
-            glsl = glsl.trim();
-            const brackets = this._getBracket(glsl);
-            const firstBracket = brackets.firstIteration;
-            const lastBracket = brackets.lastIteration;
-
-            let spaces = "";
-            for (let i = 0; i < level; i++) {
-                spaces += "    "; // 4 spaces
-            }
-            // If no brackets, return the indented string
-            if (firstBracket === -1) {
-                glsl = spaces + glsl; // indent first line
-                glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
-                glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, (x) => " " + x.trim() + " "); // space around =, *=, +=, -=, /=, ==, >=, <=
-                glsl = glsl.replace(/\s*(,)\s*/g, (x) => x.trim() + " "); // space after ,
-                glsl = glsl.replace(/\n[ \t]+/g, "\n"); // trim Start
-                glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
-                glsl = glsl.replace(/\s+$/g, "");
-                glsl = glsl.replace(/\n+$/g, "");
-                return glsl;
-            }
-            else {
-                // if brackets, beautify the inside
-                // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
-                const left = glsl.substr(0, firstBracket);
-                const right = glsl.substr(lastBracket + 1, glsl.length);
-                const inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
-                const prettyInside = this._beautify(inside, level + 1);
-                const result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
-                return result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
-            }
         }
 
         private _indentIfdef(str: string): string {
