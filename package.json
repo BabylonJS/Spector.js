@@ -1,6 +1,6 @@
 {
     "name": "spectorjs",
-    "version": "0.9.1",
+    "version": "0.9.3",
     "description": "Explore and Troubleshoot your WebGL scenes easily.",
     "keywords": ["webgl", "webgl2", "debug", "debugger", "inspector"],
     "readme": "documentation/standaloneVersion.md",
@@ -59,7 +59,7 @@
         "style-loader": "^0.19.0",
         "tslint": "^5.8.0",
         "typescript": "^2.5.3",
-        "webpack": "^3.8.1"
+        "webpack": "^3.8.1",
         "concat-cli": "^4.0.0"
     }
 }
