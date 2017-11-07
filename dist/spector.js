@@ -1322,18 +1322,20 @@ var SPECTOR;
                 // Needs both this.
                 // tslint:disable-next-line
                 var self = this;
-                var oldSetTimer = this.spiedWindow[functionName];
+                var owner = this.spiedWindow;
                 var needsReplay = (functionName === "setTimeout");
-                var spiedWindow = this.spiedWindow;
+                SPECTOR.OriginFunctionHelper.storeOriginFunction(owner, functionName);
                 // tslint:disable-next-line:only-arrow-functions
-                spiedWindow[functionName] = function () {
+                owner[functionName] = function () {
                     var callback = arguments[0];
                     var time = arguments[1];
+                    var args = Array.prototype.slice.call(arguments);
                     if (TimeSpy.setTimerCommonValues.indexOf(time) > -1) {
-                        callback = self.getCallback(self, callback, needsReplay ?
-                            function () { spiedWindow[functionName](callback); } : null);
+                        args[0] = self.getCallback(self, callback, needsReplay ?
+                            function () { owner[functionName](callback); } : null);
                     }
-                    return oldSetTimer.apply(self.spiedWindow, [callback, time]);
+                    var result = SPECTOR.OriginFunctionHelper.executeOriginFunction(owner, functionName, args);
+                    return result;
                 };
             };
             TimeSpy.prototype.getCallback = function (self, callback, skippedCalback) {
