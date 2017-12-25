@@ -1,8 +1,5 @@
 ## Main config
 engines:
-  tslint:
-    enabled: false
-    channel: beta
   scss-lint:
     enabled: false
   eslint:
