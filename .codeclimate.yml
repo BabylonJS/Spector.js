@@ -1,15 +1,19 @@
 ## Main config
 engines:
   tslint:
-    enabled: true
+    enabled: false
     channel: beta
-    config: tslint.json
   scss-lint:
     enabled: false
   eslint:
     enabled: false
   csslint:
     enabled: false
+
+plugins:
+  tslint:
+    enabled: true
+    config: tslint.json
 
 ratings:
   paths:
