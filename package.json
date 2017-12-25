@@ -46,7 +46,7 @@
     "build:copy:vendor:acejs": "node ./tools/copy.js /../vendors/ace.js /../dist/ace.js",
     "build:copy:vendor": "run-s build:copy:vendor:prismjs build:copy:vendor:prismcss build:copy:vendor:acejs -l",
     "build:tslint": "tslint -c ./tslint.json -p ./src/tsconfig.json",
-    "build": "run-s build:tscss build:tslint build:copy:vendor build:bundle build:copybuild:copy:bundle build:concatBundleFunc -l",
+    "build": "run-s build:tscss build:tslint build:copy:vendor build:bundle build:copybuild:copy:bundle build:concatBundleFunc -n",
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -r built/* & rm -r /dist/* & rm -r /extensions/spector.bundle.js"
   },
@@ -56,11 +56,11 @@
     "exports-loader": "^0.6.4",
     "http-server": "^0.10.0",
     "livereload": "^0.6.3",
-    "node-sass": "^4.6.0",
-    "npm-run-all": "^4.1.1",
-    "style-loader": "^0.19.0",
+    "node-sass": "^4.7.2",
+    "npm-run-all": "^4.1.2",
+    "style-loader": "^0.19.1",
     "tslint": "^5.8.0",
-    "typescript": "^2.6.1",
-    "webpack": "^3.8.1"
+    "typescript": "^2.6.2",
+    "webpack": "^3.10.0"
   }
 }

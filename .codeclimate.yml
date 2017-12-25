@@ -3,6 +3,7 @@ engines:
   tslint:
     enabled: true
     channel: beta
+    config: tslint.json
   scss-lint:
     enabled: false
   eslint:
