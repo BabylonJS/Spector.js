@@ -1,5 +1,8 @@
 ## Main config
-engines:
+plugins:
+  tslint:
+    enabled: true
+    config: tslint.json
   scss-lint:
     enabled: false
   eslint:
@@ -7,17 +10,8 @@ engines:
   csslint:
     enabled: false
 
-plugins:
-  tslint:
-    enabled: true
-    config: tslint.json
-
-ratings:
-  paths:
-  - "**.ts"
-
 ## other configuration excluded from example...
-exclude_paths:
+exclude_patterns:
 - "**.d.ts"
 # exlude cause auto generated.
 - ".vscode/"
