@@ -6,8 +6,11 @@ module.exports = {
         "./dist/ace.js",
         "./dist/spector.js"
     ],
+    performance: {
+        hints: false
+    },
     output: {
-        filename: './dist/spector.bundle.js',
+        filename: './spector.bundle.js',
         libraryTarget: "umd",
         library: "SPECTOR",
         umdNamedDefine: true

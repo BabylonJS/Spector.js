@@ -38,7 +38,7 @@
     "build:ts": "tsc -p ./src --outFile \"dist/spector.js\"",
     "build:css": "node-sass -r -o dist src",
     "build:tscss": "run-p build:ts build:css -l",
-    "build:bundle": "webpack --optimize-minimize --config tools/webpack.config.js",
+    "build:bundle": "webpack --mode production --optimize-minimize --config tools/webpack.config.js",
     "build:copybuild:copy:bundle": "node ./tools/copy.js /../dist/spector.bundle.js /../extensions/spector.bundle.js",
     "build:concatBundleFunc": "concat-cli -f tools/spector.ext.header.js dist/spector.bundle.js tools/spector.ext.footer.js -o extensions/spector.bundle.func.js",
     "build:copy:vendor:prismjs": "node ./tools/copy.js /../vendors/prism.js /../dist/prism.js",
@@ -53,14 +53,15 @@
   "devDependencies": {
     "concat-cli": "^4.0.0",
     "css-loader": "^0.28.11",
-    "exports-loader": "^0.6.4",
-    "http-server": "^0.10.0",
-    "livereload": "^0.6.3",
+    "exports-loader": "^0.7.0",
+    "http-server": "^0.11.1",
+    "livereload": "^0.7.0",
     "node-sass": "^4.8.3",
     "npm-run-all": "^4.1.2",
-    "style-loader": "^0.19.1",
+    "style-loader": "^0.20.3",
     "tslint": "^5.9.1",
     "typescript": "^2.8.1",
-    "webpack": "^3.11.0"
+    "webpack": "^4.4.1",
+    "webpack-cli": "^2.0.13"
   }
 }
