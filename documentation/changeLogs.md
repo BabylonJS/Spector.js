@@ -10,6 +10,8 @@ This release is meant to address the few bugs found during a bug bash session:
 - Fix Pause/Replay buttons.
 - Fix XHR Warning in the extension.
 - [Fix setTimeout/setInterval parameters](https://github.com/BabylonJS/Spector.js/issues/81).
+- [Capture off screen canvases](https://github.com/BabylonJS/Spector.js/issues/85).
+- Fix Extension list report in Webgl 2.
 
 ## v0.9.2 Chrome Canary
 This release is addressing an issue with the post message size limit in Chrome Canary:

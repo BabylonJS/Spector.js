@@ -52,15 +52,15 @@
   },
   "devDependencies": {
     "concat-cli": "^4.0.0",
-    "css-loader": "^0.28.9",
+    "css-loader": "^0.28.11",
     "exports-loader": "^0.6.4",
     "http-server": "^0.10.0",
     "livereload": "^0.6.3",
-    "node-sass": "^4.7.2",
+    "node-sass": "^4.8.3",
     "npm-run-all": "^4.1.2",
     "style-loader": "^0.19.1",
     "tslint": "^5.9.1",
-    "typescript": "^2.6.2",
-    "webpack": "^3.10.0"
+    "typescript": "^2.8.1",
+    "webpack": "^3.11.0"
   }
 }
