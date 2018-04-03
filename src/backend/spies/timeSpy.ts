@@ -99,6 +99,7 @@ namespace SPECTOR.Spies {
             for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
                 this.spyRequestAnimationFrame(Spy, this.spiedWindow);
             }
+
             for (const Spy of TimeSpy.setTimerFunctions) {
                 this.spySetTimer(Spy);
             }
@@ -117,7 +118,7 @@ namespace SPECTOR.Spies {
             OriginFunctionHelper.storeOriginFunction(owner, functionName);
             owner[functionName] = function () {
                 const callback = arguments[0];
-                const onCallback = self.getCallback(self, callback, () => { OriginFunctionHelper.executeOriginFunction(owner, functionName, [callback] as any); });
+                const onCallback = self.getCallback(self, callback, () => { self.spiedWindow[functionName](callback); });
 
                 const result = OriginFunctionHelper.executeOriginFunction(owner, functionName, [onCallback] as any);
                 return result;
@@ -129,21 +130,24 @@ namespace SPECTOR.Spies {
             // Needs both this.
             // tslint:disable-next-line
             const self = this;
-
-            const oldSetTimer = this.spiedWindow[functionName];
+            const owner = this.spiedWindow;
             const needsReplay = (functionName === "setTimeout");
-            const spiedWindow = this.spiedWindow;
+
+            OriginFunctionHelper.storeOriginFunction(owner, functionName);
 
             // tslint:disable-next-line:only-arrow-functions
-            spiedWindow[functionName] = function () {
-                let callback = arguments[0];
+            owner[functionName] = function () {
+                const callback = arguments[0];
                 const time = arguments[1];
+                const args = Array.prototype.slice.call(arguments);
+
                 if (TimeSpy.setTimerCommonValues.indexOf(time) > -1) {
-                    callback = self.getCallback(self, callback, needsReplay ?
-                        () => { spiedWindow[functionName](callback); } : null);
+                    args[0] = self.getCallback(self, callback, needsReplay ?
+                        () => { owner[functionName](callback); } : null);
                 }
 
-                return oldSetTimer.apply(self.spiedWindow, [callback, time]);
+                const result = OriginFunctionHelper.executeOriginFunction(owner, functionName, args);
+                return result;
             };
         }
 

@@ -1,6 +1,6 @@
 {
   "name": "spectorjs",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Explore and Troubleshoot your WebGL scenes easily.",
   "keywords": [
     "webgl",
@@ -40,25 +40,27 @@
     "build:tscss": "run-p build:ts build:css -l",
     "build:bundle": "webpack --optimize-minimize --config tools/webpack.config.js",
     "build:copybuild:copy:bundle": "node ./tools/copy.js /../dist/spector.bundle.js /../extensions/spector.bundle.js",
+    "build:concatBundleFunc": "concat-cli -f tools/spector.ext.header.js dist/spector.bundle.js tools/spector.ext.footer.js -o extensions/spector.bundle.func.js",
     "build:copy:vendor:prismjs": "node ./tools/copy.js /../vendors/prism.js /../dist/prism.js",
     "build:copy:vendor:prismcss": "node ./tools/copy.js /../vendors/prism.css /../dist/prism.css",
     "build:copy:vendor:acejs": "node ./tools/copy.js /../vendors/ace.js /../dist/ace.js",
     "build:copy:vendor": "run-s build:copy:vendor:prismjs build:copy:vendor:prismcss build:copy:vendor:acejs -l",
     "build:tslint": "tslint -c ./tslint.json -p ./src/tsconfig.json",
-    "build": "run-s build:tscss build:tslint build:copy:vendor build:bundle build:copybuild:copy:bundle -l",
+    "build": "run-s build:tscss build:tslint build:copy:vendor build:bundle build:copybuild:copy:bundle build:concatBundleFunc -n",
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -r built/* & rm -r /dist/* & rm -r /extensions/spector.bundle.js"
   },
   "devDependencies": {
-    "css-loader": "^0.28.7",
+    "concat-cli": "^4.0.0",
+    "css-loader": "^0.28.11",
     "exports-loader": "^0.6.4",
-    "http-server": "^0.9.0",
+    "http-server": "^0.10.0",
     "livereload": "^0.6.3",
-    "node-sass": "^4.5.3",
-    "npm-run-all": "^4.1.1",
-    "style-loader": "^0.16.1",
-    "tslint": "^5.8.0",
-    "typescript": "^2.5.3",
-    "webpack": "^2.7.0"
+    "node-sass": "^4.8.3",
+    "npm-run-all": "^4.1.2",
+    "style-loader": "^0.19.1",
+    "tslint": "^5.9.1",
+    "typescript": "^2.8.1",
+    "webpack": "^3.11.0"
   }
 }

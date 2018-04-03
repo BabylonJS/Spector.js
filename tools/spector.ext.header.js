@@ -1,0 +1,1 @@
+var spectorBundleHook = function(){

@@ -28,6 +28,8 @@ namespace SPECTOR.EmbeddedFrontend {
     declare const ace: ace;
 
     export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
+        private static readonly semicolonReplacementKey = "[[[semicolonReplacementKey]]]";
+
         public onVertexSourceClicked: IStateEvent<ISourceCodeState>;
         public onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
         public onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;
@@ -143,6 +145,8 @@ namespace SPECTOR.EmbeddedFrontend {
             for (let i = 0; i < level; i++) {
                 spaces += "    "; // 4 spaces
             }
+
+            let result: string;
             // If no brackets, return the indented string
             if (firstBracket === -1) {
                 glsl = spaces + glsl; // indent first line
@@ -153,7 +157,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
                 glsl = glsl.replace(/\s+$/g, "");
                 glsl = glsl.replace(/\n+$/g, "");
-                return glsl;
+                result = glsl;
             }
             else {
                 // if brackets, beautify the inside
@@ -162,9 +166,14 @@ namespace SPECTOR.EmbeddedFrontend {
                 const right = glsl.substr(lastBracket + 1, glsl.length);
                 const inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
                 const prettyInside = this._beautify(inside, level + 1);
-                const result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
-                return result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
+                result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
+                result = result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
+                result = result.replace(/#endif[\t \f\v]*{/g, "\n {"); // Curly after #Endig
             }
+
+            result = result.replace(SourceCodeComponent.semicolonReplacementKey, ";");
+
+            return result;
         }
 
         private _removeReturnInComments(str: string): string {
@@ -195,7 +204,7 @@ namespace SPECTOR.EmbeddedFrontend {
                 }
                 else if (char === ";") {
                     if (singleLineComment || multiLineComment) {
-                        str = str.substr(0, index) + "." + str.substr(index + 1);
+                        str = str.substr(0, index) + SourceCodeComponent.semicolonReplacementKey + str.substr(index + 1);
                     }
                 }
             }

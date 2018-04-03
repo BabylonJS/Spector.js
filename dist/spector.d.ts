@@ -2334,6 +2334,7 @@ declare namespace SPECTOR.EmbeddedFrontend {
         editable: boolean;
     }
     class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
+        private static readonly semicolonReplacementKey;
         onVertexSourceClicked: IStateEvent<ISourceCodeState>;
         onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
         onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;

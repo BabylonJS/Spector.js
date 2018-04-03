@@ -51,6 +51,7 @@ namespace SPECTOR.States.Information {
                 { name: "WEBGL_compressed_texture_atc", description: "" },
                 { name: "WEBGL_compressed_texture_etc", description: "" },
                 { name: "WEBGL_compressed_texture_etc1", description: "" },
+                { name: "WEBGL_compressed_texture_pvrtc", description: "" },
                 { name: "WEBGL_compressed_texture_s3tc", description: "" },
                 // { name: "WEBGL_debug_renderer_info", description: "" },
                 // { name: "WEBGL_debug_shaders", description: "" },
@@ -58,7 +59,22 @@ namespace SPECTOR.States.Information {
                 { name: "WEBGL_draw_buffers", description: "" }],
                 // ,
                 // WebGl2
-                // []
+                [{ name: "EXT_color_buffer_float", description: "" },
+                { name: "EXT_disjoint_timer_query", description: "" },
+                { name: "EXT_disjoint_timer_query_webgl2", description: "" },
+                { name: "EXT_texture_filter_anisotropic", description: "" },
+
+                { name: "OES_texture_float_linear", description: "" },
+
+                { name: "WEBGL_compressed_texture_astc", description: "" },
+                { name: "WEBGL_compressed_texture_atc", description: "" },
+                { name: "WEBGL_compressed_texture_etc", description: "" },
+                { name: "WEBGL_compressed_texture_etc1", description: "" },
+                { name: "WEBGL_compressed_texture_pvrtc", description: "" },
+                { name: "WEBGL_compressed_texture_s3tc", description: "" },
+                    // { name: "WEBGL_debug_renderer_info", description: "" },
+                    // { name: "WEBGL_debug_shaders", description: "" },
+                ],
             ];
 
             this.currentState = this.startCapture(true, this.quickCapture);
@@ -69,20 +85,16 @@ namespace SPECTOR.States.Information {
         }
 
         protected readFromContext(): void {
-            for (let version = 1; version <= this.contextVersion; version++) {
-                if (version > this.extensionDefinition.length) {
-                    break;
-                }
+            const extensionList = this.contextVersion === 1 ? this.extensionDefinition[0] : this.extensionDefinition[1];
 
-                for (const parameter of this.extensionDefinition[version - 1]) {
-                    const value = this.context.getExtension(parameter.name);
-                    if (value) {
-                        this.currentState[parameter.name] = true;
-                        this.extensions[parameter.name] = value;
-                    }
-                    else {
-                        this.currentState[parameter.name] = false;
-                    }
+            for (const parameter of extensionList) {
+                const value = this.context.getExtension(parameter.name);
+                if (value) {
+                    this.currentState[parameter.name] = true;
+                    this.extensions[parameter.name] = value;
+                }
+                else {
+                    this.currentState[parameter.name] = false;
                 }
             }
         }

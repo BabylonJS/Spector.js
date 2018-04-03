@@ -99,6 +99,7 @@ if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
 var canvasGetContextDetection = `
     var spector;
     var captureOnLoad = ${captureOnLoad ? "true" : "false"};
+    window.__SPECTOR_Canvases = [];
 
     (function() {
         var __SPECTOR_Origin_EXTENSION_GetContext = HTMLCanvasElement.prototype.getContext;
@@ -126,6 +127,21 @@ var canvasGetContextDetection = `
             var contextNames = ["webgl", "experimental-webgl", "webgl2", "experimental-webgl2"];
             if (contextNames.indexOf(arguments[0]) !== -1) {
                 context.canvas.setAttribute("${spectorContextTypeKey}", arguments[0]);
+                // Notify the page a canvas is available.
+                var myEvent = new CustomEvent("SpectorWebGLCanvasAvailableEvent");
+                document.dispatchEvent(myEvent);
+
+                var found = false;
+                for (var i = 0; i < window.__SPECTOR_Canvases.length; i++) {
+                    if (window.__SPECTOR_Canvases[i] === this) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    window.__SPECTOR_Canvases.push(this);
+                }
+
                 if (captureOnLoad) {
                     // Ensures canvas is in the dom to capture the one we are currently tracking.
                     if (this.parentElement || ${captureOnLoadTransient}) {
@@ -140,16 +156,17 @@ var canvasGetContextDetection = `
     })()`;
 insertTextScript(canvasGetContextDetection);
 
+var frameId = null;
+var offScreen = false;
+
 // In case the spector injection has been requested, inject the library in the page.
 if (sessionStorage.getItem(spectorLoadedKey)) {
-    var pathRoot = getExtensionURL();
-    var jsurl = pathRoot + "spector.bundle.js";
-
+    
     if (debug) {
         insertScript("http://localhost:1337/tools/loader.js");
     }
     else {
-        insertScript(jsurl);
+        insertTextScript( '(' + spectorBundleHook.toString() + ' )();');
     }
 
     // Defer exec to next slot to ensure proper loading of the lib.
@@ -167,7 +184,8 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
             });    
             document.addEventListener("SpectorRequestCaptureEvent", function(e) {
                 var canvasIndex = document.getElementById('${spectorCommunicationElementId}').value;
-                var canvas = document.body.querySelectorAll("canvas")[canvasIndex];
+
+                var canvas = window.__SPECTOR_Canvases[canvasIndex];
                 var quickCapture = (document.getElementById('${spectorCommunicationQuickCaptureElementId}').value === "true");
                 spector.captureCanvas(canvas, 0, quickCapture);
             });
@@ -191,6 +209,25 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                         var myEvent = new CustomEvent("SpectorOnProgramRebuilt", { detail: { programId: programId, errorString: error, tabId: tabId } });
                         document.dispatchEvent(myEvent);
                     });
+            });
+            document.addEventListener("SpectorRequestCanvasListEvent", function(e) {
+                var canvasList = [];
+                for (var i = 0; i < window.__SPECTOR_Canvases.length; i++) {
+                    var canvas = window.__SPECTOR_Canvases[i];
+                    canvasList.push({
+                        id: canvas.id,
+                        width: canvas.width,
+                        height: canvas.height,
+                        ref: i,
+                        offScreen: !document.body.contains(canvas)
+                    });
+                }
+                var myEvent = new CustomEvent("SpectorOnCanvasListEvent", { 
+                    detail: {
+                        canvasList: canvasList 
+                    }
+                });
+                document.dispatchEvent(myEvent);
             });
             spector.onError.add((error) => {
                 var myEvent = new CustomEvent("SpectorOnErrorEvent", { detail: { errorString: error } });
@@ -276,66 +313,47 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
             tabId: e.detail.tabId
         });
     }, false);
-}
 
-var frameId = null;
+    document.addEventListener('SpectorOnCanvasListEvent', function(e) {
+        var canvasList = e.detail.canvasList;
 
-var getCanvases = function() {
-    if (document.body) {
-        var canvasElements = document.body.querySelectorAll("canvas");
-        if (canvasElements.length > 0) {
-            
-            var canvasesInformation = [];
-            for (var i = 0; i < canvasElements.length; i++) {
-                var canvas = canvasElements[i];
-                var context = null;
-                try {
-                    context = canvas.getContext(canvas.getAttribute(spectorContextTypeKey));
-                }
-                catch (e) {
-                    // Do Nothing.
-                }
-
-                if (context) {
-                    canvasesInformation.push({
-                        id: canvas.id,
-                        width: canvas.width,
-                        height: canvas.height,
-                        ref: i
-                    });
-                }
+        var uiInformation = [];
+        for (var i = 0; i < canvasList.length; i++) {
+            var canvasInformation = canvasList[i];
+            if (canvasInformation.offScreen === offScreen) {
+                uiInformation.push({
+                    id: canvasInformation.id,
+                    width: canvasInformation.width,
+                    height: canvasInformation.height,
+                    ref: canvasInformation.ref
+                });
             }
-
-            return canvasesInformation;
         }
-    }
-    return [];
-}
 
-var sendPresenceIfCanvases = function () {
-    if (getCanvases().length > 0) {
+        // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
+        sendMessage({ canvases: uiInformation }, function (response) {
+            frameId = response.frameId;
+        });
+    });
+}
+else {
+    document.addEventListener('SpectorWebGLCanvasAvailableEvent', function(e) {
         // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
         sendMessage({ present: 1 }, function (response) {
             frameId = response.frameId;
         });
-    }
+    }, false);
 }
 
-var sendCanvases = function () {
-    var canvases = getCanvases();
-    // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
-    sendMessage({ canvases: canvases }, function (response) {
-        frameId = response.frameId;
-    });
+var getCanvases = function(offScreenParam) {
+    offScreen = !!offScreenParam;
+    var myEvent = new CustomEvent("SpectorRequestCanvasListEvent");
+    document.dispatchEvent(myEvent);
 }
 
 // Check for existing canvas a bit after the end of the loading.
 document.addEventListener("DOMContentLoaded", function () {
-    if (!sessionStorage.getItem(spectorLoadedKey)) {
-        setTimeout(sendPresenceIfCanvases, 1500);
-        setTimeout(sendPresenceIfCanvases, 5000);
-    }
-    else {
+    if (sessionStorage.getItem(spectorLoadedKey)) {
         // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
         sendMessage({ present: 2 }, function (response) {
             frameId = response.frameId;
@@ -385,8 +403,8 @@ listenForMessage(function (message) {
 
     // Let s refresh the canvases list. 
     if (action === "requestCanvases") {
-        setTimeout(function () { sendCanvases(); }, 0);
-        setTimeout(function () { sendCanvases(); }, 1000);
+        setTimeout(function () { getCanvases(message.offScreen); }, 0);
+        setTimeout(function () { getCanvases(message.offScreen); }, 1000);
         return;
     }
 

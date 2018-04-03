@@ -1313,7 +1313,7 @@ var SPECTOR;
                 SPECTOR.OriginFunctionHelper.storeOriginFunction(owner, functionName);
                 owner[functionName] = function () {
                     var callback = arguments[0];
-                    var onCallback = self.getCallback(self, callback, function () { SPECTOR.OriginFunctionHelper.executeOriginFunction(owner, functionName, [callback]); });
+                    var onCallback = self.getCallback(self, callback, function () { self.spiedWindow[functionName](callback); });
                     var result = SPECTOR.OriginFunctionHelper.executeOriginFunction(owner, functionName, [onCallback]);
                     return result;
                 };
@@ -1322,18 +1322,20 @@ var SPECTOR;
                 // Needs both this.
                 // tslint:disable-next-line
                 var self = this;
-                var oldSetTimer = this.spiedWindow[functionName];
+                var owner = this.spiedWindow;
                 var needsReplay = (functionName === "setTimeout");
-                var spiedWindow = this.spiedWindow;
+                SPECTOR.OriginFunctionHelper.storeOriginFunction(owner, functionName);
                 // tslint:disable-next-line:only-arrow-functions
-                spiedWindow[functionName] = function () {
+                owner[functionName] = function () {
                     var callback = arguments[0];
                     var time = arguments[1];
+                    var args = Array.prototype.slice.call(arguments);
                     if (TimeSpy.setTimerCommonValues.indexOf(time) > -1) {
-                        callback = self.getCallback(self, callback, needsReplay ?
-                            function () { spiedWindow[functionName](callback); } : null);
+                        args[0] = self.getCallback(self, callback, needsReplay ?
+                            function () { owner[functionName](callback); } : null);
                     }
-                    return oldSetTimer.apply(self.spiedWindow, [callback, time]);
+                    var result = SPECTOR.OriginFunctionHelper.executeOriginFunction(owner, functionName, args);
+                    return result;
                 };
             };
             TimeSpy.prototype.getCallback = function (self, callback, skippedCalback) {
@@ -1514,6 +1516,11 @@ var SPECTOR;
                     frameMemory: {},
                     memory: {},
                 };
+                // Refreshes canvas info in case it changed beffore the capture.
+                this.currentCapture.canvas.width = this.context.canvas.width;
+                this.currentCapture.canvas.height = this.context.canvas.height;
+                this.currentCapture.canvas.clientWidth = this.context.canvas.clientWidth;
+                this.currentCapture.canvas.clientHeight = this.context.canvas.clientHeight;
                 this.stateSpy.startCapture(this.currentCapture, quickCapture);
                 this.recorderSpy.startCapture();
                 this.currentCapture.listenCommandsStartTime = this.time.now;
@@ -3776,11 +3783,26 @@ var SPECTOR;
                             { name: "WEBGL_compressed_texture_atc", description: "" },
                             { name: "WEBGL_compressed_texture_etc", description: "" },
                             { name: "WEBGL_compressed_texture_etc1", description: "" },
+                            { name: "WEBGL_compressed_texture_pvrtc", description: "" },
                             { name: "WEBGL_compressed_texture_s3tc", description: "" },
                             // { name: "WEBGL_debug_renderer_info", description: "" },
                             // { name: "WEBGL_debug_shaders", description: "" },
                             { name: "WEBGL_depth_texture", description: "" },
                             { name: "WEBGL_draw_buffers", description: "" }],
+                        // ,
+                        // WebGl2
+                        [{ name: "EXT_color_buffer_float", description: "" },
+                            { name: "EXT_disjoint_timer_query", description: "" },
+                            { name: "EXT_disjoint_timer_query_webgl2", description: "" },
+                            { name: "EXT_texture_filter_anisotropic", description: "" },
+                            { name: "OES_texture_float_linear", description: "" },
+                            { name: "WEBGL_compressed_texture_astc", description: "" },
+                            { name: "WEBGL_compressed_texture_atc", description: "" },
+                            { name: "WEBGL_compressed_texture_etc", description: "" },
+                            { name: "WEBGL_compressed_texture_etc1", description: "" },
+                            { name: "WEBGL_compressed_texture_pvrtc", description: "" },
+                            { name: "WEBGL_compressed_texture_s3tc", description: "" },
+                        ],
                     ];
                     _this.currentState = _this.startCapture(true, _this.quickCapture);
                     return _this;
@@ -3789,20 +3811,16 @@ var SPECTOR;
                     return this.extensions;
                 };
                 Extensions.prototype.readFromContext = function () {
-                    for (var version = 1; version <= this.contextVersion; version++) {
-                        if (version > this.extensionDefinition.length) {
-                            break;
+                    var extensionList = this.contextVersion === 1 ? this.extensionDefinition[0] : this.extensionDefinition[1];
+                    for (var _i = 0, extensionList_1 = extensionList; _i < extensionList_1.length; _i++) {
+                        var parameter = extensionList_1[_i];
+                        var value = this.context.getExtension(parameter.name);
+                        if (value) {
+                            this.currentState[parameter.name] = true;
+                            this.extensions[parameter.name] = value;
                         }
-                        for (var _i = 0, _a = this.extensionDefinition[version - 1]; _i < _a.length; _i++) {
-                            var parameter = _a[_i];
-                            var value = this.context.getExtension(parameter.name);
-                            if (value) {
-                                this.currentState[parameter.name] = true;
-                                this.extensions[parameter.name] = value;
-                            }
-                            else {
-                                this.currentState[parameter.name] = false;
-                            }
+                        else {
+                            this.currentState[parameter.name] = false;
                         }
                     }
                 };
@@ -5950,6 +5968,7 @@ var SPECTOR;
                     if (lit && lit.length > 0 && lit[lit.length - 1] === "$") {
                         lit = lit.slice(0, -1);
                     }
+                    // otherwise escape by default by precaution.
                     else {
                         subst = _this.htmlEscape(subst);
                     }
@@ -6464,6 +6483,10 @@ var SPECTOR;
         EmbeddedFrontend.StateStore = StateStore;
     })(EmbeddedFrontend = SPECTOR.EmbeddedFrontend || (SPECTOR.EmbeddedFrontend = {}));
 })(SPECTOR || (SPECTOR = {}));
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var SPECTOR;
 (function (SPECTOR) {
     var EmbeddedFrontend;
@@ -6474,9 +6497,8 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             CaptureMenuComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["<div>\n                <div childrenContainer=\"true\" class=\"captureMenuComponent ", "\">\n                </div>\n                <div class=\"captureMenuLogComponent ", "\">\n                    <span class=\"", "\">", "<span>\n                </div>\n            </div>"], _a.raw = ["<div>\n                <div childrenContainer=\"true\" class=\"captureMenuComponent ", "\">\n                </div>\n                <div class=\"captureMenuLogComponent ", "\">\n                    <span class=\"", "\">", "<span>\n                </div>\n            </div>"], this.htmlTemplate(_a, state ? "active" : "", state.logVisible ? "active" : "", state.logLevel === SPECTOR.LogLevel.error ? "error" : "", state.logText));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["<div>\n                <div childrenContainer=\"true\" class=\"captureMenuComponent ", "\">\n                </div>\n                <div class=\"captureMenuLogComponent ", "\">\n                    <span class=\"", "\">", "<span>\n                </div>\n            </div>"], ["<div>\n                <div childrenContainer=\"true\" class=\"captureMenuComponent ", "\">\n                </div>\n                <div class=\"captureMenuLogComponent ", "\">\n                    <span class=\"", "\">", "<span>\n                </div>\n            </div>"]), state ? "active" : "", state.logVisible ? "active" : "", state.logLevel === SPECTOR.LogLevel.error ? "error" : "", state.logText);
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return CaptureMenuComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -6498,13 +6520,12 @@ var SPECTOR;
                 return _this;
             }
             CaptureMenuActionsComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div class=\"captureMenuActionsComponent\">\n                <div commandName=\"onCaptureRequested\">\n                </div>\n                $", "\n            </div>"], _a.raw = ["\n            <div class=\"captureMenuActionsComponent\">\n                <div commandName=\"onCaptureRequested\">\n                </div>\n                $",
-                    "\n            </div>"], this.htmlTemplate(_a, !state ?
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <div class=\"captureMenuActionsComponent\">\n                <div commandName=\"onCaptureRequested\">\n                </div>\n                $", "\n            </div>"], ["\n            <div class=\"captureMenuActionsComponent\">\n                <div commandName=\"onCaptureRequested\">\n                </div>\n                $",
+                    "\n            </div>"]), !state ?
                     "<div commandName=\"onPlayRequested\">\n                    </div>\n                    <div commandName=\"onPlayNextFrameRequested\">\n                    </div>"
                     :
-                        "<div commandName=\"onPauseRequested\">\n                    </div>"));
+                        "<div commandName=\"onPauseRequested\">\n                    </div>");
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return CaptureMenuActionsComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -6523,9 +6544,8 @@ var SPECTOR;
                 return _this;
             }
             CanvasListComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div class=\"canvasListComponent\">\n                <span commandName=\"onCanvasSelection\">\n                    ", "\n                </span>\n                <ul childrenContainer=\"true\" style=\"", "\"></ul>\n            </div>"], _a.raw = ["\n            <div class=\"canvasListComponent\">\n                <span commandName=\"onCanvasSelection\">\n                    ", "\n                </span>\n                <ul childrenContainer=\"true\" style=\"", "\"></ul>\n            </div>"], this.htmlTemplate(_a, state.currentCanvasInformation ? state.currentCanvasInformation.id + " (" + state.currentCanvasInformation.width + "*" + state.currentCanvasInformation.height + ")" : "Choose Canvas...", state.showList ? "display:block;visibility:visible" : "display:none;visibility:hidden"));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <div class=\"canvasListComponent\">\n                <span commandName=\"onCanvasSelection\">\n                    ", "\n                </span>\n                <ul childrenContainer=\"true\" style=\"", "\"></ul>\n            </div>"], ["\n            <div class=\"canvasListComponent\">\n                <span commandName=\"onCanvasSelection\">\n                    ", "\n                </span>\n                <ul childrenContainer=\"true\" style=\"", "\"></ul>\n            </div>"]), state.currentCanvasInformation ? state.currentCanvasInformation.id + " (" + state.currentCanvasInformation.width + "*" + state.currentCanvasInformation.height + ")" : "Choose Canvas...", state.showList ? "display:block;visibility:visible" : "display:none;visibility:hidden");
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return CanvasListComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -6791,14 +6811,13 @@ var SPECTOR;
             }
             CaptureListComponent.prototype.render = function (state, stateId) {
                 var _this = this;
-                var htmlString = (_a = ["\n            <div class=\"captureListComponent ", "\">\n                <div class=\"openCaptureFile\">\n                    <Span>Drag files here to open a previously saved capture.</span>\n                </div>\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], _a.raw = ["\n            <div class=\"captureListComponent ", "\">\n                <div class=\"openCaptureFile\">\n                    <Span>Drag files here to open a previously saved capture.</span>\n                </div>\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], this.htmlTemplate(_a, state ? "active" : ""));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <div class=\"captureListComponent ", "\">\n                <div class=\"openCaptureFile\">\n                    <Span>Drag files here to open a previously saved capture.</span>\n                </div>\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], ["\n            <div class=\"captureListComponent ", "\">\n                <div class=\"openCaptureFile\">\n                    <Span>Drag files here to open a previously saved capture.</span>\n                </div>\n                <ul childrenContainer=\"true\"></ul>\n            </div>"]), state ? "active" : "");
                 var element = this.renderElementFromTemplate(htmlString, state, stateId);
                 var openCaptureFileElement = element.querySelector(".openCaptureFile");
                 openCaptureFileElement.addEventListener("dragenter", function (e) { _this.drag(e); return false; }, false);
                 openCaptureFileElement.addEventListener("dragover", function (e) { _this.drag(e); return false; }, false);
                 openCaptureFileElement.addEventListener("drop", function (e) { _this.drop(e); }, false);
                 return element;
-                var _a;
             };
             CaptureListComponent.prototype.drag = function (e) {
                 e.stopPropagation();
@@ -6911,9 +6930,8 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             VisualStateListComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div class=\"visualStateListComponent\">\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], _a.raw = ["\n            <div class=\"visualStateListComponent\">\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], this.htmlTemplate(_a));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <div class=\"visualStateListComponent\">\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], ["\n            <div class=\"visualStateListComponent\">\n                <ul childrenContainer=\"true\"></ul>\n            </div>"]));
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return VisualStateListComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -6993,10 +7011,9 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             CommandListComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div class=\"commandListComponent\">\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], _a.raw = ["\n            <div class=\"commandListComponent\">\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], this.htmlTemplate(_a));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <div class=\"commandListComponent\">\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], ["\n            <div class=\"commandListComponent\">\n                <ul childrenContainer=\"true\"></ul>\n            </div>"]));
                 var element = this.renderElementFromTemplate(htmlString, state, stateId);
                 return element;
-                var _a;
             };
             return CommandListComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -7094,9 +7111,8 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             CommandDetailComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div class=\"commandDetailComponent\" childrenContainer=\"true\">\n            </div>"], _a.raw = ["\n            <div class=\"commandDetailComponent\" childrenContainer=\"true\">\n            </div>"], this.htmlTemplate(_a));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <div class=\"commandDetailComponent\" childrenContainer=\"true\">\n            </div>"], ["\n            <div class=\"commandDetailComponent\" childrenContainer=\"true\">\n            </div>"]));
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return CommandDetailComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -7267,9 +7283,8 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             JSONContentComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div class=\"jsonContentComponent\" childrenContainer=\"true\">\n            </div>"], _a.raw = ["\n            <div class=\"jsonContentComponent\" childrenContainer=\"true\">\n            </div>"], this.htmlTemplate(_a));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <div class=\"jsonContentComponent\" childrenContainer=\"true\">\n            </div>"], ["\n            <div class=\"jsonContentComponent\" childrenContainer=\"true\">\n            </div>"]));
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return JSONContentComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -7286,9 +7301,8 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             JSONGroupComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div class=\"jsonGroupComponent\">\n                <div class=\"jsonGroupComponentTitle\">", "</div>\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], _a.raw = ["\n            <div class=\"jsonGroupComponent\">\n                <div class=\"jsonGroupComponentTitle\">", "</div>\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], this.htmlTemplate(_a, state ? state.replace(/([A-Z])/g, " $1").trim() : ""));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <div class=\"jsonGroupComponent\">\n                <div class=\"jsonGroupComponentTitle\">", "</div>\n                <ul childrenContainer=\"true\"></ul>\n            </div>"], ["\n            <div class=\"jsonGroupComponent\">\n                <div class=\"jsonGroupComponentTitle\">", "</div>\n                <ul childrenContainer=\"true\"></ul>\n            </div>"]), state ? state.replace(/([A-Z])/g, " $1").trim() : "");
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return JSONGroupComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -7305,9 +7319,8 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             JSONItemComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <li><span class=\"jsonItemComponentKey\">", ": </span><span class=\"jsonItemComponentValue\">", "</span><li>"], _a.raw = ["\n            <li><span class=\"jsonItemComponentKey\">", ": </span><span class=\"jsonItemComponentValue\">", "</span><li>"], this.htmlTemplate(_a, state.key, state.value));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <li><span class=\"jsonItemComponentKey\">", ": </span><span class=\"jsonItemComponentValue\">", "</span><li>"], ["\n            <li><span class=\"jsonItemComponentKey\">", ": </span><span class=\"jsonItemComponentValue\">", "</span><li>"]), state.key, state.value);
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return JSONItemComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -7324,9 +7337,8 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             JSONImageItemComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <li class=\"jsonItemImageHolder\"><div class=\"jsonItemImage\"><img src=\"", "\"/><span>", "</span></div></li>"], _a.raw = ["\n            <li class=\"jsonItemImageHolder\"><div class=\"jsonItemImage\"><img src=\"", "\"/><span>", "</span></div></li>"], this.htmlTemplate(_a, state.value, state.key));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <li class=\"jsonItemImageHolder\"><div class=\"jsonItemImage\"><img src=\"", "\"/><span>", "</span></div></li>"], ["\n            <li class=\"jsonItemImageHolder\"><div class=\"jsonItemImage\"><img src=\"", "\"/><span>", "</span></div></li>"]), state.value, state.key);
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return JSONImageItemComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -7345,9 +7357,8 @@ var SPECTOR;
                 return _this;
             }
             JSONSourceItemComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <li commandName=\"onOpenSourceClicked\"><span class=\"jsonItemComponentKey\">", ": </span><span class=\"jsonSourceItemComponentOpen\">Click to Open.</span><li>"], _a.raw = ["\n            <li commandName=\"onOpenSourceClicked\"><span class=\"jsonItemComponentKey\">", ": </span><span class=\"jsonSourceItemComponentOpen\">Click to Open.</span><li>"], this.htmlTemplate(_a, state.key));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <li commandName=\"onOpenSourceClicked\"><span class=\"jsonItemComponentKey\">", ": </span><span class=\"jsonSourceItemComponentOpen\">Click to Open.</span><li>"], ["\n            <li commandName=\"onOpenSourceClicked\"><span class=\"jsonItemComponentKey\">", ": </span><span class=\"jsonSourceItemComponentOpen\">Click to Open.</span><li>"]), state.key);
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return JSONSourceItemComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -7364,9 +7375,8 @@ var SPECTOR;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             JSONHelpItemComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <li><span class=\"jsonItemComponentKey\">", ": </span>\n                <span class=\"jsonItemComponentValue\">", " (<a href=\"", "\" target=\"_blank\" class=\"jsonSourceItemComponentOpen\">Open help page</a>)\n                </span>\n            <li>"], _a.raw = ["\n            <li><span class=\"jsonItemComponentKey\">", ": </span>\n                <span class=\"jsonItemComponentValue\">", " (<a href=\"", "\" target=\"_blank\" class=\"jsonSourceItemComponentOpen\">Open help page</a>)\n                </span>\n            <li>"], this.htmlTemplate(_a, state.key, state.value, state.help));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <li><span class=\"jsonItemComponentKey\">", ": </span>\n                <span class=\"jsonItemComponentValue\">", " (<a href=\"", "\" target=\"_blank\" class=\"jsonSourceItemComponentOpen\">Open help page</a>)\n                </span>\n            <li>"], ["\n            <li><span class=\"jsonItemComponentKey\">", ": </span>\n                <span class=\"jsonItemComponentValue\">", " (<a href=\"", "\" target=\"_blank\" class=\"jsonSourceItemComponentOpen\">Open help page</a>)\n                </span>\n            <li>"]), state.key, state.value, state.help);
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return JSONHelpItemComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -7435,7 +7445,7 @@ var SPECTOR;
                 return _this;
             }
             ResultViewMenuComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\">\n                    <input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\">\n                    <a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li>\n                    <a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">\n                        Commands", "\n                    </a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"], _a.raw = ["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\">\n                    <input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\">\n                    <a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li>\n                    <a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">\n                        Commands", "\n                    </a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"], this.htmlTemplate(_a, state.searchText, state.status === 0 /* Captures */ ? "active" : "", state.status === 10 /* Information */ ? "active" : "", state.status === 20 /* InitState */ ? "active" : "", state.status === 40 /* Commands */ ? "active" : "", state.commandCount > 0 ? " (" + state.commandCount + ")" : "", state.status === 30 /* EndState */ ? "active" : ""));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\">\n                    <input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\">\n                    <a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li>\n                    <a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">\n                        Commands", "\n                    </a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"], ["<ul class=\"resultViewMenuComponent\">\n                <li class=\"resultViewMenuOpen resultViewMenuSmall\"><a href=\"#\" role=\"button\">Menu</a></li>\n\n                <li class=\"searchContainer\">\n                    <input type=\"text\" placeHolder=\"Search...\" value=\"", "\" commandName=\"onSearchTextChanged\" commandEventBinding=\"change\">\n                    <a class=\"clearSearch\" href=\"#\" CommandName=\"onSearchTextCleared\">X</a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onCapturesClicked\">Captures</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInformationClicked\">Information</a></li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onInitStateClicked\">Init State</a></li>\n                <li>\n                    <a class=\"", " href=\"#\" role=\"button\" commandName=\"onCommandsClicked\">\n                        Commands", "\n                    </a>\n                </li>\n                <li><a class=\"", " href=\"#\" role=\"button\" commandName=\"onEndStateClicked\">End State</a></li>\n                <li><a href=\"#\" role=\"button\" commandName=\"onCloseClicked\">Close</a></li>\n            </ul>"]), state.searchText, state.status === 0 /* Captures */ ? "active" : "", state.status === 10 /* Information */ ? "active" : "", state.status === 20 /* InitState */ ? "active" : "", state.status === 40 /* Commands */ ? "active" : "", state.commandCount > 0 ? " (" + state.commandCount + ")" : "", state.status === 30 /* EndState */ ? "active" : "");
                 var element = this.renderElementFromTemplate(htmlString, state, stateId);
                 var openButton = element.querySelector(".resultViewMenuOpen");
                 var lis = element.querySelectorAll("li:not(.resultViewMenuSmall)");
@@ -7456,7 +7466,6 @@ var SPECTOR;
                     }
                 });
                 return element;
-                var _a;
             };
             return ResultViewMenuComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -7491,9 +7500,8 @@ var SPECTOR;
                 return _super.call(this, eventConstructor, logger) || this;
             }
             InformationColumnComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n                <div childrenContainer=\"true\" class=\"", "\"></div>"], _a.raw = ["\n                <div childrenContainer=\"true\" class=\"", "\"></div>"], this.htmlTemplate(_a, state ? "informationColumnLeftComponent" : "informationColumnRightComponent"));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n                <div childrenContainer=\"true\" class=\"", "\"></div>"], ["\n                <div childrenContainer=\"true\" class=\"", "\"></div>"]), state ? "informationColumnLeftComponent" : "informationColumnRightComponent");
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return InformationColumnComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -7510,9 +7518,8 @@ var SPECTOR;
                 return _super.call(this, eventConstructor, logger) || this;
             }
             ResultViewComponent.prototype.render = function (state, stateId) {
-                var htmlString = (_a = ["\n            <div childrenContainer=\"true\" class=\"resultViewComponent ", "\">\n            </div>"], _a.raw = ["\n            <div childrenContainer=\"true\" class=\"resultViewComponent ", "\">\n            </div>"], this.htmlTemplate(_a, state ? "active" : ""));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <div childrenContainer=\"true\" class=\"resultViewComponent ", "\">\n            </div>"], ["\n            <div childrenContainer=\"true\" class=\"resultViewComponent ", "\">\n            </div>"]), state ? "active" : "");
                 return this.renderElementFromTemplate(htmlString, state, stateId);
-                var _a;
             };
             return ResultViewComponent;
         }(EmbeddedFrontend.BaseComponent));
@@ -7558,8 +7565,8 @@ var SPECTOR;
                 var _this = this;
                 var source = state.fragment ? state.sourceFragment : state.sourceVertex;
                 var formattedShader = source ? this._indentIfdef(this._beautify(source)) : "";
-                var htmlString = (_a = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onSourceCodeCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                $", "\n            </div>"], _a.raw = ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onSourceCodeCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                $",
-                    "\n            </div>"], this.htmlTemplate(_a, state.fragment ? "" : "active", state.fragment ? "active" : "", state.editable ? (_b = ["<div class=\"sourceCodeComponentEditable\">", "</div>"], _b.raw = ["<div class=\"sourceCodeComponentEditable\">", "</div>"], this.htmlTemplate(_b, formattedShader)) : (_c = ["<div class=\"sourceCodeComponent\">\n                        <pre class=\"language-glsl\"><code>", "</code></pre>\n                    </div>"], _c.raw = ["<div class=\"sourceCodeComponent\">\n                        <pre class=\"language-glsl\"><code>", "</code></pre>\n                    </div>"], this.htmlTemplate(_c, formattedShader))));
+                var htmlString = this.htmlTemplate(__makeTemplateObject(["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onSourceCodeCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                $", "\n            </div>"], ["\n            <div class=\"sourceCodeComponentContainer\">\n                <div class=\"sourceCodeMenuComponentContainer\">\n                    <ul class=\"sourceCodeMenuComponent\">\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onVertexSourceClicked\">Vertex</a></li>\n                        <li><a class=\"", "\" href=\"#\" role=\"button\" commandName=\"onFragmentSourceClicked\">Fragment</a></li>\n                        <li><a href=\"#\" role=\"button\" commandName=\"onSourceCodeCloseClicked\">Close</a></li>\n                    </ul>\n                </div>\n                $",
+                    "\n            </div>"]), state.fragment ? "" : "active", state.fragment ? "active" : "", state.editable ? this.htmlTemplate(__makeTemplateObject(["<div class=\"sourceCodeComponentEditable\">", "</div>"], ["<div class=\"sourceCodeComponentEditable\">", "</div>"]), formattedShader) : this.htmlTemplate(__makeTemplateObject(["<div class=\"sourceCodeComponent\">\n                        <pre class=\"language-glsl\"><code>", "</code></pre>\n                    </div>"], ["<div class=\"sourceCodeComponent\">\n                        <pre class=\"language-glsl\"><code>", "</code></pre>\n                    </div>"]), formattedShader));
                 var element = this.renderElementFromTemplate(htmlString.replace(/<br>/g, "\n"), state, stateId);
                 if (state.editable) {
                     this.editor = ace.edit(element.querySelector(".sourceCodeComponentEditable"));
@@ -7581,7 +7588,6 @@ var SPECTOR;
                     Prism.highlightElement(element.querySelector("pre"));
                 }
                 return element;
-                var _a, _b, _c;
             };
             SourceCodeComponent.prototype._triggerCompilation = function (editor, state, element, stateId) {
                 if (state.fragment) {
@@ -7607,6 +7613,7 @@ var SPECTOR;
                 for (var i = 0; i < level; i++) {
                     spaces += "    "; // 4 spaces
                 }
+                var result;
                 // If no brackets, return the indented string
                 if (firstBracket === -1) {
                     glsl = spaces + glsl; // indent first line
@@ -7617,7 +7624,7 @@ var SPECTOR;
                     glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
                     glsl = glsl.replace(/\s+$/g, "");
                     glsl = glsl.replace(/\n+$/g, "");
-                    return glsl;
+                    result = glsl;
                 }
                 else {
                     // if brackets, beautify the inside
@@ -7626,9 +7633,12 @@ var SPECTOR;
                     var right = glsl.substr(lastBracket + 1, glsl.length);
                     var inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
                     var prettyInside = this._beautify(inside, level + 1);
-                    var result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
-                    return result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
+                    result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
+                    result = result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
+                    result = result.replace(/#endif[\t \f\v]*{/g, "\n {"); // Curly after #Endig
                 }
+                result = result.replace(SourceCodeComponent.semicolonReplacementKey, ";");
+                return result;
             };
             SourceCodeComponent.prototype._removeReturnInComments = function (str) {
                 var singleLineComment = false;
@@ -7657,7 +7667,7 @@ var SPECTOR;
                     }
                     else if (char === ";") {
                         if (singleLineComment || multiLineComment) {
-                            str = str.substr(0, index) + "." + str.substr(index + 1);
+                            str = str.substr(0, index) + SourceCodeComponent.semicolonReplacementKey + str.substr(index + 1);
                         }
                     }
                 }
@@ -7717,6 +7727,7 @@ var SPECTOR;
                 }
                 return arr2.join("\n");
             };
+            SourceCodeComponent.semicolonReplacementKey = "[[[semicolonReplacementKey]]]";
             return SourceCodeComponent;
         }(EmbeddedFrontend.BaseComponent));
         EmbeddedFrontend.SourceCodeComponent = SourceCodeComponent;

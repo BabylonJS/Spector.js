@@ -42,7 +42,7 @@ namespace SPECTOR {
             }
 
             // Read the pixels from the frame buffer.
-            gl.readPixels(x, y, width, height, gl.RGBA, type, pixels);
+            gl.readPixels(x, y, width, height, gl.RGBA, type, pixels as any);
             if (gl.getError()) {
                 return undefined;
             }

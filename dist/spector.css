@@ -730,7 +730,7 @@
       height: 20px;
       background-color: #2c2c2c;
       z-index: -10; }
-    .captureMenuActionsComponent [commandName=onPlayRequested]:hover, .captureMenuActionsComponent [commandName=onPlayNextFrameRequested]:hover {
+    .captureMenuActionsComponent [commandName=onPlayRequested]:hover, .captureMenuActionsComponent :hover[commandName=onPlayNextFrameRequested] {
       cursor: pointer;
       border: 2px solid #c9c9c9;
       transition: border 0.3s;
