@@ -3783,11 +3783,26 @@ var SPECTOR;
                             { name: "WEBGL_compressed_texture_atc", description: "" },
                             { name: "WEBGL_compressed_texture_etc", description: "" },
                             { name: "WEBGL_compressed_texture_etc1", description: "" },
+                            { name: "WEBGL_compressed_texture_pvrtc", description: "" },
                             { name: "WEBGL_compressed_texture_s3tc", description: "" },
                             // { name: "WEBGL_debug_renderer_info", description: "" },
                             // { name: "WEBGL_debug_shaders", description: "" },
                             { name: "WEBGL_depth_texture", description: "" },
                             { name: "WEBGL_draw_buffers", description: "" }],
+                        // ,
+                        // WebGl2
+                        [{ name: "EXT_color_buffer_float", description: "" },
+                            { name: "EXT_disjoint_timer_query", description: "" },
+                            { name: "EXT_disjoint_timer_query_webgl2", description: "" },
+                            { name: "EXT_texture_filter_anisotropic", description: "" },
+                            { name: "OES_texture_float_linear", description: "" },
+                            { name: "WEBGL_compressed_texture_astc", description: "" },
+                            { name: "WEBGL_compressed_texture_atc", description: "" },
+                            { name: "WEBGL_compressed_texture_etc", description: "" },
+                            { name: "WEBGL_compressed_texture_etc1", description: "" },
+                            { name: "WEBGL_compressed_texture_pvrtc", description: "" },
+                            { name: "WEBGL_compressed_texture_s3tc", description: "" },
+                        ],
                     ];
                     _this.currentState = _this.startCapture(true, _this.quickCapture);
                     return _this;
@@ -3796,20 +3811,16 @@ var SPECTOR;
                     return this.extensions;
                 };
                 Extensions.prototype.readFromContext = function () {
-                    for (var version = 1; version <= this.contextVersion; version++) {
-                        if (version > this.extensionDefinition.length) {
-                            break;
+                    var extensionList = this.contextVersion === 1 ? this.extensionDefinition[0] : this.extensionDefinition[1];
+                    for (var _i = 0, extensionList_1 = extensionList; _i < extensionList_1.length; _i++) {
+                        var parameter = extensionList_1[_i];
+                        var value = this.context.getExtension(parameter.name);
+                        if (value) {
+                            this.currentState[parameter.name] = true;
+                            this.extensions[parameter.name] = value;
                         }
-                        for (var _i = 0, _a = this.extensionDefinition[version - 1]; _i < _a.length; _i++) {
-                            var parameter = _a[_i];
-                            var value = this.context.getExtension(parameter.name);
-                            if (value) {
-                                this.currentState[parameter.name] = true;
-                                this.extensions[parameter.name] = value;
-                            }
-                            else {
-                                this.currentState[parameter.name] = false;
-                            }
+                        else {
+                            this.currentState[parameter.name] = false;
                         }
                     }
                 };
@@ -5957,6 +5968,7 @@ var SPECTOR;
                     if (lit && lit.length > 0 && lit[lit.length - 1] === "$") {
                         lit = lit.slice(0, -1);
                     }
+                    // otherwise escape by default by precaution.
                     else {
                         subst = _this.htmlEscape(subst);
                     }

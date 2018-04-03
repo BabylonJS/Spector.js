@@ -126,6 +126,10 @@ var canvasGetContextDetection = `
             var contextNames = ["webgl", "experimental-webgl", "webgl2", "experimental-webgl2"];
             if (contextNames.indexOf(arguments[0]) !== -1) {
                 context.canvas.setAttribute("${spectorContextTypeKey}", arguments[0]);
+                // Notify the page a canvas is available.
+                var myEvent = new CustomEvent("SpectorWebGLCanvasAvailableEvent");
+                document.dispatchEvent(myEvent);
+
                 if (captureOnLoad) {
                     // Ensures canvas is in the dom to capture the one we are currently tracking.
                     if (this.parentElement || ${captureOnLoadTransient}) {
@@ -275,6 +279,14 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         });
     }, false);
 }
+else {
+    document.addEventListener('SpectorWebGLCanvasAvailableEvent', function(e) {
+        // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
+        sendMessage({ present: 1 }, function (response) {
+            frameId = response.frameId;
+        });
+    }, false);
+}
 
 var frameId = null;
 
@@ -310,15 +322,6 @@ var getCanvases = function() {
     return [];
 }
 
-var sendPresenceIfCanvases = function () {
-    if (getCanvases().length > 0) {
-        // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
-        sendMessage({ present: 1 }, function (response) {
-            frameId = response.frameId;
-        });
-    }
-}
-
 var sendCanvases = function () {
     var canvases = getCanvases();
     // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
@@ -329,11 +332,7 @@ var sendCanvases = function () {
 
 // Check for existing canvas a bit after the end of the loading.
 document.addEventListener("DOMContentLoaded", function () {
-    if (!sessionStorage.getItem(spectorLoadedKey)) {
-        setTimeout(sendPresenceIfCanvases, 1500);
-        setTimeout(sendPresenceIfCanvases, 5000);
-    }
-    else {
+    if (sessionStorage.getItem(spectorLoadedKey)) {
         // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
         sendMessage({ present: 2 }, function (response) {
             frameId = response.frameId;
