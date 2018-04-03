@@ -85,7 +85,7 @@ listenForMessage(function(request, sender, sendResponse) {
     else if (request.refreshCanvases) {
         window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
             tabInfo = {}
-            sendMessage({ action: "requestCanvases" });
+            sendMessage({ action: "requestCanvases", offScreen: request.offScreen });
 
             setTimeout(function() { refreshCanvases(); }, 500);
             setTimeout(function() { refreshCanvases(); }, 2000);

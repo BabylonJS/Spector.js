@@ -31,6 +31,7 @@ window.addEventListener("DOMContentLoaded", function() {
     var captureOnLoadCountInput = document.getElementById("captureOnLoadCount");
     var captureOnLoadTransientInput = document.getElementById("captureOnLoadTransient");
     var quickCaptureInput = document.getElementById("quickCapture");
+    var offScreenInput = document.getElementById("offScreen");
 
     captureOnLoadElement.addEventListener("click", (e) => { 
         var transient = captureOnLoadTransientInput.checked;
@@ -42,6 +43,10 @@ window.addEventListener("DOMContentLoaded", function() {
         this.captureonLoad(commandCount, transient, quickCapture); 
         return false; 
     });
+
+    offScreenInput.onchange = function() {
+        refreshCanvases();
+    };
 
     initUI();
     refreshCanvases();
@@ -120,7 +125,8 @@ var initUI = function() {
 }
 
 var refreshCanvases = function() {
-    window.browser.runtime.sendMessage({ refreshCanvases: true }, function(response) { });
+    var offScreenInput = document.getElementById("offScreen");
+    window.browser.runtime.sendMessage({ refreshCanvases: true, offScreen: offScreenInput.checked }, function(response) { });
 }
 
 var updateCanvasesListInformation = function (canvasesToSend) {
