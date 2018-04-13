@@ -76,6 +76,7 @@ var spectorCaptureOnLoadKey = "SPECTOR_CAPTUREONLOAD";
 var spectorCaptureOnLoadCommandCountKey = "SPECTOR_CAPTUREONLOAD_COMMANDCOUNT";
 var spectorCaptureOnLoadTransientKey = "SPECTOR_CAPTUREONLOAD_TRANSIENT";
 var spectorCaptureOnLoadQuickCaptureKey = "SPECTOR_CAPTUREONLOAD_QUICKCAPTURE";
+var captureOffScreenKey = "SPECTOR_CAPTUREOFFSCREEN";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
 var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATION_QUICKCAPTURE";
 var spectorCommunicationRebuildProgramElementId = "SPECTOR_COMMUNICATION_REBUILDPROGRAM";
@@ -86,6 +87,7 @@ var captureOnLoad = false;
 var captureOnLoadTransient = false;
 var captureOnLoadQuickCapture = false;
 var captureOnLoadCommandCount = 500;
+var captureOffScreen = false;
 
 if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
     sessionStorage.setItem(spectorCaptureOnLoadKey, "false");
@@ -96,9 +98,12 @@ if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
     captureOnLoadCommandCount = parseInt(sessionStorage.getItem(spectorCaptureOnLoadCommandCountKey));
 }
 
+captureOffScreen = (sessionStorage.getItem(captureOffScreenKey) === "true");
+
 var canvasGetContextDetection = `
     var spector;
     var captureOnLoad = ${captureOnLoad ? "true" : "false"};
+    var captureOffScreen = ${captureOffScreen ? "true" : "false"};
     window.__SPECTOR_Canvases = [];
 
     (function() {
@@ -131,15 +136,17 @@ var canvasGetContextDetection = `
                 var myEvent = new CustomEvent("SpectorWebGLCanvasAvailableEvent");
                 document.dispatchEvent(myEvent);
 
-                var found = false;
-                for (var i = 0; i < window.__SPECTOR_Canvases.length; i++) {
-                    if (window.__SPECTOR_Canvases[i] === this) {
-                        found = true;
-                        break;
+                if (captureOffScreen) {
+                    var found = false;
+                    for (var i = 0; i < window.__SPECTOR_Canvases.length; i++) {
+                        if (window.__SPECTOR_Canvases[i] === this) {
+                            found = true;
+                            break;
+                        }
                     }
-                }
-                if (!found) {
-                    window.__SPECTOR_Canvases.push(this);
+                    if (!found) {
+                        window.__SPECTOR_Canvases.push(this);
+                    }
                 }
 
                 if (captureOnLoad) {
@@ -157,7 +164,6 @@ var canvasGetContextDetection = `
 insertTextScript(canvasGetContextDetection);
 
 var frameId = null;
-var offScreen = false;
 
 // In case the spector injection has been requested, inject the library in the page.
 if (sessionStorage.getItem(spectorLoadedKey)) {
@@ -185,7 +191,12 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
             document.addEventListener("SpectorRequestCaptureEvent", function(e) {
                 var canvasIndex = document.getElementById('${spectorCommunicationElementId}').value;
 
-                var canvas = window.__SPECTOR_Canvases[canvasIndex];
+                var canvas = null;
+                if (${captureOffScreen}) {
+                    canvas = window.__SPECTOR_Canvases[canvasIndex];
+                } else {
+                    canvas = document.body.querySelectorAll("canvas")[canvasIndex]; 
+                }
                 var quickCapture = (document.getElementById('${spectorCommunicationQuickCaptureElementId}').value === "true");
                 spector.captureCanvas(canvas, 0, quickCapture);
             });
@@ -218,8 +229,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                         id: canvas.id,
                         width: canvas.width,
                         height: canvas.height,
-                        ref: i,
-                        offScreen: !document.body.contains(canvas)
+                        ref: i
                     });
                 }
                 var myEvent = new CustomEvent("SpectorOnCanvasListEvent", { 
@@ -320,18 +330,16 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         var uiInformation = [];
         for (var i = 0; i < canvasList.length; i++) {
             var canvasInformation = canvasList[i];
-            if (canvasInformation.offScreen === offScreen) {
-                uiInformation.push({
-                    id: canvasInformation.id,
-                    width: canvasInformation.width,
-                    height: canvasInformation.height,
-                    ref: canvasInformation.ref
-                });
-            }
+            uiInformation.push({
+                id: canvasInformation.id,
+                width: canvasInformation.width,
+                height: canvasInformation.height,
+                ref: canvasInformation.ref
+            });
         }
 
         // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
-        sendMessage({ canvases: uiInformation }, function (response) {
+        sendMessage({ canvases: uiInformation, captureOffScreen: true }, function (response) {
             frameId = response.frameId;
         });
     });
@@ -345,10 +353,43 @@ else {
     }, false);
 }
 
-var getCanvases = function(offScreenParam) {
-    offScreen = !!offScreenParam;
-    var myEvent = new CustomEvent("SpectorRequestCanvasListEvent");
-    document.dispatchEvent(myEvent);
+var refreshCanvases = function() {
+    if (captureOffScreen) {
+        // List is retrieved from all the ever created canvases.
+        var myEvent = new CustomEvent("SpectorRequestCanvasListEvent");
+        document.dispatchEvent(myEvent);
+    }
+    else {
+        if (document.body) {
+            var canvasElements = document.body.querySelectorAll("canvas");
+            if (canvasElements.length > 0) {
+
+                var canvasesInformation = [];
+                for (var i = 0; i < canvasElements.length; i++) {
+                    var canvas = canvasElements[i];
+                    var context = null;
+                    try {
+                        context = canvas.getContext(canvas.getAttribute(spectorContextTypeKey));
+                    }
+                    catch (e) {
+                        // Do Nothing.
+                    }
+                    
+                    if (context) {
+                        canvasesInformation.push({
+                            id: canvas.id,
+                            width: canvas.width,
+                            height: canvas.height,
+                            ref: i
+                        });
+                    }
+                }
+                sendMessage({ canvases: canvasesInformation, captureOffScreen: false }, function (response) {
+                    frameId = response.frameId;
+                });
+            }
+        }
+    }
 }
 
 // Check for existing canvas a bit after the end of the loading.
@@ -358,6 +399,13 @@ document.addEventListener("DOMContentLoaded", function () {
         sendMessage({ present: 2 }, function (response) {
             frameId = response.frameId;
         });
+
+        // Refresh the canvas list.
+        setTimeout(function () {
+            sendMessage({ pageReload: true }, function (response) {
+                frameId = response.frameId;
+            });
+        }, 500);
     }
 });
 
@@ -376,6 +424,14 @@ listenForMessage(function (message) {
             setTimeout(function () { window.location.reload(); }, 50);
             return;
         }
+    }
+
+    // Set offscreen canvas mode.
+    if (action === "changeOffScreen") {
+        sessionStorage.setItem(captureOffScreenKey, message.captureOffScreen ? "true" : "false");
+        // Delay for all frames.
+        setTimeout(function () { window.location.reload(); }, 50);
+        return;
     }
 
     // We need to reload to inject the capture loading sequence.
@@ -403,8 +459,8 @@ listenForMessage(function (message) {
 
     // Let s refresh the canvases list. 
     if (action === "requestCanvases") {
-        setTimeout(function () { getCanvases(message.offScreen); }, 0);
-        setTimeout(function () { getCanvases(message.offScreen); }, 1000);
+        setTimeout(function () { refreshCanvases(); }, 0);
+        setTimeout(function () { refreshCanvases(); }, 1000);
         return;
     }
 
