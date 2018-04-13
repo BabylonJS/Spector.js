@@ -4,8 +4,9 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
-## v0.9.4 Textures (I will do it... someday)
-In progress
+## v0.9.4 Memory Leak Fix
+This release is fixing a memory leak intriduced through the 0.9.3 version in the extension:
+- [Do not Retain Canvas/Context in extension to prevent memory leaks](https://github.com/BabylonJS/Spector.js/issues/87)
 
 ## v0.9.3 Fixes
 This release is meant to address the few bugs found during a bug bash session:

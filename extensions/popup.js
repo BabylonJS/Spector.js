@@ -19,6 +19,7 @@ function sendMessage(message) {
 //_____________________________________________________________________________________
 
 var ui = null;
+var offScreenInput = null;
 
 // Display the capture UI.
 window.addEventListener("DOMContentLoaded", function() {
@@ -31,7 +32,7 @@ window.addEventListener("DOMContentLoaded", function() {
     var captureOnLoadCountInput = document.getElementById("captureOnLoadCount");
     var captureOnLoadTransientInput = document.getElementById("captureOnLoadTransient");
     var quickCaptureInput = document.getElementById("quickCapture");
-    var offScreenInput = document.getElementById("offScreen");
+    offScreenInput = document.getElementById("offScreen");
 
     captureOnLoadElement.addEventListener("click", (e) => { 
         var transient = captureOnLoadTransientInput.checked;
@@ -44,14 +45,21 @@ window.addEventListener("DOMContentLoaded", function() {
         return false; 
     });
 
-    offScreenInput.onchange = function() {
-        refreshCanvases();
+    offScreenInput.onchange = () => {
+        this.changeOffScreenStatus(offScreenInput.checked);
     };
 
     initUI();
     refreshCanvases();
     playAll();
 });
+
+var changeOffScreenStatus = function(offScreen) {
+    sendMessage({ 
+        action: "changeOffScreen",
+        captureOffScreen : offScreen,
+    });
+}
 
 var captureonLoad = function(commandCount, transient, quickCapture) {
     sendMessage({ 
@@ -125,12 +133,12 @@ var initUI = function() {
 }
 
 var refreshCanvases = function() {
-    var offScreenInput = document.getElementById("offScreen");
-    window.browser.runtime.sendMessage({ refreshCanvases: true, offScreen: offScreenInput.checked }, function(response) { });
+    window.browser.runtime.sendMessage({ refreshCanvases: true }, function(response) { });
 }
 
 var updateCanvasesListInformation = function (canvasesToSend) {
-    ui.updateCanvasesListInformation(canvasesToSend);
+    ui.updateCanvasesListInformation(canvasesToSend.canvases);
+    offScreenInput.checked = canvasesToSend.captureOffScreen;
 }
 
 var refreshFps = function(fps, frameId, tabId) {

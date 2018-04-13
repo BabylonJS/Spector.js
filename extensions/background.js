@@ -27,15 +27,16 @@ var currentTabId = null;
 var refreshCanvases = function() {
     var popup = window.browser.extension.getViews({ type: "popup" })[0];
     if (popup != null) {
-        var canvasesToSend = [];
+        var canvasesToSend = { canvases: [], captureOffScreen: false };
         window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
             for (var tabId in tabInfo) {
                 if (tabId == tabs[0].id) {
                     for (var frameId in tabInfo[tabId]) {
                         var infos = tabInfo[tabId][frameId];
-                        for (var i = 0; i < infos.length; i++) {
-                            var info = infos[i];
-                            canvasesToSend.push({
+                        canvasesToSend.captureOffScreen = infos.captureOffScreen;
+                        for (var i = 0; i < infos.canvases.length; i++) {
+                            var info = infos.canvases[i];
+                            canvasesToSend.canvases.push({
                                 id: info.id,
                                 width: info.width,
                                 height: info.height,
@@ -85,7 +86,7 @@ listenForMessage(function(request, sender, sendResponse) {
     else if (request.refreshCanvases) {
         window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
             tabInfo = {}
-            sendMessage({ action: "requestCanvases", offScreen: request.offScreen });
+            sendMessage({ action: "requestCanvases" });
 
             setTimeout(function() { refreshCanvases(); }, 500);
             setTimeout(function() { refreshCanvases(); }, 2000);
@@ -105,7 +106,7 @@ listenForMessage(function(request, sender, sendResponse) {
             tabInfo[tabId] = { };
         }
 
-        tabInfo[tabId][frameId] = request.canvases;
+        tabInfo[tabId][frameId] = { canvases: request.canvases, captureOffScreen: request.captureOffScreen };
     }
     else if (request.errorString) {
         // Close the wait message and may display an error.
@@ -138,6 +139,13 @@ listenForMessage(function(request, sender, sendResponse) {
         var popup = window.browser.extension.getViews({ type: "popup" })[0];
         if (popup != null && popup.captureComplete) {
             popup.captureComplete();
+        }
+    }
+    else if (request.pageReload) {
+        // Display the fps of the selected frame.
+        var popup = window.browser.extension.getViews({ type: "popup" })[0];
+        if (popup != null && popup.refreshCanvases) {
+            popup.refreshCanvases();
         }
     }
 
