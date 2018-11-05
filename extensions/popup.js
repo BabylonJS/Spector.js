@@ -29,10 +29,26 @@ window.addEventListener("DOMContentLoaded", function() {
     openCaptureFileElement.addEventListener("drop", (e) => { this.drop(e); }, false);
 
     var captureOnLoadElement = document.getElementById("captureOnLoad");
+    var captureNowElement = document.getElementById("captureNow");
     var captureOnLoadCountInput = document.getElementById("captureOnLoadCount");
     var captureOnLoadTransientInput = document.getElementById("captureOnLoadTransient");
     var quickCaptureInput = document.getElementById("quickCapture");
     offScreenInput = document.getElementById("offScreen");
+
+    captureNowElement.addEventListener("click", (e) => {
+        var commandCount = parseInt(captureOnLoadCountInput.value);
+        if (commandCount < 0 || commandCount === Number.NaN) {
+            commandCount = 500;
+        }
+        var quickCaptureInput = document.getElementById("quickCapture");
+
+        var canvasInfo = ui.getSelectedCanvasInformation();
+        if (canvasInfo) {
+            var canvasRef = canvasInfo.ref;
+            this.captureNow(canvasRef, quickCaptureInput.checked, commandCount);
+        }
+        return false; 
+    });
 
     captureOnLoadElement.addEventListener("click", (e) => { 
         var transient = captureOnLoadTransientInput.checked;
@@ -54,10 +70,21 @@ window.addEventListener("DOMContentLoaded", function() {
     playAll();
 });
 
-var changeOffScreenStatus = function(offScreen) {
+var captureCanvas = function(e) {
+    if (e) {
+        var quickCaptureInput = document.getElementById("quickCapture");
+        var canvasRef = e.ref;
+
+        captureNow(canvasRef, quickCaptureInput.checked, 0);
+    }
+}
+
+var captureNow = function(canvasRef, quickCapture, commandCount) {
     sendMessage({ 
-        action: "changeOffScreen",
-        captureOffScreen : offScreen,
+        action: "capture", 
+        canvasRef: canvasRef,
+        quickCapture: quickCapture,
+        commandCount: commandCount
     });
 }
 
@@ -67,6 +94,13 @@ var captureonLoad = function(commandCount, transient, quickCapture) {
         commandCount : commandCount,
         transient: transient,
         quickCapture: quickCapture
+    });
+}
+
+var changeOffScreenStatus = function(offScreen) {
+    sendMessage({ 
+        action: "changeOffScreen",
+        captureOffScreen : offScreen,
     });
 }
 
@@ -173,16 +207,3 @@ var pause = function(e) {
         sendMessage({ action: "pause", canvasRef: e.ref });
     }
 }
-
-var captureCanvas = function(e) {
-    if (e) {
-        var quickCaptureInput = document.getElementById("quickCapture");
-
-        sendMessage({ 
-            action: "capture", 
-            canvasRef: e.ref,
-            quickCapture: quickCaptureInput.checked
-        });
-    }
-}
-

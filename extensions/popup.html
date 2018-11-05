@@ -80,13 +80,13 @@
             color: #f9f9f9;
         }
 
-        #captureOnLoad {
+        #captureOnLoad, #captureNow {
             color: #f9f9f9;
             text-decoration: underline;
             font-weight: 500;
         }
 
-        #captureOnLoad:hover {
+        #captureOnLoad:hover, #captureNow:hover {
             color: red;
             cursor: pointer; 
             transition: color 0.3s;
@@ -115,9 +115,9 @@
             <label><input type="checkbox" id="quickCapture" /> Quick Capture (no thumbnails)</label> 
         </p>
         <p>
-            Capture <input type="text" id="captureOnLoadCount" value="500" />
+            <input type="text" id="captureOnLoadCount" value="500" />
             first commands (<label><input type="checkbox" id="captureOnLoadTransient" /> transient</label>):
-            <span id="captureOnLoad">Reload</span>.
+            <span id="captureNow">Capture</span>/<span id="captureOnLoad">Reload</span>.
         </p>
     </div>
 

@@ -79,6 +79,7 @@ var spectorCaptureOnLoadQuickCaptureKey = "SPECTOR_CAPTUREONLOAD_QUICKCAPTURE";
 var captureOffScreenKey = "SPECTOR_CAPTUREOFFSCREEN";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
 var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATION_QUICKCAPTURE";
+var spectorCommunicationCommandCountElementId = "SPECTOR_COMMUNICATION_COMMANDCOUNT";
 var spectorCommunicationRebuildProgramElementId = "SPECTOR_COMMUNICATION_REBUILDPROGRAM";
 
 var spectorContextTypeKey = "__spector_context_type";
@@ -198,7 +199,9 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                     canvas = document.body.querySelectorAll("canvas")[canvasIndex]; 
                 }
                 var quickCapture = (document.getElementById('${spectorCommunicationQuickCaptureElementId}').value === "true");
-                spector.captureCanvas(canvas, 0, quickCapture);
+                var commandCount = 0 + document.getElementById('${spectorCommunicationCommandCountElementId}').value;
+
+                spector.captureCanvas(canvas, commandCount, quickCapture);
             });
             document.addEventListener("SpectorRequestRebuildProgramEvent", function(e) {
                 var buildInfoInText = document.getElementById('${spectorCommunicationRebuildProgramElementId}').value;
@@ -277,7 +280,11 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         var input3 = document.createElement('input');
         input3.type = 'Hidden';
         input3.id = '${spectorCommunicationRebuildProgramElementId}';
-        document.body.appendChild(input3);`;
+        document.body.appendChild(input3);
+        var input4 = document.createElement('input');
+        input4.type = 'Hidden';
+        input4.id = '${spectorCommunicationCommandCountElementId}';
+        document.body.appendChild(input4);`;
 
         insertTextScript(script);
     });
@@ -490,6 +497,10 @@ listenForMessage(function (message) {
             var inputQuickCapture = document.getElementById(spectorCommunicationQuickCaptureElementId);
             if (inputQuickCapture) {
                 inputQuickCapture.value = message.quickCapture ? "true" : "false";
+            }
+            var inputCommandCount = document.getElementById(spectorCommunicationCommandCountElementId);
+            if (inputCommandCount) {
+                inputCommandCount.value = message.commandCount;
             }
 
             var myEvent = new CustomEvent("SpectorRequestCaptureEvent");
