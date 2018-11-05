@@ -7,7 +7,7 @@ Please, find below the per release summary of the contribution added to the proj
 ## v0.9.5 Bug Fix and Caputre by Command Count
 This minor release is adding the capability to capture a certain amount of commands instead of a frame. This can help in case commands are called outside the RAF event.
 
-This also addresses one bug fix and is [drawArraysInstancedANGLE is not recognized](https://github.com/BabylonJS/Spector.js/issues/92)
+This also addresses one bug fix: [drawArraysInstancedANGLE is not recognized](https://github.com/BabylonJS/Spector.js/issues/92)
 
 ## v0.9.4 Memory Leak Fix
 This release is fixing a memory leak introduced through the 0.9.3 version in the extension:
