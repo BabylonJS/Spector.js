@@ -59,7 +59,7 @@ var createScene = function (engine, canvas) {
 };
 
 var renderCanvas = document.getElementById('renderCanvas');
-var engine = new BABYLON.Engine(renderCanvas);
+var engine = new BABYLON.Engine(renderCanvas, true, { disableWebGL2Support: true });
 var scene = createScene(engine, renderCanvas);
 
 engine.runRenderLoop(function () {

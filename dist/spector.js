@@ -919,6 +919,7 @@ var SPECTOR;
             drawArrays: "POINTS",
             drawElements: "POINTS",
             drawArraysInstanced: "POINTS",
+            drawArraysInstancedAngle: "POINTS",
             drawBuffers: "POINTS",
             drawElementsInstanced: "POINTS",
             drawRangeElements: "POINTS",
@@ -929,6 +930,7 @@ var SPECTOR;
             drawArrays: "LINES",
             drawElements: "LINES",
             drawArraysInstanced: "LINES",
+            drawArraysInstancedAngle: "LINES",
             drawBuffers: "LINES",
             drawElementsInstanced: "LINES",
             drawRangeElements: "LINES",
@@ -1881,9 +1883,12 @@ var SPECTOR;
     })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
 })(SPECTOR || (SPECTOR = {}));
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -2209,6 +2214,31 @@ var SPECTOR;
 (function (SPECTOR) {
     var Commands;
     (function (Commands) {
+        var DrawArraysInstancedAngle = /** @class */ (function (_super) {
+            __extends(DrawArraysInstancedAngle, _super);
+            function DrawArraysInstancedAngle() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            DrawArraysInstancedAngle.prototype.stringifyArgs = function (args) {
+                var stringified = [];
+                stringified.push(SPECTOR.WebGlConstants.stringifyWebGlConstant(args[0], "drawArraysInstancedANGLE"));
+                stringified.push(args[1]);
+                stringified.push(args[2]);
+                stringified.push(args[3]);
+                return stringified;
+            };
+            DrawArraysInstancedAngle = __decorate([
+                SPECTOR.Decorators.command("drawArraysInstancedANGLE")
+            ], DrawArraysInstancedAngle);
+            return DrawArraysInstancedAngle;
+        }(Commands.BaseCommand));
+        Commands.DrawArraysInstancedAngle = DrawArraysInstancedAngle;
+    })(Commands = SPECTOR.Commands || (SPECTOR.Commands = {}));
+})(SPECTOR || (SPECTOR = {}));
+var SPECTOR;
+(function (SPECTOR) {
+    var Commands;
+    (function (Commands) {
         var DrawBuffers = /** @class */ (function (_super) {
             __extends(DrawBuffers, _super);
             function DrawBuffers() {
@@ -2445,6 +2475,7 @@ var SPECTOR;
                 BaseRecorder.initializeByteSizeFormat();
             }
             BaseRecorder.initializeByteSizeFormat = function () {
+                var _a;
                 if (this.byteSizePerInternalFormat) {
                     return;
                 }
@@ -2492,7 +2523,6 @@ var SPECTOR;
                     _a[SPECTOR.WebGlConstants.COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2.value] = 4,
                     _a[SPECTOR.WebGlConstants.COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2.value] = 4,
                     _a);
-                var _a;
             };
             BaseRecorder.prototype.registerCallbacks = function (onFunctionCallbacks) {
                 for (var _i = 0, _a = this.createCommandNames; _i < _a.length; _i++) {
@@ -3286,6 +3316,7 @@ var SPECTOR;
             "drawArrays",
             "drawElements",
             "drawArraysInstanced",
+            "drawArraysInstancedANGLE",
             "drawElementsInstanced",
             "drawElementsInstancedANGLE",
             "drawRangeElements",
@@ -4286,6 +4317,7 @@ var SPECTOR;
             StencilState.prototype.isStateEnable = function (stateName, args) {
                 return this.context.isEnabled(SPECTOR.WebGlConstants.STENCIL_TEST.value);
             };
+            var StencilState_1;
             StencilState.stencilOpStates = [SPECTOR.WebGlConstants.STENCIL_BACK_FAIL.value,
                 SPECTOR.WebGlConstants.STENCIL_BACK_PASS_DEPTH_FAIL.value,
                 SPECTOR.WebGlConstants.STENCIL_BACK_PASS_DEPTH_PASS.value,
@@ -4304,7 +4336,6 @@ var SPECTOR;
                 SPECTOR.Decorators.state("StencilState")
             ], StencilState);
             return StencilState;
-            var StencilState_1;
         }(States.ParameterState));
         States.StencilState = StencilState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
@@ -4531,12 +4562,12 @@ var SPECTOR;
             VisualState.prototype.analyse = function (consumeCommand) {
                 // Nothing to analyse on visual state.
             };
+            var VisualState_1;
             VisualState.captureBaseSize = 256;
             VisualState = VisualState_1 = __decorate([
                 SPECTOR.Decorators.state("VisualState")
             ], VisualState);
             return VisualState;
-            var VisualState_1;
         }(States.BaseState));
         States.VisualState = VisualState;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
@@ -4545,6 +4576,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
+        var _a;
         var DrawCallState = /** @class */ (function (_super) {
             __extends(DrawCallState, _super);
             function DrawCallState(options, logger) {
@@ -5026,6 +5058,7 @@ var SPECTOR;
                     return null;
                 }
             };
+            var DrawCallState_1;
             DrawCallState.samplerTypes = (_a = {},
                 _a[SPECTOR.WebGlConstants.SAMPLER_2D.value] = SPECTOR.WebGlConstants.TEXTURE_2D,
                 _a[SPECTOR.WebGlConstants.SAMPLER_CUBE.value] = SPECTOR.WebGlConstants.TEXTURE_CUBE_MAP,
@@ -5047,10 +5080,8 @@ var SPECTOR;
                 SPECTOR.Decorators.state("DrawCall")
             ], DrawCallState);
             return DrawCallState;
-            var DrawCallState_1;
         }(States.BaseState));
         States.DrawCallState = DrawCallState;
-        var _a;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
@@ -5233,6 +5264,7 @@ var SPECTOR;
 (function (SPECTOR) {
     var States;
     (function (States) {
+        var _a;
         var DrawCallUboInputState = /** @class */ (function () {
             function DrawCallUboInputState(options, logger) {
                 this.logger = logger;
@@ -5294,7 +5326,6 @@ var SPECTOR;
             return DrawCallUboInputState;
         }());
         States.DrawCallUboInputState = DrawCallUboInputState;
-        var _a;
     })(States = SPECTOR.States || (SPECTOR.States = {}));
 })(SPECTOR || (SPECTOR = {}));
 var SPECTOR;
@@ -5627,10 +5658,12 @@ var SPECTOR;
                     }
                 }
             };
+            var CommandsSummaryAnalyser_1;
             CommandsSummaryAnalyser.drawCommands = [
                 "drawArrays",
                 "drawElements",
                 "drawArraysInstanced",
+                "drawArraysInstancedANGLE",
                 "drawElementsInstanced",
                 "drawElementsInstancedANGLE",
                 "drawRangeElements",
@@ -5639,7 +5672,6 @@ var SPECTOR;
                 SPECTOR.Decorators.analyser("CommandsSummary")
             ], CommandsSummaryAnalyser);
             return CommandsSummaryAnalyser;
-            var CommandsSummaryAnalyser_1;
         }(Analysers.BaseAnalyser));
         Analysers.CommandsSummaryAnalyser = CommandsSummaryAnalyser;
     })(Analysers = SPECTOR.Analysers || (SPECTOR.Analysers = {}));

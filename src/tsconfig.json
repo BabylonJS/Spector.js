@@ -55,6 +55,7 @@
         "backend/commands/getParameter.ts",
         "backend/commands/drawArrays.ts",
         "backend/commands/drawArraysInstanced.ts",
+        "backend/commands/drawArraysInstancedAngle.ts",
         "backend/commands/drawBuffers.ts",
         "backend/commands/drawElements.ts",
         "backend/commands/drawElementsInstanced.ts",

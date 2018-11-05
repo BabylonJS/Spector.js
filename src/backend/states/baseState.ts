@@ -24,6 +24,7 @@ namespace SPECTOR.States {
         "drawArrays",
         "drawElements",
         "drawArraysInstanced",
+        "drawArraysInstancedANGLE",
         "drawElementsInstanced",
         "drawElementsInstancedANGLE",
         "drawRangeElements",

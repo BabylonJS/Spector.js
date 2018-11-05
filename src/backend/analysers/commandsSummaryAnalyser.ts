@@ -7,6 +7,7 @@ namespace SPECTOR.Analysers {
             "drawArrays",
             "drawElements",
             "drawArraysInstanced",
+            "drawArraysInstancedANGLE",
             "drawElementsInstanced",
             "drawElementsInstancedANGLE",
             "drawRangeElements",

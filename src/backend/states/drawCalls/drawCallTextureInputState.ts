@@ -27,9 +27,9 @@ namespace SPECTOR.States {
             this.captureCanvas = document.createElement("canvas");
             this.captureContext2D = this.captureCanvas.getContext("2d");
             this.captureContext2D.imageSmoothingEnabled = true;
-            this.captureContext2D.mozImageSmoothingEnabled = true;
-            this.captureContext2D.oImageSmoothingEnabled = true;
-            this.captureContext2D.webkitImageSmoothingEnabled = true;
+            (this.captureContext2D as any).mozImageSmoothingEnabled = true;
+            (this.captureContext2D as any).oImageSmoothingEnabled = true;
+            (this.captureContext2D as any).webkitImageSmoothingEnabled = true;
             (this.captureContext2D as any).msImageSmoothingEnabled = true;
         }
 
