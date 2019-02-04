@@ -112,8 +112,7 @@ If, like BabylonJS, you would like to be able to integrate live shader support e
 
 At any time you are linking a ```ShaderProgram``` in your engine, simply append to it a **rebuild function** allowing your engine to recompile the shader as well as managing all the different states associated to it. The signature of the function should be as follow to be called by Spector:
 ```
-rebuildProgram(program: WebGLProgram, // The Program to rebuild
-            vertexSourceCode: string, // The new vertex shader source
+rebuildProgram(vertexSourceCode: string, // The new vertex shader source
             fragmentSourceCode: string, // The new fragment shader source
             onCompiled: (program: WebGLProgram) => void, // Callback triggered by your engine when the compilation is successful. It needs to send back the new linked program.
             onError: (message: string) => void): void; // Callback triggered by your engine in case of error. It needs to send the WebGL error to allow the editor to display the error in the gutter.
