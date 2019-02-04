@@ -20,9 +20,7 @@ namespace SPECTOR {
         readonly type: Function;
     }
 
-    export type WebGlObjectConstructor = {
-        new(options: IWebGlObjectOptions, logger: ILogger): IWebGlObject;
-    };
+    export type WebGlObjectConstructor = new (options: IWebGlObjectOptions, logger: ILogger) => IWebGlObject;
 }
 
 namespace SPECTOR.WebGlObjects {

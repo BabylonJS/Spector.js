@@ -15,9 +15,7 @@ namespace SPECTOR {
         readonly webGlObjectNamespace: FunctionIndexer;
     }
 
-    export type WebGlObjectSpyConstructor = {
-        new (options: IWebGlObjectSpyOptions, logger: ILogger): IWebGlObjectSpy,
-    };
+    export type WebGlObjectSpyConstructor = new (options: IWebGlObjectSpyOptions, logger: ILogger) => IWebGlObjectSpy;
 }
 
 namespace SPECTOR.Spies {
@@ -26,7 +24,7 @@ namespace SPECTOR.Spies {
         public readonly contextInformation: IContextInformation;
 
         private readonly webGlObjectConstructors:
-        { [typeName: string]: { ctor: WebGlObjectConstructor, type: Function } };
+            { [typeName: string]: { ctor: WebGlObjectConstructor, type: Function } };
         private readonly webGlObjects: { [typeName: string]: IWebGlObject };
 
         constructor(private readonly options: IWebGlObjectSpyOptions, private readonly logger: ILogger) {

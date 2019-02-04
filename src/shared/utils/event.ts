@@ -6,9 +6,7 @@ namespace SPECTOR {
         trigger(value: T): void;
     }
 
-    export type EventConstructor = {
-        new <T>(): IEvent<T>,
-    };
+    export type EventConstructor = new <T>() => IEvent<T>;
 }
 
 namespace SPECTOR.Utils {

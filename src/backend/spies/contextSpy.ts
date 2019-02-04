@@ -25,9 +25,7 @@ namespace SPECTOR {
         injection: InjectionType;
     }
 
-    export type ContextSpyConstructor = {
-        new(options: IContextSpyOptions, time: ITime, logger: ILogger): IContextSpy;
-    };
+    export type ContextSpyConstructor = new (options: IContextSpyOptions, time: ITime, logger: ILogger) => IContextSpy;
 }
 
 namespace SPECTOR.Spies {

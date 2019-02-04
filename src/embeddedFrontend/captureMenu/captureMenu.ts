@@ -32,9 +32,7 @@ namespace SPECTOR {
         readonly hideLog?: boolean;
     }
 
-    export type CaptureMenuConstructor = {
-        new (options: ICaptureMenuOptions, logger: ILogger): ICaptureMenu,
-    };
+    export type CaptureMenuConstructor = new (options: ICaptureMenuOptions, logger: ILogger) => ICaptureMenu;
 }
 
 namespace SPECTOR.EmbeddedFrontend {

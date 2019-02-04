@@ -13,9 +13,7 @@ namespace SPECTOR {
         readonly stateNamespace: FunctionIndexer;
     }
 
-    export type StateSpyConstructor = {
-        new(options: IStateSpyOptions, logger: ILogger): IStateSpy,
-    };
+    export type StateSpyConstructor = new (options: IStateSpyOptions, logger: ILogger) => IStateSpy;
 }
 
 namespace SPECTOR.Spies {

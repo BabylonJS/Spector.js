@@ -3,9 +3,7 @@ namespace SPECTOR {
         getStackTrace(removeFirstNCalls?: number, removeLastNCalls?: number): string[];
     }
 
-    export type StackTraceConstructor = {
-        new(): IStackTrace;
-    };
+    export type StackTraceConstructor = new () => IStackTrace;
 }
 
 namespace SPECTOR.Utils {

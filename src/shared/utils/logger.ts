@@ -13,9 +13,7 @@ namespace SPECTOR {
         info(msg: string, ...restOfMsg: string[]): void;
     }
 
-    export type LoggerConstructor = {
-        new (level?: LogLevel): Utils.ConsoleLogger;
-    };
+    export type LoggerConstructor = new (level?: LogLevel) => Utils.ConsoleLogger;
 }
 
 namespace SPECTOR.Utils {

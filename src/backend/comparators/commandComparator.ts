@@ -4,9 +4,7 @@ namespace SPECTOR {
         compare(commandA: ICommandCapture, commandB: ICommandCapture): ICommandCaptureComparison;
     }
 
-    export type CommandComparatorConstructor = {
-        new (logger: ILogger): ICommandComparator;
-    };
+    export type CommandComparatorConstructor = new (logger: ILogger) => ICommandComparator;
 }
 
 namespace SPECTOR.Comparators {

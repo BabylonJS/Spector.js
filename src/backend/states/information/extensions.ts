@@ -3,9 +3,7 @@ namespace SPECTOR {
         getExtensions(): ExtensionList;
     }
 
-    export type ExtensionsConstructor = {
-        new(options: IStateOptions, logger: ILogger): IExtensions;
-    };
+    export type ExtensionsConstructor = new (options: IStateOptions, logger: ILogger) => IExtensions;
 }
 
 namespace SPECTOR.States.Information {

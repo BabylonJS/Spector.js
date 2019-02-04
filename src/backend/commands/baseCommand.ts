@@ -10,9 +10,7 @@ namespace SPECTOR {
         readonly spiedCommandName: string;
     }
 
-    export type CommandConstructor = {
-        new(options: ICommandOptions, stackTrace: IStackTrace, logger: ILogger): ICommand;
-    };
+    export type CommandConstructor = new (options: ICommandOptions, stackTrace: IStackTrace, logger: ILogger) => ICommand;
 }
 
 namespace SPECTOR.Commands {

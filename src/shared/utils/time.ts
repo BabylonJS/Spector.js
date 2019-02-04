@@ -3,9 +3,7 @@ namespace SPECTOR {
         readonly now: number;
     }
 
-    export type TimeConstructor = {
-        new (): ITime;
-    };
+    export type TimeConstructor = new () => ITime;
 }
 
 namespace SPECTOR.Utils {

@@ -14,9 +14,7 @@ namespace SPECTOR {
         readonly timeConstructor: TimeConstructor;
     }
 
-    export type RecorderSpyConstructor = {
-        new (options: IRecorderSpyOptions, logger: ILogger): IRecorderSpy;
-    };
+    export type RecorderSpyConstructor = new (options: IRecorderSpyOptions, logger: ILogger) => IRecorderSpy;
 }
 
 namespace SPECTOR.Spies {

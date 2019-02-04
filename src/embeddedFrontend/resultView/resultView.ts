@@ -23,9 +23,7 @@ namespace SPECTOR {
         readonly rootPlaceHolder?: Element;
     }
 
-    export type ResultViewConstructor = {
-        new(options: IResultViewOptions, logger: ILogger): IResultView,
-    };
+    export type ResultViewConstructor = new (options: IResultViewOptions, logger: ILogger) => IResultView;
 }
 
 namespace SPECTOR.EmbeddedFrontend {

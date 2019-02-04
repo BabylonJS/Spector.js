@@ -18,9 +18,7 @@ namespace SPECTOR {
         timeConstructor: TimeConstructor;
     }
 
-    export type TimeSpyConstructor = {
-        new(options: ITimeSpyOptions, logger: ILogger): ITimeSpy;
-    };
+    export type TimeSpyConstructor = new (options: ITimeSpyOptions, logger: ILogger) => ITimeSpy;
 }
 
 namespace SPECTOR.Spies {

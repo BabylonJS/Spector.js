@@ -19,9 +19,7 @@ namespace SPECTOR {
         readonly defaultCommandCtor: CommandConstructor;
     }
 
-    export type CommandSpyConstructor = {
-        new(options: ICommandSpyOptions, time: ITime, logger: ILogger): ICommandSpy;
-    };
+    export type CommandSpyConstructor = new (options: ICommandSpyOptions, time: ITime, logger: ILogger) => ICommandSpy;
 }
 
 namespace SPECTOR.Spies {

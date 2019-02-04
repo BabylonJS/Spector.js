@@ -14,9 +14,7 @@ namespace SPECTOR {
         readonly stateName?: string;
     }
 
-    export type StateConstructor = {
-        new(options: IStateOptions, logger: ILogger): IState;
-    };
+    export type StateConstructor = new (options: IStateOptions, logger: ILogger) => IState;
 }
 
 namespace SPECTOR.States {

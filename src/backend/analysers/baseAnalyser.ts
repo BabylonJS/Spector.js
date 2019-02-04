@@ -10,9 +10,7 @@ namespace SPECTOR {
         readonly analyserName: string;
     }
 
-    export type AnalyserConstructor = {
-        new (options: IAnalyserOptions, logger: ILogger): IAnalyser;
-    };
+    export type AnalyserConstructor = new (options: IAnalyserOptions, logger: ILogger) => IAnalyser;
 }
 
 namespace SPECTOR.Analysers {

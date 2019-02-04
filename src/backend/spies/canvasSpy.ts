@@ -8,9 +8,7 @@ namespace SPECTOR {
         readonly eventConstructor: EventConstructor;
     }
 
-    export type CanvasSpyConstructor = {
-        new(options: ICanvasSpyOptions, logger: ILogger): ICanvasSpy,
-    };
+    export type CanvasSpyConstructor = new (options: ICanvasSpyOptions, logger: ILogger) => ICanvasSpy;
 }
 
 namespace SPECTOR.Spies {

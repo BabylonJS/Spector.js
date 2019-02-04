@@ -8,9 +8,7 @@ namespace SPECTOR {
         readonly analyserNamespace: FunctionIndexer;
     }
 
-    export type CaptureAnalyserConstructor = {
-        new (options: ICaptureAnalyserOptions, logger: ILogger): ICaptureAnalyser,
-    };
+    export type CaptureAnalyserConstructor = new (options: ICaptureAnalyserOptions, logger: ILogger) => ICaptureAnalyser;
 }
 
 namespace SPECTOR.Analysers {

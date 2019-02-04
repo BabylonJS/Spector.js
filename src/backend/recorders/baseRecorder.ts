@@ -13,9 +13,7 @@ namespace SPECTOR {
         readonly time: ITime;
     }
 
-    export type RecorderConstructor = {
-        new (options: IRecorderOptions, logger: ILogger): IRecorder;
-    };
+    export type RecorderConstructor = new (options: IRecorderOptions, logger: ILogger) => IRecorder;
 }
 
 namespace SPECTOR.Recorders {
