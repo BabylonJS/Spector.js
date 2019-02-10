@@ -1,6 +1,4 @@
-namespace SPECTOR {
-    export interface IAnalysis {
-        analyserName: string;
-        [key: string]: any;
-    }
+export interface IAnalysis {
+    analyserName: string;
+    [key: string]: any;
 }

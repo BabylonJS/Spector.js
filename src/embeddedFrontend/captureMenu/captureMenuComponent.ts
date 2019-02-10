@@ -1,24 +1,25 @@
-namespace SPECTOR.EmbeddedFrontend {
-    export interface ICaptureMenuComponentState {
-        readonly visible: boolean;
-        readonly logText: string;
-        readonly logLevel: LogLevel;
-        readonly logVisible: boolean;
-    }
+import { LogLevel } from "../../shared/utils/logger";
+import { BaseComponent } from "../mvx/baseComponent";
 
-    export class CaptureMenuComponent extends BaseComponent<ICaptureMenuComponentState> {
+export interface ICaptureMenuComponentState {
+    readonly visible: boolean;
+    readonly logText: string;
+    readonly logLevel: LogLevel;
+    readonly logVisible: boolean;
+}
 
-        public render(state: ICaptureMenuComponentState, stateId: number): Element {
+export class CaptureMenuComponent extends BaseComponent<ICaptureMenuComponentState> {
 
-            const htmlString = this.htmlTemplate`<div>
-                <div childrenContainer="true" class="captureMenuComponent ${state ? "active" : ""}">
-                </div>
-                <div class="captureMenuLogComponent ${state.logVisible ? "active" : ""}">
-                    <span class="${state.logLevel === LogLevel.error ? "error" : ""}">${state.logText}<span>
-                </div>
-            </div>`;
+    public render(state: ICaptureMenuComponentState, stateId: number): Element {
 
-            return this.renderElementFromTemplate(htmlString, state, stateId);
-        }
+        const htmlString = this.htmlTemplate`<div>
+            <div childrenContainer="true" class="captureMenuComponent ${state ? "active" : ""}">
+            </div>
+            <div class="captureMenuLogComponent ${state.logVisible ? "active" : ""}">
+                <span class="${state.logLevel === LogLevel.error ? "error" : ""}">${state.logText}<span>
+            </div>
+        </div>`;
+
+        return this.renderElementFromTemplate(htmlString, state, stateId);
     }
 }

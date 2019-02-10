@@ -1,13 +1,13 @@
-namespace SPECTOR {
-    export type WebGLRenderingContexts = (WebGLRenderingContext | WebGL2RenderingContext);
+import { WebGlObjectTag } from "../webGlObjects/baseWebGlObject";
 
-    export type ExtensionList = { [key: string]: any };
+export type WebGLRenderingContexts = (WebGLRenderingContext | WebGL2RenderingContext);
 
-    export interface IContextInformation {
-        readonly context: WebGLRenderingContexts;
-        readonly contextVersion: number;
-        readonly toggleCapture?: (capture: boolean) => void;
-        readonly tagWebGlObject?: (object: any) => WebGlObjectTag;
-        readonly extensions?: ExtensionList;
-    }
+export type ExtensionList = { [key: string]: any };
+
+export interface IContextInformation {
+    readonly context: WebGLRenderingContexts;
+    readonly contextVersion: number;
+    readonly toggleCapture?: (capture: boolean) => void;
+    readonly tagWebGlObject?: (object: any) => WebGlObjectTag;
+    readonly extensions?: ExtensionList;
 }

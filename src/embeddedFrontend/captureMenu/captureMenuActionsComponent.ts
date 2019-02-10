@@ -1,36 +1,36 @@
-namespace SPECTOR.EmbeddedFrontend {
-    export class CaptureMenuActionsComponent extends BaseComponent<boolean> {
-        public onCaptureRequested: IStateEvent<boolean>;
-        public onPlayRequested: IStateEvent<boolean>;
-        public onPauseRequested: IStateEvent<boolean>;
-        public onPlayNextFrameRequested: IStateEvent<boolean>;
+import { BaseComponent, IStateEvent } from "../mvx/baseComponent";
 
-        constructor(eventConstructor: EventConstructor, logger: ILogger) {
-            super(eventConstructor, logger);
-            this.onCaptureRequested = this.createEvent("onCaptureRequested");
-            this.onPlayRequested = this.createEvent("onPlayRequested");
-            this.onPauseRequested = this.createEvent("onPauseRequested");
-            this.onPlayNextFrameRequested = this.createEvent("onPlayNextFrameRequested");
-        }
+export class CaptureMenuActionsComponent extends BaseComponent<boolean> {
+    public onCaptureRequested: IStateEvent<boolean>;
+    public onPlayRequested: IStateEvent<boolean>;
+    public onPauseRequested: IStateEvent<boolean>;
+    public onPlayNextFrameRequested: IStateEvent<boolean>;
 
-        public render(state: boolean, stateId: number): Element {
+    constructor() {
+        super();
+        this.onCaptureRequested = this.createEvent("onCaptureRequested");
+        this.onPlayRequested = this.createEvent("onPlayRequested");
+        this.onPauseRequested = this.createEvent("onPauseRequested");
+        this.onPlayNextFrameRequested = this.createEvent("onPlayNextFrameRequested");
+    }
 
-            const htmlString = this.htmlTemplate`
-            <div class="captureMenuActionsComponent">
-                <div commandName="onCaptureRequested">
+    public render(state: boolean, stateId: number): Element {
+
+        const htmlString = this.htmlTemplate`
+        <div class="captureMenuActionsComponent">
+            <div commandName="onCaptureRequested">
+            </div>
+            $${!state ?
+                `<div commandName="onPlayRequested">
                 </div>
-                $${!state ?
-                    `<div commandName="onPlayRequested">
-                    </div>
-                    <div commandName="onPlayNextFrameRequested">
-                    </div>`
-                    :
-                    `<div commandName="onPauseRequested">
-                    </div>`
-                }
-            </div>`;
+                <div commandName="onPlayNextFrameRequested">
+                </div>`
+                :
+                `<div commandName="onPauseRequested">
+                </div>`
+            }
+        </div>`;
 
-            return this.renderElementFromTemplate(htmlString, state, stateId);
-        }
+        return this.renderElementFromTemplate(htmlString, state, stateId);
     }
 }

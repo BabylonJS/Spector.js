@@ -1,16 +1,10 @@
-namespace SPECTOR.EmbeddedFrontend {
+import { BaseComponent } from "../../mvx/baseComponent";
 
-    export class InformationColumnComponent extends BaseComponent<boolean> {
-
-        constructor(eventConstructor: EventConstructor, logger: ILogger) {
-            super(eventConstructor, logger);
-        }
-
-        public render(state: boolean, stateId: number): Element {
-            const htmlString = this.htmlTemplate`
+export class InformationColumnComponent extends BaseComponent<boolean> {
+    public render(state: boolean, stateId: number): Element {
+        const htmlString = this.htmlTemplate`
                 <div childrenContainer="true" class="${state ? "informationColumnLeftComponent" : "informationColumnRightComponent"}"></div>`;
 
-            return this.renderElementFromTemplate(htmlString, state, stateId);
-        }
+        return this.renderElementFromTemplate(htmlString, state, stateId);
     }
 }

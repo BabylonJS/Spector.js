@@ -1,21 +1,22 @@
-namespace SPECTOR.EmbeddedFrontend {
-    export class CanvasListItemComponent extends BaseComponent<ICanvasInformation> {
-        public onCanvasSelected: IStateEvent<ICanvasInformation>;
+import { BaseComponent, IStateEvent } from "../mvx/baseComponent";
+import { ICanvasInformation } from "./captureMenu";
 
-        constructor(eventConstructor: EventConstructor, logger: ILogger) {
-            super(eventConstructor, logger);
-            this.onCanvasSelected = this.createEvent("onCanvasSelected");
-        }
+export class CanvasListItemComponent extends BaseComponent<ICanvasInformation> {
+    public onCanvasSelected: IStateEvent<ICanvasInformation>;
 
-        public render(state: ICanvasInformation, stateId: number): Element {
-            const liHolder = document.createElement("li");
-            const textHolder = document.createElement("span");
-            textHolder.innerText = `Id: ${state.id} - Size: ${state.width}*${state.height}`;
-            liHolder.appendChild(textHolder);
+    constructor() {
+        super();
+        this.onCanvasSelected = this.createEvent("onCanvasSelected");
+    }
 
-            this.mapEventListener(liHolder, "click", "onCanvasSelected", state, stateId);
+    public render(state: ICanvasInformation, stateId: number): Element {
+        const liHolder = document.createElement("li");
+        const textHolder = document.createElement("span");
+        textHolder.innerText = `Id: ${state.id} - Size: ${state.width}*${state.height}`;
+        liHolder.appendChild(textHolder);
 
-            return liHolder;
-        }
+        this.mapEventListener(liHolder, "click", "onCanvasSelected", state, stateId);
+
+        return liHolder;
     }
 }

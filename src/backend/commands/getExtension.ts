@@ -1,9 +1,13 @@
-namespace SPECTOR.Commands {
+import { BaseCommand } from "./baseCommand";
 
-    @Decorators.command("getExtension")
-    export class GetExtension extends BaseCommand {
-        protected stringifyResult(result: any): string {
-            return result ? "true" : "false";
-        }
+export class GetExtension extends BaseCommand {
+    public static readonly commandName = "getExtension";
+
+    protected get spiedCommandName(): string {
+        return GetExtension.commandName;
+    }
+
+    protected stringifyResult(result: any): string {
+        return result ? "true" : "false";
     }
 }

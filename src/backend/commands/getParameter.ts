@@ -1,18 +1,23 @@
-namespace SPECTOR.Commands {
+import { BaseCommand } from "./baseCommand";
+import { WebGlObjects } from "../webGlObjects/baseWebGlObject";
 
-    @Decorators.command("getParameter")
-    export class GetParameter extends BaseCommand {
-        protected stringifyResult(result: any): string {
-            if (!result) {
-                return "null";
-            }
+export class GetParameter extends BaseCommand {
+    public static readonly commandName = "getParameter";
 
-            const tag = WebGlObjects.getWebGlObjectTag(result);
-            if (tag) {
-                return tag.displayText;
-            }
+    protected get spiedCommandName(): string {
+        return GetParameter.commandName;
+    }
 
-            return result;
+    protected stringifyResult(result: any): string {
+        if (!result) {
+            return "null";
         }
+
+        const tag = WebGlObjects.getWebGlObjectTag(result);
+        if (tag) {
+            return tag.displayText;
+        }
+
+        return result;
     }
 }

@@ -1,93 +1,77 @@
-namespace SPECTOR {
-    export type WebGlObjectTag = {
-        readonly typeName: string;
-        readonly id: number;
-        displayText?: string;
-        customData?: any;
-    };
+import { IContextInformation } from "../types/contextInformation";
 
-    export interface IWebGlObject {
-        readonly typeName: string;
-        // tslint:disable-next-line:ban-types
-        readonly type: Function;
+export type WebGlObjectTag = {
+    readonly typeName: string;
+    readonly id: number;
+    displayText?: string;
+    customData?: any;
+};
 
-        tagWebGlObject(webGlObject: WebGLObject): WebGlObjectTag;
+export class WebGlObjects {
+    public static getWebGlObjectTag(object: WebGLObject): WebGlObjectTag {
+        return (object as any)[WebGlObjects.SPECTOROBJECTTAGKEY];
     }
 
-    export interface IWebGlObjectOptions extends IContextInformation {
-        readonly typeName: string;
-        // tslint:disable-next-line:ban-types
-        readonly type: Function;
+    public static attachWebGlObjectTag(object: WebGLObject, tag: WebGlObjectTag): void {
+        tag.displayText = WebGlObjects.stringifyWebGlObjectTag(tag);
+        (object as any)[WebGlObjects.SPECTOROBJECTTAGKEY] = tag;
     }
 
-    export type WebGlObjectConstructor = new (options: IWebGlObjectOptions, logger: ILogger) => IWebGlObject;
-}
-
-namespace SPECTOR.WebGlObjects {
-    const SPECTOROBJECTTAGKEY = "__SPECTOR_Object_TAG";
-
-    export function getWebGlObjectTag(object: WebGLObject): WebGlObjectTag {
-        return (object as any)[SPECTOROBJECTTAGKEY];
-    }
-
-    export function attachWebGlObjectTag(object: WebGLObject, tag: WebGlObjectTag): void {
-        tag.displayText = stringifyWebGlObjectTag(tag);
-        (object as any)[SPECTOROBJECTTAGKEY] = tag;
-    }
-
-    export function stringifyWebGlObjectTag(tag: WebGlObjectTag): string {
+    public static stringifyWebGlObjectTag(tag: WebGlObjectTag): string {
         if (!tag) {
             return "No tag available.";
         }
         return `${tag.typeName} - ID: ${tag.id}`;
     }
+
+    private static readonly SPECTOROBJECTTAGKEY = "__SPECTOR_Object_TAG";
 }
 
-namespace SPECTOR.WebGlObjects {
-    export abstract class BaseWebGlObject implements IWebGlObject {
+// tslint:disable-next-line:max-classes-per-file
+export abstract class BaseWebGlObject {
 
-        public readonly typeName: string;
-        // tslint:disable-next-line:ban-types
-        public readonly type: Function;
+    public abstract get typeName(): string;
 
-        private id: number;
+    // tslint:disable-next-line:ban-types
+    public get type(): Function {
+        return (window as any)[this.typeName] || null;
+    }
 
-        constructor(protected options: IWebGlObjectOptions, logger: ILogger) {
-            this.typeName = options.typeName;
-            this.type = options.type;
-            this.id = 0;
+    private id: number;
+
+    constructor() {
+        this.id = 0;
+    }
+
+    public tagWebGlObject(webGlObject: any): WebGlObjectTag {
+        if (!this.type) {
+            return undefined;
         }
 
-        public tagWebGlObject(webGlObject: any): WebGlObjectTag {
-            if (!this.type) {
-                return undefined;
-            }
-
-            let tag: WebGlObjectTag;
-            if (!webGlObject) {
-                return tag;
-            }
-
-            tag = getWebGlObjectTag(webGlObject);
-            if (tag) {
-                return tag;
-            }
-
-            if (webGlObject instanceof this.type) {
-                const id = this.getNextId();
-                tag = {
-                    typeName: this.typeName,
-                    id,
-                };
-                attachWebGlObjectTag(webGlObject, tag);
-                return tag;
-            }
-
+        let tag: WebGlObjectTag;
+        if (!webGlObject) {
             return tag;
         }
 
-        protected getNextId(): number {
-            return this.id++;
+        tag = WebGlObjects.getWebGlObjectTag(webGlObject);
+        if (tag) {
+            return tag;
         }
+
+        if (webGlObject instanceof this.type) {
+            const id = this.getNextId();
+            tag = {
+                typeName: this.typeName,
+                id,
+            };
+            WebGlObjects.attachWebGlObjectTag(webGlObject, tag);
+            return tag;
+        }
+
+        return tag;
+    }
+
+    protected getNextId(): number {
+        return this.id++;
     }
 }

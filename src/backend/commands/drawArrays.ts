@@ -1,14 +1,19 @@
-namespace SPECTOR.Commands {
+import { BaseCommand } from "./baseCommand";
+import { WebGlConstants } from "../types/webglConstants";
 
-    @Decorators.command("drawArrays")
-    export class DrawArrays extends BaseCommand {
-        protected stringifyArgs(args: IArguments): string[] {
-            const stringified = [];
-            stringified.push(WebGlConstants.stringifyWebGlConstant(args[0], "drawArrays"));
-            stringified.push(args[1]);
-            stringified.push(args[2]);
+export class DrawArrays extends BaseCommand {
+    public static readonly commandName = "drawArrays";
 
-            return stringified;
-        }
+    protected get spiedCommandName(): string {
+        return DrawArrays.commandName;
+    }
+
+    protected stringifyArgs(args: IArguments): string[] {
+        const stringified = [];
+        stringified.push(WebGlConstants.stringifyWebGlConstant(args[0], "drawArrays"));
+        stringified.push(args[1]);
+        stringified.push(args[2]);
+
+        return stringified;
     }
 }

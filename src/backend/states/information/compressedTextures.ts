@@ -1,22 +1,27 @@
-namespace SPECTOR.States.Information {
-    export class CompressedTextures extends ParameterState {
+import { ParameterState, IParameter } from "../parameterState";
+import { WebGlConstants } from "../../types/webglConstants";
+import { IContextInformation } from "../../types/contextInformation";
 
-        constructor(options: IStateOptions, logger: ILogger) {
-            super(options, logger);
+export class CompressedTextures extends ParameterState {
+    public get stateName(): string {
+        return "CompressedTextures";
+    }
 
-            this.currentState = this.startCapture(true, this.quickCapture);
+    constructor(options: IContextInformation) {
+        super(options);
+
+        this.currentState = this.startCapture(true, this.quickCapture);
+    }
+
+    protected getWebgl1Parameters(): IParameter[] {
+        return [{ constant: WebGlConstants.COMPRESSED_TEXTURE_FORMATS }];
+    }
+
+    protected stringifyParameterValue(value: any, parameter: IParameter): any {
+        const formats = [];
+        for (const format of value) {
+            formats.push(WebGlConstants.stringifyWebGlConstant(format as any, "getParameter"));
         }
-
-        protected getWebgl1Parameters(): IParameter[] {
-            return [{ constant: WebGlConstants.COMPRESSED_TEXTURE_FORMATS }];
-        }
-
-        protected stringifyParameterValue(value: any, parameter: IParameter): any {
-            const formats = [];
-            for (const format of value) {
-                formats.push(WebGlConstants.stringifyWebGlConstant(format as any, "getParameter"));
-            }
-            return formats;
-        }
+        return formats;
     }
 }

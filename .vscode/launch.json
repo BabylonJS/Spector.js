@@ -9,7 +9,7 @@
             "webRoot": "${workspaceRoot}/",
             "sourceMaps": true,
             "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
-            "preLaunchTask": "test",
+            "preLaunchTask": "run",
             "runtimeArgs": [
                 "--enable-unsafe-es3-apis" 
             ]
@@ -22,7 +22,7 @@
             "webRoot": "${workspaceRoot}/",
             "sourceMaps": true,
             "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
-            "preLaunchTask": "test",
+            "preLaunchTask": "run",
             "runtimeArgs": [
                 "--enable-unsafe-es3-apis" 
             ]
@@ -35,7 +35,7 @@
             "webRoot": "${workspaceRoot}/",
             "sourceMaps": true,
             "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
-            "preLaunchTask": "test",
+            "preLaunchTask": "run",
             "runtimeArgs": [
                 "--disable-es3-apis" 
             ]
@@ -48,7 +48,7 @@
             "webRoot": "${workspaceRoot}/",
             "sourceMaps": true,
             "userDataDir": "${workspaceRoot}/.tempChromeProfileForDebug",
-            "preLaunchTask": "test",
+            "preLaunchTask": "run",
             "runtimeArgs": [
                 "--disable-es3-apis" 
             ]

@@ -1,78 +1,85 @@
 // tslint:disable:max-classes-per-file
-namespace SPECTOR.WebGlObjects {
+import { BaseWebGlObject, WebGlObjects } from "./baseWebGlObject";
 
-    @Decorators.webGlObject("WebGLBuffer")
-    export class Buffer extends BaseWebGlObject { }
+export class Buffer extends BaseWebGlObject {
+    public get typeName() { return "WebGLBuffer"; }
+}
 
-    @Decorators.webGlObject("WebGLFramebuffer")
-    export class FrameBuffer extends BaseWebGlObject { }
+export class FrameBuffer extends BaseWebGlObject {
+    public get typeName() { return "WebGLFramebuffer"; }
+}
 
-    @Decorators.webGlObject("WebGLProgram")
-    export class Program extends BaseWebGlObject {
-        public static saveInGlobalStore(object: WebGLProgram): void {
-            const tag = getWebGlObjectTag(object);
-            if (!tag) {
-                return;
-            }
+export class Program extends BaseWebGlObject {
+    public get typeName() { return "WebGLProgram"; }
 
-            this.store[tag.id] = object;
+    public static saveInGlobalStore(object: WebGLProgram): void {
+        const tag = WebGlObjects.getWebGlObjectTag(object);
+        if (!tag) {
+            return;
         }
 
-        public static getFromGlobalStore(id: number): WebGLProgram {
-            return this.store[id];
-        }
-
-        public static updateInGlobalStore(id: number, newProgram: WebGLProgram): void {
-            if (!newProgram) {
-                return;
-            }
-
-            const program = this.getFromGlobalStore(id);
-            if (!program) {
-                return;
-            }
-
-            const tag = getWebGlObjectTag(program);
-            if (!tag) {
-                return;
-            }
-
-            attachWebGlObjectTag(newProgram, tag);
-
-            this.store[tag.id] = newProgram;
-        }
-
-        private static store: { [id: number]: WebGLObject } = {};
-
-        constructor(options: IWebGlObjectOptions, logger: ILogger) {
-            super(options, logger);
-        }
+        this.store[tag.id] = object;
     }
 
-    @Decorators.webGlObject("WebGLQuery")
-    export class Query extends BaseWebGlObject { }
+    public static getFromGlobalStore(id: number): WebGLProgram {
+        return this.store[id];
+    }
 
-    @Decorators.webGlObject("WebGLRenderbuffer")
-    export class Renderbuffer extends BaseWebGlObject { }
+    public static updateInGlobalStore(id: number, newProgram: WebGLProgram): void {
+        if (!newProgram) {
+            return;
+        }
 
-    @Decorators.webGlObject("WebGLSampler")
-    export class Sampler extends BaseWebGlObject { }
+        const program = this.getFromGlobalStore(id);
+        if (!program) {
+            return;
+        }
 
-    @Decorators.webGlObject("WebGLShader")
-    export class Shader extends BaseWebGlObject { }
+        const tag = WebGlObjects.getWebGlObjectTag(program);
+        if (!tag) {
+            return;
+        }
 
-    @Decorators.webGlObject("WebGLSync")
-    export class Sync extends BaseWebGlObject { }
+        WebGlObjects.attachWebGlObjectTag(newProgram, tag);
 
-    @Decorators.webGlObject("WebGLTexture")
-    export class Texture extends BaseWebGlObject { }
+        this.store[tag.id] = newProgram;
+    }
 
-    @Decorators.webGlObject("WebGLTransformFeedback")
-    export class TransformFeedback extends BaseWebGlObject { }
+    private static store: { [id: number]: WebGLObject } = {};
+}
 
-    @Decorators.webGlObject("WebGLUniformLocation")
-    export class UniformLocation extends BaseWebGlObject { }
+export class Query extends BaseWebGlObject {
+    public get typeName() { return "WebGLQuery"; }
+}
 
-    @Decorators.webGlObject("WebGLVertexArrayObject")
-    export class VertexArrayObject extends BaseWebGlObject { }
+export class Renderbuffer extends BaseWebGlObject {
+    public get typeName() { return "WebGLRenderbuffer"; }
+}
+
+export class Sampler extends BaseWebGlObject {
+    public get typeName() { return "WebGLSampler"; }
+}
+
+export class Shader extends BaseWebGlObject {
+    public get typeName() { return "WebGLShader"; }
+}
+
+export class Sync extends BaseWebGlObject {
+    public get typeName() { return "WebGLSync"; }
+}
+
+export class Texture extends BaseWebGlObject {
+    public get typeName() { return "WebGLTexture"; }
+}
+
+export class TransformFeedback extends BaseWebGlObject {
+    public get typeName() { return "WebGLTransformFeedback"; }
+}
+
+export class UniformLocation extends BaseWebGlObject {
+    public get typeName() { return "WebGLUniformLocation"; }
+}
+
+export class VertexArrayObject extends BaseWebGlObject {
+    public get typeName() { return "WebGLVertexArrayObject"; }
 }

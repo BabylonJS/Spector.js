@@ -1,13 +1,17 @@
-namespace SPECTOR.Commands {
+import { BaseCommand } from "./baseCommand";
 
-    @Decorators.command("getTransformFeedbackVarying")
-    export class GetTransformFeedbackVarying extends BaseCommand {
-        protected stringifyResult(result: any): string {
-            if (!result) {
-                return undefined;
-            }
+export class GetTransformFeedbackVarying extends BaseCommand {
+    public static readonly commandName = "getTransformFeedbackVarying";
 
-            return `name: ${result.name}, size: ${result.size}, type: ${result.type}`;
+    protected get spiedCommandName(): string {
+        return GetTransformFeedbackVarying.commandName;
+    }
+
+    protected stringifyResult(result: any): string {
+        if (!result) {
+            return undefined;
         }
+
+        return `name: ${result.name}, size: ${result.size}, type: ${result.type}`;
     }
 }
