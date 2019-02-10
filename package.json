@@ -12,14 +12,7 @@
   "readme": "documentation/standaloneVersion.md",
   "main": "dist/spector.bundle.js",
   "files": [
-    "dist/spector.bundle.js",
-    "dist/prism.css",
-    "dist/prism.js",
-    "dist/ace.js",
-    "dist/spector.css",
-    "dist/spector.js",
-    "dist/spector.d.ts",
-    "documentation/standaloneVersion.md"
+    "dist/spector.bundle.js"
   ],
   "author": "@SpectorJS",
   "repository": {
