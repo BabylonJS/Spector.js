@@ -1,6 +1,3 @@
-// Import application Styles.
-import "./spector.scss";
-
 import { WebGLRenderingContexts, IContextInformation } from "./backend/types/contextInformation";
 
 import { ICapture } from "./shared/capture/capture";

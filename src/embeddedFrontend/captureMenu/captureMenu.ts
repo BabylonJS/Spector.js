@@ -1,3 +1,6 @@
+// Import application Styles.
+import "../styles/captureMenu.scss";
+
 import { Observable } from "../../shared/utils/observable";
 import { MVX } from "../mvx/mvx";
 import { CaptureMenuComponent, ICaptureMenuComponentState } from "./captureMenuComponent";

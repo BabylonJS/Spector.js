@@ -1,3 +1,6 @@
+// Import application Styles.
+import "../styles/resultView.scss";
+
 import { Observable } from "../../shared/utils/observable";
 import { ICapture } from "../../shared/capture/capture";
 import { MVX } from "../mvx/mvx";
