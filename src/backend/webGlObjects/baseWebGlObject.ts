@@ -1,5 +1,3 @@
-import { IContextInformation } from "../types/contextInformation";
-
 export type WebGlObjectTag = {
     readonly typeName: string;
     readonly id: number;
