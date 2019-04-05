@@ -33,7 +33,7 @@ And the following list of events:
 - ```onCapture: IEvent<ICapture>```: triggered when a new capture is available (this is a JSON only object containing alll the information).
 - ```onError: IEvent<string>```: triggered when an error occured and return the error message.
 
-As you notice you could usse the capture without displying the UI (this is the orientation we chosed in the browser extension).
+As you notice you could use the capture without displying the UI (this is the orientation we chosed in the browser extension).
 
 ## SPECTOR.CaptureMenu
 This is the embedded capture menu you can see in the page helping selecting a canvas, capturing or playing/pausing the rendering. This can be use as a standalone component as it is done in the browser extension.
