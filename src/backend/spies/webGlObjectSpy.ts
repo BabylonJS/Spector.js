@@ -1,7 +1,7 @@
 import { IContextInformation } from "../types/contextInformation";
 import { IFunctionInformation } from "../types/functionInformation";
 import { WebGlObjectTag, BaseWebGlObject } from "../webGlObjects/baseWebGlObject";
-import { Buffer, FrameBuffer, Program, Query, Renderbuffer, Sampler, Sync, Texture, TransformFeedback, UniformLocation, VertexArrayObject } from "../webGlObjects/webGlObjects";
+import { Buffer, FrameBuffer, Program, Query, Renderbuffer, Sampler, Sync, Texture, TransformFeedback, UniformLocation, VertexArrayObject, Shader } from "../webGlObjects/webGlObjects";
 
 // tslint:disable:ban-types
 // tslint:disable:only-arrow-functions
@@ -50,6 +50,7 @@ export class WebGlObjectSpy {
             new TransformFeedback(),
             new UniformLocation(),
             new VertexArrayObject(),
+            new Shader(),
         );
     }
 }
