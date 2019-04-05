@@ -17,6 +17,11 @@ export interface IAvailableContext {
     readonly contextSpy: ContextSpy;
 }
 
+export const EmbeddedFrontend = {
+    CaptureMenu,
+    ResultView,
+};
+
 export class Spector {
     public static getFirstAvailable3dContext(canvas: HTMLCanvasElement): WebGLRenderingContexts {
         // Custom detection to run in the extension.

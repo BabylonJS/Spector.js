@@ -158,7 +158,7 @@ var loadFiles = function(event) {
 }
 
 var initUI = function() {
-    ui = new SPECTOR.EmbeddedFrontend.CaptureMenu({ eventConstructor: SPECTOR.Utils.Event }, new SPECTOR.Utils.ConsoleLogger());
+    ui = new SPECTOR.EmbeddedFrontend.CaptureMenu();
     ui.onPlayRequested.add(this.play, this);
     ui.onPlayNextFrameRequested.add(this.playNextFrame, this);
     ui.onPauseRequested.add(this.pause, this);
