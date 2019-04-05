@@ -9,7 +9,6 @@ All the code has been simplified and migrated to modules to ease the contributio
 
 This also addresses one bug fix: [shader beautifier issue with curly in comments](https://github.com/BabylonJS/Spector.js/issues/100)
 
-
 ## v0.9.5 Bug Fix and Capture by Command Count
 This minor release is adding the capability to capture a certain amount of commands instead of a frame. This can help in case commands are called outside the RAF event.
 
