@@ -31,6 +31,11 @@ declare const ace: ace;
 
 export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
     private static readonly semicolonReplacementKey = "[[[semicolonReplacementKey]]]";
+    private static readonly semicolonReplacementKeyRegex = new RegExp("\\[\\[\\[semicolonReplacementKey\\]\\]\\]", "g");
+    private static readonly openCurlyReplacementKey = "[[[openCurlyReplacementKey]]]";
+    private static readonly openCurlyReplacementKeyRegex = new RegExp("\\[\\[\\[openCurlyReplacementKey\\]\\]\\]", "g");
+    private static readonly closeCurlyReplacementKey = "[[[closeCurlyReplacementKey]]]";
+    private static readonly closeCurlyReplacementKeyRegex = new RegExp("\\[\\[\\[closeCurlyReplacementKey\\]\\]\\]", "g");
 
     public onVertexSourceClicked: IStateEvent<ISourceCodeState>;
     public onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
@@ -138,7 +143,7 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
 
         // return condition : no brackets at all
         glsl = glsl.trim();
-        glsl = this._removeReturnInComments(glsl);
+        glsl = this._adaptComments(glsl);
         const brackets = this._getBracket(glsl);
         const firstBracket = brackets.firstIteration;
         const lastBracket = brackets.lastIteration;
@@ -173,12 +178,14 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
             result = result.replace(/#endif[\t \f\v]*{/g, "\n {"); // Curly after #Endig
         }
 
-        result = result.replace(SourceCodeComponent.semicolonReplacementKey, ";");
+        result = result.replace(SourceCodeComponent.semicolonReplacementKeyRegex, ";");
+        result = result.replace(SourceCodeComponent.openCurlyReplacementKeyRegex, "{");
+        result = result.replace(SourceCodeComponent.closeCurlyReplacementKeyRegex, "}");
 
         return result;
     }
 
-    private _removeReturnInComments(str: string): string {
+    private _adaptComments(str: string): string {
         let singleLineComment = false;
         let multiLineComment = false;
 
@@ -207,6 +214,16 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
             else if (char === ";") {
                 if (singleLineComment || multiLineComment) {
                     str = str.substr(0, index) + SourceCodeComponent.semicolonReplacementKey + str.substr(index + 1);
+                }
+            }
+            else if (char === "{") {
+                if (singleLineComment || multiLineComment) {
+                    str = str.substr(0, index) + SourceCodeComponent.openCurlyReplacementKey + str.substr(index + 1);
+                }
+            }
+            else if (char === "}") {
+                if (singleLineComment || multiLineComment) {
+                    str = str.substr(0, index) + SourceCodeComponent.closeCurlyReplacementKey + str.substr(index + 1);
                 }
             }
         }

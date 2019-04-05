@@ -7,6 +7,7 @@ var DEV_DIR = path.resolve(MAIN_DIR, "./.temp");
 var buildConfig = function(env) {
     var isProd = env === "prod";
     var config = {
+        watch: !isProd,
         context: MAIN_DIR,
         entry: [
             "./vendors/prism.css",
