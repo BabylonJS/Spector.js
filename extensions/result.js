@@ -33,9 +33,7 @@ listenForMessage(function(request, sender, sendResponse) {
 });
 
 window.addEventListener("DOMContentLoaded", function() {
-    ui = new SPECTOR.EmbeddedFrontend.ResultView({ 
-        eventConstructor: SPECTOR.Utils.Event,
-    }, new SPECTOR.Utils.ConsoleLogger());
+    ui = new SPECTOR.EmbeddedFrontend.ResultView();
     ui.onSourceCodeChanged.add((sourceCodeEvent) => {
 
         var buildInfo = {

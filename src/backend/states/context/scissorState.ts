@@ -1,25 +1,32 @@
-namespace SPECTOR.States {
+import { ParameterState, IParameter } from "../parameterState";
+import { WebGlConstants } from "../../types/webglConstants";
+import { ICommandCapture } from "../../../shared/capture/commandCapture";
+import { drawCommands } from "../../utils/drawCommands";
 
-    @Decorators.state("ScissorState")
-    export class ScissorState extends ParameterState {
-        protected getWebgl1Parameters(): IParameter[] {
-            return [{ constant: WebGlConstants.SCISSOR_TEST, changeCommands: ["enable", "disable"] },
-            { constant: WebGlConstants.SCISSOR_BOX, changeCommands: ["scissor"] }];
-        }
+export class ScissorState extends ParameterState {
+    public static readonly stateName = "ScissorState";
 
-        protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean {
-            if (command.name === "enable" || command.name === "disable") {
-                return command.commandArguments[0] === WebGlConstants.SCISSOR_TEST.value;
-            }
-            return true;
-        }
+    public get stateName(): string {
+        return ScissorState.stateName;
+    }
 
-        protected getConsumeCommands(): string[] {
-            return drawCommands;
-        }
+    protected getWebgl1Parameters(): IParameter[] {
+        return [{ constant: WebGlConstants.SCISSOR_TEST, changeCommands: ["enable", "disable"] },
+        { constant: WebGlConstants.SCISSOR_BOX, changeCommands: ["scissor"] }];
+    }
 
-        protected isStateEnable(stateName: string, args: IArguments): boolean {
-            return this.context.isEnabled(WebGlConstants.SCISSOR_TEST.value);
+    protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean {
+        if (command.name === "enable" || command.name === "disable") {
+            return command.commandArguments[0] === WebGlConstants.SCISSOR_TEST.value;
         }
+        return true;
+    }
+
+    protected getConsumeCommands(): string[] {
+        return drawCommands;
+    }
+
+    protected isStateEnable(stateName: string, args: IArguments): boolean {
+        return this.context.isEnabled(WebGlConstants.SCISSOR_TEST.value);
     }
 }

@@ -1,101 +1,80 @@
-namespace SPECTOR {
+import { IContextInformation } from "../types/contextInformation";
+import { ICapture } from "../../shared/capture/capture";
+import { ICommandCapture, CommandCapturedCallbacks } from "../../shared/capture/commandCapture";
+import { BaseState } from "../states/baseState";
 
-    export interface IStateSpy {
-        readonly contextInformation: IContextInformation;
+import { AlignmentState } from "../states/context/alignmentState";
+import { BlendState } from "../states/context/blendState";
+import { ClearState } from "../states/context/clearState";
+import { ColorState } from "../states/context/colorState";
+import { CoverageState } from "../states/context/coverageState";
+import { CullState } from "../states/context/cullState";
+import { DepthState } from "../states/context/depthState";
+import { DrawState } from "../states/context/drawState";
+import { MipmapHintState } from "../states/context/mipmapHintState";
+import { PolygonOffsetState } from "../states/context/polygonOffsetState";
+import { ScissorState } from "../states/context/scissorState";
+import { StencilState } from "../states/context/stencilState";
+import { VisualState } from "../states/context/visualState";
+import { DrawCallState } from "../states/drawCalls/drawCallState";
 
-        startCapture(currentCapture: ICapture, quickCapture: boolean): void;
-        stopCapture(currentCapture: ICapture): void;
-        captureState(commandCapture: ICommandCapture): void;
+export class StateSpy {
+    private readonly stateTrackers: BaseState[];
+    private readonly onCommandCapturedCallbacks: CommandCapturedCallbacks;
+
+    constructor(public readonly contextInformation: IContextInformation) {
+        this.stateTrackers = [];
+        this.onCommandCapturedCallbacks = {};
+        this.initStateTrackers();
     }
 
-    export interface IStateSpyOptions {
-        readonly contextInformation: IContextInformation;
-        readonly stateNamespace: FunctionIndexer;
+    public startCapture(currentCapture: ICapture, quickCapture: boolean): void {
+        for (const stateTracker of this.stateTrackers) {
+            const state = stateTracker.startCapture(true, quickCapture);
+            if (stateTracker.requireStartAndStopStates) {
+                currentCapture.initState[stateTracker.stateName] = state;
+            }
+        }
     }
 
-    export type StateSpyConstructor = {
-        new(options: IStateSpyOptions, logger: ILogger): IStateSpy,
-    };
-}
-
-namespace SPECTOR.Spies {
-    export class StateSpy implements IStateSpy {
-
-        public readonly contextInformation: IContextInformation;
-
-        private readonly stateConstructors: { [stateName: string]: StateConstructor; };
-        private readonly stateTrackers: { [name: string]: IState };
-        private readonly onCommandCapturedCallbacks: CommandCapturedCallbacks;
-
-        constructor(private readonly options: IStateSpyOptions, private readonly logger: ILogger) {
-            this.stateTrackers = {};
-            this.onCommandCapturedCallbacks = {};
-            this.stateConstructors = {};
-            this.contextInformation = options.contextInformation;
-
-            this.initAvailableStateTrackers();
-            this.initStateTrackers();
-        }
-
-        public startCapture(currentCapture: ICapture, quickCapture: boolean): void {
-            for (const stateTrackerName in this.stateTrackers) {
-                if (this.stateTrackers.hasOwnProperty(stateTrackerName)) {
-                    const stateTracker = this.stateTrackers[stateTrackerName];
-                    const state = stateTracker.startCapture(true, quickCapture);
-                    if (stateTracker.requireStartAndStopStates) {
-                        currentCapture.initState[stateTrackerName] = state;
-                    }
-                }
+    public stopCapture(currentCapture: ICapture): void {
+        for (const stateTracker of this.stateTrackers) {
+            const state = stateTracker.stopCapture();
+            if (stateTracker.requireStartAndStopStates) {
+                currentCapture.endState[stateTracker.stateName] = state;
             }
         }
+    }
 
-        public stopCapture(currentCapture: ICapture): void {
-            for (const stateTrackerName in this.stateTrackers) {
-                if (this.stateTrackers.hasOwnProperty(stateTrackerName)) {
-                    const stateTracker = this.stateTrackers[stateTrackerName];
-                    const state = stateTracker.stopCapture();
-                    if (stateTracker.requireStartAndStopStates) {
-                        currentCapture.endState[stateTrackerName] = state;
-                    }
-                }
+    public captureState(commandCapture: ICommandCapture): void {
+        const callbacks = this.onCommandCapturedCallbacks[commandCapture.name];
+        if (callbacks) {
+            for (const callback of callbacks) {
+                callback(commandCapture);
             }
         }
+    }
 
-        public captureState(commandCapture: ICommandCapture): void {
-            const callbacks = this.onCommandCapturedCallbacks[commandCapture.name];
-            if (callbacks) {
-                for (const callback of callbacks) {
-                    callback(commandCapture);
-                }
-            }
-        }
+    private initStateTrackers(): void {
+        this.stateTrackers.push(
+            new AlignmentState(this.contextInformation),
+            new BlendState(this.contextInformation),
+            new ClearState(this.contextInformation),
+            new ColorState(this.contextInformation),
+            new CoverageState(this.contextInformation),
+            new CullState(this.contextInformation),
+            new DepthState(this.contextInformation),
+            new DrawState(this.contextInformation),
+            new MipmapHintState(this.contextInformation),
+            new PolygonOffsetState(this.contextInformation),
+            new ScissorState(this.contextInformation),
+            new StencilState(this.contextInformation),
+            new VisualState(this.contextInformation),
+            new DrawCallState(this.contextInformation),
+        );
 
-        private initAvailableStateTrackers(): void {
-            for (const state in this.options.stateNamespace) {
-                if (this.options.stateNamespace.hasOwnProperty(state)) {
-                    const stateCtor = this.options.stateNamespace[state];
-                    const stateName = Decorators.getStateName(stateCtor);
-                    if (stateName) {
-                        this.stateConstructors[stateName] = stateCtor;
-                    }
-                }
-            }
-        }
-
-        private initStateTrackers(): void {
-            for (const stateName in this.stateConstructors) {
-                if (this.stateConstructors.hasOwnProperty(stateName)) {
-                    const options = merge(
-                        { stateName },
-                        this.contextInformation,
-                    );
-
-                    const stateTracker = new this.stateConstructors[stateName](options, this.logger);
-                    this.stateTrackers[stateName] = stateTracker;
-
-                    stateTracker.registerCallbacks(this.onCommandCapturedCallbacks);
-                }
-            }
+        for (const tracker of this.stateTrackers) {
+            tracker.registerCallbacks(this.onCommandCapturedCallbacks);
         }
     }
 }

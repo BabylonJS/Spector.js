@@ -1,103 +1,56 @@
+import { IContextInformation } from "../types/contextInformation";
+import { IFunctionInformation } from "../types/functionInformation";
+import { WebGlObjectTag, BaseWebGlObject } from "../webGlObjects/baseWebGlObject";
+import { Buffer, FrameBuffer, Program, Query, Renderbuffer, Sampler, Sync, Texture, TransformFeedback, UniformLocation, VertexArrayObject, Shader } from "../webGlObjects/webGlObjects";
+
 // tslint:disable:ban-types
 // tslint:disable:only-arrow-functions
+export class WebGlObjectSpy {
+    private readonly webGlObjects: BaseWebGlObject[];
 
-namespace SPECTOR {
-
-    export interface IWebGlObjectSpy {
-        readonly contextInformation: IContextInformation;
-
-        tagWebGlObjects(functionInformation: IFunctionInformation): void;
-        tagWebGlObject(object: any): WebGlObjectTag;
+    constructor(public readonly contextInformation: IContextInformation) {
+        this.webGlObjects = [];
+        this.initWebglObjects();
     }
 
-    export interface IWebGlObjectSpyOptions {
-        readonly contextInformation: IContextInformation;
-        readonly webGlObjectNamespace: FunctionIndexer;
+    public tagWebGlObjects(functionInformation: IFunctionInformation) {
+        for (const webGlObject of this.webGlObjects) {
+            for (let i = 0; i < functionInformation.arguments.length; i++) {
+                const arg = functionInformation.arguments[i];
+                if (webGlObject.tagWebGlObject(arg)) {
+                    break;
+                }
+            }
+            if (webGlObject.tagWebGlObject(functionInformation.result)) {
+                break;
+            }
+        }
     }
 
-    export type WebGlObjectSpyConstructor = {
-        new (options: IWebGlObjectSpyOptions, logger: ILogger): IWebGlObjectSpy,
-    };
-}
-
-namespace SPECTOR.Spies {
-    export class WebGlObjectSpy implements IWebGlObjectSpy {
-
-        public readonly contextInformation: IContextInformation;
-
-        private readonly webGlObjectConstructors:
-        { [typeName: string]: { ctor: WebGlObjectConstructor, type: Function } };
-        private readonly webGlObjects: { [typeName: string]: IWebGlObject };
-
-        constructor(private readonly options: IWebGlObjectSpyOptions, private readonly logger: ILogger) {
-            this.webGlObjectConstructors = {};
-            this.webGlObjects = {};
-            this.contextInformation = options.contextInformation;
-
-            this.initAvailableWebglObjects();
-            this.initWebglObjects();
-        }
-
-        public tagWebGlObjects(functionInformation: IFunctionInformation) {
-            for (const typeName in this.webGlObjects) {
-                if (this.webGlObjects.hasOwnProperty(typeName)) {
-                    const webGlObject = this.webGlObjects[typeName];
-                    for (let i = 0; i < functionInformation.arguments.length; i++) {
-                        const arg = functionInformation.arguments[i];
-                        if (webGlObject.tagWebGlObject(arg)) {
-                            break;
-                        }
-                    }
-                    if (webGlObject.tagWebGlObject(functionInformation.result)) {
-                        break;
-                    }
-                }
+    public tagWebGlObject(object: any): WebGlObjectTag {
+        for (const webGlObject of this.webGlObjects) {
+            const tag = webGlObject.tagWebGlObject(object);
+            if (tag) {
+                return tag;
             }
         }
+        return undefined;
+    }
 
-        public tagWebGlObject(object: any): WebGlObjectTag {
-            for (const typeName in this.webGlObjects) {
-                if (this.webGlObjects.hasOwnProperty(typeName)) {
-                    const webGlObject = this.webGlObjects[typeName];
-                    const tag = webGlObject.tagWebGlObject(object);
-                    if (tag) {
-                        return tag;
-                    }
-                }
-            }
-            return undefined;
-        }
-
-        private initAvailableWebglObjects(): void {
-            for (const webGlObject in this.options.webGlObjectNamespace) {
-                if (this.options.webGlObjectNamespace.hasOwnProperty(webGlObject)) {
-                    const webGlObjectCtor = this.options.webGlObjectNamespace[webGlObject];
-                    const typeName = Decorators.getWebGlObjectName(webGlObjectCtor);
-                    const type = Decorators.getWebGlObjectType(webGlObjectCtor);
-                    if (typeName && type) {
-                        this.webGlObjectConstructors[typeName] = {
-                            ctor: webGlObjectCtor,
-                            type,
-                        };
-                    }
-                }
-            }
-        }
-
-        private initWebglObjects(): void {
-            for (const typeName in this.webGlObjectConstructors) {
-                if (this.webGlObjectConstructors.hasOwnProperty(typeName)) {
-                    const options = merge({
-                        typeName,
-                        type: this.webGlObjectConstructors[typeName].type,
-                    },
-                        this.contextInformation,
-                    );
-
-                    const webglObject = new this.webGlObjectConstructors[typeName].ctor(options, this.logger);
-                    this.webGlObjects[typeName] = webglObject;
-                }
-            }
-        }
+    private initWebglObjects(): void {
+        this.webGlObjects.push(
+            new Buffer(),
+            new FrameBuffer(),
+            new Program(),
+            new Query(),
+            new Renderbuffer(),
+            new Sampler(),
+            new Sync(),
+            new Texture(),
+            new TransformFeedback(),
+            new UniformLocation(),
+            new VertexArrayObject(),
+            new Shader(),
+        );
     }
 }

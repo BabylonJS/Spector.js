@@ -4,7 +4,12 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
-## v0.9.5 Bug Fix and Caputre by Command Count
+## v0.9.6 Modules
+All the code has been simplified and migrated to modules to ease the contributions. Next step will be to migrate the frontend to a none custom framework.
+
+This also addresses one bug fix: [shader beautifier issue with curly in comments](https://github.com/BabylonJS/Spector.js/issues/100)
+
+## v0.9.5 Bug Fix and Capture by Command Count
 This minor release is adding the capability to capture a certain amount of commands instead of a frame. This can help in case commands are called outside the RAF event.
 
 This also addresses one bug fix: [drawArraysInstancedANGLE is not recognized](https://github.com/BabylonJS/Spector.js/issues/92)

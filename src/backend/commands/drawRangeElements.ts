@@ -1,20 +1,25 @@
-namespace SPECTOR.Commands {
+import { BaseCommand } from "./baseCommand";
+import { WebGlConstants } from "../types/webglConstants";
 
-    @Decorators.command("drawRangeElements")
-    export class DrawRangeElements extends BaseCommand {
-        protected stringifyArgs(args: IArguments): string[] {
-            const stringified = [];
-            stringified.push(WebGlConstants.stringifyWebGlConstant(args[0], "drawRangeElements"));
+export class DrawRangeElements extends BaseCommand {
+    public static readonly commandName = "drawRangeElements";
 
-            stringified.push(args[1]);
-            stringified.push(args[2]);
-            stringified.push(args[3]);
+    protected get spiedCommandName(): string {
+        return DrawRangeElements.commandName;
+    }
 
-            stringified.push(WebGlConstants.stringifyWebGlConstant(args[4], "drawRangeElements"));
+    protected stringifyArgs(args: IArguments): string[] {
+        const stringified = [];
+        stringified.push(WebGlConstants.stringifyWebGlConstant(args[0], "drawRangeElements"));
 
-            stringified.push(args[5]);
+        stringified.push(args[1]);
+        stringified.push(args[2]);
+        stringified.push(args[3]);
 
-            return stringified;
-        }
+        stringified.push(WebGlConstants.stringifyWebGlConstant(args[4], "drawRangeElements"));
+
+        stringified.push(args[5]);
+
+        return stringified;
     }
 }

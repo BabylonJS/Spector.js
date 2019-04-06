@@ -1,6 +1,6 @@
 {
   "name": "spectorjs",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "Explore and Troubleshoot your WebGL scenes easily.",
   "keywords": [
     "webgl",
@@ -12,14 +12,7 @@
   "readme": "documentation/standaloneVersion.md",
   "main": "dist/spector.bundle.js",
   "files": [
-    "dist/spector.bundle.js",
-    "dist/prism.css",
-    "dist/prism.js",
-    "dist/ace.js",
-    "dist/spector.css",
-    "dist/spector.js",
-    "dist/spector.d.ts",
-    "documentation/standaloneVersion.md"
+    "dist/spector.bundle.js"
   ],
   "author": "@SpectorJS",
   "repository": {
@@ -29,40 +22,31 @@
   "homepage": "https://spector.babylonjs.com",
   "license": "MIT",
   "scripts": {
-    "html": "node ./tools/devLiveReloadServer.js /../built/",
-    "watch:bootstrapcss": "node-sass -r -o built src",
-    "watch:ts": "tsc -w -p ./src",
-    "watch:css": "node-sass -r -w --source-map true -o built src",
-    "watch": "run-p watch:ts watch:css -l",
-    "start": "npm-run-all watch:bootstrapcss -p html watch:ts watch:css -l",
-    "build:ts": "tsc -p ./src --outFile \"dist/spector.js\"",
-    "build:css": "node-sass -r -o dist src",
-    "build:tscss": "run-p build:ts build:css -l",
-    "build:bundle": "webpack --mode production --optimize-minimize --config tools/webpack.config.js",
+    "clean": "rm -r built/* & rm -r /dist/* & rm -r /extensions/spector.bundle.js",
+    "html": "node ./tools/devLiveReloadServer.js /../.temp/",
+    "watch": "webpack --config tools/webpack.config.js --env=dev",
+    "start": "run-p html watch -l",
+    "build:bundle": "webpack --config tools/webpack.config.js --env=prod",
     "build:copybuild:copy:bundle": "node ./tools/copy.js /../dist/spector.bundle.js /../extensions/spector.bundle.js",
     "build:concatBundleFunc": "concat-cli -f tools/spector.ext.header.js dist/spector.bundle.js tools/spector.ext.footer.js -o extensions/spector.bundle.func.js",
-    "build:copy:vendor:prismjs": "node ./tools/copy.js /../vendors/prism.js /../dist/prism.js",
-    "build:copy:vendor:prismcss": "node ./tools/copy.js /../vendors/prism.css /../dist/prism.css",
-    "build:copy:vendor:acejs": "node ./tools/copy.js /../vendors/ace.js /../dist/ace.js",
-    "build:copy:vendor": "run-s build:copy:vendor:prismjs build:copy:vendor:prismcss build:copy:vendor:acejs -l",
     "build:tslint": "tslint -c ./tslint.json -p ./src/tsconfig.json",
-    "build": "run-s build:tscss build:tslint build:copy:vendor build:bundle build:copybuild:copy:bundle build:concatBundleFunc -n",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -r built/* & rm -r /dist/* & rm -r /extensions/spector.bundle.js"
+    "build": "run-s build:tslint build:bundle build:copybuild:copy:bundle build:concatBundleFunc -n",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^5.2.1",
     "concat-cli": "^4.0.0",
-    "css-loader": "^1.0.1",
+    "css-loader": "^2.1.0",
     "exports-loader": "^0.7.0",
-    "hoek": "^6.0.1",
     "http-server": "^0.11.1",
     "livereload": "^0.7.0",
-    "node-sass": "^4.10.0",
-    "npm-run-all": "^4.1.3",
+    "node-sass": "^4.11.0",
+    "npm-run-all": "^4.1.5",
+    "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
-    "tslint": "^5.11.0",
-    "typescript": "^3.1.6",
-    "webpack": "^4.25.0",
-    "webpack-cli": "^3.1.2"
+    "tslint": "^5.12.1",
+    "typescript": "^3.2.3",
+    "webpack": "^4.29.3",
+    "webpack-cli": "^3.2.3"
   }
 }

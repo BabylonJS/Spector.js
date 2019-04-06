@@ -1,21 +1,29 @@
-namespace SPECTOR.Commands {
-    const deprecatedCommands = [
-        "lineWidth",
-    ];
+import { BaseCommand } from "./baseCommand";
+import { ICommandCapture, CommandCaptureStatus } from "../../shared/capture/commandCapture";
+import { IContextInformation } from "../types/contextInformation";
 
-    export class DefaultCommand extends BaseCommand {
-        private readonly isDeprecated: boolean;
+const deprecatedCommands = [
+    "lineWidth",
+];
 
-        constructor(options: ICommandOptions, stackTrace: IStackTrace, logger: ILogger) {
-            super(options, stackTrace, logger);
+export class DefaultCommand extends BaseCommand {
+    protected get spiedCommandName(): string {
+        return this.internalSpiedCommandName;
+    }
 
-            this.isDeprecated = (deprecatedCommands.indexOf(this.spiedCommandName) > -1);
-        }
+    private readonly isDeprecated: boolean;
+    private readonly internalSpiedCommandName: string;
 
-        public transformCapture(commandCapture: ICommandCapture): void {
-            if (this.isDeprecated) {
-                commandCapture.status = CommandCaptureStatus.Deprecated;
-            }
+    constructor(options: IContextInformation, commandName: string) {
+        super(options);
+
+        this.internalSpiedCommandName = commandName;
+        this.isDeprecated = (deprecatedCommands.indexOf(this.spiedCommandName) > -1);
+    }
+
+    public transformCapture(commandCapture: ICommandCapture): void {
+        if (this.isDeprecated) {
+            commandCapture.status = CommandCaptureStatus.Deprecated;
         }
     }
 }

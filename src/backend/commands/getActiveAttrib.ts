@@ -1,13 +1,17 @@
-namespace SPECTOR.Commands {
+import { BaseCommand } from "./baseCommand";
 
-    @Decorators.command("getActiveAttrib")
-    export class GetActiveAttrib extends BaseCommand {
-        protected stringifyResult(result: any): string {
-            if (!result) {
-                return undefined;
-            }
+export class GetActiveAttrib extends BaseCommand {
+    public static readonly commandName = "getActiveAttrib";
 
-            return `name: ${result.name}, size: ${result.size}, type: ${result.type}`;
+    protected get spiedCommandName(): string {
+        return GetActiveAttrib.commandName;
+    }
+
+    protected stringifyResult(result: any): string {
+        if (!result) {
+            return undefined;
         }
+
+        return `name: ${result.name}, size: ${result.size}, type: ${result.type}`;
     }
 }

@@ -2,6 +2,7 @@
 # .gitignore file
 ################################################################################
 
+.temp/
 /built
 /.tempChromeProfileForDebug
 /node_modules

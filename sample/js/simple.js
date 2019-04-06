@@ -26,8 +26,8 @@ var perspectiveMatrix;
 var vertexShaderSource = "attribute vec3 aVertexPosition;" +
 "attribute vec4 aVertexColor;" +
 
-"uniform mat4 uMVMatrix;" +
-"uniform mat4 uPMatrix;" +
+"uniform mat4 uMVMatrix; // ms({ value: '#ff0000' })\n" +
+"uniform mat4 uPMatrix; // ms({ value: '#ff0000' })\n" +
 
 "\n" +
 "//test;test\n" +

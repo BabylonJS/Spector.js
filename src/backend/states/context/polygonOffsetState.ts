@@ -1,27 +1,33 @@
-namespace SPECTOR.States {
+import { ParameterState, IParameter } from "../parameterState";
+import { WebGlConstants } from "../../types/webglConstants";
+import { ICommandCapture } from "../../../shared/capture/commandCapture";
+import { drawCommands } from "../../utils/drawCommands";
 
-    @Decorators.state("PolygonOffsetState")
-    export class PolygonOffsetState extends ParameterState {
+export class PolygonOffsetState extends ParameterState {
+    public static readonly stateName = "PolygonOffsetState";
 
-        protected getWebgl1Parameters(): IParameter[] {
-            return [{ constant: WebGlConstants.POLYGON_OFFSET_FILL, changeCommands: ["enable", "disable"] },
-            { constant: WebGlConstants.POLYGON_OFFSET_FACTOR, changeCommands: ["polygonOffset"] },
-            { constant: WebGlConstants.POLYGON_OFFSET_UNITS, changeCommands: ["polygonOffset"] }];
+    public get stateName(): string {
+        return PolygonOffsetState.stateName;
+    }
+
+    protected getWebgl1Parameters(): IParameter[] {
+        return [{ constant: WebGlConstants.POLYGON_OFFSET_FILL, changeCommands: ["enable", "disable"] },
+        { constant: WebGlConstants.POLYGON_OFFSET_FACTOR, changeCommands: ["polygonOffset"] },
+        { constant: WebGlConstants.POLYGON_OFFSET_UNITS, changeCommands: ["polygonOffset"] }];
+    }
+
+    protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean {
+        if (command.name === "enable" || command.name === "disable") {
+            return command.commandArguments[0] === WebGlConstants.POLYGON_OFFSET_FILL.value;
         }
+        return true;
+    }
 
-        protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean {
-            if (command.name === "enable" || command.name === "disable") {
-                return command.commandArguments[0] === WebGlConstants.POLYGON_OFFSET_FILL.value;
-            }
-            return true;
-        }
+    protected getConsumeCommands(): string[] {
+        return drawCommands;
+    }
 
-        protected getConsumeCommands(): string[] {
-            return drawCommands;
-        }
-
-        protected isStateEnable(stateName: string, args: IArguments): boolean {
-            return this.context.isEnabled(WebGlConstants.POLYGON_OFFSET_FILL.value);
-        }
+    protected isStateEnable(stateName: string, args: IArguments): boolean {
+        return this.context.isEnabled(WebGlConstants.POLYGON_OFFSET_FILL.value);
     }
 }

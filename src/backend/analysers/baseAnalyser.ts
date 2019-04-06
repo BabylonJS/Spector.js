@@ -1,44 +1,25 @@
-namespace SPECTOR {
-    export interface IAnalyser {
-        readonly analyserName: string;
+import { IContextInformation } from "../types/contextInformation";
+import { ICapture } from "../../shared/capture/capture";
+import { IAnalysis } from "../../shared/capture/analysis";
 
-        appendAnalysis(capture: ICapture): void;
-        getAnalysis(capture: ICapture): IAnalysis;
+export abstract class BaseAnalyser {
+    protected abstract get analyserName(): string;
+
+    constructor(protected readonly options: IContextInformation) { }
+
+    public appendAnalysis(capture: ICapture): void {
+        capture.analyses = capture.analyses || [];
+        const analysis = this.getAnalysis(capture);
+        capture.analyses.push(analysis);
     }
 
-    export interface IAnalyserOptions extends IContextInformation {
-        readonly analyserName: string;
+    public getAnalysis(capture: ICapture): IAnalysis {
+        const analysis: IAnalysis = {
+            analyserName: this.analyserName,
+        };
+        this.appendToAnalysis(capture, analysis);
+        return analysis;
     }
 
-    export type AnalyserConstructor = {
-        new (options: IAnalyserOptions, logger: ILogger): IAnalyser;
-    };
-}
-
-namespace SPECTOR.Analysers {
-    export abstract class BaseAnalyser implements IAnalyser {
-
-        public readonly analyserName: string;
-
-        constructor(protected readonly options: IAnalyserOptions,
-            protected readonly logger: ILogger) {
-            this.analyserName = options.analyserName;
-        }
-
-        public appendAnalysis(capture: ICapture): void {
-            capture.analyses = capture.analyses || [];
-            const analysis = this.getAnalysis(capture);
-            capture.analyses.push(analysis);
-        }
-
-        public getAnalysis(capture: ICapture): IAnalysis {
-            const analysis: IAnalysis = {
-                analyserName: this.analyserName,
-            };
-            this.appendToAnalysis(capture, analysis);
-            return analysis;
-        }
-
-        protected abstract appendToAnalysis(capture: ICapture, analysis: IAnalysis): void;
-    }
+    protected abstract appendToAnalysis(capture: ICapture, analysis: IAnalysis): void;
 }

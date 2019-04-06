@@ -1,14 +1,18 @@
-namespace SPECTOR.States {
+import { ParameterState, IParameter } from "../parameterState";
+import { WebGlConstants } from "../../types/webglConstants";
 
-    @Decorators.state("MipmapHintState")
-    export class MipmapHintState extends ParameterState {
+export class MipmapHintState extends ParameterState {
+    public static readonly stateName = "MipmapHintState";
 
-        protected getWebgl1Parameters(): IParameter[] {
-            return [{ constant: WebGlConstants.GENERATE_MIPMAP_HINT, changeCommands: ["hint"] }];
-        }
+    public get stateName(): string {
+        return MipmapHintState.stateName;
+    }
 
-        protected getConsumeCommands(): string[] {
-            return ["generateMipmap"];
-        }
+    protected getWebgl1Parameters(): IParameter[] {
+        return [{ constant: WebGlConstants.GENERATE_MIPMAP_HINT, changeCommands: ["hint"] }];
+    }
+
+    protected getConsumeCommands(): string[] {
+        return ["generateMipmap"];
     }
 }
