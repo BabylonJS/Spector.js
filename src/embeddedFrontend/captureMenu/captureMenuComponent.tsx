@@ -142,6 +142,10 @@ export class CaptureMenuComponent extends React.Component<ICaptureMenuComponentP
     }
 
     private populateCanvasListFromDOM() {
+        if (!this.state.isTrackingCanvas) {
+            return;
+        }
+
         if (document.body) {
             const canvases = document.body.querySelectorAll("canvas");
             this.updateCanvasesListInformationInternal(canvases, (info) => {
