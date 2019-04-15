@@ -29,7 +29,7 @@
     "one-line": [false],
     "space-before-function-paren": false,
     "align": [false],
-    "no-implicit-dependencies": [true, "dev"],
+    "no-implicit-dependencies": [true, "dev"]
   },
   "rulesDirectory": []
 }

@@ -24,13 +24,13 @@ export class CanvasListComponent extends React.Component<ICanvasListComponentPro
     }
 
     public componentDidUpdate(prevProps: ICanvasListComponentProps, prevState: ICanvasListComponentState) {
-        if (prevState.showList != this.state.showList) {
+        if (prevState.showList !== this.state.showList) {
             if (this.state.showList) {
                 this.props.populateCanvasListFromDOM();
                 this.props.onCanvasSelected(null);
             }
         }
-        else if (prevProps.availableCanvasInformation != this.props.availableCanvasInformation) {
+        else if (prevProps.availableCanvasInformation !== this.props.availableCanvasInformation) {
             if (!this.state.showList) {
                 // Auto Select in the list if only one canvas.
                 const canvasesCount = this.props.availableCanvasInformation.length;
@@ -47,19 +47,21 @@ export class CanvasListComponent extends React.Component<ICanvasListComponentPro
 
     public toggleList() {
         this.setState({
-            showList: !this.state.showList
+            showList: !this.state.showList,
         });
     }
 
     public onCanvasSelected(canvas: ICanvasInformation) {
         this.setState({
-            showList: false
+            showList: false,
         });
         this.props.onCanvasSelected(canvas);
     }
 
     public render(): JSX.Element {
-        const title = this.props.currentCanvasInformation ? `${this.props.currentCanvasInformation.id} (${this.props.currentCanvasInformation.width}*${this.props.currentCanvasInformation.height})` : "Choose Canvas...";
+        const title = this.props.currentCanvasInformation ?
+            `${this.props.currentCanvasInformation.id} (${this.props.currentCanvasInformation.width}*${this.props.currentCanvasInformation.height})` :
+            "Choose Canvas...";
         return (
             <div className="canvasListComponent">
                 <span className="canvasSelection" onClick={() => this.toggleList()}>{title}</span>
@@ -68,7 +70,7 @@ export class CanvasListComponent extends React.Component<ICanvasListComponentPro
                     <ul>
                         {
                             this.props.availableCanvasInformation.map((canvas) =>
-                                <CanvasListItemComponent key={canvas.id} onCanvasSelected={(c) => this.onCanvasSelected(c)} canvas={canvas} />
+                                <CanvasListItemComponent key={canvas.id} onCanvasSelected={(c) => this.onCanvasSelected(c)} canvas={canvas} />,
                             )
                         }
                     </ul>

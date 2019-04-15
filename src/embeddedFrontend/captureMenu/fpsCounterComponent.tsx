@@ -16,7 +16,7 @@ export class FpsCounterComponent extends React.Component<IFpsCounterComponentPro
     constructor(props: IFpsCounterComponentProps) {
         super(props);
         this.state = {
-            fps: 0
+            fps: 0,
         };
     }
 
@@ -29,7 +29,7 @@ export class FpsCounterComponent extends React.Component<IFpsCounterComponentPro
     public componentDidMount(): void {
         this.fpsChangedObserver = this.props.onFpsChanged.add((fps: number) => {
             this.setState({
-                fps
+                fps,
             });
         });
     }

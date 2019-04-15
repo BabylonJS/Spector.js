@@ -17,9 +17,7 @@ interface ILogComponentProps {
     readonly onLogChanged: Observable<ILogInformation>;
 }
 
-interface ILogComponentState extends ILogInformation { }
-
-export class LogComponent extends React.Component<ILogComponentProps, ILogComponentState> {
+export class LogComponent extends React.Component<ILogComponentProps, ILogInformation> {
     private logChangedObserver: number;
 
     constructor(props: ILogComponentProps) {
@@ -31,7 +29,7 @@ export class LogComponent extends React.Component<ILogComponentProps, ILogCompon
         };
     }
 
-    public shouldComponentUpdate(nextProps: ILogComponentProps, nextState: ILogComponentState): boolean {
+    public shouldComponentUpdate(nextProps: ILogComponentProps, nextState: ILogInformation): boolean {
         return nextProps.onLogChanged !== this.props.onLogChanged ||
             nextState.logText !== this.state.logText ||
             nextState.logLevel !== this.state.logLevel ||
@@ -40,7 +38,7 @@ export class LogComponent extends React.Component<ILogComponentProps, ILogCompon
 
     public componentDidMount(): void {
         this.logChangedObserver = this.props.onLogChanged.add((logInformation: ILogInformation) => {
-            this.setState(logInformation)
+            this.setState(logInformation);
         });
     }
 
@@ -57,4 +55,3 @@ export class LogComponent extends React.Component<ILogComponentProps, ILogCompon
         );
     }
 }
-

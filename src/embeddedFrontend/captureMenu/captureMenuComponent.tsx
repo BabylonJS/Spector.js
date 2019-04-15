@@ -40,11 +40,11 @@ export class CaptureMenuComponent extends React.Component<ICaptureMenuComponentP
         this.onLogChanged = new Observable<ILogInformation>();
         this.onFpsChanged = new Observable<number>();
 
-        this.state = { 
+        this.state = {
             visible: true,
             isTrackingCanvas : false,
             currentCanvasInformation: null,
-            availableCanvasInformation: []
+            availableCanvasInformation: [],
         };
     }
 
@@ -66,7 +66,7 @@ export class CaptureMenuComponent extends React.Component<ICaptureMenuComponentP
 
     public updateMenuStateVisibility(visible: boolean) {
         this.setState({
-            visible
+            visible,
         });
     }
 
@@ -93,22 +93,8 @@ export class CaptureMenuComponent extends React.Component<ICaptureMenuComponentP
 
     public trackPageCanvases(): void {
         this.setState({
-            isTrackingCanvas: true
+            isTrackingCanvas: true,
         });
-    }
-
-    private populateCanvasListFromDOM() {
-        if (document.body) {
-            const canvases = document.body.querySelectorAll("canvas");
-            this.updateCanvasesListInformationInternal(canvases, (info) => {
-                return {
-                    id: info.id,
-                    width: info.width,
-                    height: info.height,
-                    ref: info,
-                };
-            });
-        }
     }
 
     public updateCanvasesListInformationInternal<T>(canvasesInformation: ArrayLike<T>, convertToListInfo: (info: T) => ICanvasInformation): void {
@@ -121,12 +107,12 @@ export class CaptureMenuComponent extends React.Component<ICaptureMenuComponentP
         }
 
         this.setState({
-            availableCanvasInformation: canvasesInformationClone
+            availableCanvasInformation: canvasesInformationClone,
         });
     }
 
     public componentDidUpdate(_: ICaptureMenuComponentProps, prevState: ICaptureMenuComponentState) {
-        if (prevState.isTrackingCanvas != this.state.isTrackingCanvas) {
+        if (prevState.isTrackingCanvas !== this.state.isTrackingCanvas) {
             this.populateCanvasListFromDOM();
         }
     }
@@ -153,5 +139,19 @@ export class CaptureMenuComponent extends React.Component<ICaptureMenuComponentP
                 <LogComponent onLogChanged={this.onLogChanged} hideLog={this.props.hideLog} />
             </React.Fragment>
         );
+    }
+
+    private populateCanvasListFromDOM() {
+        if (document.body) {
+            const canvases = document.body.querySelectorAll("canvas");
+            this.updateCanvasesListInformationInternal(canvases, (info) => {
+                return {
+                    id: info.id,
+                    width: info.width,
+                    height: info.height,
+                    ref: info,
+                };
+            });
+        }
     }
 }

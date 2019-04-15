@@ -32,6 +32,23 @@ export class CaptureMenuActionsComponent extends React.Component<ICaptureMenuAct
 
     }
 
+    public render(): JSX.Element {
+        return (
+            <div className="captureMenuActionsComponent">
+                <div onClick={() => this.onCaptureRequested()} className="captureRequested"></div>
+                {
+                    this.state.isPaused ?
+                    <React.Fragment>
+                        <div onClick={() => this.onPlay()} className="playRequested"></div>
+                        <div onClick={() => this.onPlayNextFrameRequested()} className="playNextFrameRequested"></div>
+                    </React.Fragment>
+                    :
+                    <div onClick={() => this.onPause()} className="pauseRequested"></div>
+                }
+            </div>
+        );
+    }
+
     private onPause() {
         this.setState({
             isPaused: true,
@@ -52,22 +69,5 @@ export class CaptureMenuActionsComponent extends React.Component<ICaptureMenuAct
 
     private onCaptureRequested() {
         this.props.onCaptureRequested.trigger(this.props.currentCanvasInformation);
-    };
-
-    public render(): JSX.Element {
-        return (
-            <div className="captureMenuActionsComponent">
-                <div onClick={() => this.onCaptureRequested()} className="captureRequested"></div>
-                {
-                    this.state.isPaused ?
-                    <React.Fragment>
-                        <div onClick={() => this.onPlay()} className="playRequested"></div>
-                        <div onClick={() => this.onPlayNextFrameRequested()} className="playNextFrameRequested"></div>
-                    </React.Fragment>
-                    :
-                    <div onClick={() => this.onPause()} className="pauseRequested"></div>
-                }
-            </div>
-        );
     }
 }

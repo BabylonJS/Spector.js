@@ -21,4 +21,3 @@ export class CanvasListItemComponent extends React.Component<ICanvasListItemComp
         );
     }
 }
-
