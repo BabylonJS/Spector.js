@@ -17,7 +17,7 @@
       "check-separator",
       "check-type"
     ],
-    "curly": true,    
+    "curly": true,
     "max-line-length": [true, 200],
     "cyclomatic-complexity": [true, 20],
     "max-file-line-count": [true, 1000],
@@ -28,7 +28,8 @@
     "no-string-literal": false,
     "one-line": [false],
     "space-before-function-paren": false,
-    "align": [false]
+    "align": [false],
+    "no-implicit-dependencies": [true, "dev"],
   },
   "rulesDirectory": []
 }
