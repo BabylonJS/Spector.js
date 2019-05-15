@@ -157,7 +157,7 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         // If no brackets, return the indented string
         if (firstBracket === -1) {
             glsl = spaces + glsl; // indent first line
-            glsl = glsl.replace(/;(?![^\(]*\))\s*/g, ";\n");
+            glsl = glsl.replace(/;(?![^\(]*\))\s*(\/\/.*)?/g, (x) => x.trim() + "\n");
             glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, (x) => " " + x.trim() + " "); // space around =, *=, +=, -=, /=, ==, >=, <=
             glsl = glsl.replace(/\s*(,)\s*/g, (x) => x.trim() + " "); // space after ,
             glsl = glsl.replace(/\n[ \t]+/g, "\n"); // trim Start
