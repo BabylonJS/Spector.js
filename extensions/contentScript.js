@@ -162,7 +162,11 @@ var canvasGetContextDetection = `
             return context;
         }
     })()`;
-insertTextScript(canvasGetContextDetection);
+
+window.addEventListener("DOMContentLoaded", function() {
+    insertTextScript(canvasGetContextDetection);
+}, false);
+
 
 var frameId = null;
 
