@@ -87,7 +87,7 @@ export class Spector {
         this.timeSpy.onError.add(this.onErrorInternal, this);
     }
 
-    public displayUI(trackPageCanvases: boolean = true) {
+    public displayUI(disableTracking: boolean = false) {
         if (!this.captureMenu) {
             this.getCaptureUI();
 
@@ -102,7 +102,7 @@ export class Spector {
 
             setInterval(() => { this.captureMenu.setFPS(this.getFps()); }, 1000);
 
-            if (trackPageCanvases) {
+            if (!disableTracking) {
                 this.captureMenu.trackPageCanvases();
             }
 
