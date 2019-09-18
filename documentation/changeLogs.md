@@ -4,6 +4,9 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.8 CSS
+Fix menu CSS due to Chrome CSS interpretation changes.
+
 ## v0.9.7 Shader Beautifier
 This addresses one bug fix: [comments are displayed with a different indentation](https://github.com/BabylonJS/Spector.js/issues/100)
 
