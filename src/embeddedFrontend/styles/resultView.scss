@@ -368,10 +368,11 @@ $visualStateListComponentWidth: 20%;
 
       img {
         display: block;
-        width:100%;
-        margin:0px;
         padding:0px;
         box-sizing: border-box;
+        max-height: 600px;
+        width: 100%;
+        margin: 0 auto;
         @include img-checkboard();
       }
 
@@ -580,11 +581,12 @@ $commandDetailComponentWidth: 40%;
   padding:10px;
 
   img {
+    @include img-checkboard();
     border : 1px solid darken($foreground, 60%);
     margin: $margin;
-    @include img-checkboard();
     width: 100%;
     max-width: 512px;
+    max-height: 800px;
   }
 
   span {
