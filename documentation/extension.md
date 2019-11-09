@@ -6,7 +6,7 @@
 
 Spector is a tool aim to *WebGl* developers willing to know what happens on their context. It enables capturing all the available information from a frame. You will be empowered to look at your entire **commands list** with their asoociated **visual states** and **context information**.
 
-[![Build Status](https://travis-ci.org/BabylonJS/Spector.js.svg?branch=master)](https://travis-ci.org/BabylonJS/Spector.js)
+[![Build Status](https://github.com/BabylonJS/Spector.js/workflows/CI/badge.svg)](https://github.com/BabylonJS/Spector.js/actions)
 [![Code Climate](https://codeclimate.com/github/BabylonJS/Spector.js.png)](https://codeclimate.com/github/BabylonJS/Spector.js)
 
 <p align="center">

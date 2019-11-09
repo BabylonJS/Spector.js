@@ -74,7 +74,7 @@ $menuHeight: $menuBaseHeight * 2;
     color: darken(white, 20%);
     background: $background-even;
     box-sizing: border-box;
-    height:100%;  
+    height: 100%;
 
     &.active {
       background: $background;
@@ -100,7 +100,7 @@ $menuHeight: $menuBaseHeight * 2;
     }
 
     &.clearSearch {
-      display: inline-block;
+      // display: inline-block;
       padding: 0px; 
       margin-left: -30px;
       margin-right: 20px;
@@ -157,7 +157,7 @@ $menuHeight: $menuBaseHeight * 2;
     // padding: $margin;
     background: lighten($background-even, 10%);
     color: $foreground;
-    height:100%; 
+    height: $menuHeight; 
     position:relative;
     top:-1px; // because of ul.border
     box-sizing: border-box;

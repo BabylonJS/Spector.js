@@ -87,7 +87,7 @@ export class Spector {
         this.timeSpy.onError.add(this.onErrorInternal, this);
     }
 
-    public displayUI() {
+    public displayUI(disableTracking: boolean = false) {
         if (!this.captureMenu) {
             this.getCaptureUI();
 
@@ -101,7 +101,10 @@ export class Spector {
             }, this);
 
             setInterval(() => { this.captureMenu.setFPS(this.getFps()); }, 1000);
-            this.captureMenu.trackPageCanvases();
+
+            if (!disableTracking) {
+                this.captureMenu.trackPageCanvases();
+            }
 
             this.captureMenu.display();
         }
@@ -242,7 +245,7 @@ export class Spector {
         commandCount = 0,
         quickCapture: boolean = false): void {
 
-        let contextSpy = this.getAvailableContextSpyByCanvas(context.canvas);
+        let contextSpy = this.getAvailableContextSpyByCanvas(context.canvas as HTMLCanvasElement);
 
         if (!contextSpy) {
             if ((context as WebGL2RenderingContext).getIndexedParameter) {
@@ -263,7 +266,7 @@ export class Spector {
             contextSpy.onMaxCommand.add(this.stopCapture, this);
 
             this.contexts.push({
-                canvas: contextSpy.context.canvas,
+                canvas: contextSpy.context.canvas as HTMLCanvasElement,
                 contextSpy,
             });
         }
@@ -394,7 +397,7 @@ export class Spector {
     }
 
     private spyContext(contextInformation: IContextInformation) {
-        let contextSpy = this.getAvailableContextSpyByCanvas(contextInformation.context.canvas);
+        let contextSpy = this.getAvailableContextSpyByCanvas(contextInformation.context.canvas as HTMLCanvasElement);
         if (!contextSpy) {
             contextSpy = new ContextSpy({
                 context: contextInformation.context,
@@ -405,7 +408,7 @@ export class Spector {
             contextSpy.onMaxCommand.add(this.stopCapture, this);
 
             this.contexts.push({
-                canvas: contextSpy.context.canvas,
+                canvas: contextSpy.context.canvas as HTMLCanvasElement,
                 contextSpy,
             });
         }
