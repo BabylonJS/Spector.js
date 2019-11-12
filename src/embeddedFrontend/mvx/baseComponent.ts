@@ -131,9 +131,10 @@ export abstract class BaseComponent<T> extends BaseNoneGenericComponent {
             commandEventBinding = "click";
         }
         const commandCapture = commandContainer.getAttribute("usecapture") === "true";
+        const stopPropagation = commandContainer.getAttribute("stoppropagation") === "true";
 
         this.createEvent(commandName);
-        this.mapEventListener(commandContainer, commandEventBinding, commandName, state, stateId, commandCapture);
+        this.mapEventListener(commandContainer, commandEventBinding, commandName, state, stateId, commandCapture, stopPropagation);
     }
 
     protected mapEventListener(domElement: Element, domEvent: string, eventName: string, state: T, stateId: number, commandCapture = false, stopPropagation = false) {
@@ -146,6 +147,7 @@ export abstract class BaseComponent<T> extends BaseNoneGenericComponent {
                     e.stopPropagation();
                     e.preventDefault();
                     self.triggerEvent(eventName, this, state, stateId);
+                    return false;
                 },
                 commandCapture);
         }
