@@ -4,6 +4,9 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.10 Textures (I will do it... someday)
+ToDo...
+
 ## v0.9.9 Mozilla
 Upgrade Mozilla Build.
 
