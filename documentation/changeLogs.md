@@ -4,6 +4,12 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.11 Mozilla
+Upgrade Vendors to help deliver on Mozilla add-ons.
+
+## v0.9.10 HREF conservation
+[Do not change URL by clicking on close](https://github.com/BabylonJS/Spector.js/issues/118)
+
 ## v0.9.9 Mozilla
 Upgrade Mozilla Build.
 

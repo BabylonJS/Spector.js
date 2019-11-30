@@ -43,7 +43,7 @@ export class ResultViewMenuComponent extends BaseComponent<IResultViewMenuState>
 
                 <li class="searchContainer">
                     <input type="text" placeHolder="Search..." value="${state.searchText}" commandName="onSearchTextChanged" commandEventBinding="change">
-                    <a class="clearSearch" href="#" CommandName="onSearchTextCleared">X</a>
+                    <a class="clearSearch" stoppropagation="true" CommandName="onSearchTextCleared">X</a>
                 </li>
                 <li><a class="${state.status === MenuStatus.Captures ? "active" : ""} href="#" role="button" commandName="onCapturesClicked">Captures</a></li>
                 <li><a class="${state.status === MenuStatus.Information ? "active" : ""} href="#" role="button" commandName="onInformationClicked">Information</a></li>
@@ -54,7 +54,7 @@ export class ResultViewMenuComponent extends BaseComponent<IResultViewMenuState>
                     </a>
                 </li>
                 <li><a class="${state.status === MenuStatus.EndState ? "active" : ""} href="#" role="button" commandName="onEndStateClicked">End State</a></li>
-                <li><a href="#" role="button" commandName="onCloseClicked">Close</a></li>
+                <li><a role="button" commandName="onCloseClicked" stoppropagation="true">Close</a></li>
             </ul>`;
 
         const element = this.renderElementFromTemplate(htmlString, state, stateId);
