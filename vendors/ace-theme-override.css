@@ -1,0 +1,47 @@
+.ace-monokai {
+    color: #f9f9f9;
+    font-size: 14px;
+}
+
+.ace-monokai .ace_entity.ace_name.ace_tag,
+.ace-monokai .ace_keyword,
+.ace-monokai .ace_meta.ace_tag,
+.ace-monokai .ace_storage {
+    color: #F0640D
+}
+
+.ace-monokai .ace_constant.ace_character,
+.ace-monokai .ace_constant.ace_other {
+    color: #5db0d7;
+}
+
+.ace-monokai .ace_marker-layer .ace_selection {
+    background: #a6e22e
+}
+
+.ace-monokai .ace_marker-layer .ace_bracket {
+    margin: -1px 0 0 -1px;
+    border: 1px solid #a6e22e;
+}
+
+.ace-monokai .ace_marker-layer .ace_active-line {
+    background: #2c2c2c
+}
+.ace-monokai .ace_gutter-active-line {
+    background-color: #2c2c2c
+}
+.ace-monokai .ace_marker-layer .ace_selected-word {
+    border: 1px solid #a6e22e
+}
+
+.ace-monokai .ace_constant.ace_language {
+    color: #e6db74
+}
+.ace-monokai .ace_constant.ace_numeric {
+    color: #ae81ff
+}
+
+.ace-monokai .ace_gutter {
+    background: #222;
+    color: #8F908A;
+}
