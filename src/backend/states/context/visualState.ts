@@ -140,6 +140,11 @@ export class VisualState extends BaseState {
                 return;
             }
         }
+        else {
+            width += x;
+            height += y;
+        }
+        x = y = 0;
 
         if (samples) {
             const gl2 = gl as WebGL2RenderingContext; // Samples only available in WebGL 2.
@@ -206,6 +211,11 @@ export class VisualState extends BaseState {
                 return;
             }
         }
+        else {
+            width += x;
+            height += y;
+        }
+        x = y = 0;
 
         gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
         if (textureLayer === 0) {
