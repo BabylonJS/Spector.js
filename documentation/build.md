@@ -49,6 +49,8 @@ Once ```npm start``` has been launched, you can access the following samples to 
 16. [Quick Capture](http://localhost:1337/sample/index.html?sample=quickCapture): Test to do a quick capture not containing visual states.
 17. [Depth Range](http://localhost:1337/sample/index.html?sample=depthRange): Test redundant depth range states.
 18. [setTimeout Parameters](http://localhost:1337/sample/index.html?sample=setTimeout): Test parameters of setTimeout functions.
+19. [Viewport](http://localhost:1337/sample/index.html?sample=viewPort): Test viewport capture in Render Targets.
+20. [Offscreen](http://localhost:1337/sample/index.html?sample=offscreen): Test Offscreen canvas support.
 
 You can also add &noSpy=1 at the end of the previous Urls to test without enabling the full spy before starting your rendering engine.
 

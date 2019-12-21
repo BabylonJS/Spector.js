@@ -4,6 +4,11 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.12 Fix
+* Fix Viewport capture issues.
+* Fix Frame Buffer Texture Array capture issues.
+* [Fix Offscreen canvas support on the main thread.](https://github.com/BabylonJS/Spector.js/issues/90)
+
 ## v0.9.11 Mozilla
 Upgrade Vendors to help deliver on Mozilla add-ons.
 
