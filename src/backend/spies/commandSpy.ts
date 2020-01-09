@@ -23,6 +23,7 @@ import { GetTransformFeedbackVarying } from "../commands/getTransformFeedbackVar
 import { Scissor } from "../commands/scissor";
 import { VertexAttribPointer } from "../commands/vertexAttribPointer";
 import { Viewport } from "../commands/viewport";
+import { EnableVertexAttribArray } from "../commands/enableVertexAttribArray";
 import { IContextInformation } from "../types/contextInformation";
 
 export type CommandSpyCallback = (command: CommandSpy, functionInformation: IFunctionInformation) => void;
@@ -140,6 +141,7 @@ export class CommandSpy {
             [Scissor.commandName]: (options: IContextInformation) => new Scissor(options),
             [VertexAttribPointer.commandName]: (options: IContextInformation) => new VertexAttribPointer(options),
             [Viewport.commandName]: (options: IContextInformation) => new Viewport(options),
+            [EnableVertexAttribArray.commandName]: (options: IContextInformation) => new EnableVertexAttribArray(options),
         };
     }
 }
