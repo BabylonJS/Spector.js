@@ -4,6 +4,9 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+
+## v0.9.14
+
 ## v0.9.13 Fix
 * Fix [Prism Leak](https://github.com/BabylonJS/Spector.js/issues/133)
 * [Enable/Disable attributes comments](https://github.com/BabylonJS/Spector.js/pull/134)
