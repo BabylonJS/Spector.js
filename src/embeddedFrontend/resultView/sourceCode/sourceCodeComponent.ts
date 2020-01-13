@@ -8,10 +8,6 @@ export interface ISourceCodeState extends ISourceCodeChangeEvent {
     editable: boolean;
 }
 
-// Declare Prism types here.
-type Prism = { highlightElement(element: HTMLElement): void; };
-declare const Prism: Prism;
-
 // Declare Ace types here.
 interface IAceEditorSession {
     setMode(mode: string): void;
@@ -22,6 +18,7 @@ interface IAceEditor {
     getValue(): string;
     setTheme(theme: string): void;
     getSession(): IAceEditorSession;
+    setReadOnly(readonly: boolean): void;
     setShowPrintMargin(show: boolean): void;
 }
 type ace = {
@@ -91,37 +88,28 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
                     <li><a href="#" role="button" commandName="onSourceCodeCloseClicked">Close</a></li>
                 </ul>
             </div>
-            $${state.editable ?
-                this.htmlTemplate`<div class="sourceCodeComponentEditable">${formattedShader}</div>`
-                :
-                this.htmlTemplate`<div class="sourceCodeComponent">
-                    <pre class="language-glsl"><code>${formattedShader}</code></pre>
-                </div>`
+            $${
+            this.htmlTemplate`<div class="sourceCodeComponent">${formattedShader}</div>`
             }
         </div>`;
 
         const element = this.renderElementFromTemplate(htmlString.replace(/<br>/g, "\n"), state, stateId);
 
-        if (state.editable) {
-            this.editor = ace.edit(element.querySelector(".sourceCodeComponentEditable"));
-            this.editor.setTheme("ace/theme/monokai");
-            this.editor.getSession().setMode("ace/mode/glsl");
-            this.editor.setShowPrintMargin(false);
-            let timeoutId = -1;
-            this.editor.getSession().on("change", (e) => {
-                if (timeoutId !== -1) {
-                    clearTimeout(timeoutId);
-                }
+        this.editor = ace.edit(element.querySelector(".sourceCodeComponent"));
+        this.editor.setTheme("ace/theme/monokai");
+        this.editor.getSession().setMode("ace/mode/glsl");
+        this.editor.setShowPrintMargin(false);
+        let timeoutId = -1;
+        this.editor.setReadOnly(!state.editable);
+        this.editor.getSession().on("change", (e) => {
+            if (timeoutId !== -1) {
+                clearTimeout(timeoutId);
+            }
 
-                timeoutId = setTimeout(() => {
-                    this._triggerCompilation(this.editor, state, element, stateId);
-                }, 1500);
-            });
-        }
-        else {
-            // Pre and Prism work on the normal carriage return.
-            Prism.highlightElement(element.querySelector("pre"));
-        }
+            timeoutId = setTimeout(() => {
+                this._triggerCompilation(this.editor, state, element, stateId);
+            }, 1500);
+        });
 
         return element;
     }
