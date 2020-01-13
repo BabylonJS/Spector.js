@@ -102,14 +102,14 @@ export class DrawCallState extends BaseState {
         }
 
         if (this.contextVersion > 1) {
-            this.readUniformsFromContextIntoState(program, uniformIndices, this.currentState.uniforms);
-
             const uniformBlocks = this.context.getProgramParameter(program, WebGlConstants.ACTIVE_UNIFORM_BLOCKS.value);
             this.currentState.uniformBlocks = [];
             for (let i = 0; i < uniformBlocks; i++) {
                 const uniformBlockState = this.readUniformBlockFromContext(program, i);
                 this.currentState.uniformBlocks.push(uniformBlockState);
             }
+
+            this.readUniformsFromContextIntoState(program, uniformIndices, this.currentState.uniforms, this.currentState.uniformBlocks);
 
             const transformFeedbackActive = this.context.getParameter(WebGlConstants.TRANSFORM_FEEDBACK_ACTIVE.value);
             if (transformFeedbackActive) {
@@ -448,7 +448,7 @@ export class DrawCallState extends BaseState {
         return undefined;
     }
 
-    protected readUniformsFromContextIntoState(program: WebGLProgram, uniformIndices: number[], uniformsState: any[]) {
+    protected readUniformsFromContextIntoState(program: WebGLProgram, uniformIndices: number[], uniformsState: any[], uniformBlockState: any[]) {
         const context2 = this.context as WebGL2RenderingContext;
 
         const typeValues = context2.getActiveUniforms(program, uniformIndices, WebGlConstants.UNIFORM_TYPE.value);
@@ -472,7 +472,8 @@ export class DrawCallState extends BaseState {
             uniformState.matrixStride = matrixStrides[i];
             uniformState.rowMajor = rowMajors[i];
             if (uniformState.blockIndice > -1) {
-                uniformState.value = this.drawCallUboInputState.getUboValue(blockIndices[i],
+                const bindingPoint = uniformBlockState[blockIndices[i]].bindingPoint;
+                uniformState.value = this.drawCallUboInputState.getUboValue(bindingPoint,
                     uniformState.offset,
                     uniformState.size,
                     typeValues[i]);

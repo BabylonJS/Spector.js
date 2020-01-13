@@ -10,10 +10,6 @@ var buildConfig = function(env) {
         watch: !isProd,
         context: MAIN_DIR,
         entry: [
-            "./vendors/prism-theme.css",
-            "./vendors/prism-theme-override.css",
-            "./vendors/prism.js",
-            "./vendors/prism-mode-glsl.js",
             "./vendors/ace.js",
             "./vendors/ace-mode-glsl.js",
             "./vendors/ace-theme-monokai.js",
@@ -51,9 +47,6 @@ var buildConfig = function(env) {
             }, {
                 test: /\.css$/,
                 use: [ "style-loader?insertInto=html", "css-loader" ]
-            }, {
-                test: /prism.js$/,
-                use: [ "exports-loader?Prism" ]
             }, {
                 test: /ace.js$/,
                 use: [ "exports-loader?ace" ]
