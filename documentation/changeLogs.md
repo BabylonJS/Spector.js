@@ -6,6 +6,7 @@ Please, find below the per release summary of the contribution added to the proj
 
 
 ## v0.9.14
+* Fix [Offscreen Canvas not defined](https://github.com/BabylonJS/Spector.js/issues/137)
 
 ## v0.9.13 Fix
 * Fix [Prism Leak](https://github.com/BabylonJS/Spector.js/issues/133)
