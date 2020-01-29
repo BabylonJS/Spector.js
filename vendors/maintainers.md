@@ -1,3 +1,7 @@
+The code is available on [github](https://github.com/BabylonJS/Spector.js) and the tag can be found for the corresponding release.
+
+Build instructions are available in the [Documentation](../documentation/build.md).
+
 Here is a list of dependency sources:
 
 ## ACE release 1.4.7 commit 5ad04a46e8e0981a65dd982693e5d19a2209311c from: https://github.com/ajaxorg/ace/tree/v1.4.7 
