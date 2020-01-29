@@ -72,7 +72,23 @@ export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
 
         const previousLength = (instance as any).__SPECTOR_Object_CustomData ? (instance as any).__SPECTOR_Object_CustomData.length : 0;
         const cubeMapMultiplier = target === "TEXTURE_2D" ? 1 : 6;
-        customData.length = customData.width * customData.height * cubeMapMultiplier * this.getByteSizeForInternalFormat(customData.internalFormat);
+        let internalFormat = customData.internalFormat;
+
+        // @ivanpopelyshev: this hack is made according to tests on PixiJS applications
+        // Float textures is not a rare case
+        // WebGL1 does not have RGBA32F, RGBA16F, we need to look in `type` field
+        if (internalFormat === WebGlConstants.RGBA.value) {
+            if (customData.type === WebGlConstants.FLOAT.value)  {
+                internalFormat = WebGlConstants.RGBA32F.value;
+            }
+            if (customData.type === WebGlConstants.HALF_FLOAT_OES.value)  {
+                internalFormat = WebGlConstants.RGBA16F.value;
+            }
+        }
+
+        // @ivanpopelyshev: This calculation should be fine for most cases, but not if we start counting mips
+        // TODO: move width/height inside and make pluggable functions based on compressed textures extensions
+        customData.length = (customData.width * customData.height * cubeMapMultiplier * this.getByteSizeForInternalFormat(internalFormat)) | 0;
         (instance as any).__SPECTOR_Object_CustomData = customData;
         return customData.length - previousLength;
     }

@@ -63,6 +63,17 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
             [WebGlConstants.COMPRESSED_SRGB8_ALPHA8_ETC2_EAC.value]: 4,
             [WebGlConstants.COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2.value]: 4,
             [WebGlConstants.COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2.value]: 4,
+            [WebGlConstants.COMPRESSED_RGB_S3TC_DXT1_EXT.value]: 0.5,
+            [WebGlConstants.COMPRESSED_RGBA_S3TC_DXT3_EXT.value]: 1,
+            [WebGlConstants.COMPRESSED_RGBA_S3TC_DXT5_EXT.value]: 1,
+            [WebGlConstants.COMPRESSED_RGB_PVRTC_4BPPV1_IMG.value]: 0.5,
+            [WebGlConstants.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG.value]: 0.5,
+            [WebGlConstants.COMPRESSED_RGB_PVRTC_2BPPV1_IMG.value]: 0.25,
+            [WebGlConstants.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG.value]: 0.25,
+            [WebGlConstants.COMPRESSED_RGB_ETC1_WEBGL.value]: 0.5,
+            [WebGlConstants.COMPRESSED_RGB_ATC_WEBGL.value]: 0.5,
+            [WebGlConstants.COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL.value]: 1,
+            [WebGlConstants.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL.value]: 1,
         };
     }
 
