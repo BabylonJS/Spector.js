@@ -15,7 +15,6 @@ import { JSONContentComponent } from "./JSON/jsonContentComponent";
 import { JSONGroupComponent } from "./JSON/jsonGroupComponent";
 import { JSONItemComponent } from "./JSON/jsonItemComponent";
 import { JSONImageItemComponent } from "./JSON/jsonImageItemComponent";
-import { JSONSourceItemComponent } from "./JSON/jsonSourceItemComponent";
 import { JSONHelpItemComponent } from "./JSON/jsonHelpItemComponent";
 import { JSONVisualStateItemComponent } from "./JSON/jsonVisualStateItemComponent";
 import { ResultViewMenuComponent, IResultViewMenuState, MenuStatus } from "./menu/resultViewMenuComponent";
@@ -48,7 +47,6 @@ export class ResultView {
     private readonly jsonGroupComponent: JSONGroupComponent;
     private readonly jsonItemComponent: JSONItemComponent;
     private readonly jsonImageItemComponent: JSONImageItemComponent;
-    private readonly jsonSourceItemComponent: JSONSourceItemComponent;
     private readonly jsonHelpItemComponent: JSONHelpItemComponent;
     private readonly jsonVisualStateItemComponent: JSONVisualStateItemComponent;
     private readonly resultViewMenuComponent: ResultViewMenuComponent;
@@ -107,7 +105,6 @@ export class ResultView {
         this.jsonGroupComponent = new JSONGroupComponent();
         this.jsonItemComponent = new JSONItemComponent();
         this.jsonImageItemComponent = new JSONImageItemComponent();
-        this.jsonSourceItemComponent = new JSONSourceItemComponent();
         this.jsonHelpItemComponent = new JSONHelpItemComponent();
         this.jsonVisualStateItemComponent = new JSONVisualStateItemComponent();
         this.resultViewMenuComponent = new ResultViewMenuComponent();
@@ -165,9 +162,6 @@ export class ResultView {
                 sourceFragment: sourceCodeState.state.sourceFragment,
                 sourceVertex: sourceCodeState.state.sourceVertex,
             });
-        });
-        this.jsonSourceItemComponent.onOpenSourceClicked.add((sourceEventArg) => {
-            this.openShader(sourceEventArg.state.value === "FRAGMENT_SHADER");
         });
 
         this.updateViewState();
@@ -400,18 +394,12 @@ export class ResultView {
         }
 
         for (const key in json) {
-            if (key === "VisualState" || key === "analyserName") {
+            if (key === "VisualState" || key === "analyserName" || key === "source") {
                 continue;
             }
 
             const value = json[key];
-            if (key === "source") {
-                this.mvx.addChildState(parentGroupId, {
-                    key,
-                    value: json["SHADER_TYPE"],
-                }, this.jsonSourceItemComponent);
-            }
-            else if (key === "visual") {
+            if (key === "visual") {
                 for (const target in value) {
                     if (value.hasOwnProperty(target) && value[target]) {
                         this.mvx.addChildState(parentGroupId, {

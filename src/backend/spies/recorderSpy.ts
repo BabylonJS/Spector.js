@@ -5,6 +5,7 @@ import { BufferRecorder } from "../recorders/bufferRecorder";
 import { RenderBufferRecorder } from "../recorders/renderBufferRecorder";
 import { Texture2DRecorder } from "../recorders/texture2DRecorder";
 import { Texture3DRecorder } from "../recorders/texture3DRecorder";
+import { ProgramRecorder } from "../recorders/programRecorder";
 import { IRecorder } from "../recorders/baseRecorder";
 
 export class RecorderSpy {
@@ -50,6 +51,7 @@ export class RecorderSpy {
             new RenderBufferRecorder(this.contextInformation),
             new Texture2DRecorder(this.contextInformation),
             new Texture3DRecorder(this.contextInformation),
+            new ProgramRecorder(this.contextInformation),
         );
 
         for (const recorder of this.recorders) {

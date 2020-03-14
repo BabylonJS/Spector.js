@@ -43,10 +43,10 @@ var buildConfig = function(env) {
                 }
             }, {
                 test: /\.scss$/,
-                use: [ "style-loader", "css-loader", "sass-loader" ]
+                use: [ "style-loader?insert=html", "css-loader", "sass-loader" ]
             }, {
                 test: /\.css$/,
-                use: [ "style-loader", "css-loader" ]
+                use: [ "style-loader?insert=html", "css-loader" ]
             }, {
                 test: /ace.js$/,
                 use: [ "exports-loader?ace" ]
