@@ -8,6 +8,7 @@ import { Program } from "../../webGlObjects/webGlObjects";
 import { IContextInformation } from "../../types/contextInformation";
 import { IRenderBufferRecorderData } from "../../recorders/renderBufferRecorder";
 import { IBufferRecorderData } from "../../recorders/bufferRecorder";
+import { ReadProgramHelper } from "../../utils/readProgramHelper";
 
 export class DrawCallState extends BaseState {
     public static readonly stateName = "DrawCall";
@@ -66,24 +67,20 @@ export class DrawCallState extends BaseState {
 
         this.currentState.frameBuffer = this.readFrameBufferFromContext();
 
-        this.currentState.programStatus = {
-            program: this.getSpectorData(program),
-            DELETE_STATUS: this.context.getProgramParameter(program, WebGlConstants.DELETE_STATUS.value),
-            LINK_STATUS: this.context.getProgramParameter(program, WebGlConstants.LINK_STATUS.value),
-            VALIDATE_STATUS: this.context.getProgramParameter(program, WebGlConstants.VALIDATE_STATUS.value),
-            RECOMPILABLE: ProgramRecompilerHelper.isBuildableProgram(program),
-        };
+        const programCapture = program.__SPECTOR_Object_CustomData ?
+            program.__SPECTOR_Object_CustomData :
+            ReadProgramHelper.getProgramData(this.context, program);
 
+        this.currentState.programStatus = {
+            ...programCapture.programStatus
+        };
+        this.currentState.programStatus.program = this.getSpectorData(program);
+        this.currentState.programStatus.RECOMPILABLE = ProgramRecompilerHelper.isBuildableProgram(program);
         if (this.currentState.programStatus.RECOMPILABLE) {
             Program.saveInGlobalStore(program);
         }
 
-        const shaders = this.context.getAttachedShaders(program);
-        this.currentState.shaders = [];
-        for (const shader of shaders) {
-            const shaderState = this.readShaderFromContext(shader);
-            this.currentState.shaders.push(shaderState);
-        }
+        this.currentState.shaders = programCapture.shaders;
 
         const attributes = this.context.getProgramParameter(program, WebGlConstants.ACTIVE_ATTRIBUTES.value);
         this.currentState.attributes = [];
@@ -254,29 +251,6 @@ export class DrawCallState extends BaseState {
         }
 
         return attachmentState;
-    }
-
-    protected readShaderFromContext(shader: WebGLShader): {} {
-        const source = this.context.getShaderSource(shader);
-        const spectorData = this.getSpectorData(shader);
-
-        const nameInMetadata = (shader && (shader as any).__SPECTOR_Metadata && (shader as any).__SPECTOR_Metadata.name);
-        let name = nameInMetadata ? (shader as any).__SPECTOR_Metadata.name :
-            this.readNameFromShaderSource(source);
-
-        if (!name) {
-            name = (this.context.getShaderParameter(shader, WebGlConstants.SHADER_TYPE.value) === WebGlConstants.FRAGMENT_SHADER.value) ?
-                "Fragment" : "Vertex";
-        }
-
-        return {
-            shader: spectorData,
-            COMPILE_STATUS: this.context.getShaderParameter(shader, WebGlConstants.COMPILE_STATUS.value),
-            DELETE_STATUS: this.context.getShaderParameter(shader, WebGlConstants.DELETE_STATUS.value),
-            SHADER_TYPE: this.getWebGlConstant(this.context.getShaderParameter(shader, WebGlConstants.SHADER_TYPE.value)),
-            source,
-            name,
-        };
     }
 
     protected readAttributeFromContext(program: WebGLProgram, activeAttributeIndex: number): {} {
@@ -543,46 +517,5 @@ export class DrawCallState extends BaseState {
     private getWebGlConstant(value: number) {
         const constant = WebGlConstantsByValue[value];
         return constant ? constant.name : value;
-    }
-
-    // Thx to https://github.com/spite/ShaderEditorExtension/blob/7b9483fdf5c417573906bae4139ca8bc7b8a49ca/src/panel.js#L689
-    // This helps displaying SHADER_NAME used in the extension.
-    private readNameFromShaderSource(source: string): string {
-        try {
-            let name = "";
-            let match;
-
-            const shaderNameRegex = /#define[\s]+SHADER_NAME[\s]+([\S]+)(\n|$)/gi;
-            match = shaderNameRegex.exec(source);
-            if (match !== null) {
-                if (match.index === shaderNameRegex.lastIndex) {
-                    shaderNameRegex.lastIndex++;
-                }
-                name = match[1];
-            }
-
-            if (name === "") {
-                // #define SHADER_NAME_B64 44K344Kn44O844OA44O8
-                // #define SHADER_NAME_B64 8J+YjvCfmIE=
-                const shaderName64Regex = /#define[\s]+SHADER_NAME_B64[\s]+([\S]+)(\n|$)/gi;
-                match = shaderName64Regex.exec(source);
-                if (match !== null) {
-                    if (match.index === shaderName64Regex.lastIndex) {
-                        shaderName64Regex.lastIndex++;
-                    }
-
-                    name = match[1];
-                }
-
-                if (name) {
-                    name = decodeURIComponent(atob(name));
-                }
-            }
-
-            return name;
-        }
-        catch (e) {
-            return null;
-        }
     }
 }
