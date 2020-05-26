@@ -10,9 +10,11 @@ var buildConfig = function(env) {
         watch: !isProd,
         context: MAIN_DIR,
         entry: [
-            "./vendors/prism.css",
-            "./vendors/prism.js",
             "./vendors/ace.js",
+            "./vendors/ace-mode-glsl.js",
+            "./vendors/ace-theme-monokai.js",
+            "./vendors/ace-theme-override.css",
+            "./vendors/ace-ext-searchbox.js",
             "./src/spector.ts"
         ],
         output: {
@@ -41,13 +43,10 @@ var buildConfig = function(env) {
                 }
             }, {
                 test: /\.scss$/,
-                use: [ "style-loader?insertInto=html", "css-loader", "sass-loader" ]
+                use: [ "style-loader?insert=html", "css-loader", "sass-loader" ]
             }, {
                 test: /\.css$/,
-                use: [ "style-loader?insertInto=html", "css-loader" ]
-            }, {
-                test: /prism.js$/,
-                use: [ "exports-loader?Prism" ]
+                use: [ "style-loader?insert=html", "css-loader" ]
             }, {
                 test: /ace.js$/,
                 use: [ "exports-loader?ace" ]

@@ -4,8 +4,36 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
-## v0.9.8 Textures (I will do it... someday)
-ToDo...
+## v0.9.17
+* Fix [Recording of deleted Shaders](https://github.com/BabylonJS/Spector.js/issues/145)
+
+## v0.9.15
+* Fix [Texture memory information](https://github.com/BabylonJS/Spector.js/issues/140)
+
+## v0.9.14
+* Fix [Offscreen Canvas not defined](https://github.com/BabylonJS/Spector.js/issues/137)
+
+## v0.9.13 Fix
+* Fix [Prism Leak](https://github.com/BabylonJS/Spector.js/issues/133)
+* [Enable/Disable attributes comments](https://github.com/BabylonJS/Spector.js/pull/134)
+* [UBO values](https://github.com/BabylonJS/Spector.js/pull/135)
+
+## v0.9.12 Fix
+* Fix Viewport capture issues.
+* Fix Frame Buffer Texture Array capture issues.
+* [Fix Offscreen canvas support on the main thread.](https://github.com/BabylonJS/Spector.js/issues/90)
+
+## v0.9.11 Mozilla
+Upgrade Vendors to help deliver on Mozilla add-ons.
+
+## v0.9.10 HREF conservation
+[Do not change URL by clicking on close](https://github.com/BabylonJS/Spector.js/issues/118)
+
+## v0.9.9 Mozilla
+Upgrade Mozilla Build.
+
+## v0.9.8 CSS
+Fix menu CSS due to Chrome CSS interpretation changes.
 
 ## v0.9.7 Shader Beautifier
 This addresses one bug fix: [comments are displayed with a different indentation](https://github.com/BabylonJS/Spector.js/issues/100)

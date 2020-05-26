@@ -140,6 +140,11 @@ export class VisualState extends BaseState {
                 return;
             }
         }
+        else {
+            width += x;
+            height += y;
+        }
+        x = y = 0;
 
         if (samples) {
             const gl2 = gl as WebGL2RenderingContext; // Samples only available in WebGL 2.
@@ -196,25 +201,32 @@ export class VisualState extends BaseState {
         const textureCubeMapFaceName = textureCubeMapFace > 0 ? WebGlConstantsByValue[textureCubeMapFace].name : WebGlConstants.TEXTURE_2D.name;
 
         // Adapt to constraints defines in the custom data if any.
+        let knownAsTextureArray = false;
         let textureType = componentType;
         if (storage.__SPECTOR_Object_CustomData) {
             const info = storage.__SPECTOR_Object_CustomData as ITextureRecorderData;
             width = info.width;
             height = info.height;
             textureType = info.type;
+            knownAsTextureArray = info.target === WebGlConstants.TEXTURE_2D_ARRAY.name;
             if (!ReadPixelsHelper.isSupportedCombination(info.type, info.format, info.internalFormat)) {
                 return;
             }
         }
+        else {
+            width += x;
+            height += y;
+        }
+        x = y = 0;
 
         gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, this.captureFrameBuffer);
-        if (textureLayer === 0) {
-            gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
-                textureCubeMapFace ? textureCubeMapFace : WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
-        }
-        else {
+        if (textureLayer > 0 || knownAsTextureArray) {
             (gl as WebGL2RenderingContext).framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                 storage, textureLevel, textureLayer);
+        }
+        else {
+            gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
+                textureCubeMapFace ? textureCubeMapFace : WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
         }
 
         const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);

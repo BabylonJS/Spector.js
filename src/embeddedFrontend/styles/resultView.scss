@@ -74,7 +74,7 @@ $menuHeight: $menuBaseHeight * 2;
     color: darken(white, 20%);
     background: $background-even;
     box-sizing: border-box;
-    height:100%;  
+    height: 100%;
 
     &.active {
       background: $background;
@@ -100,7 +100,7 @@ $menuHeight: $menuBaseHeight * 2;
     }
 
     &.clearSearch {
-      display: inline-block;
+      // display: inline-block;
       padding: 0px; 
       margin-left: -30px;
       margin-right: 20px;
@@ -157,7 +157,7 @@ $menuHeight: $menuBaseHeight * 2;
     // padding: $margin;
     background: lighten($background-even, 10%);
     color: $foreground;
-    height:100%; 
+    height: $menuHeight; 
     position:relative;
     top:-1px; // because of ul.border
     box-sizing: border-box;
@@ -368,10 +368,11 @@ $visualStateListComponentWidth: 20%;
 
       img {
         display: block;
-        width:100%;
-        margin:0px;
         padding:0px;
         box-sizing: border-box;
+        max-height: 600px;
+        width: 100%;
+        margin: 0 auto;
         @include img-checkboard();
       }
 
@@ -580,11 +581,12 @@ $commandDetailComponentWidth: 40%;
   padding:10px;
 
   img {
+    @include img-checkboard();
     border : 1px solid darken($foreground, 60%);
     margin: $margin;
-    @include img-checkboard();
     width: 100%;
     max-width: 512px;
+    max-height: 800px;
   }
 
   span {
@@ -753,7 +755,7 @@ $commandDetailComponentWidth: 40%;
   }
 }
 
-.sourceCodeComponentEditable,.sourceCodeComponent {
+.sourceCodeComponent {
   position:absolute; 
   top: $menuHeight + $border;
   left: 0;  

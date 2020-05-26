@@ -47,7 +47,7 @@ export class DrawCallUboInputState {
         this.context = options.context;
     }
 
-    public getUboValue(indice: number, offset: number, size: number, type: number): any {
+    public getUboValue(bindingPoint: number, offset: number, size: number, type: number): any {
         const uboType = DrawCallUboInputState.uboTypes[type];
         if (!uboType) {
             return undefined;
@@ -55,7 +55,7 @@ export class DrawCallUboInputState {
         const destination = new uboType.arrayBufferView(size * uboType.lengthMultiplier);
 
         const context2 = this.context as WebGL2RenderingContext;
-        const ownerbuffer = context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value, indice);
+        const ownerbuffer = context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint);
         if (ownerbuffer) {
             const boundBuffer = context2.getParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value);
             try {
