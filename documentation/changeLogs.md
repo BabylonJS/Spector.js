@@ -6,6 +6,7 @@ Please, find below the per release summary of the contribution added to the proj
 
 ## v0.9.17
 * Fix [Recording of deleted Shaders](https://github.com/BabylonJS/Spector.js/issues/145)
+* Icons Rebranding
 
 ## v0.9.15
 * Fix [Texture memory information](https://github.com/BabylonJS/Spector.js/issues/140)
