@@ -369,29 +369,29 @@ export class DrawCallState extends BaseState {
             textureState.baseLevel = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_BASE_LEVEL.value);
             textureState.immutable = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_IMMUTABLE_FORMAT.value);
             textureState.immutableLevels = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
-            textureState.maxLevel = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
+            textureState.maxLevel = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_MAX_LEVEL.value);
 
             const sampler = this.context.getParameter(WebGlConstants.SAMPLER_BINDING.value);
             if (sampler) {
                 textureState.sampler = this.getSpectorData(sampler);
                 const context2 = this.context as WebGL2RenderingContext;
 
-                textureState.samplerMaxLod = context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
-                textureState.samplerMinLod = context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
+                textureState.samplerMaxLod = context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_MAX_LOD.value);
+                textureState.samplerMinLod = context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_MIN_LOD.value);
                 textureState.samplerCompareFunc = this.getWebGlConstant(context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_COMPARE_FUNC.value));
                 textureState.samplerCompareMode = this.getWebGlConstant(context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_COMPARE_MODE.value));
                 textureState.samplerWrapS = this.getWebGlConstant(context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_WRAP_S.value));
                 textureState.samplerWrapT = this.getWebGlConstant(context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_WRAP_T.value));
-                textureState.samplerWrapR = this.getWebGlConstant(context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value));
+                textureState.samplerWrapR = this.getWebGlConstant(context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_WRAP_R.value));
                 textureState.samplerMagFilter = this.getWebGlConstant(context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_MAG_FILTER.value));
                 textureState.samplerMinFilter = this.getWebGlConstant(context2.getSamplerParameter(sampler, WebGlConstants.TEXTURE_MIN_FILTER.value));
             }
             else {
-                textureState.maxLod = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
-                textureState.minLod = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value);
+                textureState.maxLod = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_MAX_LOD.value);
+                textureState.minLod = this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_MIN_LOD.value);
                 textureState.compareFunc = this.getWebGlConstant(this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_COMPARE_FUNC.value));
                 textureState.compareMode = this.getWebGlConstant(this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_COMPARE_MODE.value));
-                textureState.wrapR = this.getWebGlConstant(this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_IMMUTABLE_LEVELS.value));
+                textureState.wrapR = this.getWebGlConstant(this.context.getTexParameter(target.value, WebGlConstants.TEXTURE_WRAP_R.value));
             }
         }
 
