@@ -72,7 +72,7 @@ export class Extensions extends BaseState {
             ],
         ];
 
-        this.currentState = this.startCapture(true, this.quickCapture);
+        this.currentState = this.startCapture(true, this.quickCapture, this.fullCapture);
     }
 
     public getExtensions(): ExtensionList {

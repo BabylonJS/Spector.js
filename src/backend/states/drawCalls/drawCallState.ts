@@ -228,7 +228,7 @@ export class DrawCallState extends BaseState {
             attachmentState.textureLevel = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL.value);
             const cubeMapFace = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE.value);
             attachmentState.textureCubeMapFace = this.getWebGlConstant(cubeMapFace);
-            this.drawCallTextureInputState.appendTextureState(attachmentState, storage);
+            this.drawCallTextureInputState.appendTextureState(attachmentState, storage, null, this.fullCapture);
         }
 
         if (this.extensions["EXT_sRGB"]) {
@@ -399,7 +399,7 @@ export class DrawCallState extends BaseState {
         if (storage) {
             // Null will prevent the visual target to be captured.
             const textureStateTarget = this.quickCapture ? null : target;
-            this.drawCallTextureInputState.appendTextureState(textureState, storage, textureStateTarget);
+            this.drawCallTextureInputState.appendTextureState(textureState, storage, textureStateTarget, this.fullCapture);
         }
 
         this.context.activeTexture(activeTexture);

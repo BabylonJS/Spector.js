@@ -10,7 +10,7 @@ export class Capabilities extends ParameterState {
     constructor(options: IContextInformation) {
         super(options);
 
-        this.currentState = this.startCapture(true, this.quickCapture);
+        this.currentState = this.startCapture(true, this.quickCapture, this.fullCapture);
     }
 
     protected getWebgl1Parameters(): IParameter[] {

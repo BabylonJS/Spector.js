@@ -259,18 +259,27 @@ export class VisualState extends BaseState {
                     this.workingContext2D.putImageData(imageData, 0, 0);
 
                     // Copy the pixels to a resized capture 2D canvas.
-                    const imageAspectRatio = width / height;
-                    if (imageAspectRatio < 1) {
-                        this.captureCanvas.width = VisualState.captureBaseSize * imageAspectRatio;
-                        this.captureCanvas.height = VisualState.captureBaseSize;
-                    }
-                    else if (imageAspectRatio > 1) {
-                        this.captureCanvas.width = VisualState.captureBaseSize;
-                        this.captureCanvas.height = VisualState.captureBaseSize / imageAspectRatio;
-                    }
-                    else {
-                        this.captureCanvas.width = VisualState.captureBaseSize;
-                        this.captureCanvas.height = VisualState.captureBaseSize;
+                    if (!this.fullCapture) {
+                        const imageAspectRatio = width / height;
+                        if (imageAspectRatio < 1) {
+                            this.captureCanvas.width =
+                                VisualState.captureBaseSize * imageAspectRatio;
+                            this.captureCanvas.height =
+                                VisualState.captureBaseSize;
+                        } else if (imageAspectRatio > 1) {
+                            this.captureCanvas.width =
+                                VisualState.captureBaseSize;
+                            this.captureCanvas.height =
+                                VisualState.captureBaseSize / imageAspectRatio;
+                        } else {
+                            this.captureCanvas.width =
+                                VisualState.captureBaseSize;
+                            this.captureCanvas.height =
+                                VisualState.captureBaseSize;
+                        }
+                    } else {
+                        this.captureCanvas.width = this.workingCanvas.width;
+                        this.captureCanvas.height = this.workingCanvas.height;
                     }
 
                     this.captureCanvas.width = Math.max(this.captureCanvas.width, 1);
