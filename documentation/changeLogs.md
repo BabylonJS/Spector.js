@@ -4,6 +4,8 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.19
+
 ## v0.9.18
 * Add Toggle for [fullscreen textures](https://github.com/BabylonJS/Spector.js/issues/145) in the extension.
 
