@@ -76,9 +76,11 @@ var spectorCaptureOnLoadKey = "SPECTOR_CAPTUREONLOAD";
 var spectorCaptureOnLoadCommandCountKey = "SPECTOR_CAPTUREONLOAD_COMMANDCOUNT";
 var spectorCaptureOnLoadTransientKey = "SPECTOR_CAPTUREONLOAD_TRANSIENT";
 var spectorCaptureOnLoadQuickCaptureKey = "SPECTOR_CAPTUREONLOAD_QUICKCAPTURE";
+var spectorCaptureOnLoadFullCaptureKey = "SPECTOR_CAPTUREONLOAD_FULLCAPTURE";
 var captureOffScreenKey = "SPECTOR_CAPTUREOFFSCREEN";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
 var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATION_QUICKCAPTURE";
+var spectorCommunicationFullCaptureElementId = "SPECTOR_COMMUNICATION_FULLCAPTURE";
 var spectorCommunicationCommandCountElementId = "SPECTOR_COMMUNICATION_COMMANDCOUNT";
 var spectorCommunicationRebuildProgramElementId = "SPECTOR_COMMUNICATION_REBUILDPROGRAM";
 
@@ -87,6 +89,7 @@ var spectorContextTypeKey = "__spector_context_type";
 var captureOnLoad = false;
 var captureOnLoadTransient = false;
 var captureOnLoadQuickCapture = false;
+var captureOnLoadFullCapture = false;
 var captureOnLoadCommandCount = 500;
 var captureOffScreen = false;
 
@@ -96,6 +99,7 @@ if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
 
     captureOnLoadTransient = (sessionStorage.getItem(spectorCaptureOnLoadTransientKey) === "true");
     captureOnLoadQuickCapture = (sessionStorage.getItem(spectorCaptureOnLoadQuickCaptureKey) === "true");
+    captureOnLoadFullCapture = (sessionStorage.getItem(spectorCaptureOnLoadFullCaptureKey) === "true");
     captureOnLoadCommandCount = parseInt(sessionStorage.getItem(spectorCaptureOnLoadCommandCountKey));
 }
 
@@ -146,7 +150,7 @@ var canvasGetContextDetection = `
                     if (captureOnLoad) {
                         // Ensures canvas is in the dom to capture the one we are currently tracking.
                         if (${captureOnLoadTransient}) {
-                            spector.captureContext(context, ${captureOnLoadCommandCount}, ${captureOnLoadQuickCapture});
+                            spector.captureContext(context, ${captureOnLoadCommandCount}, ${captureOnLoadQuickCapture}, ${captureOnLoadFullCapture});
                             captureOnLoad = false;
                         }
                     }
@@ -198,7 +202,7 @@ var canvasGetContextDetection = `
                 if (captureOnLoad) {
                     // Ensures canvas is in the dom to capture the one we are currently tracking.
                     if (this.parentElement || ${captureOnLoadTransient}) {
-                        spector.captureContext(context, ${captureOnLoadCommandCount}, ${captureOnLoadQuickCapture});
+                        spector.captureContext(context, ${captureOnLoadCommandCount}, ${captureOnLoadQuickCapture}, ${captureOnLoadFullCapture});
                         captureOnLoad = false;
                     }
                 }
@@ -244,9 +248,10 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                     canvas = document.body.querySelectorAll("canvas")[canvasIndex]; 
                 }
                 var quickCapture = (document.getElementById('${spectorCommunicationQuickCaptureElementId}').value === "true");
+                var fullCapture = (document.getElementById('${spectorCommunicationFullCaptureElementId}').value === "true");
                 var commandCount = 0 + document.getElementById('${spectorCommunicationCommandCountElementId}').value;
 
-                spector.captureCanvas(canvas, commandCount, quickCapture);
+                spector.captureCanvas(canvas, commandCount, quickCapture, fullCapture);
             });
             document.addEventListener("SpectorRequestRebuildProgramEvent", function(e) {
                 var buildInfoInText = document.getElementById('${spectorCommunicationRebuildProgramElementId}').value;
@@ -324,12 +329,16 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         document.body.appendChild(input2);
         var input3 = document.createElement('input');
         input3.type = 'Hidden';
-        input3.id = '${spectorCommunicationRebuildProgramElementId}';
+        input3.id = '${spectorCommunicationFullCaptureElementId}';
         document.body.appendChild(input3);
         var input4 = document.createElement('input');
         input4.type = 'Hidden';
-        input4.id = '${spectorCommunicationCommandCountElementId}';
-        document.body.appendChild(input4);`;
+        input4.id = '${spectorCommunicationRebuildProgramElementId}';
+        document.body.appendChild(input4);
+        var input5 = document.createElement('input');
+        input5.type = 'Hidden';
+        input5.id = '${spectorCommunicationCommandCountElementId}';
+        document.body.appendChild(input5);`;
 
         insertTextScript(script);
     });
@@ -491,9 +500,11 @@ listenForMessage(function (message) {
         var transient = message.transient;
         var commandCount = message.commandCount;
         var quickCapture = message.quickCapture;
+        var fullCapture = message.fullCapture;
 
         sessionStorage.setItem(spectorCaptureOnLoadTransientKey, transient);
         sessionStorage.setItem(spectorCaptureOnLoadQuickCaptureKey, quickCapture);
+        sessionStorage.setItem(spectorCaptureOnLoadFullCaptureKey, fullCapture);
         sessionStorage.setItem(spectorCaptureOnLoadCommandCountKey, commandCount);
         sessionStorage.setItem(spectorCaptureOnLoadKey, "true");
 
@@ -542,6 +553,10 @@ listenForMessage(function (message) {
             var inputQuickCapture = document.getElementById(spectorCommunicationQuickCaptureElementId);
             if (inputQuickCapture) {
                 inputQuickCapture.value = message.quickCapture ? "true" : "false";
+            }
+            var inputFullCapture = document.getElementById(spectorCommunicationFullCaptureElementId);
+            if (inputFullCapture) {
+                inputFullCapture.value = message.fullCapture ? "true" : "false";
             }
             var inputCommandCount = document.getElementById(spectorCommunicationCommandCountElementId);
             if (inputCommandCount) {

@@ -33,6 +33,7 @@ window.addEventListener("DOMContentLoaded", function() {
     var captureOnLoadCountInput = document.getElementById("captureOnLoadCount");
     var captureOnLoadTransientInput = document.getElementById("captureOnLoadTransient");
     var quickCaptureInput = document.getElementById("quickCapture");
+    var fullCaptureInput = document.getElementById("fullCapture");
     offScreenInput = document.getElementById("offScreen");
 
     captureNowElement.addEventListener("click", (e) => {
@@ -41,11 +42,12 @@ window.addEventListener("DOMContentLoaded", function() {
             commandCount = 500;
         }
         var quickCaptureInput = document.getElementById("quickCapture");
+        var fullCaptureInput = document.getElementById("fullCapture");
 
         var canvasInfo = ui.getSelectedCanvasInformation();
         if (canvasInfo) {
             var canvasRef = canvasInfo.ref;
-            this.captureNow(canvasRef, quickCaptureInput.checked, commandCount);
+            this.captureNow(canvasRef, quickCaptureInput.checked, fullCaptureInput.checked, commandCount);
         }
         return false; 
     });
@@ -53,11 +55,12 @@ window.addEventListener("DOMContentLoaded", function() {
     captureOnLoadElement.addEventListener("click", (e) => { 
         var transient = captureOnLoadTransientInput.checked;
         var quickCapture = quickCaptureInput.checked;
+        var fullCapture = fullCaptureInput.checked;
         var commandCount = parseInt(captureOnLoadCountInput.value);
         if (commandCount < 0 || commandCount === Number.NaN) {
             commandCount = 500;
         }
-        this.captureonLoad(commandCount, transient, quickCapture); 
+        this.captureonLoad(commandCount, transient, quickCapture, fullCapture); 
         return false; 
     });
 
@@ -73,27 +76,30 @@ window.addEventListener("DOMContentLoaded", function() {
 var captureCanvas = function(e) {
     if (e) {
         var quickCaptureInput = document.getElementById("quickCapture");
+        var fullCaptureInput = document.getElementById("fullCapture");
         var canvasRef = e.ref;
 
-        captureNow(canvasRef, quickCaptureInput.checked, 0);
+        captureNow(canvasRef, quickCaptureInput.checked, fullCaptureInput.checked, 0);
     }
 }
 
-var captureNow = function(canvasRef, quickCapture, commandCount) {
+var captureNow = function(canvasRef, quickCapture, fullCapture, commandCount) {
     sendMessage({ 
         action: "capture", 
         canvasRef: canvasRef,
         quickCapture: quickCapture,
+        fullCapture: fullCapture,
         commandCount: commandCount
     });
 }
 
-var captureonLoad = function(commandCount, transient, quickCapture) {
+var captureonLoad = function(commandCount, transient, quickCapture, fullCapture) {
     sendMessage({ 
         action: "captureOnLoad",
         commandCount : commandCount,
         transient: transient,
-        quickCapture: quickCapture
+        quickCapture: quickCapture,
+        fullCapture: fullCapture
     });
 }
 

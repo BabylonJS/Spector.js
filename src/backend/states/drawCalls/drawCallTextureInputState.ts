@@ -23,6 +23,8 @@ export class DrawCallTextureInputState {
     private readonly workingContext2D: CanvasRenderingContext2D;
     private readonly captureContext2D: CanvasRenderingContext2D;
 
+    private fullCapture: boolean;
+
     constructor(options: IContextInformation) {
         this.context = options.context;
         this.captureFrameBuffer = options.context.createFramebuffer();
@@ -37,7 +39,7 @@ export class DrawCallTextureInputState {
         (this.captureContext2D as any).msImageSmoothingEnabled = true;
     }
 
-    public appendTextureState(state: any, storage: WebGLTexture, target: WebGlConstant = null): void {
+    public appendTextureState(state: any, storage: WebGLTexture, target: WebGlConstant = null, fullCapture: boolean): void {
         if (!storage) {
             return;
         }
@@ -47,6 +49,8 @@ export class DrawCallTextureInputState {
         if (!customData) {
             return;
         }
+
+        this.fullCapture = fullCapture;
 
         if (customData.type) {
             state.textureType = this.getWebGlConstant(customData.type);
@@ -162,19 +166,25 @@ export class DrawCallTextureInputState {
             imageData.data.set(pixels);
             this.workingContext2D.putImageData(imageData, 0, 0);
 
-            // Copy the pixels to a resized capture 2D canvas.
-            const imageAspectRatio = width / height;
-            if (imageAspectRatio < 1) {
-                this.captureCanvas.width = VisualState.captureBaseSize * imageAspectRatio;
-                this.captureCanvas.height = VisualState.captureBaseSize;
-            }
-            else if (imageAspectRatio > 1) {
-                this.captureCanvas.width = VisualState.captureBaseSize;
-                this.captureCanvas.height = VisualState.captureBaseSize / imageAspectRatio;
+            if (!this.fullCapture) {
+                // Copy the pixels to a resized capture 2D canvas.
+                const imageAspectRatio = width / height;
+                if (imageAspectRatio < 1) {
+                    this.captureCanvas.width = VisualState.captureBaseSize * imageAspectRatio;
+                    this.captureCanvas.height = VisualState.captureBaseSize;
+                }
+                else if (imageAspectRatio > 1) {
+                    this.captureCanvas.width = VisualState.captureBaseSize;
+                    this.captureCanvas.height = VisualState.captureBaseSize / imageAspectRatio;
+                }
+                else {
+                    this.captureCanvas.width = VisualState.captureBaseSize;
+                    this.captureCanvas.height = VisualState.captureBaseSize;
+                }
             }
             else {
-                this.captureCanvas.width = VisualState.captureBaseSize;
-                this.captureCanvas.height = VisualState.captureBaseSize;
+                this.captureCanvas.width = this.workingCanvas.width;
+                this.captureCanvas.height = this.workingCanvas.height;
             }
 
             this.captureCanvas.width = Math.max(this.captureCanvas.width, 1);

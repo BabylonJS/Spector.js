@@ -15,6 +15,7 @@ export abstract class BaseState {
     protected previousState: State;
     protected currentState: State;
     protected quickCapture: boolean;
+    protected fullCapture: boolean;
 
     private readonly changeCommandsByState: { [key: string]: string[] };
     private readonly consumeCommands: string[];
@@ -37,8 +38,9 @@ export abstract class BaseState {
         return true;
     }
 
-    public startCapture(loadFromContext: boolean, quickCapture: boolean): State {
+    public startCapture(loadFromContext: boolean, quickCapture: boolean, fullCapture: boolean): State {
         this.quickCapture = quickCapture;
+        this.fullCapture = fullCapture;
         this.capturedCommandsByState = {};
         if (loadFromContext && this.requireStartAndStopStates) {
             this.currentState = {};
@@ -123,7 +125,7 @@ export abstract class BaseState {
         this.storeCommandIds();
         command[this.stateName] = this.currentState;
 
-        this.startCapture(false, this.quickCapture);
+        this.startCapture(false, this.quickCapture, this.fullCapture);
     }
 
     protected isValidConsumeCommand(command: ICommandCapture): boolean {

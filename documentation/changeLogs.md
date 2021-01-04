@@ -4,6 +4,9 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.18
+* Add Toggle for [fullscreen textures](https://github.com/BabylonJS/Spector.js/issues/145) in the extension.
+
 ## v0.9.17
 * Fix [Recording of deleted Shaders](https://github.com/BabylonJS/Spector.js/issues/145)
 * Icons Rebranding

@@ -102,7 +102,7 @@ export class ContextSpy {
         }
     }
 
-    public startCapture(maxCommands = 0, quickCapture = false): void {
+    public startCapture(maxCommands = 0, quickCapture = false, fullCapture = false): void {
         const startTime = Time.now;
         this.maxCommands = maxCommands;
 
@@ -133,7 +133,7 @@ export class ContextSpy {
         this.currentCapture.canvas.clientWidth = (this.context.canvas as HTMLCanvasElement).clientWidth || this.context.canvas.width;
         this.currentCapture.canvas.clientHeight = (this.context.canvas as HTMLCanvasElement).clientHeight || this.context.canvas.height;
 
-        this.stateSpy.startCapture(this.currentCapture, quickCapture);
+        this.stateSpy.startCapture(this.currentCapture, quickCapture, fullCapture);
         this.recorderSpy.startCapture();
 
         this.currentCapture.listenCommandsStartTime = Time.now;

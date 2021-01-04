@@ -57,10 +57,11 @@ export class DrawCallUboInputState {
         const context2 = this.context as WebGL2RenderingContext;
         const ownerbuffer = context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value, bindingPoint);
         if (ownerbuffer) {
+            const startOffset = context2.getIndexedParameter(WebGlConstants.UNIFORM_BUFFER_START.value, bindingPoint);
             const boundBuffer = context2.getParameter(WebGlConstants.UNIFORM_BUFFER_BINDING.value);
             try {
                 context2.bindBuffer(WebGlConstants.UNIFORM_BUFFER.value, ownerbuffer);
-                context2.getBufferSubData(WebGlConstants.UNIFORM_BUFFER.value, offset, destination);
+                context2.getBufferSubData(WebGlConstants.UNIFORM_BUFFER.value, startOffset + offset, destination);
             }
             catch (e) {
                 // Prevent back fromats to break the capture.

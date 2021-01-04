@@ -28,9 +28,9 @@ export class StateSpy {
         this.initStateTrackers();
     }
 
-    public startCapture(currentCapture: ICapture, quickCapture: boolean): void {
+    public startCapture(currentCapture: ICapture, quickCapture: boolean, fullCapture: boolean): void {
         for (const stateTracker of this.stateTrackers) {
-            const state = stateTracker.startCapture(true, quickCapture);
+            const state = stateTracker.startCapture(true, quickCapture, fullCapture);
             if (stateTracker.requireStartAndStopStates) {
                 currentCapture.initState[stateTracker.stateName] = state;
             }
