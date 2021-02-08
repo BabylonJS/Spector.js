@@ -95,8 +95,8 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         <div class="sourceCodeComponentContainer">
             <div class="sourceCodeMenuComponentContainer">
                 <ul class="sourceCodeMenuComponent">
-                    ${ state.translatedSourceVertex ? this.htmlTemplate`<li><a class="${!state.fragment && state.translated ? "active" : ""}" href="#" role="button" commandName="onTranslatedVertexSourceClicked">Translated Vertex</a></li>` : "" }
-                    ${ state.translatedSourceFragment ? this.htmlTemplate`<li><a class="${state.fragment && state.translated ? "active" : ""}" href="#" role="button" commandName="onTranslatedFragmentSourceClicked">Translated Fragment</a></li>` : "" }
+                    $${ state.translatedSourceVertex ? this.htmlTemplate`<li><a class="${!state.fragment && state.translated ? "active" : ""}" href="#" role="button" commandName="onTranslatedVertexSourceClicked">Translated Vertex</a></li>` : "" }
+                    $${ state.translatedSourceFragment ? this.htmlTemplate`<li><a class="${state.fragment && state.translated ? "active" : ""}" href="#" role="button" commandName="onTranslatedFragmentSourceClicked">Translated Fragment</a></li>` : "" }
                     <li><a class="${!state.fragment && !state.translated ? "active" : ""}" href="#" role="button" commandName="onVertexSourceClicked">Vertex</a></li>
                     <li><a class="${state.fragment && !state.translated ? "active" : ""}" href="#" role="button" commandName="onFragmentSourceClicked">Fragment</a></li>
                     <li><a href="#" role="button" commandName="onSourceCodeCloseClicked">Close</a></li>
@@ -114,7 +114,7 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         this.editor.getSession().setMode("ace/mode/glsl");
         this.editor.setShowPrintMargin(false);
         let timeoutId = -1;
-        this.editor.setReadOnly(!state.editable);
+        this.editor.setReadOnly(!state.editable && !state.translated);
         this.editor.getSession().on("change", (e) => {
             if (timeoutId !== -1) {
                 clearTimeout(timeoutId);
