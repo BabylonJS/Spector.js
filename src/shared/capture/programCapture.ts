@@ -3,6 +3,7 @@ export interface IShaderCapture {
     fragment: boolean;
     name: string;
     source: string;
+    translatedSource: string;
 }
 
 export interface IProgramStatus {
