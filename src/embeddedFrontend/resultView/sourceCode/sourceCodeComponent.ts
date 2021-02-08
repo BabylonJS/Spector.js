@@ -5,6 +5,7 @@ export interface ISourceCodeState extends ISourceCodeChangeEvent {
     nameVertex: string;
     nameFragment: string;
     fragment: boolean;
+    translated: boolean;
     editable: boolean;
 }
 
@@ -34,6 +35,8 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
     private static readonly closeCurlyReplacementKey = "[[[closeCurlyReplacementKey]]]";
     private static readonly closeCurlyReplacementKeyRegex = new RegExp("\\[\\[\\[closeCurlyReplacementKey\\]\\]\\]", "g");
 
+    public onTranslatedVertexSourceClicked: IStateEvent<ISourceCodeState>;
+    public onTranslatedFragmentSourceClicked: IStateEvent<ISourceCodeState>;
     public onVertexSourceClicked: IStateEvent<ISourceCodeState>;
     public onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
     public onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;
@@ -43,6 +46,8 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
 
     constructor() {
         super();
+        this.onTranslatedVertexSourceClicked = this.createEvent("onTranslatedVertexSourceClicked");
+        this.onTranslatedFragmentSourceClicked = this.createEvent("onTranslatedFragmentSourceClicked");
         this.onVertexSourceClicked = this.createEvent("onVertexSourceClicked");
         this.onFragmentSourceClicked = this.createEvent("onFragmentSourceClicked");
         this.onSourceCodeCloseClicked = this.createEvent("onSourceCodeCloseClicked");
@@ -77,14 +82,23 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
 
     public render(state: ISourceCodeState, stateId: number): Element {
         const source = state.fragment ? state.sourceFragment : state.sourceVertex;
-        const formattedShader = source ? this._indentIfdef(this._beautify(source)) : "";
+        let formattedShader: string;
+        // tslint:disable-next-line:prefer-conditional-expression
+        if (state.translated) {
+            formattedShader = state.fragment ? state.translatedSourceFragment : state.translatedSourceVertex;
+        }
+        else {
+            formattedShader = source ? this._indentIfdef(this._beautify(source)) : "";
+        }
 
         const htmlString = this.htmlTemplate`
         <div class="sourceCodeComponentContainer">
             <div class="sourceCodeMenuComponentContainer">
                 <ul class="sourceCodeMenuComponent">
-                    <li><a class="${state.fragment ? "" : "active"}" href="#" role="button" commandName="onVertexSourceClicked">Vertex</a></li>
-                    <li><a class="${state.fragment ? "active" : ""}" href="#" role="button" commandName="onFragmentSourceClicked">Fragment</a></li>
+                    ${ state.translatedSourceVertex ? this.htmlTemplate`<li><a class="${!state.fragment && state.translated ? "active" : ""}" href="#" role="button" commandName="onTranslatedVertexSourceClicked">Translated Vertex</a></li>` : "" }
+                    ${ state.translatedSourceFragment ? this.htmlTemplate`<li><a class="${state.fragment && state.translated ? "active" : ""}" href="#" role="button" commandName="onTranslatedFragmentSourceClicked">Translated Fragment</a></li>` : "" }
+                    <li><a class="${!state.fragment && !state.translated ? "active" : ""}" href="#" role="button" commandName="onVertexSourceClicked">Vertex</a></li>
+                    <li><a class="${state.fragment && !state.translated ? "active" : ""}" href="#" role="button" commandName="onFragmentSourceClicked">Fragment</a></li>
                     <li><a href="#" role="button" commandName="onSourceCodeCloseClicked">Close</a></li>
                 </ul>
             </div>

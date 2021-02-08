@@ -34,6 +34,8 @@ export class ReadProgramHelper {
 
     private static readShaderFromContext(context: WebGLRenderingContexts, shader: WebGLShader): IShaderCapture {
         const source = context.getShaderSource(shader);
+        const ext = context.getExtension("WEBGL_debug_shaders");
+        const translatedSource = ext ? ext.getTranslatedShaderSource(shader) : null;
 
         const shaderTypeValue = context.getShaderParameter(shader, WebGlConstants.SHADER_TYPE.value);
         const isFragment = shaderTypeValue === WebGlConstants.FRAGMENT_SHADER.value;
@@ -52,6 +54,7 @@ export class ReadProgramHelper {
             fragment: isFragment,
             name,
             source,
+            translatedSource,
         };
     }
 

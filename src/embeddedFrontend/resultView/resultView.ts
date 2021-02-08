@@ -28,6 +28,8 @@ import { MDNCommandLinkHelper } from "./commandList/mdnCommandLinkHelper";
 export interface ISourceCodeChangeEvent {
     sourceVertex: string;
     sourceFragment: string;
+    translatedSourceVertex: string;
+    translatedSourceFragment: string;
     programId: number;
 }
 
@@ -146,14 +148,28 @@ export class ResultView {
         this.sourceCodeComponent.onSourceCodeCloseClicked.add(() => {
             this.displayCurrentCapture();
         });
+        this.sourceCodeComponent.onTranslatedVertexSourceClicked.add((sourceCodeState) => {
+            const state = this.mvx.getGenericState<ISourceCodeState>(this.sourceCodeComponentStateId);
+            state.fragment = false;
+            state.translated = true;
+            this.mvx.updateState(this.sourceCodeComponentStateId, state);
+        });
+        this.sourceCodeComponent.onTranslatedFragmentSourceClicked.add((sourceCodeState) => {
+            const state = this.mvx.getGenericState<ISourceCodeState>(this.sourceCodeComponentStateId);
+            state.fragment = true;
+            state.translated = true;
+            this.mvx.updateState(this.sourceCodeComponentStateId, state);
+        });
         this.sourceCodeComponent.onVertexSourceClicked.add((sourceCodeState) => {
             const state = this.mvx.getGenericState<ISourceCodeState>(this.sourceCodeComponentStateId);
             state.fragment = false;
+            state.translated = false;
             this.mvx.updateState(this.sourceCodeComponentStateId, state);
         });
         this.sourceCodeComponent.onFragmentSourceClicked.add((sourceCodeState) => {
             const state = this.mvx.getGenericState<ISourceCodeState>(this.sourceCodeComponentStateId);
             state.fragment = true;
+            state.translated = false;
             this.mvx.updateState(this.sourceCodeComponentStateId, state);
         });
         this.sourceCodeComponent.onSourceCodeChanged.add((sourceCodeState) => {
@@ -161,6 +177,8 @@ export class ResultView {
                 programId: sourceCodeState.state.programId,
                 sourceFragment: sourceCodeState.state.sourceFragment,
                 sourceVertex: sourceCodeState.state.sourceVertex,
+                translatedSourceFragment: sourceCodeState.state.translatedSourceFragment,
+                translatedSourceVertex: sourceCodeState.state.translatedSourceVertex,
             });
         });
 
@@ -263,7 +281,10 @@ export class ResultView {
             nameFragment: commandState.capture.DrawCall.shaders[1].name,
             sourceVertex: commandState.capture.DrawCall.shaders[0].source,
             sourceFragment: commandState.capture.DrawCall.shaders[1].source,
+            translatedSourceVertex: commandState.capture.DrawCall.shaders[0].translatedSource,
+            translatedSourceFragment: commandState.capture.DrawCall.shaders[1].translatedSource,
             fragment,
+            translated: false,
             editable: commandState.capture.DrawCall.programStatus.RECOMPILABLE,
         }, this.sourceCodeComponent);
 
