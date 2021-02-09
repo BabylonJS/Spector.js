@@ -415,7 +415,7 @@ export class ResultView {
         }
 
         for (const key in json) {
-            if (key === "VisualState" || key === "analyserName" || key === "source") {
+            if (key === "VisualState" || key === "analyserName" || key === "source" || key === "translatedSource") {
                 continue;
             }
 
