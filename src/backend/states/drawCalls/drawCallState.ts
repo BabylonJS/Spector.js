@@ -82,6 +82,14 @@ export class DrawCallState extends BaseState {
 
         this.currentState.shaders = programCapture.shaders;
 
+        if (this.lastCommandName?.indexOf("Elements") >= 0) {
+            const elementArrayBuffer = this.context.getParameter(this.context.ELEMENT_ARRAY_BUFFER_BINDING);
+            if (elementArrayBuffer) {
+                this.currentState.elementArray = {};
+                this.currentState.elementArray.arrayBuffer = this.getSpectorData(elementArrayBuffer);
+            }
+        }
+
         const attributes = this.context.getProgramParameter(program, WebGlConstants.ACTIVE_ATTRIBUTES.value);
         this.currentState.attributes = [];
         for (let i = 0; i < attributes; i++) {

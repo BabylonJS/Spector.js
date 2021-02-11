@@ -16,6 +16,7 @@ export abstract class BaseState {
     protected currentState: State;
     protected quickCapture: boolean;
     protected fullCapture: boolean;
+    protected lastCommandName: string;
 
     private readonly changeCommandsByState: { [key: string]: string[] };
     private readonly consumeCommands: string[];
@@ -129,6 +130,7 @@ export abstract class BaseState {
     }
 
     protected isValidConsumeCommand(command: ICommandCapture): boolean {
+        this.lastCommandName = command?.name;
         return true;
     }
 

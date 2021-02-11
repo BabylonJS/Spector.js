@@ -4,6 +4,9 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.22
+* Display [elementArrayBuffer in capture state](https://github.com/BabylonJS/Spector.js/issues/180)
+
 ## v0.9.19 && v0.9.20 && v0.9.21
 * Add Support for [translated shaders](https://github.com/BabylonJS/Spector.js/issues/175) in the extension.
 
