@@ -4,7 +4,10 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
-## v0.9.23
+## v0.9.25
+
+## v0.9.24
+* Chrome web Store policy change
 
 ## v0.9.22
 * Display [elementArrayBuffer in capture state](https://github.com/BabylonJS/Spector.js/issues/180)
