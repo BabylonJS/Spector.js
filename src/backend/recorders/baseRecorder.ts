@@ -217,6 +217,16 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
         }
 
         this.options.toggleCapture(false);
+
+        const tag = WebGlObjects.getWebGlObjectTag(instance);
+        if (!tag) {
+            this.options.toggleCapture(true);
+            return;
+        }
+
+        // Remove object from list of objects
+        delete this.objects[tag.id];
+
         const size = this.delete(instance);
         this.changeMemorySize(-size);
         this.options.toggleCapture(true);
