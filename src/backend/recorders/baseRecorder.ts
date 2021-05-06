@@ -142,7 +142,11 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
                     const source = WebGlObjects.getWebGlObjectSource(object);
                     if (source) {
                         capture.objects[this.objectName][id] = source;
+                    } else {
+                        console.log("Object without source");
                     }
+                } else {
+                    console.log("Object which was already free'd");
                 }
             }
         }
