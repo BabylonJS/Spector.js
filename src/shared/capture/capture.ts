@@ -16,4 +16,5 @@ export interface ICapture {
     analyses: IAnalysis[];
     frameMemory: { [objectName: string]: number };
     memory: { [objectName: string]: { [second: number]: number } };
+    objects: { [objectName: string]: { [id: number]: string[] } };
 }

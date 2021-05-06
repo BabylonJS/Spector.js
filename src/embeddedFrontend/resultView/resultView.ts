@@ -407,6 +407,8 @@ export class ResultView {
         }
         this.displayJSONGroup(rightJsonContentStateId, "Frame Memory Changes", capture.frameMemory);
         this.displayJSONGroup(rightJsonContentStateId, "Total Memory (seconds since application start: bytes)", capture.memory);
+        this.displayJSONGroup(rightJsonContentStateId, "Objects", capture.objects);
+
     }
 
     private displayJSON(parentGroupId: number, json: any) {
@@ -499,6 +501,10 @@ export class ResultView {
                 help: json.help,
             }, this.jsonHelpItemComponent);
             return null;
+        }
+
+        if (json.__SPECTOR_Object_SOURCE) {
+            return json.__SPECTOR_Object_SOURCE;
         }
 
         if (json.__SPECTOR_Object_TAG) {

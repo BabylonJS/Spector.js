@@ -10,6 +10,10 @@
         "experimentalDecorators": true,
         "module": "es6",
         "moduleResolution": "node",
-        "target": "es5"
+        "target": "es5",
+        "lib": [
+            "ESNext",
+            "dom"
+        ]
     }
 }

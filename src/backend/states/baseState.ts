@@ -263,6 +263,7 @@ export abstract class BaseState {
 
         return {
             __SPECTOR_Object_TAG: WebGlObjects.getWebGlObjectTag(object) || this.options.tagWebGlObject(object),
+            __SPECTOR_Object_Source: WebGlObjects.getWebGlObjectSource(object),
             __SPECTOR_Object_CustomData: object.__SPECTOR_Object_CustomData,
             __SPECTOR_Metadata: object.__SPECTOR_Metadata,
         };
