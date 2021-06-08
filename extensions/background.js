@@ -115,6 +115,16 @@ listenForMessage(function(request, sender, sendResponse) {
             popup.captureComplete(request.errorString);
         }
     }
+    else if (request.capture) {
+        var capture = request.capture;
+        // Open the result view if not open (need to check if length == 1 that the function exists for Edge),
+        window.browser.tabs.create({ url: "result.html", active: true }, function(tab) {
+            resultTab = tab;
+            currentCapture = capture;
+            currentFrameId = frameId;
+            currentTabId = sender.tab.id;
+        });
+    }
     else if (request.captureChunk) {
         currentCaptureChunks.push(request.captureChunk);
     }
@@ -124,8 +134,6 @@ listenForMessage(function(request, sender, sendResponse) {
         currentCaptureChunks = [];
         var fullJSON = "".concat.apply("", allChunks);
         var capture = JSON.parse(fullJSON);
-        // If a capture has been received,
-        var tabWindows = browser.extension.getViews({type: "tab"});
         // Open the result view if not open (need to check if length == 1 that the function exists for Edge),
         window.browser.tabs.create({ url: "result.html", active: true }, function(tab) {
             resultTab = tab;

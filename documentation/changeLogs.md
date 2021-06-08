@@ -5,6 +5,7 @@
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
 ## v0.9.25
+* [Fix Drag and Drop captures in the main extension popup](https://github.com/BabylonJS/Spector.js/issues/199)
 
 ## v0.9.24
 * Chrome web Store policy change
