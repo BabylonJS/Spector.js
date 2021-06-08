@@ -2,13 +2,13 @@
   "manifest_version": 2,
   "minimum_chrome_version": "20",
   "name" : "Spector.js",
-  "version" : "0.9.22",
+  "version" : "0.9.25",
   "homepage_url": "http://spector.babylonjs.com/",
   "description" : "Explore and Troubleshoot your WebGL scenes easily.",
   "author": "@SpectorJS",
   
   "permissions": [
-    "tabs", "http://*/*", "https://*/*"
+    "http://*/*", "https://*/*"
   ],
   "page_action" :
   {
@@ -41,6 +41,6 @@
   ],
   "icons" : {
     "48" : "spectorjs-48.png",
-    "128" : "spectorjs-128.png"
+    "128" : "spectorjs-128128.png"
   }
 }
