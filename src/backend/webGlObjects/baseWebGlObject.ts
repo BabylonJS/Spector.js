@@ -5,6 +5,8 @@ export type WebGlObjectTag = {
     customData?: any;
 };
 
+export type WebGlObjectSource = string[];
+
 export class WebGlObjects {
     public static getWebGlObjectTag(object: WebGLObject): WebGlObjectTag {
         return (object as any)[WebGlObjects.SPECTOROBJECTTAGKEY];
@@ -22,7 +24,16 @@ export class WebGlObjects {
         return `${tag.typeName} - ID: ${tag.id}`;
     }
 
+    public static getWebGlObjectSource(object: WebGLObject): WebGlObjectSource {
+        return (object as any)[WebGlObjects.SPECTOROBJECTSOURCEKEY];
+    }
+
+    public static attachWebGlObjectSource(object: WebGLObject, source: WebGlObjectSource): void {
+        (object as any)[WebGlObjects.SPECTOROBJECTSOURCEKEY] = source;
+    }
+
     private static readonly SPECTOROBJECTTAGKEY = "__SPECTOR_Object_TAG";
+    private static readonly SPECTOROBJECTSOURCEKEY = "__SPECTOR_Object_SOURCE";
 }
 
 // tslint:disable-next-line:max-classes-per-file

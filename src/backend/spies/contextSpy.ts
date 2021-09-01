@@ -125,6 +125,7 @@ export class ContextSpy {
             analyses: [],
             frameMemory: {},
             memory: {},
+            objects: {},
         };
 
         // Refreshes canvas info in case it changed beffore the capture.

@@ -4,6 +4,7 @@ import { WebGlConstants, WebGlConstantsByValue } from "../types/webglConstants";
 import { FunctionCallbacks, IFunctionInformation } from "../types/functionInformation";
 import { ICapture } from "../../shared/capture/capture";
 import { WebGlObjects } from "../webGlObjects/baseWebGlObject";
+import {StackTrace} from "../../shared/utils/stackTrace";
 
 export interface IRecorder {
     registerCallbacks(onFunctionCallbacks: FunctionCallbacks): void;
@@ -85,6 +86,8 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
     protected readonly startTime: number;
     protected readonly memoryPerSecond: { [second: number]: number };
 
+    private objects: { [id: number]: WeakRef<WebGLObject> };
+
     private totalMemory: number;
     private frameMemory: number;
     private capturing: boolean;
@@ -131,6 +134,22 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
     public appendRecordedInformation(capture: ICapture): void {
         capture.frameMemory[this.objectName] = this.frameMemory;
         capture.memory[this.objectName] = this.memoryPerSecond;
+        capture.objects[this.objectName] = {};
+        for (const id in this.objects) {
+            if (this.objects.hasOwnProperty(id)) {
+                const object = this.objects[id].deref();
+                if (object) {
+                    const source = WebGlObjects.getWebGlObjectSource(object);
+                    if (source) {
+                        capture.objects[this.objectName][id] = source;
+                    } else {
+                        console.log("Object without source");
+                    }
+                } else {
+                    console.log("Object which was already free'd");
+                }
+            }
+        }
     }
 
     protected abstract getCreateCommandNames(): string[];
@@ -141,7 +160,19 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
     protected abstract delete(instance: T): number;
 
     protected create(functionInformation: IFunctionInformation): void {
-        // Nothing tracked currently on create.
+        // Removes the spector internal calls to leave only the relevant part.
+        const stackTrace = StackTrace.getStackTrace(5, 0);
+
+        const createdWebGlObject = functionInformation.result as T;
+
+        // Add information where this object was created
+        WebGlObjects.attachWebGlObjectSource(createdWebGlObject, stackTrace);
+
+        // Add our object to the list of tracked objects (object should only exist once).
+        const tag = WebGlObjects.getWebGlObjectTag(createdWebGlObject);
+        this.objects = this.objects || [];
+        if (this.objects[tag.id]) { debugger; }
+        this.objects[tag.id] = new WeakRef(createdWebGlObject);
     }
 
     protected createWithoutSideEffects(functionInformation: IFunctionInformation): void {
@@ -186,6 +217,16 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
         }
 
         this.options.toggleCapture(false);
+
+        const tag = WebGlObjects.getWebGlObjectTag(instance);
+        if (!tag) {
+            this.options.toggleCapture(true);
+            return;
+        }
+
+        // Remove object from list of objects
+        delete this.objects[tag.id];
+
         const size = this.delete(instance);
         this.changeMemorySize(-size);
         this.options.toggleCapture(true);
