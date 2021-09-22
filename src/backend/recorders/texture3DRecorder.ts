@@ -54,13 +54,20 @@ export class Texture3DRecorder extends BaseRecorder<WebGLTexture> {
         }
 
         const previousLength = (instance as any).__SPECTOR_Object_CustomData ? (instance as any).__SPECTOR_Object_CustomData.length : 0;
-        customData.length = customData.width * customData.height * customData.depth
-            * this.getByteSizeForInternalFormat(customData.internalFormat);
-
-        if (customData) {
-            (instance as any).__SPECTOR_Object_CustomData = customData;
+        if (customData.isCompressed) {
+            // Compressed textures are worth the size of their data.
+            if (functionInformation.arguments.length >= 7) {
+                const viewOrSize = functionInformation.arguments[6];
+                customData.length = (typeof viewOrSize === "number") ? viewOrSize : viewOrSize?.byteLength;
+            }
+        }
+        else {
+            customData.length = customData.width * customData.height * customData.depth
+                * this.getByteSizeForInternalFormat(customData.internalFormat);
         }
 
+        customData.length = customData.length | 0;
+        (instance as any).__SPECTOR_Object_CustomData = customData;
         return customData.length - previousLength;
     }
 
@@ -89,6 +96,7 @@ export class Texture3DRecorder extends BaseRecorder<WebGLTexture> {
                 height: functionInformation.arguments[4],
                 depth: functionInformation.arguments[5],
                 length: 0,
+                isCompressed: false,
             };
         }
 
@@ -113,6 +121,7 @@ export class Texture3DRecorder extends BaseRecorder<WebGLTexture> {
                 height: functionInformation.arguments[4],
                 depth: functionInformation.arguments[5],
                 length: 0,
+                isCompressed: true,
             };
         }
 
@@ -139,6 +148,7 @@ export class Texture3DRecorder extends BaseRecorder<WebGLTexture> {
                 format: functionInformation.arguments[7],
                 type: functionInformation.arguments[8],
                 length: 0,
+                isCompressed: false,
             };
         }
 
