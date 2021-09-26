@@ -13,6 +13,7 @@ export interface ITextureRecorderData {
     format?: number;
     type?: number;
     depth?: number;
+    isCompressed: boolean;
 }
 
 export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
@@ -71,24 +72,35 @@ export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
         }
 
         const previousLength = (instance as any).__SPECTOR_Object_CustomData ? (instance as any).__SPECTOR_Object_CustomData.length : 0;
-        const cubeMapMultiplier = target === "TEXTURE_2D" ? 1 : 6;
-        let internalFormat = customData.internalFormat;
-
-        // @ivanpopelyshev: this hack is made according to tests on PixiJS applications
-        // Float textures is not a rare case
-        // WebGL1 does not have RGBA32F, RGBA16F, we need to look in `type` field
-        if (internalFormat === WebGlConstants.RGBA.value) {
-            if (customData.type === WebGlConstants.FLOAT.value)  {
-                internalFormat = WebGlConstants.RGBA32F.value;
-            }
-            if (customData.type === WebGlConstants.HALF_FLOAT_OES.value)  {
-                internalFormat = WebGlConstants.RGBA16F.value;
+        if (customData.isCompressed) {
+            // Compressed textures are worth the size of their data.
+            if (functionInformation.arguments.length >= 7) {
+                const viewOrSize = functionInformation.arguments[6];
+                customData.length = (typeof viewOrSize === "number") ? viewOrSize : viewOrSize?.byteLength;
             }
         }
+        else {
+            const cubeMapMultiplier = target === "TEXTURE_2D" ? 1 : 6;
+            let internalFormat = customData.internalFormat;
 
-        // @ivanpopelyshev: This calculation should be fine for most cases, but not if we start counting mips
-        // TODO: move width/height inside and make pluggable functions based on compressed textures extensions
-        customData.length = (customData.width * customData.height * cubeMapMultiplier * this.getByteSizeForInternalFormat(internalFormat)) | 0;
+            // @ivanpopelyshev: this hack is made according to tests on PixiJS applications
+            // Float textures is not a rare case
+            // WebGL1 does not have RGBA32F, RGBA16F, we need to look in `type` field
+            if (internalFormat === WebGlConstants.RGBA.value) {
+                if (customData.type === WebGlConstants.FLOAT.value)  {
+                    internalFormat = WebGlConstants.RGBA32F.value;
+                }
+                if (customData.type === WebGlConstants.HALF_FLOAT_OES.value)  {
+                    internalFormat = WebGlConstants.RGBA16F.value;
+                }
+            }
+
+            // @ivanpopelyshev: This calculation should be fine for most cases, but not if we start counting mips
+            // TODO: move width/height inside and make pluggable functions based on compressed textures extensions
+            customData.length = (customData.width * customData.height * cubeMapMultiplier * this.getByteSizeForInternalFormat(internalFormat));
+        }
+
+        customData.length = customData.length | 0;
         (instance as any).__SPECTOR_Object_CustomData = customData;
         return customData.length - previousLength;
     }
@@ -117,6 +129,7 @@ export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
                 width: functionInformation.arguments[3],
                 height: functionInformation.arguments[4],
                 length: 0,
+                isCompressed: false,
             };
         }
 
@@ -140,6 +153,7 @@ export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
                 width: functionInformation.arguments[3],
                 height: functionInformation.arguments[4],
                 length: 0,
+                isCompressed: true,
             };
         }
 
@@ -165,6 +179,7 @@ export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
                 format: functionInformation.arguments[6],
                 type: functionInformation.arguments[7],
                 length: 0,
+                isCompressed: false,
             };
         }
         else if (functionInformation.arguments.length === 6) {
@@ -178,6 +193,7 @@ export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
                 format: functionInformation.arguments[3],
                 type: functionInformation.arguments[4],
                 length: 0,
+                isCompressed: false,
             };
         }
 
