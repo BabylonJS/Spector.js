@@ -5,7 +5,8 @@ var BUILD_DIR = path.resolve(MAIN_DIR, "./dist");
 var DEV_DIR = path.resolve(MAIN_DIR, "./.temp");
 
 var buildConfig = function(env) {
-    var isProd = env === "prod";
+    var isProd = env.prod;
+
     var config = {
         watch: !isProd,
         context: MAIN_DIR,
@@ -31,7 +32,7 @@ var buildConfig = function(env) {
         resolve: {
             extensions: [".ts", ".tsx", ".js", ".css", ".sass"]
         },
-        devtool: isProd ? "none" : "source-map",
+        devtool: false,
         mode: isProd ? "production" : "development",
         module: {
             rules: [{
