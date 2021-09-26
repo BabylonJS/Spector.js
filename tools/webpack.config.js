@@ -36,10 +36,9 @@ var buildConfig = function(env) {
         module: {
             rules: [{
                 test: /\.tsx?$/,
-                loader: "awesome-typescript-loader",
+                loader: "ts-loader",
                 options: {
-                    configFileName: "src/tsconfig.json",
-                    declaration: false
+                    configFile: "src/tsconfig.json"
                 }
             }, {
                 test: /\.scss$/,
@@ -49,7 +48,12 @@ var buildConfig = function(env) {
                 use: [ "style-loader?insert=html", "css-loader" ]
             }, {
                 test: /ace.js$/,
-                use: [ "exports-loader?ace" ]
+                // use: [ "exports-loader?ace" ]
+                loader: "exports-loader",
+                options: {
+                    type: "commonjs",
+                    exports: "ace",
+                },
             }, {
                 test: /spector.js$/,
                 use: [ "exports-loader?SPECTOR" ]

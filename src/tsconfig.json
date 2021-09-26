@@ -2,6 +2,7 @@
     "compilerOptions": {
         "outDir": "../.temp/tsc/",
         "rootDir": "./",
+        "types": [],
         "sourceMap": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
