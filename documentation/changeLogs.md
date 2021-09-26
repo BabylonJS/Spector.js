@@ -4,6 +4,9 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.27
+* Fixed compressed textures gathered sizes.
+
 ## v0.9.26
 * Add support for SRGB textures capture.
 
