@@ -21,6 +21,7 @@ import { GetParameter } from "../commands/getParameter";
 import { GetShaderPrecisionFormat } from "../commands/getShaderPrecisionFormat";
 import { GetTransformFeedbackVarying } from "../commands/getTransformFeedbackVarying";
 import { Scissor } from "../commands/scissor";
+import { StencilFuncSeparate } from "../commands/stencilFuncSeparate";
 import { VertexAttribPointer } from "../commands/vertexAttribPointer";
 import { Viewport } from "../commands/viewport";
 import { EnableVertexAttribArray } from "../commands/enableVertexAttribArray";
@@ -139,6 +140,7 @@ export class CommandSpy {
             [GetShaderPrecisionFormat.commandName]: (options: IContextInformation) => new GetShaderPrecisionFormat(options),
             [GetTransformFeedbackVarying.commandName]: (options: IContextInformation) => new GetTransformFeedbackVarying(options),
             [Scissor.commandName]: (options: IContextInformation) => new Scissor(options),
+            [StencilFuncSeparate.commandName]: (options: IContextInformation) => new StencilFuncSeparate(options),
             [VertexAttribPointer.commandName]: (options: IContextInformation) => new VertexAttribPointer(options),
             [Viewport.commandName]: (options: IContextInformation) => new Viewport(options),
             [EnableVertexAttribArray.commandName]: (options: IContextInformation) => new EnableVertexAttribArray(options),
