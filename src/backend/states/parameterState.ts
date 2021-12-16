@@ -78,7 +78,7 @@ export abstract class ParameterState extends BaseState {
 
     protected readParameterFromContext(parameter: IParameter): any {
         if (parameter.constant.extensionName && !this.extensions[parameter.constant.extensionName]) {
-            return `Extension ${parameter.constant.extensionName} is unavailble.`;
+            return `Extension ${parameter.constant.extensionName} is unavailable.`;
         }
 
         const value = this.context.getParameter(parameter.constant.value);
