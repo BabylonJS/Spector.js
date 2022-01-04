@@ -12,8 +12,11 @@
   "readme": "documentation/standaloneVersion.md",
   "main": "dist/spector.bundle.js",
   "files": [
-    "dist/spector.bundle.js"
+    "dist/spector.bundle.js",
+    "dist/spector.d.ts",
+    "dist/spector.js.map"
   ],
+  "types": "dist/spector.d.ts",
   "author": "@SpectorJS",
   "repository": {
     "type": "git",
