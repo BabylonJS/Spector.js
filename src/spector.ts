@@ -303,8 +303,8 @@ export class Spector {
             this.capturingContext = contextSpy;
             this.capturingContext.setMarker(this.marker);
 
-            // Limit command count to 5000 record.
-            commandCount = Math.min(commandCount, 5000);
+            // Limit command count to 10000 record.
+            commandCount = Math.min(commandCount, 10000);
             if (commandCount > 0) {
                 this.captureCommands(commandCount);
             }
