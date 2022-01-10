@@ -12,6 +12,8 @@ import { Program } from "./backend/webGlObjects/webGlObjects";
 import { CaptureMenu } from "./embeddedFrontend/captureMenu/captureMenu";
 import { ResultView } from "./embeddedFrontend/resultView/resultView";
 
+const CAPTURE_LIMIT = 10000; // Limit command count to 10000 record (to be kept in sync with the documentation)
+
 export interface IAvailableContext {
     readonly canvas: HTMLCanvasElement | OffscreenCanvas;
     readonly contextSpy: ContextSpy;
@@ -303,8 +305,8 @@ export class Spector {
             this.capturingContext = contextSpy;
             this.capturingContext.setMarker(this.marker);
 
-            // Limit command count to 5000 record.
-            commandCount = Math.min(commandCount, 5000);
+            // Limit the shown command count
+            commandCount = Math.min(commandCount, CAPTURE_LIMIT);
             if (commandCount > 0) {
                 this.captureCommands(commandCount);
             }

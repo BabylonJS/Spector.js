@@ -83,6 +83,8 @@ The bottom of the menu helps capturing what is happening during the page load on
     <img src="https://spectordoc.babylonjs.com/pictures/extensionResult.png" style="width:512px" width="512px">
 </p>
 
+The current maximum count of captured GL calls is 10000.
+
 Another interesting feature is the ability to drive the extension by code. Once the extension is enabled, from your browser's dev tools, or even your code, you can call the following APIs on spector:
 - ```captureNextFrame(obj: HTMLCanvasElement | RenderingContext)``` : Call to begin a capture of the next frame of a specific canvas or context.
 - ```startCapture(obj: HTMLCanvasElement | RenderingContext, commandCount: number)``` : Start a capture on a specific canvas or context. The capture will stop once it reaches the number of commands specified as a parameter, or after 10 seconds.
