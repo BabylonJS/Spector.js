@@ -386,6 +386,12 @@ export class Spector {
         }
     }
 
+    public log(value: string): void {
+        if (this.capturingContext) {
+            this.capturingContext.log(value);
+        }
+    }
+
     private captureFrames(frameCount: number): void {
         this.captureNextFrames = frameCount;
         this.captureNextCommands = 0;

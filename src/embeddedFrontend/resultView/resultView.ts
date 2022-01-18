@@ -617,7 +617,7 @@ export class ResultView {
                 status,
             });
         }
-        else {
+        else if (command.name !== "LOG") {
             this.displayJSONGroup(this.commandDetailStateId, "Global", {
                 name: { help: helpLink, name: command.name },
                 duration: command.commandEndTime - command.startTime,
@@ -685,7 +685,10 @@ export class ResultView {
 
         for (let i = 0; i < capture.commands.length; i++) {
             const commandCapture = capture.commands[i];
-            if (this.toFilter(commandCapture.marker) && this.toFilter(commandCapture.name) && commandCapture.id !== this.currentCommandId) {
+            if (this.toFilter(commandCapture.marker) &&
+                this.toFilter(commandCapture.name) &&
+                commandCapture.id !== this.currentCommandId &&
+                commandCapture.name === "LOG" && this.toFilter(commandCapture.text)) {
                 continue;
             }
 

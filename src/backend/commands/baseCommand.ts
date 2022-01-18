@@ -1,6 +1,5 @@
 import { IContextInformation } from "../types/contextInformation";
 import { StackTrace } from "../../shared/utils/stackTrace";
-import { Logger } from "../../shared/utils/logger";
 import { IFunctionInformation } from "../types/functionInformation";
 import { ICommandCapture, CommandCaptureStatus } from "../../shared/capture/commandCapture";
 import { WebGlConstants } from "../types/webglConstants";
