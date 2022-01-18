@@ -11,6 +11,7 @@ Please, find below the per release summary of the contribution added to the proj
 * Fix [STENCIL_BITS is not displayed in stencil state](https://github.com/BabylonJS/Spector.js/issues/214)
 * Add [spector.log support](https://github.com/BabylonJS/Spector.js/issues/171)
 * Fix [Shader Type display](https://github.com/BabylonJS/Spector.js/issues/179)
+* Add [Pixelated Texture on Nearest mag filter](https://github.com/BabylonJS/Spector.js/issues/107)
 
 ## v0.9.27
 * Fixed compressed textures gathered sizes.

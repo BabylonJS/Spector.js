@@ -426,6 +426,7 @@ export class ResultView {
                         this.mvx.addChildState(parentGroupId, {
                             key: target,
                             value: value[target],
+                            pixelated: json["samplerMagFilter"] === "NEAREST" || json["magFilter"] === "NEAREST",
                         }, this.jsonImageItemComponent);
                     }
                 }

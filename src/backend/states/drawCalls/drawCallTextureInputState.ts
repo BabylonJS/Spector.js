@@ -32,11 +32,7 @@ export class DrawCallTextureInputState {
         this.workingContext2D = this.workingCanvas.getContext("2d");
         this.captureCanvas = document.createElement("canvas");
         this.captureContext2D = this.captureCanvas.getContext("2d");
-        this.captureContext2D.imageSmoothingEnabled = true;
-        (this.captureContext2D as any).mozImageSmoothingEnabled = true;
-        (this.captureContext2D as any).oImageSmoothingEnabled = true;
-        (this.captureContext2D as any).webkitImageSmoothingEnabled = true;
-        (this.captureContext2D as any).msImageSmoothingEnabled = true;
+        this._setSmoothing(true);
     }
 
     public appendTextureState(state: any, storage: WebGLTexture, target: WebGlConstant = null, fullCapture: boolean): void {
@@ -68,13 +64,15 @@ export class DrawCallTextureInputState {
         }
 
         if (target) {
+            const pixelated = state["samplerMagFilter"] === "NEAREST" || state["magFilter"] === "NEAREST";
             state.visual = this.getTextureVisualState(target,
                 storage,
-                customData);
+                customData,
+                pixelated);
         }
     }
 
-    protected getTextureVisualState(target: WebGlConstant, storage: WebGLTexture, info: ITextureRecorderData): any {
+    protected getTextureVisualState(target: WebGlConstant, storage: WebGLTexture, info: ITextureRecorderData, pixelated: boolean): any {
         try {
             const gl = this.context;
             const visual: any = {};
@@ -101,7 +99,7 @@ export class DrawCallTextureInputState {
                         }
                         gl2.framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                             storage, textureLevel, i);
-                        visual["3D Layer " + i] = this.getCapture(gl, 0, 0, width, height, info.type);
+                        visual["3D Layer " + i] = this.getCapture(gl, 0, 0, width, height, info.type, pixelated);
                     }
                 }
                 else if (target === WebGlConstants.TEXTURE_2D_ARRAY && info.depth) {
@@ -113,20 +111,20 @@ export class DrawCallTextureInputState {
                         }
                         gl2.framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                             storage, textureLevel, i);
-                        visual["Layer " + i] = this.getCapture(gl, 0, 0, width, height, info.type);
+                        visual["Layer " + i] = this.getCapture(gl, 0, 0, width, height, info.type, pixelated);
                     }
                 }
                 else if (target === WebGlConstants.TEXTURE_CUBE_MAP) {
                     for (const face of DrawCallTextureInputState.cubeMapFaces) {
                         gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                             face.value, storage, textureLevel);
-                        visual[face.name] = this.getCapture(gl, 0, 0, width, height, info.type);
+                        visual[face.name] = this.getCapture(gl, 0, 0, width, height, info.type, pixelated);
                     }
                 }
                 else {
                     gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                         WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
-                    visual[WebGlConstants.TEXTURE_2D.name] = this.getCapture(gl, 0, 0, width, height, info.type);
+                    visual[WebGlConstants.TEXTURE_2D.name] = this.getCapture(gl, 0, 0, width, height, info.type, pixelated);
                 }
             }
             catch (e) {
@@ -143,7 +141,7 @@ export class DrawCallTextureInputState {
         return undefined;
     }
 
-    protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number): string {
+    protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number, pixelated: boolean): string {
         try {
             // Check FBO status.
             const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);
@@ -194,6 +192,7 @@ export class DrawCallTextureInputState {
             this.captureContext2D.globalCompositeOperation = "copy";
             this.captureContext2D.scale(1, -1); // Y flip
             this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
+            this._setSmoothing(!pixelated);
             this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
             this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
             this.captureContext2D.globalCompositeOperation = "source-over";
@@ -211,5 +210,13 @@ export class DrawCallTextureInputState {
     protected getWebGlConstant(value: number): string {
         const constant = WebGlConstantsByValue[value];
         return constant ? constant.name : value + "";
+    }
+
+    private _setSmoothing(smooth: boolean) {
+        this.captureContext2D.imageSmoothingEnabled = smooth;
+        (this.captureContext2D as any).mozImageSmoothingEnabled = smooth;
+        (this.captureContext2D as any).oImageSmoothingEnabled = smooth;
+        (this.captureContext2D as any).webkitImageSmoothingEnabled = smooth;
+        (this.captureContext2D as any).msImageSmoothingEnabled = smooth;
     }
 }

@@ -53,6 +53,7 @@ Once ```npm start``` has been launched, you can access the following samples to 
 20. [Offscreen](http://localhost:1337/sample/index.html?sample=offscreen): Test Offscreen canvas support.
 21. [Scissor Clear](http://localhost:1337/sample/index.html?sample=scissorClear): Test scissor redundant calls when clearing.
 22. [Custom Log](http://localhost:1337/sample/index.html?sample=customLog): Test the custom log functionnality.
+22. [Pixelated Nearest](http://localhost:1337/sample/index.html?sample=texturePixelated): Test visual texture capture being pixelated on nearest.
 
 You can also add &noSpy=1 at the end of the previous Urls to test without enabling the full spy before starting your rendering engine.
 
