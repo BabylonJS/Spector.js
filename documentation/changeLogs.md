@@ -7,6 +7,7 @@ Please, find below the per release summary of the contribution added to the proj
 ## v0.9.28
 * Fix [BindAttribLocation parameter display](https://github.com/BabylonJS/Spector.js/issues/220)
 * Fix [Scissor redundant calls on clear](https://github.com/BabylonJS/Spector.js/issues/215)
+* Fix [Stencil command consistency](https://github.com/BabylonJS/Spector.js/issues/213)
 
 ## v0.9.27
 * Fixed compressed textures gathered sizes.

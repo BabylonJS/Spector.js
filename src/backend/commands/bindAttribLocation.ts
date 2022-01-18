@@ -17,7 +17,7 @@ export class BindAttribLocation extends BaseCommand {
         }
         // Index
         if (args.length > 1) {
-            const arg = '' + args[1];
+            const arg = "" + args[1];
             stringified.push(arg);
         }
         // Name
