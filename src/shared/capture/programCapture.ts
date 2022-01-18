@@ -1,6 +1,6 @@
 export interface IShaderCapture {
     COMPILE_STATUS: boolean;
-    fragment: boolean;
+    shaderType: string;
     name: string;
     source: string;
     translatedSource: string;
