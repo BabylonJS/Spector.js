@@ -1,5 +1,6 @@
 import { BaseCommand } from "./baseCommand";
 import { WebGlConstants } from "../types/webglConstants";
+import { formatBinary } from "../utils/formatHelper";
 
 export class StencilMaskSeparate extends BaseCommand {
     public static readonly commandName = "stencilMaskSeparate";
@@ -11,7 +12,7 @@ export class StencilMaskSeparate extends BaseCommand {
     protected stringifyArgs(args: IArguments): string[] {
         const stringified = [];
         stringified.push(WebGlConstants.stringifyWebGlConstant(args[0], "stencilMaskSeparate"));
-        stringified.push(`${args[1].toFixed(0)} (0b${(args[1] >>> 0).toString(2)})`);
+        stringified.push(formatBinary(args[1]));
 
         return stringified;
     }

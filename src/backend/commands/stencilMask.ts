@@ -1,3 +1,4 @@
+import { formatBinary } from "../utils/formatHelper";
 import { BaseCommand } from "./baseCommand";
 
 export class StencilMask extends BaseCommand {
@@ -9,7 +10,7 @@ export class StencilMask extends BaseCommand {
 
     protected stringifyArgs(args: IArguments): string[] {
         const stringified = [];
-        stringified.push(`${args[0].toFixed(0)} (0b${(args[0] >>> 0).toString(2)})`);
+        stringified.push(formatBinary(args[0]));
 
         return stringified;
     }

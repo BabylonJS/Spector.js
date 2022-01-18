@@ -1,6 +1,7 @@
 import { WebGlConstant, WebGlConstants } from "../types/webglConstants";
 import { BaseState } from "./baseState";
 import { WebGlObjects } from "../webGlObjects/baseWebGlObject";
+import { formatBinary } from "../utils/formatHelper";
 
 export const enum ParameterReturnType {
     Unknown = 0,
@@ -95,8 +96,7 @@ export abstract class ParameterState extends BaseState {
         }
 
         if (parameter.returnType === ParameterReturnType.GlUint) {
-            value = value.toString(2);
-            value = "00000000000000000000000000000000".substr(value.length) + value;
+            value = formatBinary(value);
             return value;
         }
 
