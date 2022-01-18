@@ -3,6 +3,7 @@ import { BaseCommand } from "../commands/baseCommand";
 import { OriginFunctionHelper } from "../utils/originFunctionHelper";
 import { ICommandCapture } from "../../shared/capture/commandCapture";
 import { Time } from "../../shared/utils/time";
+import { BindAttribLocation } from "../commands/bindAttribLocation";
 import { BlitFrameBuffer } from "../commands/blitFrameBuffer";
 import { Clear } from "../commands/clear";
 import { DefaultCommand } from "../commands/defaultCommand";
@@ -123,6 +124,7 @@ export class CommandSpy {
         }
 
         CommandSpy.customCommandsConstructors = {
+            [BindAttribLocation.commandName]: (options: IContextInformation) => new BindAttribLocation(options),
             [BlitFrameBuffer.commandName]: (options: IContextInformation) => new BlitFrameBuffer(options),
             [Clear.commandName]: (options: IContextInformation) => new Clear(options),
             [DisableVertexAttribArray.commandName]: (options: IContextInformation) => new DisableVertexAttribArray(options),
