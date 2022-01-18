@@ -306,9 +306,9 @@ function drawScene() {
 //
 function initShaders() {
   var fragmentShader = getShader(gl, fragmentShaderSource, false);  
-  fragmentShader.__SPECTOR_Metadata = { name: "FragmentShader" };
+  fragmentShader.__SPECTOR_Metadata = { name: "CustomFragmentShaderName" };
   var vertexShader = getShader(gl, vertexShaderSource, true);  
-  vertexShader.__SPECTOR_Metadata = { name: "VertexShader" };
+  vertexShader.__SPECTOR_Metadata = { name: "CustomVertexShaderName" };
 
   // Create the shader program
 
