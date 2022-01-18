@@ -27,6 +27,7 @@ This is the main entry point of the library and contains the following methods:
 - ```stopCapture(): ICapture``` : Stop the current capture and returns the result in JSON. It displays the result if the UI has been displayed. This returns undefined if the capture has not been completed or did not find any commands.
 - ```setMarker(marker: string)``` : Adds a marker that is displayed in the capture, helping you analyze the results.
 - ```clearMarker()``` : Clears the current marker from the capture for any subsequent calls.
+- ```log(value: string)``` : Adds a command with the name value in the list. This can be filtered in the search. All logs can be filtered searching for "LOG".
 
 And the following list of events:
 - ```onCaptureStarted: IEvent<any>``` : triggered when a capture starts.
