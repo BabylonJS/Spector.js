@@ -23,7 +23,7 @@ export class ScissorState extends ParameterState {
     }
 
     protected getConsumeCommands(): string[] {
-        return drawCommands;
+        return [...drawCommands, "clear"];
     }
 
     protected isStateEnable(stateName: string, args: IArguments): boolean {

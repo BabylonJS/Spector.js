@@ -51,6 +51,7 @@ Once ```npm start``` has been launched, you can access the following samples to 
 18. [setTimeout Parameters](http://localhost:1337/sample/index.html?sample=setTimeout): Test parameters of setTimeout functions.
 19. [Viewport](http://localhost:1337/sample/index.html?sample=viewPort): Test viewport capture in Render Targets.
 20. [Offscreen](http://localhost:1337/sample/index.html?sample=offscreen): Test Offscreen canvas support.
+21. [Scissor Clear](http://localhost:1337/sample/index.html?sample=scissorClear): Test scissor redundant calls when clearing.
 
 You can also add &noSpy=1 at the end of the previous Urls to test without enabling the full spy before starting your rendering engine.
 
