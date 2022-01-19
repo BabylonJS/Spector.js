@@ -4,6 +4,8 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.29
+* Fix [Texture Display for texture arrays](https://github.com/BabylonJS/Spector.js/pull/224
 ## v0.9.28
 * Fix [BindAttribLocation parameter display](https://github.com/BabylonJS/Spector.js/issues/220)
 * Fix [Scissor redundant calls on clear](https://github.com/BabylonJS/Spector.js/issues/215)
