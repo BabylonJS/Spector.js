@@ -133,17 +133,18 @@ export class DrawCallState extends BaseState {
         // Insert texture state at the end of the uniform datas.
         for (let i = 0; i < uniformIndices.length; i++) {
             const uniformState = this.currentState.uniforms[i];
-            if (uniformState.value !== null && uniformState.value !== undefined) {
+            const values = uniformState.value ?? uniformState.values;
+            if (values !== null && values !== undefined) {
                 const textureTarget = DrawCallState.samplerTypes[uniformState.typeValue];
                 if (textureTarget) {
-                    if (uniformState.value.length) {
+                    if (values.length) {
                         uniformState.textures = [];
-                        for (let j = 0; j < uniformState.value.length; j++) {
-                            uniformState.textures.push(this.readTextureFromContext(uniformState.value[j], textureTarget));
+                        for (let j = 0; j < values.length; j++) {
+                            uniformState.textures.push(this.readTextureFromContext(values[j].value, textureTarget));
                         }
                     }
                     else {
-                        uniformState.texture = this.readTextureFromContext(uniformState.value, textureTarget);
+                        uniformState.texture = this.readTextureFromContext(values, textureTarget);
                     }
                 }
             }
