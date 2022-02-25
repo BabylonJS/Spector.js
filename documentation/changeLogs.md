@@ -12,6 +12,7 @@ Please, find below the per release summary of the contribution added to the proj
 * Add [spector.log support](https://github.com/BabylonJS/Spector.js/issues/171)
 * Fix [Shader Type display](https://github.com/BabylonJS/Spector.js/issues/179)
 * Add [Pixelated Texture on Nearest mag filter](https://github.com/BabylonJS/Spector.js/issues/107)
+* Fix [Texture Display for texture arrays](https://github.com/BabylonJS/Spector.js/pull/224)
 * Fix [texture capture with texStorage2D](https://github.com/BabylonJS/Spector.js/issues/227)
 
 ## v0.9.27
