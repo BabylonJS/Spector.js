@@ -689,7 +689,7 @@ export class ResultView {
             if (this.toFilter(commandCapture.marker) &&
                 this.toFilter(commandCapture.name) &&
                 commandCapture.id !== this.currentCommandId &&
-                commandCapture.name === "LOG" && this.toFilter(commandCapture.text)) {
+                (commandCapture.name !== "LOG" || this.toFilter(commandCapture.text))) {
                 continue;
             }
 

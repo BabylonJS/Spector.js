@@ -14,6 +14,7 @@ Please, find below the per release summary of the contribution added to the proj
 * Add [Pixelated Texture on Nearest mag filter](https://github.com/BabylonJS/Spector.js/issues/107)
 * Fix [Texture Display for texture arrays](https://github.com/BabylonJS/Spector.js/pull/224)
 * Fix [texture capture with texStorage2D](https://github.com/BabylonJS/Spector.js/issues/227)
+* Fix Search field in the UI.
 
 ## v0.9.27
 * Fixed compressed textures gathered sizes.
