@@ -21,6 +21,8 @@ import { GetExtension } from "../commands/getExtension";
 import { GetParameter } from "../commands/getParameter";
 import { GetShaderPrecisionFormat } from "../commands/getShaderPrecisionFormat";
 import { GetTransformFeedbackVarying } from "../commands/getTransformFeedbackVarying";
+import { MultiDrawArraysInstancedBaseInstanceWEBGL } from "../commands/MultiDrawArraysInstancedBaseInstanceWEBGL";
+import { MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL } from "../commands/MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL";
 import { Scissor } from "../commands/scissor";
 import { StencilMask } from "../commands/stencilMask";
 import { StencilMaskSeparate } from "../commands/stencilMaskSeparate";
@@ -144,6 +146,8 @@ export class CommandSpy {
             [GetParameter.commandName]: (options: IContextInformation) => new GetParameter(options),
             [GetShaderPrecisionFormat.commandName]: (options: IContextInformation) => new GetShaderPrecisionFormat(options),
             [GetTransformFeedbackVarying.commandName]: (options: IContextInformation) => new GetTransformFeedbackVarying(options),
+            [MultiDrawArraysInstancedBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new MultiDrawArraysInstancedBaseInstanceWEBGL(options),
+            [MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(options),
             [Scissor.commandName]: (options: IContextInformation) => new Scissor(options),
             [StencilMask.commandName]: (options: IContextInformation) => new StencilMask(options),
             [StencilMaskSeparate.commandName]: (options: IContextInformation) => new StencilMaskSeparate(options),

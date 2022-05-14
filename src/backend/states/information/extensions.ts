@@ -69,6 +69,7 @@ export class Extensions extends BaseState {
             { name: "WEBGL_compressed_texture_s3tc", description: "" },
                 // { name: "WEBGL_debug_renderer_info", description: "" },
                 // { name: "WEBGL_debug_shaders", description: "" },
+            { name: "WEBGL_multi_draw_instanced_base_vertex_base_instance", description: ""},
             ],
         ];
 
