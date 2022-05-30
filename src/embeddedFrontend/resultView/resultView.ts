@@ -403,7 +403,12 @@ export class ResultView {
 
         const rightJsonContentStateId = this.mvx.addChildState(rightId, null, this.jsonContentComponent);
         for (const analysis of capture.analyses) {
-            this.displayJSONGroup(rightJsonContentStateId, analysis.analyserName, analysis);
+            if (analysis.analyserName === "Primitives") {
+                this.displayJSONGroup(rightJsonContentStateId, "Vertices count", analysis);
+            }
+            else {
+                this.displayJSONGroup(rightJsonContentStateId, analysis.analyserName, analysis);
+            }
         }
         this.displayJSONGroup(rightJsonContentStateId, "Frame Memory Changes", capture.frameMemory);
         this.displayJSONGroup(rightJsonContentStateId, "Total Memory (seconds since application start: bytes)", capture.memory);
