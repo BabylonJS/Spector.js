@@ -661,6 +661,10 @@ export class WebGlConstants {
     }
 
     public static stringifyWebGlConstant(value: number, command: string): string {
+        if (value === undefined || value === null) {
+            return "";
+        }
+
         if (value === 0) {
             const meaning = this.zeroMeaningByCommand[command];
             if (meaning) {
