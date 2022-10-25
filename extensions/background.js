@@ -21,6 +21,7 @@ var tabInfo = {}
 var resultTab = null;
 var currentCapture = null;
 var currentCaptureChunks = [];
+var currentCommandChunks = [];
 var currentFrameId = null;
 var currentTabId = null;
 
@@ -128,12 +129,33 @@ listenForMessage(function(request, sender, sendResponse) {
     else if (request.captureChunk) {
         currentCaptureChunks.push(request.captureChunk);
     }
+    else if (request.commandChunk) {
+        currentCommandChunks.push({ chunk: request.commandChunk, chunkIx: request.chunkIx });
+    }
     else if (request.captureDone) {
         // Concatenate the current capture chunks and reset the array.
         var allChunks = currentCaptureChunks;
         currentCaptureChunks = [];
         var fullJSON = "".concat.apply("", allChunks);
         var capture = JSON.parse(fullJSON);
+
+        // In case commands were sent separately, concatenate them and set them into the capture.
+        var curCommandChunkIx = 0;
+        while (currentCommandChunks.length > 0) {
+            var curCommandChunk = '';
+            while (currentCommandChunks.length && currentCommandChunks[0].chunkIx === curCommandChunkIx) {
+                curCommandChunk += currentCommandChunks[0].chunk;
+                currentCommandChunks.shift();
+            }
+
+            var commands = JSON.parse(curCommandChunk);
+            for (var i = 0; i < commands.length; i++) {
+                capture.commands.push(commands[i]);
+            }
+            curCommandChunkIx++;
+        }
+        currentCommandChunks = [];
+
         // Open the result view if not open (need to check if length == 1 that the function exists for Edge),
         window.browser.tabs.create({ url: "result.html", active: true }, function(tab) {
             resultTab = tab;

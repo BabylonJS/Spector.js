@@ -343,64 +343,67 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         insertTextScript(script);
     });
 
-    function sendCaptureChunks(serialized) {
+    function sendChunks(serialized, buildMsg) {
         var len = serialized.length;
         var ii = 0;
         var step = 32 * 1024 * 1024; // 32 MB
         while (ii < len) {
             var nextIndex = Math.min(ii + step, len);
             var substr = serialized.substring(ii, nextIndex);
-            sendMessage({ captureChunk: substr });
+            const msg = buildMsg(substr);
+            sendMessage(msg);
             ii = nextIndex;
         }
     }
 
+    function buildCaptureChunkMessage(substr) {
+        return { captureChunk: substr };
+    }
+
     /**
      * For very large captures, the serialized size can exceed the maximum string length for the browser.  This
-     * attempts to get around that by doing some manual JSON stringification of the inner `commands` array and
-     * returning an array of strings that can be reassembled on the other side.
+     * attempts to get around that by splitting up the inner `commands` array (which might be very large) and
+     * sending it separately in chunks.
      */
-    function serializeCaptureFallback(capture) {
+    function serializeCapture(capture) {
         var commands = capture.commands;
-        capture.commands = '__REPLACED_COMMANDS_SPECTORJS_INTERNAL__';
+        capture.commands = [];
 
-        var serialized;
+        var serializedCapture;
         try {
-            serialized = JSON.stringify(capture);
+            serializedCapture = JSON.stringify(capture);
         } catch(err) {
-            throw new Error('Fallback serialization unable to stringify; capture failed: ' + err);
+            throw new Error('Capture serialization unable to stringify; capture failed: ' + err);
         }
 
-        var spl = serialized.split('"__REPLACED_COMMANDS_SPECTORJS_INTERNAL__"');
-        var before = spl[0];
-        sendCaptureChunks(before);
-        sendCaptureChunks('[');
+        sendChunks(serializedCapture, buildCaptureChunkMessage);
 
-        // Send chunks of 100 commands at a time
+        // Send chunks of 100 commands at a time.  They will be re-joined to the capture on the other side.
         var commandChunkSize = 100;
-        var commandChunks = [];
         for (var i = 0; i < commands.length; i += commandChunkSize) {
-            commandChunks.push(commands.slice(i, i + commandChunkSize));
-        }
+            var chunk = [];
+            for (var j = 0; j < commandChunkSize; j++) {
+                if (i + j < commands.length) {
+                    chunk.push(commands[i + j]);
+                    // Remove the command from the original array to allow it to be garbage collected early.
+                    commands[i + j] = null;
+                } else {
+                    break;
+                }
+            }
 
-        for (var i = 0; i < commandChunks.length; i++) {
-            var chunk = commandChunks[i];
             var chunkSerialized;
             try {
                 chunkSerialized = JSON.stringify(chunk);
             } catch(err) {
-                throw new Error('Fallback serialization unable to stringify; capture failed: ' + err);
+                throw new Error('Capture serialization unable to stringify; capture failed: ' + err);
             }
 
-            sendCaptureChunks(chunkSerialized);
-            if (i < commandChunks.length - 1) {
-                sendCaptureChunks(',');
+            function buildCommandChunkMessage(substr) {
+                return { commandChunk: substr, chunkIx: i / commandChunkSize };
             }
+            sendChunks(chunkSerialized, buildCommandChunkMessage);
         }
-
-        sendCaptureChunks(']');
-        var after = spl[1];
-        sendCaptureChunks(after);
     };
 
     document.addEventListener('SpectorOnCaptureEvent', function (e) {
@@ -415,19 +418,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         // were to stub out certain fields and send them separately,
         // Object.assign would have to be used to create a new top-level object.
 
-        var serialized;
-        try {
-            serialized = JSON.stringify(e.detail.capture);
-        } catch (err) {
-            console.warn(
-                'Failed to serialize capture, probably due to string length limits. Trying fallback serialization...'
-            );
-            serializeCaptureFallback(e.detail.capture);
-            sendMessage({ captureDone: true });
-            return;
-        }
-
-        sendCaptureChunks(serialized);
+        serializeCapture(e.detail.capture);
         sendMessage({ captureDone: true });
     }, false);
 
