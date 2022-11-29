@@ -6,6 +6,7 @@ Please, find below the per release summary of the contribution added to the proj
 
 ## v0.9.29
 * Fix [Stencil functions could crash](https://github.com/BabylonJS/Spector.js/issues/66)
+* Fix [Warning on Spy](https://github.com/BabylonJS/Spector.js/issues/246)
 
 ## v0.9.28
 * Fix [BindAttribLocation parameter display](https://github.com/BabylonJS/Spector.js/issues/220)

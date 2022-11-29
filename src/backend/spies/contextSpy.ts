@@ -26,9 +26,12 @@ export interface IContextSpyOptions {
 
 export class ContextSpy {
 
-    private static readonly unSpyableMembers = ["canvas",
+    private static readonly unSpyableMembers = [
+        "canvas",
         "drawingBufferWidth",
         "drawingBufferHeight",
+        "drawingBufferColorSpace",
+        "unpackColorSpace",
         "glp", // WebGl Insight internal method.
     ];
 
