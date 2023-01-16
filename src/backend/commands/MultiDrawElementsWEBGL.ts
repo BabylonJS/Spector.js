@@ -1,23 +1,20 @@
 import { BaseCommand } from "./baseCommand";
 import { WebGlConstants } from "../types/webglConstants";
 
-export class MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL extends BaseCommand {
-    public static readonly commandName = "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL";
+export class MultiDrawElementsWEBGL extends BaseCommand {
+    public static readonly commandName = "multiDrawElementsWEBGL";
 
     protected get spiedCommandName(): string {
-        return MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL.commandName;
+        return MultiDrawElementsWEBGL.commandName;
     }
 
     protected stringifyArgs(args: IArguments): string[] {
         const stringified = [];
         stringified.push(WebGlConstants.stringifyWebGlConstant(args[0], "drawArrays"));
         stringified.push(WebGlConstants.stringifyWebGlConstant(args[3], "drawArrays"));
-        stringified.push(`drawCount=${args[11]}`);
+        stringified.push(`drawCount=${args[6]}`);
         stringified.push(args[2]);
-        stringified.push(args[4]);
-        stringified.push(args[6]);
-        stringified.push(args[8]);
-        stringified.push(args[10]);
+        stringified.push(args[5]);
 
         return stringified;
     }
