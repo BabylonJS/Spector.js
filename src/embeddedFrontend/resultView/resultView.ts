@@ -185,8 +185,20 @@ export class ResultView {
         this.updateViewState();
     }
     public saveCapture(capture: ICapture): void {
-        const captureInString = JSON.stringify(capture, null, 4);
-        const blob = new Blob([captureInString], { type: "octet/stream" });
+        const commands = capture.commands;
+        const commandsTag = `"commands": [`;
+        capture.commands = [];
+        const captureInString = [];
+        const captureObjString = JSON.stringify(capture, null, 4);
+        const strIdx = captureObjString.indexOf(commandsTag) + commandsTag.length;
+        captureInString.push(captureObjString.substring(0, strIdx));
+        captureInString.push("\n");
+        for (let i = 0; i < commands.length; i++) {
+            captureInString.push(JSON.stringify(commands[i], null, 4));
+            captureInString.push(",\n");
+        }
+        captureInString.push(captureObjString.substring(strIdx, captureObjString.length));
+        const blob = new Blob(captureInString, { type: "octet/stream" });
         const fileName = "capture " + new Date(capture.startTime).toTimeString().split(" ")[0] + ".json";
 
         if (navigator.msSaveBlob) {
