@@ -2,7 +2,7 @@
     "compilerOptions": {
         "outDir": "../.temp/tsc/",
         "rootDir": "./",
-        "types": [],
+        "types": ["@types/webxr"],
         "sourceMap": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
@@ -11,6 +11,6 @@
         "experimentalDecorators": true,
         "module": "es6",
         "moduleResolution": "node",
-        "target": "es5"
+        "target": "ES2015"
     }
 }

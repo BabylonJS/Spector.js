@@ -1,5 +1,5 @@
 export function formatBinary(value: number): string {
-    if (value === undefined || value === null) {
+    if (value === undefined || value === null || (value as any) === false) {
         return "";
     }
 
