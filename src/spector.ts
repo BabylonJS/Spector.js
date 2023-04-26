@@ -11,9 +11,7 @@ import { CanvasSpy } from "./backend/spies/canvasSpy";
 import { Program } from "./backend/webGlObjects/webGlObjects";
 import { CaptureMenu } from "./embeddedFrontend/captureMenu/captureMenu";
 import { ResultView } from "./embeddedFrontend/resultView/resultView";
-import type { XRSessionSpector } from "./polyfill/XRSessionSpector";
-import { XRWebGLLayerSpector } from "./polyfill/XRWebGLLayerSpector";
-import { XRWebGLBindingSpector } from "./polyfill/XRWebGLBindingSpector";
+import { XRSpy } from "./backend/spies/xrSpy";
 
 const CAPTURE_LIMIT = 10000; // Limit command count to 10000 record (to be kept in sync with the documentation)
 
@@ -76,6 +74,7 @@ export class Spector {
     public readonly onError: Observable<string>;
 
     private readonly timeSpy: TimeSpy;
+    private readonly xrSpy: XRSpy | undefined;
     private readonly contexts: IAvailableContext[];
 
     private canvasSpy: CanvasSpy;
@@ -91,7 +90,6 @@ export class Spector {
     private marker: string;
 
     private options: SpectorInitOptions;
-    private xrSession: XRSessionSpector;
 
     constructor(options: SpectorInitOptions = {}) {
         this.options = {
@@ -118,65 +116,7 @@ export class Spector {
         // if we want to capture WebXR sessions, we have to polyfill a bunch of stuff to ensure Spector.JS has access to the session
         // and the GL context. So we do that here.
         if (this.options.enableXRCapture) {
-            if (!navigator.xr) {
-                return;
-            }
-
-            (window as any).XRWebGLLayer = XRWebGLLayerSpector;
-            (window as any).XRWebGLBinding = XRWebGLBindingSpector;
-
-            // polyfill request session so Spector gets access to the session object.
-            const existingRequestSession = navigator.xr.requestSession;
-            Object.defineProperty(navigator.xr, "requestSessionInternal", { writable: true });
-            (navigator.xr as any).requestSessionInternal = existingRequestSession;
-
-            const newRequestSession = (
-                sessionMode: XRSessionMode,
-                sessionInit?: any
-            ): Promise<XRSession> => {
-                const modifiedSessionPromise = (mode: XRSessionMode, init?: any): Promise<XRSession> => {
-                    return (navigator.xr as any).requestSessionInternal(mode, init).then((session: XRSession) => {
-                        // listen to the XR Session here! When we do that, we'll stop listening to window.requestAnimationFrame
-                        // and start listening to session.requestAnimationFrame
-
-                        // Feed the gl context through the session
-                        const spectorSession = session as XRSessionSpector;
-                        spectorSession._updateRenderState = session.updateRenderState;
-                        spectorSession.updateRenderState = async (
-                            renderStateInit?: XRRenderStateInit
-                        ): Promise<void> => {
-                            if (renderStateInit.baseLayer) {
-                                const polyfilledBaseLayer =
-                                    renderStateInit.baseLayer as XRWebGLLayerSpector;
-                                spectorSession.glContext = polyfilledBaseLayer.getContext();
-                            }
-
-                            if (renderStateInit.layers) {
-                                for (const layer of renderStateInit.layers) {
-                                    const layerAny: any = layer;
-                                    if (layerAny.glContext) {
-                                        spectorSession.glContext = layerAny.glContext;
-                                    }
-                                }
-                            }
-                            return spectorSession._updateRenderState(renderStateInit);
-                        };
-
-                        this.timeSpy.listenXRSession(session);
-                        this.xrSession = spectorSession;
-                        session.addEventListener("end", () => {
-                            this.timeSpy.unlistenXRSession();
-                            this.xrSession = undefined;
-                        });
-                        return Promise.resolve(session);
-                    });
-                };
-                return modifiedSessionPromise(sessionMode, sessionInit);
-            };
-
-
-            Object.defineProperty(navigator.xr, "requestSession", { writable: true });
-            (navigator.xr as any).requestSession = newRequestSession;
+            this.xrSpy = new XRSpy(this.timeSpy);
         }
     }
 
@@ -315,16 +255,6 @@ export class Spector {
         return this.getAvailableContexts();
     }
 
-    public getXRContext(): WebGLRenderingContexts {
-        if (!this.options.enableXRCapture) {
-            Logger.error("Cannot retrieve WebXR context if capturing WebXR is disabled.");
-        }
-        if (!this.xrSession) {
-            Logger.error("No currently active WebXR session.");
-        }
-        return this.xrSession.glContext;
-    }
-
     public captureCanvas(canvas: HTMLCanvasElement | OffscreenCanvas,
         commandCount = 0,
         quickCapture: boolean = false,
@@ -377,6 +307,12 @@ export class Spector {
         if (contextSpy) {
             this.captureContextSpy(contextSpy, commandCount, quickCapture, fullCapture);
         }
+    }
+
+    public captureXRContext(commandCount = 0,
+        quickCapture: boolean = false,
+        fullCapture: boolean = false): void {
+        this.captureContext(this.getXRContext(), commandCount, quickCapture, fullCapture);
     }
 
     public captureContextSpy(contextSpy: ContextSpy,
@@ -539,6 +475,16 @@ export class Spector {
             }
         }
         return undefined;
+    }
+
+    private getXRContext(): WebGLRenderingContexts {
+        if (!this.options.enableXRCapture) {
+            Logger.error("Cannot retrieve WebXR context if capturing WebXR is disabled.");
+        }
+        if (!this.xrSpy.currentXRSession) {
+            Logger.error("No currently active WebXR session.");
+        }
+        return this.xrSpy.currentXRSession.glContext;
     }
 
     private onFrameStart(): void {

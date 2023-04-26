@@ -19,12 +19,14 @@ let createScene = async function () {
 
     // we can't access the Spector UI while in WebXR, so we take a capture whenever the trigger
     // is pressed instead.
+    let previousTriggerPressed = false;
     xr.input.onControllerAddedObservable.add((controller) => {
-        let triggerComponent = controller.gamepadController.components['xr-standard-trigger'];
-        triggerComponent.onButtonStateChanged.add(() => {
-            if (triggerComponent.pressed) {
-                spector.captureContext(spector.getXRContext());	
+        let triggerComponent = controller.gamepadController.components["xr-standard-trigger"];
+        triggerComponent.onButtonStateChanged.add((stateObject) => {
+            if (stateObject.pressed && !previousTriggerPressed) {
+                spector.captureXRContext();
             }
+            previousTriggerPressed = stateObject.pressed;
         });
     });
 

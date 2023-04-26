@@ -7,7 +7,7 @@ export type WebGlObjectTag = {
 
 export class WebGlObjects {
     public static getWebGlObjectTag(object: WebGLObject): WebGlObjectTag {
-        if (!object) {
+        if (object === undefined || object === null) {
             return null;
         }
         return (object as any)[WebGlObjects.SPECTOROBJECTTAGKEY];

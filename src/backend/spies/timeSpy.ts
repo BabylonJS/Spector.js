@@ -6,7 +6,7 @@ import { Observable } from "../../shared/utils/observable";
 // tslint:disable:only-arrow-functions
 
 export class TimeSpy {
-    private static readonly requestAnimationFrameFunctions = ["requestAnimationFrame",
+    public static readonly requestAnimationFrameFunctions = ["requestAnimationFrame",
         "msRequestAnimationFrame",
         "webkitRequestAnimationFrame",
         "mozRequestAnimationFrame",
@@ -33,7 +33,6 @@ export class TimeSpy {
     private lastFrame: number;
     private speedRatio: number;
     private willPlayNextFrame: boolean;
-    private currentXRSession: XRSession | undefined;
 
     constructor(spiedScope?: { [name: string]: Function }) {
         this.spiedScope = spiedScope || window;
@@ -83,31 +82,6 @@ export class TimeSpy {
         return 1000 * 60 / accumulator;
     }
 
-    public listenXRSession(session: XRSession) {
-        if (this.currentXRSession) {
-            this.unlistenXRSession();
-        }
-        for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
-            this.unspyRequestAnimationFrame(Spy, this.spiedWindow);
-        }
-        this.spyRequestAnimationFrame("requestAnimationFrame", session);
-        this.currentXRSession = session;
-    }
-
-    public unlistenXRSession() {
-        if (!this.currentXRSession) {
-            return;
-        }
-
-        this.unspyRequestAnimationFrame("requestAnimationFrame", this.currentXRSession);
-        this.currentXRSession = undefined;
-        // listen to the regular frames again.
-        for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
-            this.spyRequestAnimationFrame(Spy, this.spiedWindow);
-        }
-
-    }
-
     private init(): void {
         for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
             this.spyRequestAnimationFrame(Spy, this.spiedScope);
@@ -123,7 +97,7 @@ export class TimeSpy {
             });
         }
     }
-    private spyRequestAnimationFrame(functionName: string, owner: any): void {
+    public spyRequestAnimationFrame(functionName: string, owner: any): void {
         // Needs both this.
         // tslint:disable-next-line
         const self = this;
@@ -135,13 +109,6 @@ export class TimeSpy {
             const result = OriginFunctionHelper.executeOriginFunction(owner, functionName, [onCallback] as any);
             return result;
         };
-
-    }
-
-    private unspyRequestAnimationFrame(functionName: string, owner: any): void {
-        if (OriginFunctionHelper.getOriginFunction(owner, functionName)) {
-            owner[functionName] = OriginFunctionHelper.getOriginFunction(owner, functionName);
-        }
 
     }
 

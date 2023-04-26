@@ -33,8 +33,8 @@ export class ReadPixelsHelper {
         // Empty error list.
         gl.getError();
 
-        // hack to get WebXR layer inputs working from Quest 2.
-        // The framebuffers have type UNSIGNED_NORMALIZED, which needs to be converted into something that is a valid format for readPixel.
+        // If type is UNSIGNED_NORMALIZED, we passed in a component type that isn't a pixel format type.
+        // So we have to convert it to a valid pixel format type.
         if (type === WebGlConstants.UNSIGNED_NORMALIZED.value) {
             type = WebGlConstants.UNSIGNED_BYTE.value;
         }
