@@ -62,6 +62,10 @@ export class TimeSpy {
         this.speedRatio = ratio;
     }
 
+    public addRequestAnimationFrameFunctionName(functionName: string): void {
+        TimeSpy.requestAnimationFrameFunctions.push(functionName);
+    }
+
     public setSpiedScope(spiedScope: { [name: string]: any }): void {
         this.spiedScope = spiedScope;
     }
