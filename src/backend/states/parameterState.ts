@@ -65,6 +65,11 @@ export abstract class ParameterState extends BaseState {
 
             for (const parameter of this.parameters[version - 1]) {
                 const value = this.readParameterFromContext(parameter);
+                if (value === null || value === undefined) {
+                    const stringValue = this.stringifyParameterValue(value, parameter);
+                    this.currentState[parameter.constant.name] = stringValue;
+                    continue;
+                }
                 const tag = WebGlObjects.getWebGlObjectTag(value);
                 if (tag) {
                     this.currentState[parameter.constant.name] = tag;
