@@ -386,6 +386,14 @@ export class Spector {
         }
     }
 
+    public addRequestAnimationFrameFunctionName(functionName: string): void {
+        this.timeSpy.addRequestAnimationFrameFunctionName(functionName);
+    }
+
+    public setSpiedScope(spiedScope: { [name: string]: any }): void {
+        this.timeSpy.setSpiedScope(spiedScope);
+    }
+
     public log(value: string): void {
         if (this.capturingContext) {
             this.capturingContext.log(value);
