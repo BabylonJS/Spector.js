@@ -16,8 +16,8 @@ export class XRSpy {
         if (this.currentXRSession) {
             this.unspyXRSession();
         }
-        for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
-            OriginFunctionHelper.resetOriginFunction(this.timeSpy.spiedWindow, Spy);
+        for (const Spy of TimeSpy.getRequestAnimationFrameFunctionNames()) {
+            OriginFunctionHelper.resetOriginFunction(this.timeSpy.getSpiedScope(), Spy);
         }
         this.timeSpy.spyRequestAnimationFrame("requestAnimationFrame", session);
         this.currentXRSession = session;
@@ -31,8 +31,8 @@ export class XRSpy {
         OriginFunctionHelper.resetOriginFunction(this.currentXRSession, "requestAnimationFrame");
         this.currentXRSession = undefined;
         // listen to the regular frames again.
-        for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
-            this.timeSpy.spyRequestAnimationFrame(Spy, this.timeSpy.spiedWindow);
+        for (const Spy of TimeSpy.getRequestAnimationFrameFunctionNames()) {
+            this.timeSpy.spyRequestAnimationFrame(Spy, this.timeSpy.getSpiedScope());
         }
     }
 

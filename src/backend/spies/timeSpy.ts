@@ -6,7 +6,7 @@ import { Observable } from "../../shared/utils/observable";
 // tslint:disable:only-arrow-functions
 
 export class TimeSpy {
-    public static readonly requestAnimationFrameFunctions = ["requestAnimationFrame",
+    private static readonly requestAnimationFrameFunctions = ["requestAnimationFrame",
         "msRequestAnimationFrame",
         "webkitRequestAnimationFrame",
         "mozRequestAnimationFrame",
@@ -25,7 +25,7 @@ export class TimeSpy {
     public readonly onFrameEnd: Observable<TimeSpy>;
     public readonly onError: Observable<string>;
 
-    private readonly spiedScope: { [name: string]: any };
+    private spiedScope: { [name: string]: any };
     private readonly lastSixtyFramesDuration: number[];
 
     private lastSixtyFramesCurrentIndex: number;
@@ -62,8 +62,16 @@ export class TimeSpy {
         this.speedRatio = ratio;
     }
 
+    public static getRequestAnimationFrameFunctionNames(): string[] {
+        return [...TimeSpy.requestAnimationFrameFunctions];
+    }
+
     public addRequestAnimationFrameFunctionName(functionName: string): void {
         TimeSpy.requestAnimationFrameFunctions.push(functionName);
+    }
+
+    public getSpiedScope() {
+        return this.spiedScope;
     }
 
     public setSpiedScope(spiedScope: { [name: string]: any }): void {
