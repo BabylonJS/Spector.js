@@ -25,7 +25,7 @@ export class TimeSpy {
     public readonly onFrameEnd: Observable<TimeSpy>;
     public readonly onError: Observable<string>;
 
-    private readonly spiedScope: { [name: string]: any };
+    private spiedScope: { [name: string]: any };
     private readonly lastSixtyFramesDuration: number[];
 
     private lastSixtyFramesCurrentIndex: number;
