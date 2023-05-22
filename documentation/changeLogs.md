@@ -4,6 +4,8 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.30
+
 ## v0.9.29
 * Add [WebXR tracking capabilities](https://github.com/BabylonJS/Spector.js/pull/257)
 * Fix [Stencil functions could crash](https://github.com/BabylonJS/Spector.js/issues/66)
