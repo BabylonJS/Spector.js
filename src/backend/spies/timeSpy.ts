@@ -62,8 +62,16 @@ export class TimeSpy {
         this.speedRatio = ratio;
     }
 
+    public static getRequestAnimationFrameFunctionNames(): string[] {
+        return [...TimeSpy.requestAnimationFrameFunctions];
+    }
+
     public addRequestAnimationFrameFunctionName(functionName: string): void {
         TimeSpy.requestAnimationFrameFunctions.push(functionName);
+    }
+
+    public getSpiedScope() {
+        return this.spiedScope;
     }
 
     public setSpiedScope(spiedScope: { [name: string]: any }): void {
@@ -97,8 +105,7 @@ export class TimeSpy {
             });
         }
     }
-
-    private spyRequestAnimationFrame(functionName: string, owner: any): void {
+    public spyRequestAnimationFrame(functionName: string, owner: any): void {
         // Needs both this.
         // tslint:disable-next-line
         const self = this;

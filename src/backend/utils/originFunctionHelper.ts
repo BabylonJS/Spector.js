@@ -16,6 +16,23 @@ export class OriginFunctionHelper {
         object[originFunctionName] = object[functionName];
     }
 
+    public static resetOriginFunction(object: any, functionName: string): any {
+        if (!object) {
+            return;
+        }
+
+        if (!object[functionName]) {
+            return;
+        }
+        const originFunctionName = this.getOriginFunctionName(functionName);
+        if (!object[originFunctionName]) {
+            return;
+        }
+
+        object[functionName] = object[originFunctionName];
+        delete object[originFunctionName];
+    }
+
     public static storePrototypeOriginFunction(object: any, functionName: string): void {
         if (!object) {
             return;
