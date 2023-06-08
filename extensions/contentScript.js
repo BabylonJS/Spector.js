@@ -343,6 +343,69 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         insertTextScript(script);
     });
 
+    function sendChunks(serialized, buildMsg) {
+        var len = serialized.length;
+        var ii = 0;
+        var step = 32 * 1024 * 1024; // 32 MB
+        while (ii < len) {
+            var nextIndex = Math.min(ii + step, len);
+            var substr = serialized.substring(ii, nextIndex);
+            const msg = buildMsg(substr);
+            sendMessage(msg);
+            ii = nextIndex;
+        }
+    }
+
+    function buildCaptureChunkMessage(substr) {
+        return { captureChunk: substr };
+    }
+
+    /**
+     * For very large captures, the serialized size can exceed the maximum string length for the browser.  This
+     * attempts to get around that by splitting up the inner `commands` array (which might be very large) and
+     * sending it separately in chunks.
+     */
+    function serializeCapture(capture) {
+        var commands = capture.commands;
+        capture.commands = [];
+
+        var serializedCapture;
+        try {
+            serializedCapture = JSON.stringify(capture);
+        } catch(err) {
+            throw new Error('Capture serialization unable to stringify; capture failed: ' + err);
+        }
+
+        sendChunks(serializedCapture, buildCaptureChunkMessage);
+
+        // Send chunks of 100 commands at a time.  They will be re-joined to the capture on the other side.
+        var commandChunkSize = 100;
+        for (var i = 0; i < commands.length; i += commandChunkSize) {
+            var chunk = [];
+            for (var j = 0; j < commandChunkSize; j++) {
+                if (i + j < commands.length) {
+                    chunk.push(commands[i + j]);
+                    // Remove the command from the original array to allow it to be garbage collected early.
+                    commands[i + j] = null;
+                } else {
+                    break;
+                }
+            }
+
+            var chunkSerialized;
+            try {
+                chunkSerialized = JSON.stringify(chunk);
+            } catch(err) {
+                throw new Error('Capture serialization unable to stringify; capture failed: ' + err);
+            }
+
+            function buildCommandChunkMessage(substr) {
+                return { commandChunk: substr, chunkIx: i / commandChunkSize };
+            }
+            sendChunks(chunkSerialized, buildCommandChunkMessage);
+        }
+    };
+
     document.addEventListener('SpectorOnCaptureEvent', function (e) {
         // The browser imposes limits on the size of the serialized JSON
         // associated with these messages. To avoid running into these limits,
@@ -354,16 +417,8 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         // serialized from the main world to the content script. If the goal
         // were to stub out certain fields and send them separately,
         // Object.assign would have to be used to create a new top-level object.
-        var serialized = JSON.stringify(e.detail.capture);
-        var len = serialized.length;
-        var ii = 0;
-        var step = 32 * 1024 * 1024; // 32 MB
-        while (ii < len) {
-            var nextIndex = Math.min(ii + step, len);
-            var substr = serialized.substring(ii, nextIndex);
-            sendMessage({ captureChunk: substr });
-            ii = nextIndex;
-        }
+
+        serializeCapture(e.detail.capture);
         sendMessage({ captureDone: true });
     }, false);
 

@@ -17,7 +17,7 @@ export class ReadProgramHelper {
             const shaderState = this.readShaderFromContext(context, shader);
             length += shaderState.source.length;
 
-            if (shaderState.fragment) {
+            if (shaderState.shaderType === WebGlConstants.FRAGMENT_SHADER.name) {
                 shaders[1] = shaderState;
             }
             else {
@@ -51,7 +51,7 @@ export class ReadProgramHelper {
 
         return {
             COMPILE_STATUS: context.getShaderParameter(shader, WebGlConstants.COMPILE_STATUS.value),
-            fragment: isFragment,
+            shaderType: isFragment ? WebGlConstants.FRAGMENT_SHADER.name : WebGlConstants.VERTEX_SHADER.name,
             name,
             source,
             translatedSource,

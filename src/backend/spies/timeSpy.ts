@@ -25,7 +25,7 @@ export class TimeSpy {
     public readonly onFrameEnd: Observable<TimeSpy>;
     public readonly onError: Observable<string>;
 
-    private readonly spiedWindow: { [name: string]: any };
+    private spiedScope: { [name: string]: any };
     private readonly lastSixtyFramesDuration: number[];
 
     private lastSixtyFramesCurrentIndex: number;
@@ -34,8 +34,8 @@ export class TimeSpy {
     private speedRatio: number;
     private willPlayNextFrame: boolean;
 
-    constructor(spiedWindow?: { [name: string]: Function }) {
-        this.spiedWindow = spiedWindow || window;
+    constructor(spiedScope?: { [name: string]: Function }) {
+        this.spiedScope = spiedScope || window;
         this.lastFrame = 0;
 
         this.speedRatio = 1;
@@ -62,6 +62,22 @@ export class TimeSpy {
         this.speedRatio = ratio;
     }
 
+    public static getRequestAnimationFrameFunctionNames(): string[] {
+        return [...TimeSpy.requestAnimationFrameFunctions];
+    }
+
+    public addRequestAnimationFrameFunctionName(functionName: string): void {
+        TimeSpy.requestAnimationFrameFunctions.push(functionName);
+    }
+
+    public getSpiedScope() {
+        return this.spiedScope;
+    }
+
+    public setSpiedScope(spiedScope: { [name: string]: any }): void {
+        this.spiedScope = spiedScope;
+    }
+
     public getFps(): number {
         let accumulator = 0;
         for (let i = 0; i < TimeSpy.fpsWindowSize; i++) {
@@ -76,28 +92,27 @@ export class TimeSpy {
 
     private init(): void {
         for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
-            this.spyRequestAnimationFrame(Spy, this.spiedWindow);
+            this.spyRequestAnimationFrame(Spy, this.spiedScope);
         }
 
         for (const Spy of TimeSpy.setTimerFunctions) {
             this.spySetTimer(Spy);
         }
 
-        if (this.spiedWindow["VRDisplay"]) {
-            this.spiedWindow.addEventListener("vrdisplaypresentchange", (event: any) => {
+        if (this.spiedScope["VRDisplay"]) {
+            this.spiedScope.addEventListener("vrdisplaypresentchange", (event: any) => {
                 this.spyRequestAnimationFrame("requestAnimationFrame", event.display);
             });
         }
     }
-
-    private spyRequestAnimationFrame(functionName: string, owner: any): void {
+    public spyRequestAnimationFrame(functionName: string, owner: any): void {
         // Needs both this.
         // tslint:disable-next-line
         const self = this;
         OriginFunctionHelper.storeOriginFunction(owner, functionName);
         owner[functionName] = function () {
             const callback = arguments[0];
-            const onCallback = self.getCallback(self, callback, () => { self.spiedWindow[functionName](callback); });
+            const onCallback = self.getCallback(self, callback, () => { self.spiedScope[functionName](callback); });
 
             const result = OriginFunctionHelper.executeOriginFunction(owner, functionName, [onCallback] as any);
             return result;
@@ -109,7 +124,7 @@ export class TimeSpy {
         // Needs both this.
         // tslint:disable-next-line
         const self = this;
-        const owner = this.spiedWindow;
+        const owner = this.spiedScope;
         const needsReplay = (functionName === "setTimeout");
 
         OriginFunctionHelper.storeOriginFunction(owner, functionName);
@@ -138,7 +153,7 @@ export class TimeSpy {
             if (self.willPlayNextFrame || (self.speedRatio && !self.lastFrame)) {
                 self.onFrameStart.trigger(self);
                 try {
-                    callback.apply(self.spiedWindow, arguments);
+                    callback.apply(self.spiedScope, arguments);
                 }
                 catch (e) {
                     self.onError.trigger(e);

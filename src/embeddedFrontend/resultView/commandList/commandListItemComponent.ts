@@ -65,12 +65,21 @@ export class CommandListItemComponent extends BaseComponent<ICommandListItemStat
             liHolder.appendChild(markerElement);
         }
 
-        const textElement = document.createElement("span");
-        let text = state.capture.text;
-        text = text.replace(state.capture.name, `<span class=" ${status} important">${state.capture.name}</span>`);
+        if (state.capture.name === "LOG") {
+            const logElement = document.createElement("span");
+            logElement.className = status + " marker important";
+            logElement.innerText = state.capture.text + " ";
+            logElement.style.fontWeight = "1000";
+            liHolder.appendChild(logElement);
+        }
+        else {
+            const textElement = document.createElement("span");
+            let text = state.capture.text;
+            text = text.replace(state.capture.name, `<span class=" ${status} important">${state.capture.name}</span>`);
 
-        textElement.innerHTML = text;
-        liHolder.appendChild(textElement);
+            textElement.innerHTML = text;
+            liHolder.appendChild(textElement);
+        }
 
         if ((state.capture as any).VisualState && state.capture.name !== "clear") {
             try {

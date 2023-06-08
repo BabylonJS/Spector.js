@@ -3,6 +3,7 @@ import { BaseCommand } from "../commands/baseCommand";
 import { OriginFunctionHelper } from "../utils/originFunctionHelper";
 import { ICommandCapture } from "../../shared/capture/commandCapture";
 import { Time } from "../../shared/utils/time";
+import { BindAttribLocation } from "../commands/bindAttribLocation";
 import { BlitFrameBuffer } from "../commands/blitFrameBuffer";
 import { Clear } from "../commands/clear";
 import { DefaultCommand } from "../commands/defaultCommand";
@@ -20,7 +21,13 @@ import { GetExtension } from "../commands/getExtension";
 import { GetParameter } from "../commands/getParameter";
 import { GetShaderPrecisionFormat } from "../commands/getShaderPrecisionFormat";
 import { GetTransformFeedbackVarying } from "../commands/getTransformFeedbackVarying";
+import { MultiDrawArraysInstancedBaseInstanceWEBGL } from "../commands/MultiDrawArraysInstancedBaseInstanceWEBGL";
+import { MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL } from "../commands/MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL";
 import { Scissor } from "../commands/scissor";
+import { StencilMask } from "../commands/stencilMask";
+import { StencilMaskSeparate } from "../commands/stencilMaskSeparate";
+import { StencilFunc } from "../commands/stencilFunc";
+import { StencilFuncSeparate } from "../commands/stencilFuncSeparate";
 import { VertexAttribPointer } from "../commands/vertexAttribPointer";
 import { Viewport } from "../commands/viewport";
 import { EnableVertexAttribArray } from "../commands/enableVertexAttribArray";
@@ -122,6 +129,7 @@ export class CommandSpy {
         }
 
         CommandSpy.customCommandsConstructors = {
+            [BindAttribLocation.commandName]: (options: IContextInformation) => new BindAttribLocation(options),
             [BlitFrameBuffer.commandName]: (options: IContextInformation) => new BlitFrameBuffer(options),
             [Clear.commandName]: (options: IContextInformation) => new Clear(options),
             [DisableVertexAttribArray.commandName]: (options: IContextInformation) => new DisableVertexAttribArray(options),
@@ -138,7 +146,13 @@ export class CommandSpy {
             [GetParameter.commandName]: (options: IContextInformation) => new GetParameter(options),
             [GetShaderPrecisionFormat.commandName]: (options: IContextInformation) => new GetShaderPrecisionFormat(options),
             [GetTransformFeedbackVarying.commandName]: (options: IContextInformation) => new GetTransformFeedbackVarying(options),
+            [MultiDrawArraysInstancedBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new MultiDrawArraysInstancedBaseInstanceWEBGL(options),
+            [MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(options),
             [Scissor.commandName]: (options: IContextInformation) => new Scissor(options),
+            [StencilMask.commandName]: (options: IContextInformation) => new StencilMask(options),
+            [StencilMaskSeparate.commandName]: (options: IContextInformation) => new StencilMaskSeparate(options),
+            [StencilFunc.commandName]: (options: IContextInformation) => new StencilFunc(options),
+            [StencilFuncSeparate.commandName]: (options: IContextInformation) => new StencilFuncSeparate(options),
             [VertexAttribPointer.commandName]: (options: IContextInformation) => new VertexAttribPointer(options),
             [Viewport.commandName]: (options: IContextInformation) => new Viewport(options),
             [EnableVertexAttribArray.commandName]: (options: IContextInformation) => new EnableVertexAttribArray(options),

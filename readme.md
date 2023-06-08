@@ -4,7 +4,7 @@
 ## Summary
 **Explore and Troubleshoot your WebGL scenes (All engines and Vanilla script support) with ease.**
 
-Spector is a tool aimed at *WebGl* developers wanting to know what happens in their context. It enables capturing of all the available information from a frame. You will be able to look at your entire **commands list** with their associated **visual states** and **context information**.
+Spector is a tool aimed at *WebGL* developers wanting to know what happens in their context. It enables capturing of all the available information from a frame. You will be able to look at your entire **commands list** with their associated **visual states** and **context information**.
 
 [![Build Status](https://github.com/BabylonJS/Spector.js/workflows/CI/badge.svg)](https://github.com/BabylonJS/Spector.js/actions)
 [![devDependencies Status](https://david-dm.org/babylonjs/spectorjs/dev-status.svg)](https://david-dm.org/babylonjs/spectorjs?type=dev)

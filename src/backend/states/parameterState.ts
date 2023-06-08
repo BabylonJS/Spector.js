@@ -1,6 +1,7 @@
 import { WebGlConstant, WebGlConstants } from "../types/webglConstants";
 import { BaseState } from "./baseState";
 import { WebGlObjects } from "../webGlObjects/baseWebGlObject";
+import { formatBinary } from "../utils/formatHelper";
 
 export const enum ParameterReturnType {
     Unknown = 0,
@@ -64,6 +65,11 @@ export abstract class ParameterState extends BaseState {
 
             for (const parameter of this.parameters[version - 1]) {
                 const value = this.readParameterFromContext(parameter);
+                if (value === null || value === undefined) {
+                    const stringValue = this.stringifyParameterValue(value, parameter);
+                    this.currentState[parameter.constant.name] = stringValue;
+                    continue;
+                }
                 const tag = WebGlObjects.getWebGlObjectTag(value);
                 if (tag) {
                     this.currentState[parameter.constant.name] = tag;
@@ -78,7 +84,7 @@ export abstract class ParameterState extends BaseState {
 
     protected readParameterFromContext(parameter: IParameter): any {
         if (parameter.constant.extensionName && !this.extensions[parameter.constant.extensionName]) {
-            return `Extension ${parameter.constant.extensionName} is unavailble.`;
+            return `Extension ${parameter.constant.extensionName} is unavailable.`;
         }
 
         const value = this.context.getParameter(parameter.constant.value);
@@ -95,8 +101,7 @@ export abstract class ParameterState extends BaseState {
         }
 
         if (parameter.returnType === ParameterReturnType.GlUint) {
-            value = value.toString(2);
-            value = "00000000000000000000000000000000".substr(value.length) + value;
+            value = formatBinary(value);
             return value;
         }
 

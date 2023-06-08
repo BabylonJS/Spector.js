@@ -5,7 +5,8 @@ var BUILD_DIR = path.resolve(MAIN_DIR, "./dist");
 var DEV_DIR = path.resolve(MAIN_DIR, "./.temp");
 
 var buildConfig = function(env) {
-    var isProd = env === "prod";
+    var isProd = env.prod;
+
     var config = {
         watch: !isProd,
         context: MAIN_DIR,
@@ -31,15 +32,14 @@ var buildConfig = function(env) {
         resolve: {
             extensions: [".ts", ".tsx", ".js", ".css", ".sass"]
         },
-        devtool: isProd ? "none" : "source-map",
+        devtool: false,
         mode: isProd ? "production" : "development",
         module: {
             rules: [{
                 test: /\.tsx?$/,
-                loader: "awesome-typescript-loader",
+                loader: "ts-loader",
                 options: {
-                    configFileName: "src/tsconfig.json",
-                    declaration: false
+                    configFile: "src/tsconfig.json"
                 }
             }, {
                 test: /\.scss$/,
@@ -49,7 +49,12 @@ var buildConfig = function(env) {
                 use: [ "style-loader?insert=html", "css-loader" ]
             }, {
                 test: /ace.js$/,
-                use: [ "exports-loader?ace" ]
+                // use: [ "exports-loader?ace" ]
+                loader: "exports-loader",
+                options: {
+                    type: "commonjs",
+                    exports: "ace",
+                },
             }, {
                 test: /spector.js$/,
                 use: [ "exports-loader?SPECTOR" ]

@@ -1,4 +1,9 @@
-var spector = new SPECTOR.Spector();
+var spectorOptions = {};
+if ((window.location + "").indexOf("webxr") !== -1) {
+	spectorOptions.enableXRCapture = true;
+}
+
+var spector = new SPECTOR.Spector(spectorOptions);
 window.spector = spector;
 spector.displayUI();
 

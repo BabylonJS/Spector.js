@@ -62,10 +62,6 @@ export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
     }
 
     protected update(functionInformation: IFunctionInformation, target: string, instance: WebGLTexture): number {
-        if (functionInformation.arguments.length >= 2 && functionInformation.arguments[1] !== 0) {
-            return 0;
-        }
-
         const customData = this.getCustomData(functionInformation, target, instance);
         if (!customData) {
             return 0;
@@ -124,7 +120,7 @@ export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
             // Custom data required to display the texture.
             customData = {
                 target,
-                // level: functionInformation.arguments[1],
+                // number of level: functionInformation.arguments[1],
                 internalFormat: functionInformation.arguments[2],
                 width: functionInformation.arguments[3],
                 height: functionInformation.arguments[4],

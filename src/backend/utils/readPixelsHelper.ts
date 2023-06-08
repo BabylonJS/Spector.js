@@ -33,6 +33,12 @@ export class ReadPixelsHelper {
         // Empty error list.
         gl.getError();
 
+        // If type is UNSIGNED_NORMALIZED, we passed in a component type that isn't a pixel format type.
+        // So we have to convert it to a valid pixel format type.
+        if (type === WebGlConstants.UNSIGNED_NORMALIZED.value) {
+            type = WebGlConstants.UNSIGNED_BYTE.value;
+        }
+
         // prepare destination storage.
         const size = width * height * 4;
         let pixels: ArrayBufferView;

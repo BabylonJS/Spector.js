@@ -11,6 +11,9 @@ import { CanvasSpy } from "./backend/spies/canvasSpy";
 import { Program } from "./backend/webGlObjects/webGlObjects";
 import { CaptureMenu } from "./embeddedFrontend/captureMenu/captureMenu";
 import { ResultView } from "./embeddedFrontend/resultView/resultView";
+import { XRSpy } from "./backend/spies/xrSpy";
+
+const CAPTURE_LIMIT = 10000; // Limit command count to 10000 record (to be kept in sync with the documentation)
 
 export interface IAvailableContext {
     readonly canvas: HTMLCanvasElement | OffscreenCanvas;
@@ -26,6 +29,10 @@ interface IAnnotatedOffscreenCanvas extends OffscreenCanvas {
     __spector_context_type?: string;
 }
 
+type SpectorInitOptions = {
+    enableXRCapture?: boolean;
+};
+
 export class Spector {
     public static getFirstAvailable3dContext(canvas: HTMLCanvasElement | OffscreenCanvas): WebGLRenderingContexts {
         // Custom detection to run in the extension.
@@ -37,7 +44,7 @@ export class Spector {
     }
 
     private static tryGetContextFromHelperField(canvas: HTMLCanvasElement | OffscreenCanvas): WebGLRenderingContexts {
-        const type: string|void = canvas instanceof HTMLCanvasElement ?
+        const type: string | void = canvas instanceof HTMLCanvasElement ?
             canvas.getAttribute("__spector_context_type") :
             (canvas as IAnnotatedOffscreenCanvas).__spector_context_type;
 
@@ -67,6 +74,7 @@ export class Spector {
     public readonly onError: Observable<string>;
 
     private readonly timeSpy: TimeSpy;
+    private readonly xrSpy: XRSpy | undefined;
     private readonly contexts: IAvailableContext[];
 
     private canvasSpy: CanvasSpy;
@@ -81,7 +89,14 @@ export class Spector {
     private noFrameTimeout = -1;
     private marker: string;
 
-    constructor() {
+    private options: SpectorInitOptions;
+
+    constructor(options: SpectorInitOptions = {}) {
+        this.options = {
+            enableXRCapture: false,
+            ...options,
+        };
+
         this.captureNextFrames = 0;
         this.captureNextCommands = 0;
         this.quickCapture = false;
@@ -97,6 +112,12 @@ export class Spector {
         this.timeSpy.onFrameStart.add(this.onFrameStart, this);
         this.timeSpy.onFrameEnd.add(this.onFrameEnd, this);
         this.timeSpy.onError.add(this.onErrorInternal, this);
+
+        // if we want to capture WebXR sessions, we have to polyfill a bunch of stuff to ensure Spector.JS has access to the session
+        // and the GL context. So we do that here.
+        if (this.options.enableXRCapture) {
+            this.xrSpy = new XRSpy(this.timeSpy);
+        }
     }
 
     public displayUI(disableTracking: boolean = false) {
@@ -288,6 +309,12 @@ export class Spector {
         }
     }
 
+    public captureXRContext(commandCount = 0,
+        quickCapture: boolean = false,
+        fullCapture: boolean = false): void {
+        this.captureContext(this.getXRContext(), commandCount, quickCapture, fullCapture);
+    }
+
     public captureContextSpy(contextSpy: ContextSpy,
         commandCount = 0,
         quickCapture: boolean = false,
@@ -303,8 +330,8 @@ export class Spector {
             this.capturingContext = contextSpy;
             this.capturingContext.setMarker(this.marker);
 
-            // Limit command count to 5000 record.
-            commandCount = Math.min(commandCount, 5000);
+            // Limit the shown command count
+            commandCount = Math.min(commandCount, CAPTURE_LIMIT);
             if (commandCount > 0) {
                 this.captureCommands(commandCount);
             }
@@ -384,6 +411,20 @@ export class Spector {
         }
     }
 
+    public addRequestAnimationFrameFunctionName(functionName: string): void {
+        this.timeSpy.addRequestAnimationFrameFunctionName(functionName);
+    }
+
+    public setSpiedScope(spiedScope: { [name: string]: any }): void {
+        this.timeSpy.setSpiedScope(spiedScope);
+    }
+
+    public log(value: string): void {
+        if (this.capturingContext) {
+            this.capturingContext.log(value);
+        }
+    }
+
     private captureFrames(frameCount: number): void {
         this.captureNextFrames = frameCount;
         this.captureNextCommands = 0;
@@ -434,6 +475,16 @@ export class Spector {
             }
         }
         return undefined;
+    }
+
+    private getXRContext(): WebGLRenderingContexts {
+        if (!this.options.enableXRCapture) {
+            Logger.error("Cannot retrieve WebXR context if capturing WebXR is disabled.");
+        }
+        if (!this.xrSpy.currentXRSession) {
+            Logger.error("No currently active WebXR session.");
+        }
+        return this.xrSpy.currentXRSession.glContext;
     }
 
     private onFrameStart(): void {

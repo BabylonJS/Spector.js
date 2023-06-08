@@ -26,8 +26,12 @@ var perspectiveMatrix;
 var vertexShaderSource = "attribute vec3 aVertexPosition;" +
 "attribute vec4 aVertexColor;" +
 
-"uniform mat4 uMVMatrix;" +
-"uniform mat4 uPMatrix;" +
+"uniform mat4 uMVMatrix; // ms({ value: '#ff0000' })\n" +
+"uniform mat4 uPMatrix; // ms({ value: '#ff0000' })\n" +
+
+"\n" +
+"//test;test\n" +
+"\n" +
 
 "varying lowp vec4 vColor;" +
 
@@ -109,7 +113,6 @@ function initBuffers() {
   // Create a buffer for the cube's vertices.
 
   cubeVerticesBuffer = gl.createBuffer();
-  cubeVerticesBuffer.__SPECTOR_Metadata = { name: "CubeVerticesBuffer" };
 
   // Select the cubeVerticesBuffer as the one to apply vertex
   // operations to from here out.
@@ -189,15 +192,13 @@ function initBuffers() {
   }
 
   cubeVerticesColorBuffer = gl.createBuffer();
-  cubeVerticesColorBuffer.__SPECTOR_Metadata = { name: "cubeVerticesColorBuffer" };
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesColorBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(generatedColors), gl.STATIC_DRAW);
 
   // Build the element array buffer; this specifies the indices
   // into the vertex array for each face's vertices.
 
-  cubeVerticesIndexBuffer = gl.createBuffer();  
-  cubeVerticesIndexBuffer.__SPECTOR_Metadata = { name: "cubeVerticesIndexBuffer" };
+  cubeVerticesIndexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
 
   // This array defines each face as two triangles, using the
@@ -226,9 +227,17 @@ function initBuffers() {
 //
 function drawScene() {
   // Clear the canvas before we start drawing on it.
-  gl.clearColor(0, 0.5 + 0.1 * Math.random(1), 0, 1);
+  gl.clearColor(0, 0, 0, 1);
   gl.clearDepth(1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  gl.enable(gl.SCISSOR_TEST);
+  for(let x = 0; x < 10; x++) {
+    gl.scissor(x * 10, 0, 8, 8);
+    gl.clearStencil(x);
+    gl.clear(gl.STENCIL_BUFFER_BIT);
+  }
+  gl.disable(gl.SCISSOR_TEST);
 
   // Establish the perspective with which we want to view the
   // scene. Our field of view is 45 degrees, with a width/height
@@ -305,19 +314,16 @@ function drawScene() {
 // Initialize the shaders, so WebGL knows how to light our scene.
 //
 function initShaders() {
-  var fragmentShader = getShader(gl, fragmentShaderSource, false);  
-  fragmentShader.__SPECTOR_Metadata = { name: "CustomFragmentShaderName" };
-  var vertexShader = getShader(gl, vertexShaderSource, true);  
-  vertexShader.__SPECTOR_Metadata = { name: "CustomVertexShaderName" };
+  var fragmentShader = getShader(gl, fragmentShaderSource, false);
+  var vertexShader = getShader(gl, vertexShaderSource, true);
 
   // Create the shader program
 
   shaderProgram = gl.createProgram();
-  shaderProgram.__SPECTOR_Metadata = { name: "ShaderProgram" };
   gl.attachShader(shaderProgram, vertexShader);
   gl.attachShader(shaderProgram, fragmentShader);
   gl.linkProgram(shaderProgram);
-
+shaderProgram.__SPECTOR_rebuildProgram = true;
   // If creating the shader program failed, alert
 
   if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
@@ -327,11 +333,9 @@ function initShaders() {
   gl.useProgram(shaderProgram);
 
   vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-  vertexPositionAttribute.__SPECTOR_Metadata = { name: "VertexPositionAttribute" };
   gl.enableVertexAttribArray(vertexPositionAttribute);
 
   vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
-  vertexPositionAttribute.__SPECTOR_Metadata = { name: "VertexColorAttribute" };
   gl.enableVertexAttribArray(vertexColorAttribute);
 }
 
@@ -371,12 +375,10 @@ function mvTranslate(v) {
 }
 
 function setMatrixUniforms() {
-  var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");  
-  pUniform.__SPECTOR_Metadata = { name: "pUniform" };
+  var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
   gl.uniformMatrix4fv(pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
 
   var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-  mvUniform.__SPECTOR_Metadata = { name: "mvUniform" };
   gl.uniformMatrix4fv(mvUniform, false, new Float32Array(mvMatrix.flatten()));
 }
 

@@ -45,6 +45,36 @@ export class StencilState extends ParameterState {
         { constant: WebGlConstants.STENCIL_WRITEMASK, returnType: ParameterReturnType.GlUint, changeCommands: ["stencilMask", "stencilMaskSeparate"] }];
     }
 
+    protected readFromContext(): void {
+        super.readFromContext();
+
+        const gl = this.context;
+        const target = WebGlConstants.FRAMEBUFFER.value;
+        const attachment = WebGlConstants.STENCIL_ATTACHMENT.value;
+        const frameBuffer = gl.getParameter(WebGlConstants.FRAMEBUFFER_BINDING.value);
+
+        let value = 0;
+        if (!frameBuffer) {
+            value = this.readParameterFromContext({ constant: WebGlConstants.STENCIL_BITS });
+        }
+        else {
+            const type = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE.value);
+            if (type !== WebGlConstants.NONE.value) {
+                if (this.contextVersion > 1) {
+                    value = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE.value);
+                }
+                else {
+                    const storage = this.context.getFramebufferAttachmentParameter(target, attachment, WebGlConstants.FRAMEBUFFER_ATTACHMENT_OBJECT_NAME.value);
+                    if (storage === WebGlConstants.RENDERBUFFER.value) {
+                        value = gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_STENCIL_SIZE);
+                    }
+                }
+            }
+        }
+
+        this.currentState[WebGlConstants.STENCIL_BITS.name] = "" + value;
+    }
+
     protected isValidChangeCommand(command: ICommandCapture, stateName: string): boolean {
         if (command.name === "enable" || command.name === "disable") {
             return command.commandArguments[0] === WebGlConstants.STENCIL_TEST.value;

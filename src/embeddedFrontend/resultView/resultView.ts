@@ -403,7 +403,12 @@ export class ResultView {
 
         const rightJsonContentStateId = this.mvx.addChildState(rightId, null, this.jsonContentComponent);
         for (const analysis of capture.analyses) {
-            this.displayJSONGroup(rightJsonContentStateId, analysis.analyserName, analysis);
+            if (analysis.analyserName === "Primitives") {
+                this.displayJSONGroup(rightJsonContentStateId, "Vertices count", analysis);
+            }
+            else {
+                this.displayJSONGroup(rightJsonContentStateId, analysis.analyserName, analysis);
+            }
         }
         this.displayJSONGroup(rightJsonContentStateId, "Frame Memory Changes", capture.frameMemory);
         this.displayJSONGroup(rightJsonContentStateId, "Total Memory (seconds since application start: bytes)", capture.memory);
@@ -426,6 +431,7 @@ export class ResultView {
                         this.mvx.addChildState(parentGroupId, {
                             key: target,
                             value: value[target],
+                            pixelated: json["samplerMagFilter"] === "NEAREST" || json["magFilter"] === "NEAREST",
                         }, this.jsonImageItemComponent);
                     }
                 }
@@ -617,7 +623,7 @@ export class ResultView {
                 status,
             });
         }
-        else {
+        else if (command.name !== "LOG") {
             this.displayJSONGroup(this.commandDetailStateId, "Global", {
                 name: { help: helpLink, name: command.name },
                 duration: command.commandEndTime - command.startTime,
@@ -685,7 +691,10 @@ export class ResultView {
 
         for (let i = 0; i < capture.commands.length; i++) {
             const commandCapture = capture.commands[i];
-            if (this.toFilter(commandCapture.marker) && this.toFilter(commandCapture.name) && commandCapture.id !== this.currentCommandId) {
+            if (this.toFilter(commandCapture.marker) &&
+                this.toFilter(commandCapture.name) &&
+                commandCapture.id !== this.currentCommandId &&
+                (commandCapture.name !== "LOG" || this.toFilter(commandCapture.text))) {
                 continue;
             }
 

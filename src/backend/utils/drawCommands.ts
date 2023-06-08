@@ -6,4 +6,10 @@ export const drawCommands = [
     "drawElementsInstanced",
     "drawElementsInstancedANGLE",
     "drawRangeElements",
+    "multiDrawArraysWEBGL",
+    "multiDrawElementsWEBGL",
+    "multiDrawArraysInstancedWEBGL",
+    "multiDrawElementsInstancedWEBGL",
+    "multiDrawArraysInstancedBaseInstanceWEBGL",
+    "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
 ];

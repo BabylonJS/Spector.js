@@ -16,6 +16,7 @@ import { Logger } from "../../shared/utils/logger";
 import { Extensions } from "../states/information/extensions";
 import { CompressedTextures } from "../states/information/compressedTextures";
 import { Capabilities } from "../states/information/capabilities";
+import { CommandCaptureStatus } from "../../shared/capture/commandCapture";
 
 export interface IContextSpyOptions {
     context: WebGLRenderingContexts;
@@ -25,9 +26,12 @@ export interface IContextSpyOptions {
 
 export class ContextSpy {
 
-    private static readonly unSpyableMembers = ["canvas",
+    private static readonly unSpyableMembers = [
+        "canvas",
         "drawingBufferWidth",
         "drawingBufferHeight",
+        "drawingBufferColorSpace",
+        "unpackColorSpace",
         "glp", // WebGl Insight internal method.
     ];
 
@@ -167,6 +171,22 @@ export class ContextSpy {
 
     public clearMarker() {
         this.marker = null;
+    }
+
+    public log(value: string) {
+        this.currentCapture.commands.push({
+            name: "LOG",
+            text: value,
+            commandArguments: [] as unknown as IArguments,
+            commandEndTime: Time.now,
+            endTime: Time.now,
+            stackTrace: [],
+            marker: "",
+            status: CommandCaptureStatus.Valid,
+            startTime: Time.now,
+            result: undefined,
+            id: this.getNextCommandCaptureId()
+        });
     }
 
     public getNextCommandCaptureId(): number {
