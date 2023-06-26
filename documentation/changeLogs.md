@@ -8,6 +8,7 @@ Please, find below the per release summary of the contribution added to the proj
 * Fix [Scissor function call](https://github.com/BabylonJS/Spector.js/issues/266)
 * Fix [bufferSubData and getAttribLocation number report](https://github.com/BabylonJS/Spector.js/issues/262)
 * Fix [Dataview representation](https://github.com/BabylonJS/Spector.js/issues/263)
+* Fix [Multidraw spy](https://github.com/BabylonJS/Spector.js/issues/253)
 
 ## v0.9.29
 * Add [WebXR tracking capabilities](https://github.com/BabylonJS/Spector.js/pull/257)

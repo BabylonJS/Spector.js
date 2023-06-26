@@ -24,7 +24,12 @@ import { GetParameter } from "../commands/getParameter";
 import { GetShaderPrecisionFormat } from "../commands/getShaderPrecisionFormat";
 import { GetTransformFeedbackVarying } from "../commands/getTransformFeedbackVarying";
 import { MultiDrawArraysInstancedBaseInstanceWEBGL } from "../commands/MultiDrawArraysInstancedBaseInstanceWEBGL";
+import { MultiDrawArraysInstancedWEBGL } from "../commands/MultiDrawArraysInstancedWEBGL";
+import { MultiDrawArraysWEBGL } from "../commands/MultiDrawArraysWEBGL";
 import { MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL } from "../commands/MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL";
+import { MultiDrawElementsInstancedWEBGL } from "../commands/MultiDrawElementsInstancedWEBGL";
+import { MultiDrawElementsWEBGL } from "../commands/MultiDrawElementsWEBGL";
+
 import { Scissor } from "../commands/scissor";
 import { StencilMask } from "../commands/stencilMask";
 import { StencilMaskSeparate } from "../commands/stencilMaskSeparate";
@@ -151,7 +156,11 @@ export class CommandSpy {
             [GetShaderPrecisionFormat.commandName]: (options: IContextInformation) => new GetShaderPrecisionFormat(options),
             [GetTransformFeedbackVarying.commandName]: (options: IContextInformation) => new GetTransformFeedbackVarying(options),
             [MultiDrawArraysInstancedBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new MultiDrawArraysInstancedBaseInstanceWEBGL(options),
+            [MultiDrawArraysInstancedWEBGL.commandName]: (options: IContextInformation) => new MultiDrawArraysInstancedWEBGL(options),
+            [MultiDrawArraysWEBGL.commandName]: (options: IContextInformation) => new MultiDrawArraysWEBGL(options),
             [MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(options),
+            [MultiDrawElementsInstancedWEBGL.commandName]: (options: IContextInformation) => new MultiDrawElementsInstancedWEBGL(options),
+            [MultiDrawElementsWEBGL.commandName]: (options: IContextInformation) => new MultiDrawElementsWEBGL(options),
             [Scissor.commandName]: (options: IContextInformation) => new Scissor(options),
             [StencilMask.commandName]: (options: IContextInformation) => new StencilMask(options),
             [StencilMaskSeparate.commandName]: (options: IContextInformation) => new StencilMaskSeparate(options),
