@@ -1,5 +1,6 @@
 import { IFunctionInformation } from "../types/functionInformation";
 import { BaseCommand } from "../commands/baseCommand";
+import { BufferSubData } from "../commands/bufferSubData";
 import { OriginFunctionHelper } from "../utils/originFunctionHelper";
 import { ICommandCapture } from "../../shared/capture/commandCapture";
 import { Time } from "../../shared/utils/time";
@@ -17,6 +18,7 @@ import { DrawElementsInstanced } from "../commands/drawElementsInstanced";
 import { DrawRangeElements } from "../commands/drawRangeElements";
 import { GetActiveAttrib } from "../commands/getActiveAttrib";
 import { GetActiveUniform } from "../commands/getActiveUniform";
+import { GetAttribLocation } from "../commands/getAttribLocation";
 import { GetExtension } from "../commands/getExtension";
 import { GetParameter } from "../commands/getParameter";
 import { GetShaderPrecisionFormat } from "../commands/getShaderPrecisionFormat";
@@ -131,6 +133,7 @@ export class CommandSpy {
         CommandSpy.customCommandsConstructors = {
             [BindAttribLocation.commandName]: (options: IContextInformation) => new BindAttribLocation(options),
             [BlitFrameBuffer.commandName]: (options: IContextInformation) => new BlitFrameBuffer(options),
+            [BufferSubData.commandName]: (options: IContextInformation) => new BufferSubData(options),
             [Clear.commandName]: (options: IContextInformation) => new Clear(options),
             [DisableVertexAttribArray.commandName]: (options: IContextInformation) => new DisableVertexAttribArray(options),
             [DrawArrays.commandName]: (options: IContextInformation) => new DrawArrays(options),
@@ -142,6 +145,7 @@ export class CommandSpy {
             [DrawRangeElements.commandName]: (options: IContextInformation) => new DrawRangeElements(options),
             [GetActiveAttrib.commandName]: (options: IContextInformation) => new GetActiveAttrib(options),
             [GetActiveUniform.commandName]: (options: IContextInformation) => new GetActiveUniform(options),
+            [GetAttribLocation.commandName]: (options: IContextInformation) => new GetAttribLocation(options),
             [GetExtension.commandName]: (options: IContextInformation) => new GetExtension(options),
             [GetParameter.commandName]: (options: IContextInformation) => new GetParameter(options),
             [GetShaderPrecisionFormat.commandName]: (options: IContextInformation) => new GetShaderPrecisionFormat(options),
