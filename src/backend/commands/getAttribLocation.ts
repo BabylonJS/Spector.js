@@ -8,7 +8,7 @@ export class GetAttribLocation extends BaseCommand {
     }
 
     protected stringifyResult(result: any): string {
-        if (!result) {
+        if (result === undefined || result === null) {
             return undefined;
         }
 
