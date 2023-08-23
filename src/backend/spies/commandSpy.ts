@@ -113,13 +113,41 @@ export class CommandSpy {
         // tslint:disable-next-line:only-arrow-functions
         return function () {
             const before = Time.now;
-            const result = OriginFunctionHelper.executeOriginFunction(self.spiedCommandRunningContext, self.spiedCommandName, arguments);
+            let result = OriginFunctionHelper.executeOriginFunction(self.spiedCommandRunningContext, self.spiedCommandName, arguments);
             const after = Time.now;
 
-            const functionInformation = {
+            // Initialize error logging
+            const gl = self.spiedCommandRunningContext;
+            if (!gl.currentErrors) {
+                gl.currentErrors = [];
+            }
+
+            const newErrors = []
+            if (self.spiedCommandName === 'getError') {
+                // Inject one of the collected errors
+                result = gl.currentErrors.shift() ?? gl.NO_ERROR;
+            } else {
+                // Record new errors
+                while (true) {
+                    const errorResult = OriginFunctionHelper.executeOriginFunction(gl, "getError", undefined);
+                    if (errorResult === gl.NO_ERROR) {
+                        break;
+                    }
+                    newErrors.push(errorResult);
+                }
+                // Move new errors to the accumulated list
+                newErrors.forEach(newError => {
+                    if (!gl.currentErrors.includes(newError)) {
+                        gl.currentErrors.push(newError);
+                    }
+                });
+            }
+
+            const functionInformation: IFunctionInformation = {
                 name: self.spiedCommandName,
                 arguments,
                 result,
+                errors: newErrors,
                 startTime: before,
                 endTime: after,
             };
