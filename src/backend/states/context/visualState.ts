@@ -170,7 +170,7 @@ export class VisualState extends BaseState {
 
             const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);
             if (status === WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
-                this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, WebGlConstants.UNSIGNED_BYTE.value);
+                this.getCapture(gl, webglConstant.name, x, y, width, height, 0, 0, componentType);
             }
 
             gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, frameBuffer);
