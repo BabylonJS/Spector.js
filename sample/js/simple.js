@@ -42,7 +42,16 @@ var vertexShaderSource = "attribute vec3 aVertexPosition;" +
 
 var fragmentShaderSource = "varying lowp vec4 vColor;" +
 
-"void main(void) {" +
+"void main(void) {\n" +
+
+"#define TEST {}\n" +
+"\n" +
+"\n" +
+"#ifdef TEST\n" +
+"{}\n" +
+"#endif\n" +
+"{}\n" +
+
 "  gl_FragColor = vColor;" +
 "}";
 

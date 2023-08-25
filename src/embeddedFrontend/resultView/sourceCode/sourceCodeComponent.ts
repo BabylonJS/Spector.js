@@ -7,10 +7,13 @@ export interface ISourceCodeState extends ISourceCodeChangeEvent {
     fragment: boolean;
     translated: boolean;
     editable: boolean;
+    beautify: boolean;
 }
 
 // Declare Ace types here.
 interface IAceEditorSession {
+    setUseSoftTabs(enabled: boolean): void;
+    setTabSize(size: number): void;
     setMode(mode: string): void;
     on(eventName: string, callback: (e: any) => void): void;
     setAnnotations(annotations: any[]): void;
@@ -22,25 +25,23 @@ interface IAceEditor {
     setReadOnly(readonly: boolean): void;
     setShowPrintMargin(show: boolean): void;
 }
+interface IAceBeautify {
+    beautify(session: IAceEditorSession): boolean;
+}
 type ace = {
+    require(path: string): unknown;
     edit(sourceCodeComponent: Element): IAceEditor;
 };
 declare const ace: ace;
 
 export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
-    private static readonly semicolonReplacementKey = "[[[semicolonReplacementKey]]]";
-    private static readonly semicolonReplacementKeyRegex = new RegExp("\\[\\[\\[semicolonReplacementKey\\]\\]\\]", "g");
-    private static readonly openCurlyReplacementKey = "[[[openCurlyReplacementKey]]]";
-    private static readonly openCurlyReplacementKeyRegex = new RegExp("\\[\\[\\[openCurlyReplacementKey\\]\\]\\]", "g");
-    private static readonly closeCurlyReplacementKey = "[[[closeCurlyReplacementKey]]]";
-    private static readonly closeCurlyReplacementKeyRegex = new RegExp("\\[\\[\\[closeCurlyReplacementKey\\]\\]\\]", "g");
-
     public onTranslatedVertexSourceClicked: IStateEvent<ISourceCodeState>;
     public onTranslatedFragmentSourceClicked: IStateEvent<ISourceCodeState>;
     public onVertexSourceClicked: IStateEvent<ISourceCodeState>;
     public onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
     public onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;
     public onSourceCodeChanged: IStateEvent<ISourceCodeState>;
+    public onBeautifyChanged: IStateEvent<ISourceCodeState>;
 
     private editor: IAceEditor;
 
@@ -52,6 +53,7 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         this.onFragmentSourceClicked = this.createEvent("onFragmentSourceClicked");
         this.onSourceCodeCloseClicked = this.createEvent("onSourceCodeCloseClicked");
         this.onSourceCodeChanged = this.createEvent("onSourceCodeChanged");
+        this.onBeautifyChanged = this.createEvent("onBeautifyChanged");
     }
 
     public showError(errorMessage: string) {
@@ -82,13 +84,13 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
 
     public render(state: ISourceCodeState, stateId: number): Element {
         const source = state.fragment ? state.sourceFragment : state.sourceVertex;
-        let formattedShader: string;
+        let originalShader: string;
         // tslint:disable-next-line:prefer-conditional-expression
         if (state.translated) {
-            formattedShader = state.fragment ? state.translatedSourceFragment : state.translatedSourceVertex;
+            originalShader = state.fragment ? state.translatedSourceFragment : state.translatedSourceVertex;
         }
         else {
-            formattedShader = source ? this._indentIfdef(this._beautify(source)) : "";
+            originalShader = source ?? "";
         }
 
         const htmlString = this.htmlTemplate`
@@ -102,20 +104,30 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
                     <li><a href="#" role="button" commandName="onSourceCodeCloseClicked">Close</a></li>
                 </ul>
             </div>
-            $${
-            this.htmlTemplate`<div class="sourceCodeComponent">${formattedShader}</div>`
-            }
+            $${this.htmlTemplate`<div class="sourceCodeComponent">${originalShader}</div>`}
+            <div class="sourceCodeMenuComponentFooter">
+                <p>
+                    <label><input type="checkbox" commandName="onBeautifyChanged" ${state.beautify ? "checked" : ""} /> Beautify</label>
+                </p>
+            </div>
         </div>`;
 
         const element = this.renderElementFromTemplate(htmlString.replace(/<br>/g, "\n"), state, stateId);
 
         this.editor = ace.edit(element.querySelector(".sourceCodeComponent"));
         this.editor.setTheme("ace/theme/monokai");
-        this.editor.getSession().setMode("ace/mode/glsl");
+        const session = this.editor.getSession();
+        session.setMode("ace/mode/glsl");
+        if (state.beautify) {
+            session.setUseSoftTabs(true);
+            session.setTabSize(4);
+            const beautify = ace.require("ace/ext/beautify") as IAceBeautify;
+            beautify.beautify(session);
+        }
         this.editor.setShowPrintMargin(false);
         let timeoutId = -1;
         this.editor.setReadOnly(!state.editable && !state.translated);
-        this.editor.getSession().on("change", (e) => {
+        session.on("change", (e) => {
             if (timeoutId !== -1) {
                 clearTimeout(timeoutId);
             }
@@ -136,159 +148,5 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
             state.sourceVertex = editor.getValue();
         }
         this.triggerEvent("onSourceCodeChanged", element, state, stateId);
-    }
-
-    /**
-     * Beautify the given string : correct indentation according to brackets
-     */
-    private _beautify(glsl: string, level: number = 0): string {
-
-        // return condition : no brackets at all
-        glsl = glsl.trim();
-        glsl = this._adaptComments(glsl);
-        const brackets = this._getBracket(glsl);
-        const firstBracket = brackets.firstIteration;
-        const lastBracket = brackets.lastIteration;
-
-        let spaces = "";
-        for (let i = 0; i < level; i++) {
-            spaces += "    "; // 4 spaces
-        }
-
-        let result: string;
-        // If no brackets, return the indented string
-        if (firstBracket === -1) {
-            glsl = spaces + glsl; // indent first line
-            glsl = glsl.replace(/;(?![^\(]*\))\s*(\/\/.*)?/g, (x) => x.trim() + "\n");
-            glsl = glsl.replace(/\s*([*+-/=><\s]*=)\s*/g, (x) => " " + x.trim() + " "); // space around =, *=, +=, -=, /=, ==, >=, <=
-            glsl = glsl.replace(/\s*(,)\s*/g, (x) => x.trim() + " "); // space after ,
-            glsl = glsl.replace(/\n[ \t]+/g, "\n"); // trim Start
-            glsl = glsl.replace(/\n/g, "\n" + spaces); // indentation
-            glsl = glsl.replace(/\s+$/g, "");
-            glsl = glsl.replace(/\n+$/g, "");
-            result = glsl;
-        }
-        else {
-            // if brackets, beautify the inside
-            // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
-            const left = glsl.substr(0, firstBracket);
-            const right = glsl.substr(lastBracket + 1, glsl.length);
-            const inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
-            const prettyInside = this._beautify(inside, level + 1);
-            result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
-            result = result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
-            result = result.replace(/#endif[\t \f\v]*{/g, "\n {"); // Curly after #Endig
-        }
-
-        result = result.replace(SourceCodeComponent.semicolonReplacementKeyRegex, ";");
-        result = result.replace(SourceCodeComponent.openCurlyReplacementKeyRegex, "{");
-        result = result.replace(SourceCodeComponent.closeCurlyReplacementKeyRegex, "}");
-
-        return result;
-    }
-
-    private _adaptComments(str: string): string {
-        let singleLineComment = false;
-        let multiLineComment = false;
-
-        for (let index = 0; index < str.length; index++) {
-            const char = str[index];
-            if (char === "/") {
-                if (str[index - 1] === "*") {
-                    multiLineComment = false;
-                }
-                else if (str[index + 1] === "*") {
-                    if (!singleLineComment) {
-                        multiLineComment = true;
-                        index++;
-                    }
-                }
-                else if (str[index + 1] === "/") {
-                    if (!multiLineComment) {
-                        singleLineComment = true;
-                        index++;
-                    }
-                }
-            }
-            else if (char === "\n") {
-                singleLineComment = false;
-            }
-            else if (char === ";") {
-                if (singleLineComment || multiLineComment) {
-                    str = str.substr(0, index) + SourceCodeComponent.semicolonReplacementKey + str.substr(index + 1);
-                }
-            }
-            else if (char === "{") {
-                if (singleLineComment || multiLineComment) {
-                    str = str.substr(0, index) + SourceCodeComponent.openCurlyReplacementKey + str.substr(index + 1);
-                }
-            }
-            else if (char === "}") {
-                if (singleLineComment || multiLineComment) {
-                    str = str.substr(0, index) + SourceCodeComponent.closeCurlyReplacementKey + str.substr(index + 1);
-                }
-            }
-        }
-
-        return str;
-    }
-
-    /**
-     * Returns the position of the first "{" and the corresponding "}"
-     * @param str the Shader source code as a string
-     * @param searchFrom Search open brackets from this position
-     */
-    private _getBracket(str: string, searchFrom = -1): { firstIteration: number, lastIteration: number } {
-        const fb = str.indexOf("{", searchFrom);
-        const arr = str.substr(fb + 1).split("");
-        let counter = 1;
-        let currentPosInString = fb;
-        let lastBracketIndex = 0;
-        for (const char of arr) {
-            currentPosInString++;
-
-            if (char === "{") {
-                counter++;
-            }
-            if (char === "}") {
-                counter--;
-            }
-            if (counter === 0) {
-                lastBracketIndex = currentPosInString;
-                break;
-            }
-        }
-
-        // More open than close.
-        if (fb > -1 && lastBracketIndex === 0) {
-            return this._getBracket(str, fb + 1);
-        }
-
-        return { firstIteration: fb, lastIteration: lastBracketIndex };
-    }
-
-    private _indentIfdef(str: string): string {
-        let level = 0;
-
-        const arr2 = str.split("\n");
-
-        for (let index = 0; index < arr2.length; index++) {
-            const line = arr2[index];
-            if (line.indexOf("#endif") !== -1) {
-                level--;
-            }
-            if (line.indexOf("#else") !== -1) {
-                level--;
-            }
-            let spaces = "";
-            for (let i = 0; i < level; i++) {
-                spaces += "    "; // 4 spaces
-            }
-            arr2[index] = spaces + line;
-            if (line.indexOf("#if") !== -1 || line.indexOf("#else") !== -1) {
-                level++;
-            }
-        }
-        return arr2.join("\n");
     }
 }

@@ -14,11 +14,13 @@
     <script src="assets/js/babylon.objFileLoader.js"></script>
 
     <!--Add manually cause only in the bundle -->
-    <script src="../vendors/ace.js" type="text/javascript"></script>
-    <script src="../vendors/ace-theme-monokai.js" type="text/javascript"></script>
-    <script src="../vendors/ace-mode-glsl.js" type="text/javascript"></script>
-    <script src="../vendors/ace-ext-searchbox.js" type="text/javascript"></script>
-    <link href="../vendors/ace-theme-override.css" rel="stylesheet" />
+    <script src="./node_modules/ace-builds/src-noconflict/ace.js" type="text/javascript"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/theme-monokai.js" type="text/javascript"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/mode-glsl.js" type="text/javascript"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/ext-searchbox.js" type="text/javascript"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/ext-beautify.js" type="text/javascript"></script>
+
+    <link href="./../src/embeddedFrontend/styles/ace-theme-override.css" rel="stylesheet" />
 
     <style>
         html,

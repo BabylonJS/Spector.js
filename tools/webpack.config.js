@@ -11,11 +11,12 @@ var buildConfig = function(env) {
         watch: !isProd,
         context: MAIN_DIR,
         entry: [
-            "./vendors/ace.js",
-            "./vendors/ace-mode-glsl.js",
-            "./vendors/ace-theme-monokai.js",
-            "./vendors/ace-theme-override.css",
-            "./vendors/ace-ext-searchbox.js",
+            "./node_modules/ace-builds/src-noconflict/ace.js",
+            "./node_modules/ace-builds/src-noconflict/ext-searchbox.js",
+            "./node_modules/ace-builds/src-noconflict/ext-beautify.js",
+            "./node_modules/ace-builds/src-noconflict/mode-glsl.js",
+            "./node_modules/ace-builds/src-noconflict/theme-monokai.js",
+            "./src/embeddedFrontend/styles/ace-theme-override.css",
             "./src/spector.ts"
         ],
         output: {
