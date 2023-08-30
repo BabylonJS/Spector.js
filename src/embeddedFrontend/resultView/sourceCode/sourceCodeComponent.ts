@@ -7,6 +7,7 @@ export interface ISourceCodeState extends ISourceCodeChangeEvent {
     fragment: boolean;
     translated: boolean;
     editable: boolean;
+    beautify: boolean;
 }
 
 // Declare Ace types here.
@@ -41,6 +42,7 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
     public onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
     public onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;
     public onSourceCodeChanged: IStateEvent<ISourceCodeState>;
+    public onBeautifyChanged: IStateEvent<ISourceCodeState>;
 
     private editor: IAceEditor;
 
@@ -52,6 +54,7 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         this.onFragmentSourceClicked = this.createEvent("onFragmentSourceClicked");
         this.onSourceCodeCloseClicked = this.createEvent("onSourceCodeCloseClicked");
         this.onSourceCodeChanged = this.createEvent("onSourceCodeChanged");
+        this.onBeautifyChanged = this.createEvent("onBeautifyChanged");
     }
 
     public showError(errorMessage: string) {
@@ -82,14 +85,16 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
 
     public render(state: ISourceCodeState, stateId: number): Element {
         const source = state.fragment ? state.sourceFragment : state.sourceVertex;
-        let formattedShader: string;
+        let originalShader: string;
         // tslint:disable-next-line:prefer-conditional-expression
         if (state.translated) {
-            formattedShader = state.fragment ? state.translatedSourceFragment : state.translatedSourceVertex;
+            originalShader = state.fragment ? state.translatedSourceFragment : state.translatedSourceVertex;
         }
         else {
-            formattedShader = source ? this._indentIfdef(this._beautify(source)) : "";
+            originalShader = source ?? "";
         }
+
+        const displayedShader = state.beautify ? this._indentIfdef(this._beautify(originalShader)) : originalShader;
 
         const htmlString = this.htmlTemplate`
         <div class="sourceCodeComponentContainer">
@@ -103,8 +108,13 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
                 </ul>
             </div>
             $${
-            this.htmlTemplate`<div class="sourceCodeComponent">${formattedShader}</div>`
+            this.htmlTemplate`<div class="sourceCodeComponent">${displayedShader}</div>`
             }
+            <div class="sourceCodeMenuComponentFooter">
+                <p>
+                    <label><input type="checkbox" commandName="onBeautifyChanged" ${state.beautify ? "checked" : ""} /> Beautify</label>
+                </p>
+            </div>
         </div>`;
 
         const element = this.renderElementFromTemplate(htmlString.replace(/<br>/g, "\n"), state, stateId);

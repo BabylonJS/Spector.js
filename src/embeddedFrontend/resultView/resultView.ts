@@ -181,6 +181,12 @@ export class ResultView {
                 translatedSourceVertex: sourceCodeState.state.translatedSourceVertex,
             });
         });
+        this.sourceCodeComponent.onBeautifyChanged.add((sourceCodeState) => {
+            const state = this.mvx.getGenericState<ISourceCodeState>(this.sourceCodeComponentStateId);
+            state.beautify = (sourceCodeState.sender as HTMLInputElement).checked;
+            this.mvx.updateState(this.sourceCodeComponentStateId, state);
+        });
+
 
         this.updateViewState();
     }
@@ -286,6 +292,7 @@ export class ResultView {
             fragment,
             translated: false,
             editable: commandState.capture.DrawCall.programStatus.RECOMPILABLE,
+            beautify: true
         }, this.sourceCodeComponent);
 
         this.commandDetailStateId = this.mvx.addChildState(this.contentStateId, null, this.commandDetailComponent);
