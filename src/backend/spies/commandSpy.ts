@@ -29,6 +29,8 @@ import { MultiDrawArraysWEBGL } from "../commands/MultiDrawArraysWEBGL";
 import { MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL } from "../commands/MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL";
 import { MultiDrawElementsInstancedWEBGL } from "../commands/MultiDrawElementsInstancedWEBGL";
 import { MultiDrawElementsWEBGL } from "../commands/MultiDrawElementsWEBGL";
+import { DrawArraysInstancedBaseInstanceWEBGL } from "../commands/drawArraysInstancedBaseInstanceWEBGL";
+import { DrawElementsInstancedBaseVertexBaseInstanceWEBGL } from "../commands/drawElementsInstancedBaseVertexBaseInstanceWEBGL";
 
 import { Scissor } from "../commands/scissor";
 import { StencilMask } from "../commands/stencilMask";
@@ -161,6 +163,8 @@ export class CommandSpy {
             [MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(options),
             [MultiDrawElementsInstancedWEBGL.commandName]: (options: IContextInformation) => new MultiDrawElementsInstancedWEBGL(options),
             [MultiDrawElementsWEBGL.commandName]: (options: IContextInformation) => new MultiDrawElementsWEBGL(options),
+            [DrawArraysInstancedBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new DrawArraysInstancedBaseInstanceWEBGL(options),
+            [DrawElementsInstancedBaseVertexBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new DrawElementsInstancedBaseVertexBaseInstanceWEBGL(options),
             [Scissor.commandName]: (options: IContextInformation) => new Scissor(options),
             [StencilMask.commandName]: (options: IContextInformation) => new StencilMask(options),
             [StencilMaskSeparate.commandName]: (options: IContextInformation) => new StencilMaskSeparate(options),
