@@ -2,6 +2,8 @@ import type { XRSessionSpector } from "../../polyfill/XRSessionSpector";
 import { OriginFunctionHelper } from "../utils/originFunctionHelper";
 import { TimeSpy } from "./timeSpy";
 
+// tslint:disable:max-classes-per-file
+
 export class XRSpy {
     public currentXRSession: XRSessionSpector | undefined;
     private timeSpy: TimeSpy;
