@@ -71,6 +71,7 @@ export class Extensions extends BaseState {
                 // { name: "WEBGL_debug_shaders", description: "" },
             { name: "WEBGL_multi_draw", description: ""},
             { name: "WEBGL_multi_draw_instanced_base_vertex_base_instance", description: ""},
+            { name: "WEBGL_draw_instanced_base_vertex_base_instance", description: ""},
             ],
         ];
 

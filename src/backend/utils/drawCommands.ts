@@ -12,4 +12,6 @@ export const drawCommands = [
     "multiDrawElementsInstancedWEBGL",
     "multiDrawArraysInstancedBaseInstanceWEBGL",
     "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
+    "drawArraysInstancedBaseInstanceWEBGL",
+    "drawElementsInstancedBaseVertexBaseInstanceWEBGL"
 ];

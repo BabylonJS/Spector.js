@@ -7,6 +7,7 @@ export interface ISourceCodeState extends ISourceCodeChangeEvent {
     fragment: boolean;
     translated: boolean;
     editable: boolean;
+    beautify: boolean;
 }
 
 // Declare Ace types here.
@@ -41,6 +42,7 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
     public onFragmentSourceClicked: IStateEvent<ISourceCodeState>;
     public onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;
     public onSourceCodeChanged: IStateEvent<ISourceCodeState>;
+    public onBeautifyChanged: IStateEvent<ISourceCodeState>;
 
     private editor: IAceEditor;
 
@@ -52,6 +54,7 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         this.onFragmentSourceClicked = this.createEvent("onFragmentSourceClicked");
         this.onSourceCodeCloseClicked = this.createEvent("onSourceCodeCloseClicked");
         this.onSourceCodeChanged = this.createEvent("onSourceCodeChanged");
+        this.onBeautifyChanged = this.createEvent("onBeautifyChanged");
     }
 
     public showError(errorMessage: string) {
@@ -82,14 +85,16 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
 
     public render(state: ISourceCodeState, stateId: number): Element {
         const source = state.fragment ? state.sourceFragment : state.sourceVertex;
-        let formattedShader: string;
+        let originalShader: string;
         // tslint:disable-next-line:prefer-conditional-expression
         if (state.translated) {
-            formattedShader = state.fragment ? state.translatedSourceFragment : state.translatedSourceVertex;
+            originalShader = state.fragment ? state.translatedSourceFragment : state.translatedSourceVertex;
         }
         else {
-            formattedShader = source ? this._indentIfdef(this._beautify(source)) : "";
+            originalShader = source ?? "";
         }
+
+        const displayedShader = state.beautify ? this._indentIfdef(this._beautify(originalShader)) : originalShader;
 
         const htmlString = this.htmlTemplate`
         <div class="sourceCodeComponentContainer">
@@ -103,8 +108,13 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
                 </ul>
             </div>
             $${
-            this.htmlTemplate`<div class="sourceCodeComponent">${formattedShader}</div>`
+            this.htmlTemplate`<div class="sourceCodeComponent">${displayedShader}</div>`
             }
+            <div class="sourceCodeMenuComponentFooter">
+                <p>
+                    <label><input type="checkbox" commandName="onBeautifyChanged" ${state.beautify ? "checked" : ""} /> Beautify</label>
+                </p>
+            </div>
         </div>`;
 
         const element = this.renderElementFromTemplate(htmlString.replace(/<br>/g, "\n"), state, stateId);
@@ -142,18 +152,40 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
      * Beautify the given string : correct indentation according to brackets
      */
     private _beautify(glsl: string, level: number = 0): string {
-
-        // return condition : no brackets at all
-        glsl = glsl.trim();
-        glsl = this._adaptComments(glsl);
-        const brackets = this._getBracket(glsl);
-        const firstBracket = brackets.firstIteration;
-        const lastBracket = brackets.lastIteration;
-
         let spaces = "";
         for (let i = 0; i < level; i++) {
             spaces += "    "; // 4 spaces
         }
+
+        const untrimmedGlsl = glsl;
+        glsl = glsl.trim();
+
+        // If preprocessor, indent the preprocessor line and beautify the rest
+        if (glsl[0] === "#") {
+
+            // Figure out if we trimmed away a newline
+            const preprocessorStart = untrimmedGlsl.indexOf("#");
+            const newline = untrimmedGlsl.indexOf("\n");
+            let preservedNewline: string = "";
+            if (newline !== -1) {
+                if (newline < preprocessorStart) {
+                    preservedNewline = spaces + "\n";
+                }
+            }
+
+            const firstLineEnd = glsl.indexOf("\n");
+            const preprocessorLineEnd = (firstLineEnd !== -1) ? firstLineEnd : glsl.length;
+            const preprocessorLine = glsl.substr(0, preprocessorLineEnd);
+            const rest = glsl.substr(preprocessorLineEnd + 1);
+
+            return preservedNewline + spaces + preprocessorLine + "\n" + this._beautify(rest, level);
+        }
+
+        // return condition : no brackets at all
+        glsl = this._adaptComments(glsl);
+        const brackets = this._getBracket(glsl);
+        const firstBracket = brackets.firstIteration;
+        const lastBracket = brackets.lastIteration;
 
         let result: string;
         // If no brackets, return the indented string
@@ -171,13 +203,14 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         else {
             // if brackets, beautify the inside
             // let insideWithBrackets = glsl.substr(firstBracket, lastBracket-firstBracket+1);
-            const left = glsl.substr(0, firstBracket);
-            const right = glsl.substr(lastBracket + 1, glsl.length);
+            const left = glsl.substr(0, firstBracket).trim();
+            const right = glsl.substr(lastBracket + 1, glsl.length).trim();
             const inside = glsl.substr(firstBracket + 1, lastBracket - firstBracket - 1).trim();
+            const prettyLeft = (left === "") ? spaces + "{" : this._beautify(left, level) + " {\n";
             const prettyInside = this._beautify(inside, level + 1);
-            result = this._beautify(left, level) + " {\n" + prettyInside + "\n" + spaces + "}\n" + this._beautify(right, level);
+            const prettyRight = this._beautify(right, level);
+            result = prettyLeft + prettyInside + "\n" + spaces + "}\n" + prettyRight;
             result = result.replace(/\s*\n+\s*;/g, ";"); // Orphan ;
-            result = result.replace(/#endif[\t \f\v]*{/g, "\n {"); // Curly after #Endig
         }
 
         result = result.replace(SourceCodeComponent.semicolonReplacementKeyRegex, ";");

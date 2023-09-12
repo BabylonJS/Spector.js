@@ -1,5 +1,6 @@
 import { IFunctionInformation } from "../types/functionInformation";
 import { BaseCommand } from "../commands/baseCommand";
+import { BufferSubData } from "../commands/bufferSubData";
 import { OriginFunctionHelper } from "../utils/originFunctionHelper";
 import { ICommandCapture } from "../../shared/capture/commandCapture";
 import { Time } from "../../shared/utils/time";
@@ -17,12 +18,20 @@ import { DrawElementsInstanced } from "../commands/drawElementsInstanced";
 import { DrawRangeElements } from "../commands/drawRangeElements";
 import { GetActiveAttrib } from "../commands/getActiveAttrib";
 import { GetActiveUniform } from "../commands/getActiveUniform";
+import { GetAttribLocation } from "../commands/getAttribLocation";
 import { GetExtension } from "../commands/getExtension";
 import { GetParameter } from "../commands/getParameter";
 import { GetShaderPrecisionFormat } from "../commands/getShaderPrecisionFormat";
 import { GetTransformFeedbackVarying } from "../commands/getTransformFeedbackVarying";
 import { MultiDrawArraysInstancedBaseInstanceWEBGL } from "../commands/MultiDrawArraysInstancedBaseInstanceWEBGL";
+import { MultiDrawArraysInstancedWEBGL } from "../commands/MultiDrawArraysInstancedWEBGL";
+import { MultiDrawArraysWEBGL } from "../commands/MultiDrawArraysWEBGL";
 import { MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL } from "../commands/MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL";
+import { MultiDrawElementsInstancedWEBGL } from "../commands/MultiDrawElementsInstancedWEBGL";
+import { MultiDrawElementsWEBGL } from "../commands/MultiDrawElementsWEBGL";
+import { DrawArraysInstancedBaseInstanceWEBGL } from "../commands/drawArraysInstancedBaseInstanceWEBGL";
+import { DrawElementsInstancedBaseVertexBaseInstanceWEBGL } from "../commands/drawElementsInstancedBaseVertexBaseInstanceWEBGL";
+
 import { Scissor } from "../commands/scissor";
 import { StencilMask } from "../commands/stencilMask";
 import { StencilMaskSeparate } from "../commands/stencilMaskSeparate";
@@ -131,6 +140,7 @@ export class CommandSpy {
         CommandSpy.customCommandsConstructors = {
             [BindAttribLocation.commandName]: (options: IContextInformation) => new BindAttribLocation(options),
             [BlitFrameBuffer.commandName]: (options: IContextInformation) => new BlitFrameBuffer(options),
+            [BufferSubData.commandName]: (options: IContextInformation) => new BufferSubData(options),
             [Clear.commandName]: (options: IContextInformation) => new Clear(options),
             [DisableVertexAttribArray.commandName]: (options: IContextInformation) => new DisableVertexAttribArray(options),
             [DrawArrays.commandName]: (options: IContextInformation) => new DrawArrays(options),
@@ -142,12 +152,19 @@ export class CommandSpy {
             [DrawRangeElements.commandName]: (options: IContextInformation) => new DrawRangeElements(options),
             [GetActiveAttrib.commandName]: (options: IContextInformation) => new GetActiveAttrib(options),
             [GetActiveUniform.commandName]: (options: IContextInformation) => new GetActiveUniform(options),
+            [GetAttribLocation.commandName]: (options: IContextInformation) => new GetAttribLocation(options),
             [GetExtension.commandName]: (options: IContextInformation) => new GetExtension(options),
             [GetParameter.commandName]: (options: IContextInformation) => new GetParameter(options),
             [GetShaderPrecisionFormat.commandName]: (options: IContextInformation) => new GetShaderPrecisionFormat(options),
             [GetTransformFeedbackVarying.commandName]: (options: IContextInformation) => new GetTransformFeedbackVarying(options),
             [MultiDrawArraysInstancedBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new MultiDrawArraysInstancedBaseInstanceWEBGL(options),
+            [MultiDrawArraysInstancedWEBGL.commandName]: (options: IContextInformation) => new MultiDrawArraysInstancedWEBGL(options),
+            [MultiDrawArraysWEBGL.commandName]: (options: IContextInformation) => new MultiDrawArraysWEBGL(options),
             [MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(options),
+            [MultiDrawElementsInstancedWEBGL.commandName]: (options: IContextInformation) => new MultiDrawElementsInstancedWEBGL(options),
+            [MultiDrawElementsWEBGL.commandName]: (options: IContextInformation) => new MultiDrawElementsWEBGL(options),
+            [DrawArraysInstancedBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new DrawArraysInstancedBaseInstanceWEBGL(options),
+            [DrawElementsInstancedBaseVertexBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new DrawElementsInstancedBaseVertexBaseInstanceWEBGL(options),
             [Scissor.commandName]: (options: IContextInformation) => new Scissor(options),
             [StencilMask.commandName]: (options: IContextInformation) => new StencilMask(options),
             [StencilMaskSeparate.commandName]: (options: IContextInformation) => new StencilMaskSeparate(options),

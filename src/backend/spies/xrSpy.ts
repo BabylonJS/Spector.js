@@ -1,8 +1,8 @@
-import { XRSessionSpector } from "../../polyfill/XRSessionSpector";
-import { XRWebGLBindingSpector } from "../../polyfill/XRWebGLBindingSpector";
-import { XRWebGLLayerSpector } from "../../polyfill/XRWebGLLayerSpector";
+import type { XRSessionSpector } from "../../polyfill/XRSessionSpector";
 import { OriginFunctionHelper } from "../utils/originFunctionHelper";
 import { TimeSpy } from "./timeSpy";
+
+// tslint:disable:max-classes-per-file
 
 export class XRSpy {
     public currentXRSession: XRSessionSpector | undefined;
@@ -41,6 +41,39 @@ export class XRSpy {
             return;
         }
 
+        // define XR Polyfills.
+        // we do them here in xrSpy.init so that we don't try to initialize them *unless* we are using WebXR,
+        // since not all browsers will support experimental WebXR APIs.
+        class XRWebGLLayerSpector extends XRWebGLLayer {
+            private glContext: WebGLRenderingContext | WebGL2RenderingContext;
+            constructor(
+                session: XRSession,
+                context: WebGLRenderingContext | WebGL2RenderingContext,
+                layerInit?: XRWebGLLayerInit
+            ) {
+                super(session, context, layerInit);
+                this.glContext = context;
+            }
+
+            public getContext() {
+                return this.glContext;
+            }
+        }
+
+        class XRWebGLBindingSpector extends XRWebGLBinding {
+            private glContext: WebGLRenderingContext | WebGL2RenderingContext;
+            constructor(session: XRSession, context: WebGLRenderingContext) {
+                super(session, context);
+                this.glContext = context;
+            }
+
+            public createProjectionLayer(init?: XRProjectionLayerInit): XRProjectionLayer {
+                const layer = super.createProjectionLayer(init);
+                (layer as any).glContext = this.glContext;
+                return layer;
+            }
+        }
+
         (window as any).XRWebGLLayer = XRWebGLLayerSpector;
         (window as any).XRWebGLBinding = XRWebGLBindingSpector;
 
@@ -66,7 +99,7 @@ export class XRSpy {
                     ): Promise<void> => {
                         if (renderStateInit.baseLayer) {
                             const polyfilledBaseLayer =
-                                renderStateInit.baseLayer as XRWebGLLayerSpector;
+                                renderStateInit.baseLayer as unknown as XRWebGLLayerSpector;
                             spectorSession.glContext = polyfilledBaseLayer.getContext();
                         }
 

@@ -1,6 +1,7 @@
 export class MDNCommandLinkHelper {
     public static WebGL2RootUrl = "https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/";
     public static WebGLRootUrl = "https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/";
+    public static AngleInstancedArraysExtRootUrl = "https://developer.mozilla.org/en-US/docs/Web/API/ANGLE_instanced_arrays/";
 
     public static WebGL2Functions: { [key: string]: string } = {
         beginQuery: "beginQuery",
@@ -133,6 +134,12 @@ export class MDNCommandLinkHelper {
         vertexAttrib4fv: "vertexAttrib",
     };
 
+    public static AngleInstancedArraysExtFunctions: { [key: string]: string } = {
+        drawArraysInstancedANGLE: "drawArraysInstancedANGLE",
+        drawElementsInstancedANGLE: "drawElementsInstancedANGLE",
+        vertexAttribDivisorANGLE: "vertexAttribDivisorANGLE",
+    };
+
     public static getMDNLink(commandName: string): string {
         const webgl2Name = MDNCommandLinkHelper.WebGL2Functions[commandName];
         if (webgl2Name) {
@@ -141,6 +148,10 @@ export class MDNCommandLinkHelper {
         const webglName = MDNCommandLinkHelper.WebGLFunctions[commandName];
         if (webglName) {
             return MDNCommandLinkHelper.WebGLRootUrl + webglName;
+        }
+        const angleInstancedArraysExtName = MDNCommandLinkHelper.AngleInstancedArraysExtFunctions[commandName];
+        if (angleInstancedArraysExtName) {
+            return MDNCommandLinkHelper.AngleInstancedArraysExtRootUrl + angleInstancedArraysExtName;
         }
         return MDNCommandLinkHelper.WebGLRootUrl + commandName;
     }

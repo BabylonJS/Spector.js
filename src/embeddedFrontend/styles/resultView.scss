@@ -620,7 +620,16 @@ $commandDetailComponentWidth: 40%;
   position: absolute;
   left: 0;
   top: 0;
+  bottom: 48px;
   right: $commandDetailComponentWidth;
+}
+
+.sourceCodeMenuComponentFooter {
+  position: absolute;
+  left: 0;
+  right: $commandDetailComponentWidth;
+  bottom: 0;
+  padding: 0 15px;
 }
 
 .sourceCodeMenuComponent {
@@ -759,7 +768,7 @@ $commandDetailComponentWidth: 40%;
   position:absolute; 
   top: $menuHeight + $border;
   left: 0;  
-  bottom: 0;
+  bottom: 48px;
   right: $commandDetailComponentWidth;
   background: $background;
   z-index: 9000;

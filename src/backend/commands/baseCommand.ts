@@ -86,7 +86,7 @@ export abstract class BaseCommand {
         if (args && args.length > 0) {
             stringified += ": " + this.stringifyArgs(args).join(", ");
         }
-        if (result) {
+        if (result !== undefined && result !== null) {
             stringified += " -> " + this.stringifyResult(result);
         }
         return stringified;
@@ -162,6 +162,11 @@ export abstract class BaseCommand {
 
         if (value.length) {
             return "[..(" + value.length + ")..]";
+        }
+
+        // DataView
+        if (value.byteLength) {
+            return "[..(" + value.byteLength + ")..]";
         }
 
         return value;
