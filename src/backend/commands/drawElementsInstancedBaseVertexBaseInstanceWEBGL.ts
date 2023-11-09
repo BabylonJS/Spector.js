@@ -11,7 +11,7 @@ export class DrawElementsInstancedBaseVertexBaseInstanceWEBGL extends BaseComman
     protected stringifyArgs(args: IArguments): string[] {
         const stringified = [];
         stringified.push(WebGlConstants.stringifyWebGlConstant(args[0], "drawElementsInstanced"));
-        stringified.push(args[1]);
+        stringified.push(args[1] + " indices");
         stringified.push(WebGlConstants.stringifyWebGlConstant(args[2], "drawElementsInstanced"));
         stringified.push(args[3]);
         stringified.push(args[4]);
