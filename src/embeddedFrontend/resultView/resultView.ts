@@ -186,6 +186,11 @@ export class ResultView {
             state.beautify = (sourceCodeState.sender as HTMLInputElement).checked;
             this.mvx.updateState(this.sourceCodeComponentStateId, state);
         });
+        this.sourceCodeComponent.onPreprocessChanged.add((sourceCodeState) => {
+            const state = this.mvx.getGenericState<ISourceCodeState>(this.sourceCodeComponentStateId);
+            state.preprocessed = (sourceCodeState.sender as HTMLInputElement).checked;
+            this.mvx.updateState(this.sourceCodeComponentStateId, state);
+        });
 
 
         this.updateViewState();
