@@ -14,6 +14,7 @@ Please, find below the per release summary of the contribution added to the proj
 * Add [Beautifier Toggle](https://github.com/BabylonJS/Spector.js/pull/282)
 * Fix [BaseVertexBaseInstance Capture](https://github.com/BabylonJS/Spector.js/pull/284)
 * Fix [XR spy on firefox](https://github.com/BabylonJS/Spector.js/pull/285)
+* Fix [Frame Buffer visual state](https://github.com/BabylonJS/Spector.js/pull/292)
 
 ## v0.9.29
 * Add [WebXR tracking capabilities](https://github.com/BabylonJS/Spector.js/pull/257)
