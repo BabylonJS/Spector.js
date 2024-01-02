@@ -1,5 +1,7 @@
+import preprocess from "@shaderfrog/glsl-parser/preprocessor"; // tslint:disable-line:no-submodule-imports
 import { BaseComponent, IStateEvent } from "../../mvx/baseComponent";
 import { ISourceCodeChangeEvent } from "../resultView";
+import { Logger } from "../../../shared/utils/logger";
 
 export interface ISourceCodeState extends ISourceCodeChangeEvent {
     nameVertex: string;
@@ -8,6 +10,7 @@ export interface ISourceCodeState extends ISourceCodeChangeEvent {
     translated: boolean;
     editable: boolean;
     beautify: boolean;
+    preprocessed: boolean;
 }
 
 // Declare Ace types here.
@@ -43,6 +46,7 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
     public onSourceCodeCloseClicked: IStateEvent<ISourceCodeState>;
     public onSourceCodeChanged: IStateEvent<ISourceCodeState>;
     public onBeautifyChanged: IStateEvent<ISourceCodeState>;
+    public onPreprocessChanged: IStateEvent<ISourceCodeState>;
 
     private editor: IAceEditor;
 
@@ -55,6 +59,7 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
         this.onSourceCodeCloseClicked = this.createEvent("onSourceCodeCloseClicked");
         this.onSourceCodeChanged = this.createEvent("onSourceCodeChanged");
         this.onBeautifyChanged = this.createEvent("onBeautifyChanged");
+        this.onPreprocessChanged = this.createEvent("onPreprocessChanged");
     }
 
     public showError(errorMessage: string) {
@@ -86,33 +91,50 @@ export class SourceCodeComponent extends BaseComponent<ISourceCodeState> {
     public render(state: ISourceCodeState, stateId: number): Element {
         const source = state.fragment ? state.sourceFragment : state.sourceVertex;
         let originalShader: string;
+        let preprocessed = state.preprocessed;
+
         // tslint:disable-next-line:prefer-conditional-expression
         if (state.translated) {
             originalShader = state.fragment ? state.translatedSourceFragment : state.translatedSourceVertex;
+            preprocessed = false;
         }
         else {
             originalShader = source ?? "";
         }
 
-        const displayedShader = state.beautify ? this._indentIfdef(this._beautify(originalShader)) : originalShader;
+        let displayedShader = originalShader;
+        if (preprocessed) {
+            try {
+                displayedShader = preprocess(displayedShader, {
+                    preserveComments: false,
+                    stopOnError: true
+                });
+            } catch (e) {
+                Logger.error("shader preprocess failed", e);
+            }
+        }
+
+        if (state.beautify) {
+            displayedShader = this._indentIfdef(this._beautify(displayedShader));
+        }
 
         const htmlString = this.htmlTemplate`
         <div class="sourceCodeComponentContainer">
             <div class="sourceCodeMenuComponentContainer">
                 <ul class="sourceCodeMenuComponent">
-                    $${ state.translatedSourceVertex ? this.htmlTemplate`<li><a class="${!state.fragment && state.translated ? "active" : ""}" href="#" role="button" commandName="onTranslatedVertexSourceClicked">Translated Vertex</a></li>` : "" }
-                    $${ state.translatedSourceFragment ? this.htmlTemplate`<li><a class="${state.fragment && state.translated ? "active" : ""}" href="#" role="button" commandName="onTranslatedFragmentSourceClicked">Translated Fragment</a></li>` : "" }
+                    $${state.translatedSourceVertex ? this.htmlTemplate`<li><a class="${!state.fragment && state.translated ? "active" : ""}" href="#" role="button" commandName="onTranslatedVertexSourceClicked">Translated Vertex</a></li>` : ""}
+                    $${state.translatedSourceFragment ? this.htmlTemplate`<li><a class="${state.fragment && state.translated ? "active" : ""}" href="#" role="button" commandName="onTranslatedFragmentSourceClicked">Translated Fragment</a></li>` : ""}
                     <li><a class="${!state.fragment && !state.translated ? "active" : ""}" href="#" role="button" commandName="onVertexSourceClicked">Vertex</a></li>
                     <li><a class="${state.fragment && !state.translated ? "active" : ""}" href="#" role="button" commandName="onFragmentSourceClicked">Fragment</a></li>
                     <li><a href="#" role="button" commandName="onSourceCodeCloseClicked">Close</a></li>
                 </ul>
             </div>
-            $${
-            this.htmlTemplate`<div class="sourceCodeComponent">${displayedShader}</div>`
+            $${this.htmlTemplate`<div class="sourceCodeComponent">${displayedShader}</div>`
             }
             <div class="sourceCodeMenuComponentFooter">
                 <p>
                     <label><input type="checkbox" commandName="onBeautifyChanged" ${state.beautify ? "checked" : ""} /> Beautify</label>
+                    <label><input type="checkbox" commandName="onPreprocessChanged" ${state.preprocessed ? "checked" : ""} /> Preprocess</label>
                 </p>
             </div>
         </div>`;
