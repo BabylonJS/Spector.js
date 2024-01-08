@@ -29,7 +29,6 @@ export class VisualStateListItemComponent extends BaseComponent<IVisualStateItem
 
         if (state.VisualState.Attachments) {
             for (const imageState of state.VisualState.Attachments) {
-                debugger;
                 if (!imageState.src && !imageState.srcBuffer) {
                     continue;
                 }
@@ -42,7 +41,7 @@ export class VisualStateListItemComponent extends BaseComponent<IVisualStateItem
                     const canvas = document.createElement("canvas");
                     const ctx = canvas.getContext("bitmaprenderer");
                     ctx.transferFromImageBitmap(imageState.srcBuffer);
-                    img.src = canvas.toDataURL();
+                    imageState.src = img.src = canvas.toDataURL();
                     liHolder.appendChild(img);
                 }
                 if (state.VisualState.Attachments.length > 1) {
