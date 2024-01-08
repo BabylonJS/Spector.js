@@ -4,6 +4,8 @@ import { IContextInformation } from "../types/contextInformation";
 
 type CanvasConstructor = (new() => HTMLCanvasElement) | (new(...args: any[]) => OffscreenCanvas);
 
+let MAIN_THREAD = typeof window === "object";
+
 export class CanvasSpy {
     public readonly onContextRequested: Observable<IContextInformation>;
 
@@ -18,7 +20,7 @@ export class CanvasSpy {
         const self = this;
 
         const getContextSpied = function (this: HTMLCanvasElement | OffscreenCanvas) {
-            const OriginalCanvasConstructor: CanvasConstructor = this instanceof HTMLCanvasElement ?
+            const OriginalCanvasConstructor: CanvasConstructor = (MAIN_THREAD && this instanceof HTMLCanvasElement) ?
                 HTMLCanvasElement :
                 OffscreenCanvas;
 
@@ -26,7 +28,7 @@ export class CanvasSpy {
                 OriginFunctionHelper.executeOriginFunction(this, "getContext", arguments) :
                 OriginFunctionHelper.executePrototypeOriginFunction(this, OriginalCanvasConstructor, "getContext", arguments);
 
-            if (arguments.length > 0 && arguments[0] === "2d") {
+            if (arguments.length > 0 && (arguments[0] === "2d" || arguments[0] === "bitmaprenderer")) {
                 return context;
             }
 
@@ -51,8 +53,10 @@ export class CanvasSpy {
             this.canvas.getContext = getContextSpied;
         }
         else {
-            OriginFunctionHelper.storePrototypeOriginFunction(HTMLCanvasElement, "getContext");
-            (HTMLCanvasElement as any).prototype.getContext = getContextSpied;
+            if (MAIN_THREAD) {
+                OriginFunctionHelper.storePrototypeOriginFunction(HTMLCanvasElement, "getContext");
+                (HTMLCanvasElement as any).prototype.getContext = getContextSpied;
+            }
 
             if (typeof OffscreenCanvas !== "undefined") {
                 OriginFunctionHelper.storePrototypeOriginFunction(OffscreenCanvas, "getContext");

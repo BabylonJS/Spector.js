@@ -1,4 +1,5 @@
 // Old Fashion Way for IE 11 Devs. Yes, that still exists ;-)
+var MAIN_THREAD = typeof window === "object";
 
 var SPECTORTOOLS;
 (function (SPECTORTOOLS) {
@@ -9,7 +10,7 @@ var SPECTORTOOLS;
 
         function Loader() {
             queue = [];
-            useDist = (document.location.href.toLowerCase().indexOf('dist=true') > 0);
+            useDist = (location.href.toLowerCase().indexOf('dist=true') > 0);
             callback = null;
         }
 
@@ -22,18 +23,25 @@ var SPECTORTOOLS;
                 return;
             }
 
-            var url = queue.shift();
-            
-            var head = document.getElementsByTagName('head')[0];
-            var script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = url;
+          
+            if (typeof document !== 'undefined') {
+                var url = queue.shift();
+                var head = document.getElementsByTagName('head')[0];
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = url;
 
-            var self = this;
-            script.onload = function() {
-                self.dequeue();
-            };
-            head.appendChild(script);
+                var self = this;
+                script.onload = function() {
+                    self.dequeue();
+                };
+                head.appendChild(script);
+            } else {
+                while (queue.length > 0) {
+                    var url = queue.shift();
+                    importScripts(url);
+                }
+            }
         }
 
         Loader.prototype.loadScript = function (url) {
@@ -41,11 +49,20 @@ var SPECTORTOOLS;
         }
 
         Loader.prototype.loadSPECTORScripts = function () {
-            if (useDist) {
-                this.loadScript("/dist/spector.bundle.js");
-            }
-            else {
-                this.loadScript("/.temp/spector.bundle.js");
+            if (MAIN_THREAD) {
+                if (useDist) {
+                    this.loadScript("/dist/spector.bundle.js");
+                }
+                else {
+                    this.loadScript("/.temp/spector.bundle.js");
+                }
+            } else {
+                if (useDist) {
+                    this.loadScript("/dist/spector-headless.bundle.js");
+                }
+                else {
+                    this.loadScript("/.temp/spector-headless.bundle.js");
+                }
             }
         }
 

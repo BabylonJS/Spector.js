@@ -35,7 +35,7 @@ export class TimeSpy {
     private willPlayNextFrame: boolean;
 
     constructor(spiedScope?: { [name: string]: Function }) {
-        this.spiedScope = spiedScope || window;
+        this.spiedScope = spiedScope || globalThis;
         this.lastFrame = 0;
 
         this.speedRatio = 1;

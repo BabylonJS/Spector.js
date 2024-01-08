@@ -32,7 +32,7 @@ export abstract class BaseWebGlObject {
 
     // tslint:disable-next-line:ban-types
     public get type(): Function {
-        return (window as any)[this.typeName] || null;
+        return (globalThis as any)[this.typeName] || null;
     }
 
     private id: number;
