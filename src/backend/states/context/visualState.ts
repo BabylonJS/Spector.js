@@ -305,8 +305,7 @@ export class VisualState extends BaseState {
                         attachmentVisualState.src = this.captureCanvas.toDataURL();
                     } else {
                         // @ts-ignore
-                        const imageData = this.captureCanvas.transferToImageBitmap();
-                        attachmentVisualState.srcBuffer = imageData;
+                        attachmentVisualState.srcBuffer = this.captureCanvas.transferToImageBitmap();
                     }
                 }
             }

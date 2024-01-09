@@ -4,7 +4,7 @@ import { IContextInformation } from "../types/contextInformation";
 
 type CanvasConstructor = (new() => HTMLCanvasElement) | (new(...args: any[]) => OffscreenCanvas);
 
-let MAIN_THREAD = typeof window === "object";
+const MAIN_THREAD = typeof window === "object";
 
 export class CanvasSpy {
     public readonly onContextRequested: Observable<IContextInformation>;

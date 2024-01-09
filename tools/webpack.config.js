@@ -18,7 +18,7 @@ var buildConfig = function(env) {
                 "./vendors/ace-theme-override.css",
                 "./vendors/ace-ext-searchbox.js",
                 "./src/spector.ts",
-                ],
+            ],
             "spector-headless": ["./src/baseSpector.ts"],
         },
         output: {

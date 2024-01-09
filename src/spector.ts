@@ -98,7 +98,7 @@ export class Spector extends BaseSpector {
 }
 
 
-
+/* tslint:disable:max-classes-per-file */
 export class RemoteSpector extends BaseSpector {
 
     private captureMenu: CaptureMenu;
