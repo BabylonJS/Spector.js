@@ -69,13 +69,28 @@ var createScene = function (engine, canvas) {
     return scene;
 }
 
-var renderCanvas = document.getElementById('renderCanvas');
 
-var engine = new BABYLON.Engine(renderCanvas);
-spector.captureCanvas(renderCanvas, 100, true);
+function renderMain(renderCanvas) {
+    var engine = new BABYLON.Engine(renderCanvas);
+    spector.captureCanvas(renderCanvas, 100, true);
+    var scene = createScene(engine, renderCanvas);
 
-var scene = createScene(engine, renderCanvas);
+    engine.runRenderLoop(function() {
+        scene.render();
+    });
+}
 
-engine.runRenderLoop(function() {
-    scene.render();
-});
+var MAIN_THREAD = typeof window === "object";
+
+if (MAIN_THREAD) {
+    var renderCanvas = document.getElementById('renderCanvas');
+    renderMain(renderCanvas);
+} else {
+    addEventListener("message", (evt) => {
+        if (evt.data && evt.data.cmd === "start") {
+            const canvas = globalThis.canvas = evt.data.canvas;
+            canvas.__SPECTOR_id = evt.data.id;
+            renderMain(canvas);
+        }
+    });
+}

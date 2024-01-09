@@ -1,4 +1,4 @@
-import {BaseSpector, SpectorInitOptions} from "./baseSpector"
+import {BaseSpector, SpectorInitOptions} from "./baseSpector";
 import * as Comlink from "comlink";
 
 
@@ -110,20 +110,34 @@ export class RemoteSpector extends BaseSpector {
         this.worker = Comlink.wrap(worker);
     }
 
-    public async pause(): void {
+    public async pause(): Promise<void> {
         await this.worker.pause();
     }
 
-    public async play(): void {
+    public async play(): Promise<void> {
         await this.worker.play();
     }
 
-    public async playNextFrame(): void {
+    public async playNextFrame(): Promise<void> {
         await this.worker.playNextFrame();
     }
 
-    public async getFps(): Promise<number> {
-        return await this.worker.getFps();
+    // @ts-ignore
+    public async getFps(): any {
+        return this.worker.getFps();
+    }
+
+    public async captureCanvas(canvas: HTMLCanvasElement | OffscreenCanvas | string,
+                               commandCount = 0,
+                               quickCapture: boolean = false,
+                               fullCapture: boolean = false) {
+        if (typeof canvas === "string") {
+            return this.worker.captureCanvas(canvas, commandCount, quickCapture, fullCapture);
+        } else {
+            const _canvas = canvas as any;
+            const id = _canvas.__SPECTOR_id ? _canvas.__SPECTOR_id : _canvas.id;
+            return this.worker.captureCanvas(id, commandCount, quickCapture, fullCapture);
+        }
     }
 
     public displayUI(disableTracking: boolean = false) {
@@ -151,8 +165,8 @@ export class RemoteSpector extends BaseSpector {
         if (!this.resultView) {
             this.getResultUI();
 
-            let onCapture = this.worker.onCapture;
-            onCapture.add(Comlink.proxy((capture) => {
+            const onCapture = this.worker.onCapture;
+            onCapture.add(Comlink.proxy((capture: ICapture) => {
                 this.resultView.display();
                 this.resultView.addCapture(capture);
             }));

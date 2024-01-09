@@ -26,10 +26,22 @@ var createScene = function (engine, canvas) {
     return scene;
 }
 
-var renderCanvas = document.getElementById('renderCanvas');
-var engine = new BABYLON.Engine(renderCanvas);
-var scene = createScene(engine, renderCanvas);
+function renderMain(renderCanvas) {
+    var engine = new BABYLON.Engine(renderCanvas);
+    var scene = createScene(engine, renderCanvas);
 
-engine.runRenderLoop(function () {
-    scene.render();
-});
+    engine.runRenderLoop(function() {
+        scene.render();
+    });
+}
+
+
+
+var MAIN_THREAD = typeof window === "object";
+
+if (MAIN_THREAD) {
+    var renderCanvas = document.getElementById('renderCanvas');
+    renderMain(renderCanvas);
+} else {
+    console.error("This sample is not available in worker");
+}

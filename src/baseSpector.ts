@@ -201,7 +201,7 @@ export class BaseSpector {
         quickCapture: boolean = false,
         fullCapture: boolean = false): void {
         const contextSpy = this.getAvailableContextSpyByCanvas(canvas);
-        if (!contextSpy) {
+        if (!contextSpy && typeof canvas !== "string") {
             const context = BaseSpector.getFirstAvailable3dContext(canvas);
             if (context) {
                 this.captureContext(context, commandCount, quickCapture, fullCapture);
@@ -411,7 +411,7 @@ export class BaseSpector {
 
     private getAvailableContextSpyByCanvas(canvas: HTMLCanvasElement | OffscreenCanvas | string): ContextSpy {
         for (const availableContext of this.contexts) {
-            if (typeof canvas === "string" && canvas === availableContext.canvas.__SPECTOR_id) {
+            if (typeof canvas === "string" && canvas === (availableContext.canvas as any).__SPECTOR_id) {
                 return availableContext.contextSpy;
             } if (availableContext.canvas === canvas) {
                 return availableContext.contextSpy;
@@ -457,9 +457,6 @@ export class BaseSpector {
 
     protected triggerCapture(capture: ICapture) {
         this.onCapture.trigger(capture);
-        if (!MAIN_THREAD) {
-            
-        }
     }
 
     protected onErrorInternal(error: string) {

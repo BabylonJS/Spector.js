@@ -6,7 +6,13 @@ var MAIN_THREAD = typeof window === "object";
 var spector;
 
 if (MAIN_THREAD) {
-    spector = new SPECTOR.RemoteSpector(spectorOptions, window.spectorWorker);
+    const urlParams = new URLSearchParams(location.search);
+    const runInWorker = urlParams.get("worker") === "1";
+    if (runInWorker) {
+        spector = new SPECTOR.RemoteSpector(spectorOptions, window.spectorWorker);
+    } else {
+        spector = new SPECTOR.Spector(spectorOptions, window.spectorWorker);
+    }
     spector.displayUI();
 } else {
     spector = new SPECTOR.BaseSpector(spectorOptions);
