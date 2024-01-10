@@ -39,7 +39,7 @@ var SPECTORTOOLS;
             } else {
                 while (queue.length > 0) {
                     var url = queue.shift();
-                    importScripts(url);
+                    import(url).then((exports) => {debugger;console.log(exports.default());});
                 }
             }
         }

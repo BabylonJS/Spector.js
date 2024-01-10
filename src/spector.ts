@@ -199,5 +199,9 @@ export class RemoteSpector extends BaseSpector {
         return this.captureMenu;
     }
 
+    public addOnCapture(callback: (capture: ICapture) => void): void {
+        this.worker.onCapture.add(Comlink.proxy(callback));
+    }
+
 
 }

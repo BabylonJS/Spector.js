@@ -411,7 +411,9 @@ export class BaseSpector {
 
     private getAvailableContextSpyByCanvas(canvas: HTMLCanvasElement | OffscreenCanvas | string): ContextSpy {
         for (const availableContext of this.contexts) {
-            if (typeof canvas === "string" && canvas === (availableContext.canvas as any).__SPECTOR_id) {
+            if (typeof canvas === "string" &&
+                (canvas === (availableContext.canvas as any).__SPECTOR_id
+                || canvas === (availableContext.canvas as any).id)) {
                 return availableContext.contextSpy;
             } if (availableContext.canvas === canvas) {
                 return availableContext.contextSpy;

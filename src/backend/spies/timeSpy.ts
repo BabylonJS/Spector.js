@@ -68,6 +68,9 @@ export class TimeSpy {
 
     public addRequestAnimationFrameFunctionName(functionName: string): void {
         TimeSpy.requestAnimationFrameFunctions.push(functionName);
+        for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
+            this.spyRequestAnimationFrame(Spy, this.spiedScope);
+        }
     }
 
     public getSpiedScope() {

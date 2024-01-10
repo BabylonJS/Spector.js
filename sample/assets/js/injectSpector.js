@@ -9,9 +9,9 @@ if (MAIN_THREAD) {
     const urlParams = new URLSearchParams(location.search);
     const runInWorker = urlParams.get("worker") === "1";
     if (runInWorker) {
-        spector = new SPECTOR.RemoteSpector(spectorOptions, window.spectorWorker);
+        spector = new SPECTOR.RemoteSpector(spectorOptions, window.__SPECTOR_worker);
     } else {
-        spector = new SPECTOR.Spector(spectorOptions, window.spectorWorker);
+        spector = new SPECTOR.Spector(spectorOptions);
     }
     spector.displayUI();
 } else {

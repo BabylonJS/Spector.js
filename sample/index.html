@@ -44,7 +44,7 @@
         const urlParams = new URLSearchParams(location.search);
         const runInWorker = urlParams.get("worker") === "1";
         if (runInWorker) {
-            var worker = window.spectorWorker = new Worker("js/worker.js" + location.search);
+            var worker = window.__SPECTOR_worker = new Worker("js/worker.js" + location.search);
             const htmlCanvas = document.getElementById("renderCanvas");
             htmlCanvas.width = document.body.clientWidth;
             htmlCanvas.height = document.body.clientHeight;
