@@ -33,6 +33,9 @@
     "build": "run-s build:tslint build:bundle build:copybuild:copy:bundle build:concatBundleFunc -n",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "@shaderfrog/glsl-parser": "^2.0.1"
+  },
   "devDependencies": {
     "@types/webxr": "^0.5.1",
     "concat-cli": "^4.0.0",

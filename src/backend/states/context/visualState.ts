@@ -207,7 +207,9 @@ export class VisualState extends BaseState {
             const info = storage.__SPECTOR_Object_CustomData as ITextureRecorderData;
             width = info.width;
             height = info.height;
-            textureType = info.type;
+            if (info.type !== undefined) {
+                textureType = info.type;
+            }
             knownAsTextureArray = info.target === WebGlConstants.TEXTURE_2D_ARRAY.name;
             if (!ReadPixelsHelper.isSupportedCombination(info.type, info.format, info.internalFormat)) {
                 return;
