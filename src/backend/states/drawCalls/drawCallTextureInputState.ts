@@ -4,6 +4,8 @@ import { VisualState } from "../context/visualState";
 import { IContextInformation } from "../../types/contextInformation";
 import { ITextureRecorderData } from "../../recorders/texture2DRecorder";
 
+const MAIN_THREAD = typeof window === "object";
+
 export class DrawCallTextureInputState {
     public static captureBaseSize = 64;
 
@@ -18,8 +20,8 @@ export class DrawCallTextureInputState {
 
     private readonly context: WebGLRenderingContext;
     private readonly captureFrameBuffer: WebGLFramebuffer;
-    private readonly workingCanvas: HTMLCanvasElement;
-    private readonly captureCanvas: HTMLCanvasElement;
+    private readonly workingCanvas: HTMLCanvasElement | OffscreenCanvas;
+    private readonly captureCanvas: HTMLCanvasElement | OffscreenCanvas;
     private readonly workingContext2D: CanvasRenderingContext2D;
     private readonly captureContext2D: CanvasRenderingContext2D;
 
@@ -28,9 +30,11 @@ export class DrawCallTextureInputState {
     constructor(options: IContextInformation) {
         this.context = options.context;
         this.captureFrameBuffer = options.context.createFramebuffer();
-        this.workingCanvas = document.createElement("canvas");
+        // @ts-ignore
+        this.workingCanvas = MAIN_THREAD ? document.createElement("canvas") : new OffscreenCanvas(300, 150);
         this.workingContext2D = this.workingCanvas.getContext("2d");
-        this.captureCanvas = document.createElement("canvas");
+        // @ts-ignore
+        this.captureCanvas = MAIN_THREAD ? document.createElement("canvas") : new OffscreenCanvas(300, 150);
         this.captureContext2D = this.captureCanvas.getContext("2d");
         this._setSmoothing(true);
     }

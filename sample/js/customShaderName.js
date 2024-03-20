@@ -52,8 +52,6 @@ var fragmentShaderSource = "#define SHADER_NAME w00tFragment\n\n" +
 // Called when the canvas is created to get the ball rolling.
 //
 function start() {
-  canvas = document.getElementById("renderCanvas");
-
   initWebGL(canvas);      // Initialize the GL context
 
   // Only continue if WebGL is available and working
@@ -89,16 +87,16 @@ function initWebGL() {
   gl = null;
 
   try {
-    gl = canvas.getContext("experimental-webgl");
+    gl = canvas.getContext("webgl");
   }
   catch(e) {
-    alert(e);
+    console.error(e);
   }
 
   // If we don't have a GL context, give up now
 
   if (!gl) {
-    alert("Unable to initialize WebGL. Your browser may not support it.");
+    console.error("Unable to initialize WebGL. Your browser may not support it.");
   }
 }
 
@@ -295,7 +293,7 @@ function drawScene() {
 
   lastCubeUpdateTime = currentTime;
 
-  window.requestAnimationFrame(function() {
+  requestAnimationFrame(function() {
         drawScene();
   });
 }
@@ -407,4 +405,17 @@ function mvRotate(angle, v) {
   multMatrix(m);
 }
 
-start();
+var MAIN_THREAD = typeof window === "object";
+
+if (MAIN_THREAD) {
+  canvas = document.getElementById('renderCanvas');
+  start();
+} else {
+  addEventListener("message", (evt) => {
+    if (evt.data && evt.data.cmd === "start") {
+      canvas = globalThis.canvas = evt.data.canvas;
+      canvas.__SPECTOR_id = evt.data.id;
+      start();
+    }
+  });
+}

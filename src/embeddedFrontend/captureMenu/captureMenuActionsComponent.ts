@@ -18,15 +18,15 @@ export class CaptureMenuActionsComponent extends BaseComponent<boolean> {
 
         const htmlString = this.htmlTemplate`
         <div class="captureMenuActionsComponent">
-            <div commandName="onCaptureRequested">
+            <div commandname="onCaptureRequested">
             </div>
             $${!state ?
-                `<div commandName="onPlayRequested">
+                `<div commandname="onPlayRequested">
                 </div>
-                <div commandName="onPlayNextFrameRequested">
+                <div commandname="onPlayNextFrameRequested">
                 </div>`
                 :
-                `<div commandName="onPauseRequested">
+                `<div commandname="onPauseRequested">
                 </div>`
             }
         </div>`;

@@ -5,6 +5,8 @@ import { ICommandCapture, CommandCaptureStatus } from "../../shared/capture/comm
 import { WebGlConstants } from "../types/webglConstants";
 import { WebGlObjects } from "../webGlObjects/baseWebGlObject";
 
+const MAIN_THREAD = typeof window === "object";
+
 export abstract class BaseCommand {
     protected abstract get spiedCommandName(): string;
 
@@ -152,7 +154,7 @@ export abstract class BaseCommand {
             return value;
         }
 
-        if (value instanceof HTMLImageElement) {
+        if (MAIN_THREAD && value instanceof HTMLImageElement) {
             return value.src;
         }
 

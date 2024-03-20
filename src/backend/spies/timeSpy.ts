@@ -35,7 +35,7 @@ export class TimeSpy {
     private willPlayNextFrame: boolean;
 
     constructor(spiedScope?: { [name: string]: Function }) {
-        this.spiedScope = spiedScope || window;
+        this.spiedScope = spiedScope || globalThis;
         this.lastFrame = 0;
 
         this.speedRatio = 1;
@@ -68,6 +68,9 @@ export class TimeSpy {
 
     public addRequestAnimationFrameFunctionName(functionName: string): void {
         TimeSpy.requestAnimationFrameFunctions.push(functionName);
+        for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
+            this.spyRequestAnimationFrame(Spy, this.spiedScope);
+        }
     }
 
     public getSpiedScope() {

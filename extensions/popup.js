@@ -20,6 +20,7 @@ function sendMessage(message) {
 
 var ui = null;
 var offScreenInput = null;
+var captureWorkerInput = null;
 
 // Display the capture UI.
 window.addEventListener("DOMContentLoaded", function() {
@@ -34,6 +35,7 @@ window.addEventListener("DOMContentLoaded", function() {
     var captureOnLoadTransientInput = document.getElementById("captureOnLoadTransient");
     var quickCaptureInput = document.getElementById("quickCapture");
     var fullCaptureInput = document.getElementById("fullCapture");
+    captureWorkerInput = document.getElementById("captureWorker");
     offScreenInput = document.getElementById("offScreen");
 
     captureNowElement.addEventListener("click", (e) => {
@@ -66,6 +68,10 @@ window.addEventListener("DOMContentLoaded", function() {
 
     offScreenInput.onchange = () => {
         this.changeOffScreenStatus(offScreenInput.checked);
+    };
+
+    captureWorkerInput.onchange = () => {
+        this.changeCaptureWorker(captureWorkerInput.checked);
     };
 
     initUI();
@@ -109,6 +115,14 @@ var changeOffScreenStatus = function(offScreen) {
         captureOffScreen : offScreen,
     });
 }
+
+var changeCaptureWorker = function(captureWorker) {
+    sendMessage({
+        action: "changeCaptureWorker",
+        captureWorker : captureWorker,
+    });
+}
+
 
 var drag = function(e) {
     e.stopPropagation();
@@ -179,6 +193,7 @@ var refreshCanvases = function() {
 var updateCanvasesListInformation = function (canvasesToSend) {
     ui.updateCanvasesListInformation(canvasesToSend.canvases);
     offScreenInput.checked = canvasesToSend.captureOffScreen;
+    captureWorkerInput.checked = canvasesToSend.captureWorker;
 }
 
 var refreshFps = function(fps, frameId, tabId) {

@@ -1,14 +1,26 @@
 var spectorOptions = {};
-if ((window.location + "").indexOf("webxr") !== -1) {
+if ((globalThis.location + "").indexOf("webxr") !== -1) {
 	spectorOptions.enableXRCapture = true;
 }
+var MAIN_THREAD = typeof window === "object";
+var spector;
 
-var spector = new SPECTOR.Spector(spectorOptions);
-window.spector = spector;
-spector.displayUI();
+if (MAIN_THREAD) {
+    const urlParams = new URLSearchParams(location.search);
+    const runInWorker = urlParams.get("worker") === "1";
+    if (runInWorker) {
+        spector = new SPECTOR.RemoteSpector(spectorOptions, window.__SPECTOR_worker);
+    } else {
+        spector = new SPECTOR.Spector(spectorOptions);
+    }
+    spector.displayUI();
+} else {
+    spector = new SPECTOR.BaseSpector(spectorOptions);
+}
+globalThis.spector = spector;
 
 var noSpy = false;
-if ((window.location + "").indexOf("noSpy") !== -1) {
+if ((globalThis.location + "").indexOf("noSpy") !== -1) {
     noSpy = true;
 }
 else {

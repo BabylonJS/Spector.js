@@ -34,7 +34,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@shaderfrog/glsl-parser": "^2.0.1"
+    "@shaderfrog/glsl-parser": "^2.0.1",
+    "comlink": "^4.4.1"
   },
   "devDependencies": {
     "@types/webxr": "^0.5.1",

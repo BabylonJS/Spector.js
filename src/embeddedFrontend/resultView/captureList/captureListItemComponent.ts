@@ -24,9 +24,18 @@ export class CaptureListItemComponent extends BaseComponent<ICaptureListItemStat
 
         if (state.capture.endState.VisualState.Attachments) {
             for (const imageState of state.capture.endState.VisualState.Attachments) {
-                const img = document.createElement("img");
-                img.src = encodeURI(imageState.src);
-                liHolder.appendChild(img);
+                if (imageState.src) {
+                    const img = document.createElement("img");
+                    img.src = encodeURI(imageState.src);
+                    liHolder.appendChild(img);
+                } else {
+                    const img = document.createElement("img");
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("bitmaprenderer");
+                    ctx.transferFromImageBitmap(imageState.srcBuffer);
+                    imageState.src = img.src = canvas.toDataURL();
+                    liHolder.appendChild(img);
+                }
             }
         }
         else {

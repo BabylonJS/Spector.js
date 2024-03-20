@@ -10,18 +10,21 @@ var buildConfig = function(env) {
     var config = {
         watch: !isProd,
         context: MAIN_DIR,
-        entry: [
-            "./vendors/ace.js",
-            "./vendors/ace-mode-glsl.js",
-            "./vendors/ace-theme-monokai.js",
-            "./vendors/ace-theme-override.css",
-            "./vendors/ace-ext-searchbox.js",
-            "./src/spector.ts"
-        ],
+        entry: {
+            "spector":[
+                "./vendors/ace.js",
+                "./vendors/ace-mode-glsl.js",
+                "./vendors/ace-theme-monokai.js",
+                "./vendors/ace-theme-override.css",
+                "./vendors/ace-ext-searchbox.js",
+                "./src/spector.ts",
+            ],
+            "spector-headless": ["./src/baseSpector.ts"],
+        },
         output: {
             path: isProd ? BUILD_DIR : DEV_DIR,
             publicPath: "/",
-            filename: "spector.bundle.js",
+            filename: "[name].bundle.js",
             libraryTarget: "umd",
             library: "SPECTOR",
             umdNamedDefine: true

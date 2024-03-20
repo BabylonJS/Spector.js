@@ -50,7 +50,6 @@ var fragmentShaderSource = "precision highp float;" +
 // Called when the canvas is created to get the ball rolling.
 //
 function start() {
-  canvas = document.getElementById("renderCanvas");
 
   initWebGL(canvas);      // Initialize the GL context
 
@@ -87,16 +86,16 @@ function initWebGL() {
   gl = null;
 
   try {
-    gl = canvas.getContext("experimental-webgl");
+    gl = canvas.getContext("webgl");
   }
   catch(e) {
-    alert(e);
+    console.error(e);
   }
 
   // If we don't have a GL context, give up now
 
   if (!gl) {
-    alert("Unable to initialize WebGL. Your browser may not support it.");
+    console.error("Unable to initialize WebGL. Your browser may not support it.");
   }
 }
 
@@ -225,7 +224,7 @@ function initBuffers() {
 //
 function drawScene() {
   // Clear the canvas before we start drawing on it.
-  window.spector.setMarker("CLEAR");
+  spector.setMarker("CLEAR");
   gl.clearColor(0, 0, 0, 1);
   gl.clearDepth(1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -255,7 +254,7 @@ function drawScene() {
 
   // Draw the cube by binding the array buffer to the cube's vertices
   // array, setting attributes, and pushing it to GL.
-  window.spector.setMarker("ATTRIBS");
+  spector.setMarker("ATTRIBS");
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesBuffer);
   gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
@@ -264,14 +263,14 @@ function drawScene() {
   gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
 
   // Draw the cube.
-  window.spector.setMarker("INDICES");
+  spector.setMarker("INDICES");
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
 
-  window.spector.setMarker("UNIFORMS");
+  spector.setMarker("UNIFORMS");
   setMatrixUniforms();
   setUniforms();
 
-  window.spector.setMarker("DRAW");
+  spector.setMarker("DRAW");
   gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
 
   // Restore the original matrix
@@ -298,7 +297,7 @@ function drawScene() {
 
   lastCubeUpdateTime = currentTime;
 
-  window.requestAnimationFrame(function() {
+  requestAnimationFrame(function() {
         drawScene();
   });
 }
@@ -410,4 +409,17 @@ function mvRotate(angle, v) {
   multMatrix(m);
 }
 
-start();
+var MAIN_THREAD = typeof window === "object";
+
+if (MAIN_THREAD) {
+  canvas = document.getElementById('renderCanvas');
+  start();
+} else {
+  addEventListener("message", (evt) => {
+    if (evt.data && evt.data.cmd === "start") {
+      canvas = globalThis.canvas = evt.data.canvas;
+      canvas.__SPECTOR_id = evt.data.id;
+      start();
+    }
+  });
+}

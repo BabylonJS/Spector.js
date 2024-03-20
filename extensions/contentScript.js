@@ -32,6 +32,7 @@ function insertTextScript(text) {
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.text = text;
+    script.nonce = ""
     insertHeaderNode(script);
     return script;
 };
@@ -78,6 +79,7 @@ var spectorCaptureOnLoadTransientKey = "SPECTOR_CAPTUREONLOAD_TRANSIENT";
 var spectorCaptureOnLoadQuickCaptureKey = "SPECTOR_CAPTUREONLOAD_QUICKCAPTURE";
 var spectorCaptureOnLoadFullCaptureKey = "SPECTOR_CAPTUREONLOAD_FULLCAPTURE";
 var captureOffScreenKey = "SPECTOR_CAPTUREOFFSCREEN";
+var captureWorkerKey = "SPECTOR_CAPTUREWORKER";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
 var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATION_QUICKCAPTURE";
 var spectorCommunicationFullCaptureElementId = "SPECTOR_COMMUNICATION_FULLCAPTURE";
@@ -87,6 +89,7 @@ var spectorCommunicationRebuildProgramElementId = "SPECTOR_COMMUNICATION_REBUILD
 var spectorContextTypeKey = "__spector_context_type";
 
 var captureOnLoad = false;
+var captureWorker = false;
 var captureOnLoadTransient = false;
 var captureOnLoadQuickCapture = false;
 var captureOnLoadFullCapture = false;
@@ -104,6 +107,7 @@ if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
 }
 
 captureOffScreen = (sessionStorage.getItem(captureOffScreenKey) === "true");
+captureWorker = (sessionStorage.getItem(captureWorkerKey) === "true");
 
 var canvasGetContextDetection = `
     var spector;
@@ -114,6 +118,8 @@ var canvasGetContextDetection = `
     (function() {
         var __SPECTOR_Origin_EXTENSION_GetContext = HTMLCanvasElement.prototype.getContext;
         HTMLCanvasElement.prototype.__SPECTOR_Origin_EXTENSION_GetContext = __SPECTOR_Origin_EXTENSION_GetContext;
+        var __SPECTOR_Origin_EXTENSION_TransferControlToOffscreen = HTMLCanvasElement.prototype.transferControlToOffscreen;
+        HTMLCanvasElement.prototype.__SPECTOR_Origin_EXTENSION_TransferControlToOffscreen = __SPECTOR_Origin_EXTENSION_TransferControlToOffscreen;
 
         if (typeof OffscreenCanvas !== 'undefined') {
             var __SPECTOR_Origin_EXTENSION_OffscreenGetContext = OffscreenCanvas.prototype.getContext;
@@ -210,24 +216,38 @@ var canvasGetContextDetection = `
 
             return context;
         }
+        
+        HTMLCanvasElement.prototype.transferControlToOffscreen = function() {
+            var offscreenCanvas = this.__SPECTOR_Origin_EXTENSION_TransferControlToOffscreen();
+            var myEvent = new CustomEvent("SpectorWebGLCanvasAvailableEvent");
+            document.dispatchEvent(myEvent);
+            return offscreenCanvas;
+        }
     })()`;
 insertTextScript(canvasGetContextDetection);
 
 var frameId = null;
-
 // In case the spector injection has been requested, inject the library in the page.
 if (sessionStorage.getItem(spectorLoadedKey)) {
-    
     if (debug) {
         insertScript("http://localhost:1337/tools/loader.js");
+    } else {
+        insertTextScript('(' + spectorBundleHook.toString() + ' )();');
     }
-    else {
-        insertTextScript( '(' + spectorBundleHook.toString() + ' )();');
-    }
-
-    // Defer exec to next slot to ensure proper loading of the lib.
-    setTimeout(function () {
-        var captureLib = `spector = new SPECTOR.Spector();
+    function loadCaptureLib() {
+        // Defer exec to next slot to ensure proper loading of the lib.
+        setTimeout(function () {
+            var captureLib = `(function() {
+            if (window.__SPECTOR_spector_${captureWorker ? "worker" : "main"}) {
+                spector = window.__SPECTOR_spector_${captureWorker ? "worker" : "main"};
+                return;
+            }
+            if (${captureWorker} && !window.__SPECTOR_worker) {
+                console.error("Worker not found, please create worker and set to window.__SPECTOR_worker");
+                console.assert(false);
+                return;
+            }
+            spector = ${captureWorker} ? new SPECTOR.RemoteSpector({}, window.__SPECTOR_worker) : new SPECTOR.Spector();
             spector.spyCanvases();
             document.addEventListener("SpectorRequestPauseEvent", function() {
                 spector.pause();
@@ -242,14 +262,14 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                 var canvasIndex = document.getElementById('${spectorCommunicationElementId}').value;
 
                 var canvas = null;
-                if (${captureOffScreen}) {
+                if (${!captureWorker && captureOffScreen}) {
                     canvas = window.__SPECTOR_Canvases[canvasIndex];
                 } else {
                     canvas = document.body.querySelectorAll("canvas")[canvasIndex]; 
                 }
                 var quickCapture = (document.getElementById('${spectorCommunicationQuickCaptureElementId}').value === "true");
                 var fullCapture = (document.getElementById('${spectorCommunicationFullCaptureElementId}').value === "true");
-                var commandCount = 0 + document.getElementById('${spectorCommunicationCommandCountElementId}').value;
+                var commandCount = 0 + parseInt(document.getElementById('${spectorCommunicationCommandCountElementId}').value);
 
                 spector.captureCanvas(canvas, commandCount, quickCapture, fullCapture);
             });
@@ -296,27 +316,40 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                 var myEvent = new CustomEvent("SpectorOnErrorEvent", { detail: { errorString: error } });
                 document.dispatchEvent(myEvent);
             });
-            spector.onCapture.add((capture) => {
-                var myEvent = new CustomEvent("SpectorOnCaptureEvent", { detail: { capture: capture } });
-                document.dispatchEvent(myEvent);
-            });
-            setInterval(() => {
-                var myEvent = new CustomEvent("SpectorFPSEvent", { detail: { fps: (spector ? spector.getFps() : 0) } });
+            if (${captureWorker}) {
+                spector.addOnCapture((capture) => {
+                    var myEvent = new CustomEvent("SpectorOnCaptureEvent", { detail: { capture: capture } });
+                    document.dispatchEvent(myEvent);
+                });
+            } else {
+                spector.onCapture.add((capture) => {
+                    var myEvent = new CustomEvent("SpectorOnCaptureEvent", { detail: { capture: capture } });
+                    document.dispatchEvent(myEvent);
+                });
+            }
+            setInterval(async () => {
+                var myEvent = new CustomEvent("SpectorFPSEvent", { detail: { fps: (spector ? await spector.getFps() : 0) } });
                 document.dispatchEvent(myEvent);
             }, 1500);
-            window.spector = spector;`;
+            window.spector = spector;
+            console.log("Spector init. Spied on ${captureWorker ? "worker" : "main" }");
+            window.__SPECTOR_spector_${captureWorker ? "worker" : "main"} = spector;
+            })()`;
 
-        if (debug) {
-            insertTextScript(`SPECTORTOOLS.Loader
+            if (debug) {
+                insertTextScript(`SPECTORTOOLS.Loader
 			.onReady(function() {
 				${captureLib}
 			})
 			.load();`);
-        }
-        else {
-            insertTextScript(captureLib);
-        }
-    }, 0);
+            } else {
+                insertTextScript(captureLib);
+            }
+        }, 0);
+    }
+    if (!captureWorker) {
+        loadCaptureLib();
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
         var script = `var input = document.createElement('input');
@@ -455,7 +488,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         }
 
         // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
-        sendMessage({ canvases: uiInformation, captureOffScreen: true }, function (response) {
+        sendMessage({ canvases: uiInformation, captureOffScreen: true, captureWorker: false }, function (response) {
             frameId = response.frameId;
         });
     });
@@ -470,7 +503,10 @@ else {
 }
 
 var refreshCanvases = function() {
-    if (captureOffScreen) {
+    if (captureWorker) {
+        loadCaptureLib();
+    }
+    if (!captureWorker && captureOffScreen) {
         // List is retrieved from all the ever created canvases.
         var myEvent = new CustomEvent("SpectorRequestCanvasListEvent");
         document.dispatchEvent(myEvent);
@@ -484,11 +520,23 @@ var refreshCanvases = function() {
                 for (var i = 0; i < canvasElements.length; i++) {
                     var canvas = canvasElements[i];
                     var context = null;
-                    try {
-                        context = canvas.getContext(canvas.getAttribute(spectorContextTypeKey));
-                    }
-                    catch (e) {
-                        // Do Nothing.
+
+                    if (captureWorker) {
+                        if (!canvas.getAttribute(spectorContextTypeKey)) {
+                            // Empty attr means we didn't call getContext, or it is transfered
+                            canvasesInformation.push({
+                                id: canvas.id,
+                                width: canvas.width,
+                                height: canvas.height,
+                                ref: i
+                            });
+                        }
+                    } else {
+                        try {
+                            context = canvas.getContext(canvas.getAttribute(spectorContextTypeKey));
+                        } catch (e) {
+                            // Do Nothing.
+                        }
                     }
                     
                     if (context) {
@@ -500,7 +548,7 @@ var refreshCanvases = function() {
                         });
                     }
                 }
-                sendMessage({ canvases: canvasesInformation, captureOffScreen: false }, function (response) {
+                sendMessage({ canvases: canvasesInformation, captureOffScreen: false, captureWorker: captureWorker }, function (response) {
                     frameId = response.frameId;
                 });
             }
@@ -550,6 +598,14 @@ listenForMessage(function (message) {
         return;
     }
 
+    // Set worker canvas mode.
+    if (action === "changeCaptureWorker") {
+        sessionStorage.setItem(captureWorkerKey, message.captureWorker ? "true" : "false");
+        // Delay for all frames.
+        setTimeout(function () { window.location.reload(); }, 50);
+        return;
+    }
+
     // We need to reload to inject the capture loading sequence.
     if (action === "captureOnLoad") {
         var transient = message.transient;
@@ -584,7 +640,7 @@ listenForMessage(function (message) {
 
     // Following actions are only valid for the selected frame.
     var canvasRef = message.canvasRef;
-    if (canvasRef.frameId !== frameId) {
+    if (!canvasRef || canvasRef.frameId !== frameId) {
         return;
     }
 

@@ -1,3 +1,5 @@
+const MAIN_THREAD = typeof window === "object";
+
 export class Time {
 
     private static instance = new Time();
@@ -5,7 +7,7 @@ export class Time {
     private readonly nowFunction: () => number;
 
     constructor() {
-        if (window.performance && window.performance.now) {
+        if (globalThis.performance && globalThis.performance.now) {
             this.nowFunction = this.dateBasedPerformanceNow.bind(this);
         }
         else {
@@ -15,7 +17,7 @@ export class Time {
     }
 
     private dateBasedPerformanceNow(): number {
-        return performance.timing.navigationStart + performance.now();
+        return MAIN_THREAD ? performance.timing.navigationStart + performance.now() : Date.now();
     }
 
     public static get now(): number {

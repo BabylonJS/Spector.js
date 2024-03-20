@@ -35,6 +35,7 @@ var refreshCanvases = function() {
                     for (var frameId in tabInfo[tabId]) {
                         var infos = tabInfo[tabId][frameId];
                         canvasesToSend.captureOffScreen = infos.captureOffScreen;
+                        canvasesToSend.captureWorker = infos.captureWorker;
                         for (var i = 0; i < infos.canvases.length; i++) {
                             var info = infos.canvases[i];
                             canvasesToSend.canvases.push({
@@ -107,7 +108,7 @@ listenForMessage(function(request, sender, sendResponse) {
             tabInfo[tabId] = { };
         }
 
-        tabInfo[tabId][frameId] = { canvases: request.canvases, captureOffScreen: request.captureOffScreen };
+        tabInfo[tabId][frameId] = { canvases: request.canvases, captureOffScreen: request.captureOffScreen, captureWorker: request.captureWorker };
     }
     else if (request.errorString) {
         // Close the wait message and may display an error.
