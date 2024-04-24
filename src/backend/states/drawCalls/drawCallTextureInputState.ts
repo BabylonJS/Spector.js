@@ -142,6 +142,9 @@ export class DrawCallTextureInputState {
     }
 
     protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number, pixelated: boolean): string {
+        width = Math.floor(width);
+        height = Math.floor(height);
+
         try {
             // Check FBO status.
             const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);

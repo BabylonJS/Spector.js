@@ -241,6 +241,9 @@ export class VisualState extends BaseState {
 
     protected getCapture(gl: WebGLRenderingContext, name: string, x: number, y: number, width: number, height: number,
         textureCubeMapFace: number, textureLayer: number, type: number) {
+        width = Math.floor(width);
+        height = Math.floor(height);
+
         const attachmentVisualState = {
             attachmentName: name,
             src: null as string,
@@ -256,7 +259,7 @@ export class VisualState extends BaseState {
                     // Copy the pixels to a working 2D canvas same size.
                     this.workingCanvas.width = width;
                     this.workingCanvas.height = height;
-                    const imageData = this.workingContext2D.createImageData(Math.ceil(width), Math.ceil(height));
+                    const imageData = this.workingContext2D.createImageData(width, height);
                     imageData.data.set(pixels);
                     this.workingContext2D.putImageData(imageData, 0, 0);
 
