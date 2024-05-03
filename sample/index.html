@@ -41,26 +41,39 @@
     <canvas id="renderCanvas"></canvas>
 
     <script>
+        const urlParams = new URLSearchParams(location.search);
+        const runInWorker = urlParams.get("worker") === "1";
+        if (runInWorker) {
+            var worker = window.__SPECTOR_worker = new Worker("js/worker.js" + location.search);
+            const htmlCanvas = document.getElementById("renderCanvas");
+            htmlCanvas.width = document.body.clientWidth;
+            htmlCanvas.height = document.body.clientHeight;
+            const offscreen = htmlCanvas.transferControlToOffscreen();
+            worker.postMessage({cmd: "start", id: "renderCanvas", canvas: offscreen}, [offscreen]);
+        }
+
         // Allow querystring to navigate easily in debug in local samples.
         var indexjs = 'js/';
         var sampleSearch = /sample=([0-9-zA-z]+)/i;
         var matches = null;
         if ((matches = sampleSearch.exec(window.location)) !== null) {
             indexjs += matches[1];
-        }
-        else {
+        } else {
             indexjs += 'lights';
         }
         indexjs += '.js';
 
         spector = null;
-
+        var jsList = ['assets/js/injectSpector.js'];
+        if (!runInWorker) {
+            jsList.push(indexjs);
+        }
         // Load the scripts + map file to allow vscode debug.
         SPECTORTOOLS.Loader
             .onReady(function () {
                 console.log('All loaded.');
             })
-            .load(['assets/js/injectSpector.js', indexjs]);
+            .load(jsList);
     </script>
 </body>
 

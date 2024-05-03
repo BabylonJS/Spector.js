@@ -1,6 +1,5 @@
-let renderCanvas = document.getElementById('renderCanvas');
 
-let createScene = async function () {
+let createScene = async function (engine) {
     let scene = new BABYLON.Scene(engine);
     let camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
     camera.setTarget(BABYLON.Vector3.Zero());
@@ -33,11 +32,21 @@ let createScene = async function () {
     return scene;
 };
 
-let engine = new BABYLON.Engine(renderCanvas);
-createScene(engine, renderCanvas).then((scene) => {
-
-    engine.runRenderLoop(function () {
-        scene.render();
+function renderMain(renderCanvas) {
+    let engine = new BABYLON.Engine(renderCanvas);
+    createScene(engine, renderCanvas).then((scene) => {
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
     });
+}
 
-});
+var MAIN_THREAD = typeof window === "object";
+
+if (MAIN_THREAD) {
+    var renderCanvas = document.getElementById('renderCanvas');
+    renderMain(renderCanvas);
+} else {
+    console.error("This sample is not available in worker");
+}
+

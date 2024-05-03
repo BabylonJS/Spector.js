@@ -29,14 +29,21 @@ export class VisualStateListItemComponent extends BaseComponent<IVisualStateItem
 
         if (state.VisualState.Attachments) {
             for (const imageState of state.VisualState.Attachments) {
-                if (!imageState.src) {
+                if (!imageState.src && !imageState.srcBuffer) {
                     continue;
                 }
-
-                const img = document.createElement("img");
-                img.src = encodeURI(imageState.src);
-                liHolder.appendChild(img);
-
+                if (imageState.src) {
+                    const img = document.createElement("img");
+                    img.src = encodeURI(imageState.src);
+                    liHolder.appendChild(img);
+                } else {
+                    const img = document.createElement("img");
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("bitmaprenderer");
+                    ctx.transferFromImageBitmap(imageState.srcBuffer);
+                    imageState.src = img.src = canvas.toDataURL();
+                    liHolder.appendChild(img);
+                }
                 if (state.VisualState.Attachments.length > 1) {
                     const attachment = document.createElement("span");
                     attachment.innerText = imageState.attachmentName;

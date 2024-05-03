@@ -1,3 +1,4 @@
+
 var createScene = function (engine, canvas) {
     var scene = new BABYLON.Scene(engine);
 
@@ -40,28 +41,28 @@ var createScene = function (engine, canvas) {
 
     //Creation of a material with an image texture
     var materialSphere3 = new BABYLON.StandardMaterial("texture3", scene);
-    materialSphere3.diffuseTexture = new BABYLON.Texture("assets/textures/misc.jpg", scene);
+    materialSphere3.diffuseTexture = new BABYLON.Texture("/sample/assets/textures/misc.jpg", scene);
 
     //Creation of a material with translated texture
     var materialSphere4 = new BABYLON.StandardMaterial("texture4", scene);
-    materialSphere4.diffuseTexture = new BABYLON.Texture("assets/textures/misc.jpg", scene);
+    materialSphere4.diffuseTexture = new BABYLON.Texture("/sample/assets/textures/misc.jpg", scene);
     materialSphere4.diffuseTexture.vOffset = 0.1;//Vertical offset of 10%
     materialSphere4.diffuseTexture.uOffset = 0.4;//Horizontal offset of 40%
 
     //Creation of a material with an alpha texture
     var materialSphere5 = new BABYLON.StandardMaterial("texture5", scene);
-    materialSphere5.diffuseTexture = new BABYLON.Texture("assets/textures/tree.png", scene);
+    materialSphere5.diffuseTexture = new BABYLON.Texture("/sample/assets/textures/tree.png", scene);
     materialSphere5.diffuseTexture.hasAlpha = true;//Has an alpha
 
     //Creation of a material and show all the faces
     var materialSphere6 = new BABYLON.StandardMaterial("texture6", scene);
-    materialSphere6.diffuseTexture = new BABYLON.Texture("assets/textures/tree.png", scene);
+    materialSphere6.diffuseTexture = new BABYLON.Texture("/sample/assets/textures/tree.png", scene);
     materialSphere6.diffuseTexture.hasAlpha = true;//Have an alpha
     materialSphere6.backFaceCulling = false;//Show all the faces of the element
 
     //Creation of a repeated textured material
     var materialPlane = new BABYLON.StandardMaterial("texturePlane", scene);
-    materialPlane.diffuseTexture = new BABYLON.Texture("assets/textures/grass.jpg", scene);
+    materialPlane.diffuseTexture = new BABYLON.Texture("/sample/assets/textures/grass.jpg", scene);
     materialPlane.diffuseTexture.uScale = 5.0;//Repeat 5 times on the Vertical Axes
     materialPlane.diffuseTexture.vScale = 5.0;//Repeat 5 times on the Horizontal Axes
     materialPlane.backFaceCulling = false;//Always show the front and the back of an element
@@ -81,10 +82,26 @@ var createScene = function (engine, canvas) {
     return scene;
 };
 
-var renderCanvas = document.getElementById('renderCanvas');
-var engine = new BABYLON.Engine(renderCanvas);
-var scene = createScene(engine, renderCanvas);
+function renderMain(renderCanvas) {
+    var engine = new BABYLON.Engine(renderCanvas);
+    var scene = createScene(engine, renderCanvas);
 
-engine.runRenderLoop(function() {
-    scene.render();
-});
+    engine.runRenderLoop(function() {
+        scene.render();
+    });
+}
+
+var MAIN_THREAD = typeof window === "object";
+
+if (MAIN_THREAD) {
+    var renderCanvas = document.getElementById('renderCanvas');
+    renderMain(renderCanvas);
+} else {
+    addEventListener("message", (evt) => {
+        if (evt.data && evt.data.cmd === "start") {
+            const canvas = globalThis.canvas = evt.data.canvas;
+            canvas.__SPECTOR_id = evt.data.id;
+            renderMain(canvas);
+        }
+    });
+}

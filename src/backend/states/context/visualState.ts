@@ -8,6 +8,8 @@ import { IRenderBufferRecorderData } from "../../recorders/renderBufferRecorder"
 import { ITextureRecorderData } from "../../recorders/texture2DRecorder";
 import { Logger } from "../../../shared/utils/logger";
 
+const MAIN_THREAD = typeof window === "object";
+
 export class VisualState extends BaseState {
     public static readonly stateName = "VisualState";
 
@@ -18,17 +20,19 @@ export class VisualState extends BaseState {
     public static captureBaseSize = 256;
 
     private readonly captureFrameBuffer: WebGLFramebuffer;
-    private readonly workingCanvas: HTMLCanvasElement;
-    private readonly captureCanvas: HTMLCanvasElement;
+    private readonly workingCanvas: OffscreenCanvas | HTMLCanvasElement;
+    private readonly captureCanvas: OffscreenCanvas | HTMLCanvasElement;
     private readonly workingContext2D: CanvasRenderingContext2D;
     private readonly captureContext2D: CanvasRenderingContext2D;
 
     constructor(options: IContextInformation) {
         super(options);
         this.captureFrameBuffer = options.context.createFramebuffer();
-        this.workingCanvas = document.createElement("canvas");
+        // @ts-ignore
+        this.workingCanvas = MAIN_THREAD ? document.createElement("canvas") : new OffscreenCanvas(300, 150);
         this.workingContext2D = this.workingCanvas.getContext("2d");
-        this.captureCanvas = document.createElement("canvas");
+        // @ts-ignore
+        this.captureCanvas = MAIN_THREAD ? document.createElement("canvas") : new OffscreenCanvas(300, 150);
         this.captureContext2D = this.captureCanvas.getContext("2d");
         this.captureContext2D.imageSmoothingEnabled = true;
         (this.captureContext2D as any).mozImageSmoothingEnabled = true;
@@ -247,6 +251,7 @@ export class VisualState extends BaseState {
         const attachmentVisualState = {
             attachmentName: name,
             src: null as string,
+            srcBuffer: null as ImageBitmap,
             textureCubeMapFace: textureCubeMapFace ? WebGlConstantsByValue[textureCubeMapFace].name : null,
             textureLayer,
         };
@@ -299,7 +304,12 @@ export class VisualState extends BaseState {
                     this.captureContext2D.globalCompositeOperation = "source-over";
 
                     // get the screen capture
-                    attachmentVisualState.src = this.captureCanvas.toDataURL();
+                    if (MAIN_THREAD) {
+                        attachmentVisualState.src = this.captureCanvas.toDataURL();
+                    } else {
+                        // @ts-ignore
+                        attachmentVisualState.srcBuffer = this.captureCanvas.transferToImageBitmap();
+                    }
                 }
             }
             catch (e) {
