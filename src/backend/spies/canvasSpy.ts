@@ -26,8 +26,15 @@ export class CanvasSpy {
                 OriginFunctionHelper.executeOriginFunction(this, "getContext", arguments) :
                 OriginFunctionHelper.executePrototypeOriginFunction(this, OriginalCanvasConstructor, "getContext", arguments);
 
-            if (arguments.length > 0 && arguments[0] === "2d") {
-                return context;
+            if (arguments.length > 0) {
+                const contextType = arguments[0];
+                if (contextType !== "webgl" &&
+                    contextType !== "experimental-webgl" &&
+                    contextType !== "webgl2" &&
+                    contextType !== "experimental-webgl2"
+                ) {
+                    return context;
+                }
             }
 
             if (context) {

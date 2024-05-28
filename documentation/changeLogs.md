@@ -4,6 +4,9 @@
 ## Change Log
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.31
+* Fix [Request Non GL contexts](https://github.com/BabylonJS/Spector.js/issues/307)
+
 ## v0.9.30
 * Fix [Scissor function call](https://github.com/BabylonJS/Spector.js/issues/266)
 * Fix [bufferSubData and getAttribLocation number report](https://github.com/BabylonJS/Spector.js/issues/262)

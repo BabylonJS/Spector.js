@@ -29,6 +29,7 @@ Once ```npm start``` has been launched, you can access the following samples to 
 1. [Exception](http://localhost:1337/sample/index.html?sample=lightsException): Test of exception during capture.
 2. [No Render](http://localhost:1337/sample/index.html?sample=lightsNoRender): Test to capture if no frame are detected.
 3. [No command](http://localhost:1337/sample/index.html?sample=simpleNoCommand): Simple use case containing a frame with no webgl commands.
+4. [Bitmap Renderer](http://localhost:1337/sample/index.html?sample=bitmapRenderer): Do not crash when bitmap renderer is requested.
 
 ### Valid Use Cases
 1. [Simple](http://localhost:1337/sample/index.html?sample=simple): A basic use case validating state changes.
