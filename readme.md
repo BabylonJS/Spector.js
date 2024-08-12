@@ -35,7 +35,7 @@ This can be used either as a *browser extension* or directly from your page with
 
 ## Why
 ###### [Back to top](#table-of-content)
-As a core member of the BabylonJS team I often found the need to debug what was happening to my webgl context. I was a huge fan of webgl inspector until we introduced WebGl2 in Babylon. As the WebGL community as a whole is our focus, I thought it would be great to share an extension compatible with all the Webgl/Webgl2 engines available.
+As a core member of the BabylonJS team I often found the need to debug what was happening to my webgl context. I was a huge fan of webgl inspector until we introduced WebGL2 in Babylon. As the WebGL community as a whole is our focus, I thought it would be great to share an extension compatible with all the Webgl/Webgl2 engines available.
 
 You can use the library inside of your own application easily as it is transpiled as a UMD module. It will either work as a script reference or with your favorite bundling tools like webpack.
 
