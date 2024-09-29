@@ -17,7 +17,7 @@ export abstract class BaseCommand {
         // Includes uniform functions special cases to prevent lots of inheritence.
         const text = (functionInformation.name.indexOf("uniform") === 0) ?
             this.stringifyUniform(functionInformation.arguments) :
-            this.stringify(functionInformation.arguments, functionInformation.result);
+            this.stringify(functionInformation.arguments, functionInformation.result, functionInformation.errors);
 
         const commandCapture = {
             id: commandCaptureId,
@@ -81,13 +81,16 @@ export abstract class BaseCommand {
         // Nothing by default.
     }
 
-    protected stringify(args: IArguments, result: any): string {
+    protected stringify(args: IArguments, result: any, errors: any[]): string {
         let stringified = this.spiedCommandName;
         if (args && args.length > 0) {
             stringified += ": " + this.stringifyArgs(args).join(", ");
         }
         if (result !== undefined && result !== null) {
             stringified += " -> " + this.stringifyResult(result);
+        }
+        if (errors.length > 0) {
+            stringified += " ~> " + errors.map(error => this.stringifyValue(error)).join(", ");
         }
         return stringified;
     }
