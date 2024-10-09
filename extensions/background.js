@@ -1,59 +1,60 @@
 //_______________________________EXTENSION POLYFILL_____________________________________
-window.browser = (function () {
-    return window.msBrowser ||
-        window.browser ||
-        window.chrome ||
-        browser;
+browser = (function () {
+    return chrome ||
+        browser ||
+        chrome;
 })();
 
 function sendMessage(message) {
-    window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
-        window.browser.tabs.sendMessage(tabs[0].id, message, function(response) { }); 
+    browser.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        browser.tabs.sendMessage(tabs[0].id, message, function(response) { });
     });
 };
 
+function sendRuntimeMessage(message) {
+    browser.runtime.sendMessage(message, function(response) { });
+};
+
 function listenForMessage(callback) {
-    window.browser.runtime.onMessage.addListener(callback);
+    browser.runtime.onMessage.addListener(callback);
 };
 //_____________________________________________________________________________________
 
 var tabInfo = {}
 var resultTab = null;
 var currentCapture = null;
-var currentCaptureChunks = [];
-var currentCommandChunks = [];
 var currentFrameId = null;
 var currentTabId = null;
 
 var refreshCanvases = function() {
-    var popup = window.browser.extension.getViews({ type: "popup" })[0];
-    if (popup != null) {
-        var canvasesToSend = { canvases: [], captureOffScreen: false };
-        window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
-            for (var tabId in tabInfo) {
-                if (tabId == tabs[0].id) {
-                    for (var frameId in tabInfo[tabId]) {
-                        var infos = tabInfo[tabId][frameId];
-                        canvasesToSend.captureOffScreen = infos.captureOffScreen;
-                        for (var i = 0; i < infos.canvases.length; i++) {
-                            var info = infos.canvases[i];
-                            canvasesToSend.canvases.push({
-                                id: info.id,
-                                width: info.width,
-                                height: info.height,
-                                ref: { tabId: tabId, frameId: frameId, index: info.ref }
-                            });
-                        }
+    var canvasesToSend = { canvases: [], captureOffScreen: false };
+    browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
+        for (var tabId in tabInfo) {
+            if (tabId == tabs[0].id) {
+                for (var frameId in tabInfo[tabId]) {
+                    var infos = tabInfo[tabId][frameId];
+                    canvasesToSend.captureOffScreen = infos.captureOffScreen;
+                    for (var i = 0; i < infos.canvases.length; i++) {
+                        var info = infos.canvases[i];
+                        canvasesToSend.canvases.push({
+                            id: info.id,
+                            width: info.width,
+                            height: info.height,
+                            ref: { tabId: tabId, frameId: frameId, index: info.ref }
+                        });
                     }
                 }
             }
+        }
 
-            popup.updateCanvasesListInformation(canvasesToSend);
+        sendRuntimeMessage({
+            popup: "updateCanvasesListInformation",
+            data: canvasesToSend
         });
-    }
+    });
 }
 
-window.browser.pageAction.onClicked.addListener(function (tab) {
+browser.action.onClicked.addListener(function (tab) {
     sendMessage({ action: "pageAction" });
 });
 
@@ -73,19 +74,19 @@ listenForMessage(function(request, sender, sendResponse) {
     if (request.action) {
     }
     else if (request.present === 1) {
-        window.browser.pageAction.show(sender.tab.id);
+        browser.action.enable(sender.tab.id);
     }
     // In case we are enabled, change the icon to green andd enable the popup.
     else if (request.present === 2) {
-        window.browser.pageAction.setIcon({tabId: sender.tab.id, path: {
+        browser.action.setIcon({tabId: sender.tab.id, path: {
             "19": "spectorjs-green-19.png",
             "38": "spectorjs-green-38.png"
         }});
-        window.browser.pageAction.setPopup({tabId: sender.tab.id, popup: "popup.html"});
-        window.browser.pageAction.show(sender.tab.id);
+        browser.action.setPopup({tabId: sender.tab.id, popup: "popup.html"});
+        browser.action.enable(sender.tab.id);
     }
     else if (request.refreshCanvases) {
-        window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
+        browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
             tabInfo = {}
             sendMessage({ action: "requestCanvases" });
 
@@ -94,11 +95,14 @@ listenForMessage(function(request, sender, sendResponse) {
         });
     }
     else if (request.fps) {
-        // Display the fps of the selected frame.
-        var popup = window.browser.extension.getViews({ type: "popup" })[0];
-        if (popup != null && popup.refreshFps) {
-            popup.refreshFps(request.fps, frameId, sender.tab.id);
-        }
+        sendRuntimeMessage({
+            popup: "refreshFps",
+            data: {
+                fps: request.fps,
+                frameId: frameId,
+                senderTabId: sender.tab.id
+            }
+        });
     }
     else if (request.canvases) {
         // Store the list of found canvases for the caller frame.
@@ -111,72 +115,38 @@ listenForMessage(function(request, sender, sendResponse) {
     }
     else if (request.errorString) {
         // Close the wait message and may display an error.
-        var popup = window.browser.extension.getViews({ type: "popup" })[0];
-        if (popup != null && popup.captureComplete) {
-            popup.captureComplete(request.errorString);
-        }
-    }
-    else if (request.capture) {
-        var capture = request.capture;
-        // Open the result view if not open (need to check if length == 1 that the function exists for Edge),
-        window.browser.tabs.create({ url: "result.html", active: true }, function(tab) {
-            resultTab = tab;
-            currentCapture = capture;
-            currentFrameId = frameId;
-            currentTabId = sender.tab.id;
+        sendRuntimeMessage({
+            popup: "captureComplete",
+            data: request.errorString
         });
-    }
-    else if (request.captureChunk) {
-        currentCaptureChunks.push(request.captureChunk);
-    }
-    else if (request.commandChunk) {
-        currentCommandChunks.push({ chunk: request.commandChunk, chunkIx: request.chunkIx });
     }
     else if (request.captureDone) {
-        // Concatenate the current capture chunks and reset the array.
-        var allChunks = currentCaptureChunks;
-        currentCaptureChunks = [];
-        var fullJSON = "".concat.apply("", allChunks);
-        var capture = JSON.parse(fullJSON);
+        currentFrameId = frameId;
+        currentTabId = sender?.tab?.id;
 
-        // In case commands were sent separately, concatenate them and set them into the capture.
-        var curCommandChunkIx = 0;
-        while (currentCommandChunks.length > 0) {
-            var curCommandChunk = '';
-            while (currentCommandChunks.length && currentCommandChunks[0].chunkIx === curCommandChunkIx) {
-                curCommandChunk += currentCommandChunks[0].chunk;
-                currentCommandChunks.shift();
+        browser.storage.local.set({
+            "currentFrameInfo": {
+                currentFrameId,
+                currentTabId
             }
-
-            var commands = JSON.parse(curCommandChunk);
-            for (var i = 0; i < commands.length; i++) {
-                capture.commands.push(commands[i]);
-            }
-            curCommandChunkIx++;
-        }
-        currentCommandChunks = [];
+        });
 
         // Open the result view if not open (need to check if length == 1 that the function exists for Edge),
-        window.browser.tabs.create({ url: "result.html", active: true }, function(tab) {
+        browser.tabs.create({ url: "result.html", active: true }, function(tab) {
             resultTab = tab;
-            currentCapture = capture;
-            currentFrameId = frameId;
-            currentTabId = sender.tab.id;
         });
-        
+
 
         // Close the wait message and may display an error.
-        var popup = window.browser.extension.getViews({ type: "popup" })[0];
-        if (popup != null && popup.captureComplete) {
-            popup.captureComplete();
-        }
+        sendRuntimeMessage({
+            popup: "captureComplete"
+        });
     }
     else if (request.pageReload) {
         // Display the fps of the selected frame.
-        var popup = window.browser.extension.getViews({ type: "popup" })[0];
-        if (popup != null && popup.refreshCanvases) {
-            popup.refreshCanvases();
-        }
+        sendRuntimeMessage({
+            popup: "refreshCanvases"
+        });
     }
 
     // Return the frameid for reference.

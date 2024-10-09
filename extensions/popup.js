@@ -16,6 +16,10 @@ function sendMessage(message) {
         // Tab has probably been closed.
     }
 };
+
+function listenForMessage(callback) {
+    window.browser.runtime.onMessage.addListener(callback);
+};
 //_____________________________________________________________________________________
 
 var ui = null;
@@ -151,7 +155,12 @@ var loadFiles = function(event) {
                 };
                 reader.onload = e => {
                     try {
-                        window.browser.runtime.sendMessage({ capture: JSON.parse(e.target['result']) }, function(response) { });
+                        browser.storage.local.set({
+                            'currentCapture': JSON.parse(e.target['result']),
+                        });
+                
+                        window.browser.runtime.sendMessage({ captureDone: true }, function(response) { });
+
                     }
                     catch (exception) {
                         console.error("Error while reading file: " + fileToLoad.name + exception);
@@ -213,3 +222,35 @@ var pause = function(e) {
         sendMessage({ action: "pause", canvasRef: e.ref });
     }
 }
+
+//_____________________________________________________________________________________
+
+listenForMessage(function(request, sender, sendResponse) {
+    var frameId;
+    if (sender.frameId) {
+        frameId = sender.frameId;
+    } 
+    else if (request.uniqueId) {
+        frameId = request.uniqueId;
+    }
+    else {
+        frameId = sender.id;
+    }
+    frameId += "";
+
+    if (request.popup === "updateCanvasesListInformation") {
+        updateCanvasesListInformation(request.data);
+    }
+    else if (request.popup === "refreshFps") {
+        refreshFps(request.data.fps, request.data.frameId, request.data.senderTabId);
+    }
+    else if (request.popup === "captureComplete") {
+        captureComplete(request.data);
+    }
+    else if (request.popup === "refreshCanvases") {
+        refreshCanvases();
+    }
+
+    // Return the frameid for reference.
+    sendResponse({ frameId: frameId });
+});

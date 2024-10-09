@@ -1,16 +1,16 @@
 {
-  "manifest_version": 2,
-  "minimum_chrome_version": "20",
+  "manifest_version": 3,
+  "minimum_chrome_version": "100",
   "name" : "Spector.js",
   "version" : "0.9.31",
   "homepage_url": "http://spector.babylonjs.com/",
   "description" : "Explore and Troubleshoot your WebGL scenes easily.",
   "author": "@SpectorJS",
-  
-  "permissions": [
+  "host_permissions": [
     "http://*/*", "https://*/*"
   ],
-  "page_action" :
+  "permissions": ["storage", "unlimitedStorage", "activeTab", "scripting"],
+  "action" :
   {
     "default_icon" : {
       "19": "spectorjs-19.png",
@@ -19,8 +19,7 @@
     "default_title" : "Debug with Spector"
   },
   "background": {
-    "scripts": ["background.js"],
-    "persistent": true
+    "service_worker": "background.js"
   },
   "content_scripts" : [
     {
@@ -29,18 +28,40 @@
         "http://*/*",
         "https://*/*"
       ],
+      "js" : ["contentScriptProxy.js"],
+      "run_at" : "document_start",
+      "all_frames" : true,
+      "world": "ISOLATED"
+    },
+    {
+      "matches" : [
+        "file://*/*",
+        "http://*/*",
+        "https://*/*"
+      ],
       "js" : ["spector.bundle.func.js", "contentScript.js"],
       "run_at" : "document_start",
-      "all_frames" : true
+      "all_frames" : true,
+      "world": "MAIN"
     }
   ],
   "web_accessible_resources": [
-    "spector.bundle.js",
-    "popup.js",
-    "result.js"
+    {
+      "resources": [
+        "spector.bundle.js",
+        "popup.js",
+        "result.js"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
   ],
   "icons" : {
     "48" : "spectorjs-48.png",
     "128" : "spectorjs-128128.png"
-  }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+   }
 }

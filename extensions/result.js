@@ -44,18 +44,20 @@ window.addEventListener("DOMContentLoaded", function() {
 
         sendMessage({ 
             action: "rebuildProgram", 
-            canvasRef: { frameId: frameId, tabId: tabId },
+            canvasRef: { frameId, tabId },
             buildInfo: buildInfo,
         }, tabId);
     });
     ui.display();
 
-    // On first load collect and display the capture from the background page.
-    var bgPage = browser.extension.getBackgroundPage();
-    addCapture(bgPage.currentCapture);
-    frameId = bgPage.currentFrameId;
-    tabId = bgPage.currentTabId;
-    bgPage.currentCapture = null;
+    browser.storage.local.get("currentFrameInfo").then(c => {
+        frameId = c.currentFrameInfo.currentFrameId;
+        tabId = c.currentFrameInfo.currentTabId;
+    });
+
+    browser.storage.local.get("currentCapture").then(c => {
+        addCapture(c.currentCapture);
+    });
 });
 
 var addCapture = function(capture) {
