@@ -9,7 +9,7 @@
   "host_permissions": [
     "http://*/*", "https://*/*"
   ],
-  "permissions": ["storage", "unlimitedStorage", "activeTab", "scripting"],
+  "permissions": ["storage", "unlimitedStorage", "activeTab"],
   "action" :
   {
     "default_icon" : {
