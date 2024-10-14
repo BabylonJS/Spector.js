@@ -5,6 +5,7 @@
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
 ## v0.9.32
+* Fix [Capture on Reload](https://github.com/BabylonJS/Spector.js/issues/313)
 
 ## v0.9.31
 * Fix [Manifest V2](https://github.com/BabylonJS/Spector.js/issues/312)

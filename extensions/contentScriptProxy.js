@@ -37,24 +37,7 @@ var spectorCommunicationRebuildProgramElementId = "SPECTOR_COMMUNICATION_REBUILD
 
 var spectorContextTypeKey = "__spector_context_type";
 
-var captureOnLoad = false;
-var captureOnLoadTransient = false;
-var captureOnLoadQuickCapture = false;
-var captureOnLoadFullCapture = false;
-var captureOnLoadCommandCount = 500;
-var captureOffScreen = false;
-
-if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
-    sessionStorage.setItem(spectorCaptureOnLoadKey, "false");
-    captureOnLoad = true;
-
-    captureOnLoadTransient = (sessionStorage.getItem(spectorCaptureOnLoadTransientKey) === "true");
-    captureOnLoadQuickCapture = (sessionStorage.getItem(spectorCaptureOnLoadQuickCaptureKey) === "true");
-    captureOnLoadFullCapture = (sessionStorage.getItem(spectorCaptureOnLoadFullCaptureKey) === "true");
-    captureOnLoadCommandCount = parseInt(sessionStorage.getItem(spectorCaptureOnLoadCommandCountKey));
-}
-
-captureOffScreen = (sessionStorage.getItem(captureOffScreenKey) === "true");
+var captureOffScreen = (sessionStorage.getItem(captureOffScreenKey) === "true");
 
 var frameId = null;
 
@@ -199,15 +182,10 @@ listenForMessage(function (message) {
 
     // We need to reload to inject the capture loading sequence.
     if (action === "captureOnLoad") {
-        var transient = message.transient;
-        var commandCount = message.commandCount;
-        var quickCapture = message.quickCapture;
-        var fullCapture = message.fullCapture;
-
-        sessionStorage.setItem(spectorCaptureOnLoadTransientKey, transient);
-        sessionStorage.setItem(spectorCaptureOnLoadQuickCaptureKey, quickCapture);
-        sessionStorage.setItem(spectorCaptureOnLoadFullCaptureKey, fullCapture);
-        sessionStorage.setItem(spectorCaptureOnLoadCommandCountKey, commandCount);
+        sessionStorage.setItem(spectorCaptureOnLoadTransientKey, message.transient);
+        sessionStorage.setItem(spectorCaptureOnLoadQuickCaptureKey, message.quickCapture);
+        sessionStorage.setItem(spectorCaptureOnLoadFullCaptureKey, message.fullCapture);
+        sessionStorage.setItem(spectorCaptureOnLoadCommandCountKey, message.commandCount);
         sessionStorage.setItem(spectorCaptureOnLoadKey, "true");
 
         // Delay for all frames.
