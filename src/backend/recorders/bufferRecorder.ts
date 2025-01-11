@@ -101,25 +101,29 @@ export class BufferRecorder extends BaseRecorder<WebGLBuffer> {
 
     protected getLength(functionInformation: IFunctionInformation): number {
         /* tslint:disable */
-        let length = -1;
-        let offset = 0;
-        if (functionInformation.arguments.length === 5) {
-            length = functionInformation.arguments[4];
-            offset = functionInformation.arguments[3];
+        const sizeOrData = functionInformation.arguments[1];
+        const offset = functionInformation.arguments[3];
+        const length = functionInformation.arguments[4];
+
+        // bufferData(target, size, usage)
+        if (typeof sizeOrData === 'number') {
+            return sizeOrData;
         }
 
-        if (length <= 0) {
-            if (typeof functionInformation.arguments[1] === "number") {
-                length = functionInformation.arguments[1];
-            }
-            else if (functionInformation.arguments[1]) {
-                length = functionInformation.arguments[1].byteLength || functionInformation.arguments[1].length || 0;
-            }
-            else {
-                length = 0;
-            }
+        // bufferData(target, srcData, usage, srcOffset, length)
+        if (typeof length === 'number' && length > 0) {
+            return length;
         }
 
-        return length - offset;
+        const dataLength = sizeOrData.byteLength || sizeOrData.length || 0;
+
+        // bufferData(target, srcData, usage, srcOffset)
+        if (typeof offset === 'number' && offset > 0) {
+            return dataLength - offset;
+        }
+        // bufferData(target, srcData, usage)
+        else {
+            return dataLength;
+        }
     }
 }
