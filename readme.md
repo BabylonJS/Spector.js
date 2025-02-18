@@ -7,6 +7,7 @@
 Spector is a tool aimed at *WebGL* developers wanting to know what happens in their context. It enables capturing of all the available information from a frame. You will be able to look at your entire **commands list** with their associated **visual states** and **context information**.
 
 [![Build Status](https://github.com/BabylonJS/Spector.js/workflows/CI/badge.svg)](https://github.com/BabylonJS/Spector.js/actions)
+[![License](https://img.shields.io/github/license/BabylonJS/Spector.js)](https://github.com/BabylonJS/Spector.js/blob/master/LICENSE.txt)
 [![devDependencies Status](https://david-dm.org/babylonjs/spectorjs/dev-status.svg)](https://david-dm.org/babylonjs/spectorjs?type=dev)
 
 This can be used either as a *browser extension* or directly from your page with a *Standalone Version*.
