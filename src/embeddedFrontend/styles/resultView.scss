@@ -34,7 +34,7 @@ $menuBaseHeight: 20px;
 $menuHeight: $menuBaseHeight * 2;
 
 .resultViewMenuComponent {
-  font-family: 'Montserrat', sans-serif;
+  font-family: sans-serif;
   // text-transform: uppercase; 
   font-size: 13px;
   font-weight: 300;
@@ -149,7 +149,7 @@ $menuHeight: $menuBaseHeight * 2;
 
   input {
     border: 0;
-    font-family: 'Montserrat', sans-serif;
+    font-family: sans-serif;
     font-weight: 300;
     padding:0 $menuBaseHeight 0 $menuBaseHeight;
     // line-height: 20px;
@@ -633,7 +633,7 @@ $commandDetailComponentWidth: 40%;
 }
 
 .sourceCodeMenuComponent {
-  font-family: 'Montserrat', sans-serif;
+  font-family: sans-serif;
   // text-transform: uppercase; 
   font-size: 13px;
   font-weight: 300;
@@ -715,7 +715,7 @@ $commandDetailComponentWidth: 40%;
 
   input {
     border: 0;
-    font-family: 'Montserrat', sans-serif;
+    font-family: sans-serif;
     font-weight: 300;
     padding:0 $menuBaseHeight 0 $menuBaseHeight;
     // line-height: 20px;
