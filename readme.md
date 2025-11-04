@@ -74,13 +74,13 @@ Please follow the instructions below to create a new directory and install the r
 mkdir sample
 cd sample
 npm init
-npm install webpack --save-dev
+npm install --save-dev webpack webpack-cli
 npm install spectorjs --save-dev
 ```
 
 Following the HelloWorld example from Webpack, you can now create it in the sample folder:
 
-A js file named entry.js containing the following code:
+A js file named `entry.js` containing the following code:
 
 ```javascript
 var SPECTOR = require("spectorjs");
@@ -89,14 +89,14 @@ var spector = new SPECTOR.Spector();
 spector.displayUI();
 ```
 
-And an html file named index.js containing the following code:
+And an html file named `index.html` containing the following code:
 
 ```html
 <html>
     <head>
     </head>
     <body>
-        <script type="text/javascript" src="bundle.js" charset="utf-8"></script>
+        <script type="text/javascript" src="dist/main.js" charset="utf-8"></script>
     </body>
 </html>
 ```
@@ -104,10 +104,10 @@ And an html file named index.js containing the following code:
 Now your application is ready. Go back to your command line and bundle the javascript file:
 
 ```
-webpack entry.js bundle.js
+npx webpack entry.js 
 ```
 
-You are all set. You can open your index.html file and see the inspector running. It obviously won't be that usefull on an empty page but at least you get the integration idea.
+You are all set. You can open your `index.html` file and see the inspector running e.g. `open index.html` on Linux and macOS. It obviously won't be that useful on an empty page but at least you get the integration idea.
 
 ## Use as a Script Reference
 ###### [Back to top](#table-of-content)
