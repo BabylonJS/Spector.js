@@ -104,7 +104,7 @@ And an html file named `index.html` containing the following code:
 Now your application is ready. Go back to your command line and bundle the javascript file:
 
 ```
-webpack entry.js 
+npx webpack entry.js 
 ```
 
 You are all set. You can open your `index.html` file and see the inspector running e.g. `open index.html` on Linux and macOS. It obviously won't be that useful on an empty page but at least you get the integration idea.
