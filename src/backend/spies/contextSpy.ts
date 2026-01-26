@@ -229,7 +229,7 @@ export class ContextSpy {
             }
 
             try {
-                const isFunction = typeof bindingContext[member] !== "number";
+                const isFunction = typeof bindingContext[member] === "function";
                 if (isFunction) {
                     this.spyFunction(member, bindingContext);
                 }
