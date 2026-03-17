@@ -45,6 +45,7 @@ You can use the library inside of your own application easily as it is transpile
 If you are willing to use the browser extension, you can direclty install it from the store:
 - [Chrome](https://chrome.google.com/webstore/detail/spectorjs/denbgaamihkadbghdceggmchnflmhpmk)
 - [Firefox](https://addons.mozilla.org/en-US/firefox/addon/spector-js/)
+- Safari — see the [Safari extension documentation](documentation/safari-extension.md) for build and installation instructions
 
 You can find on [Real Time Rendering](http://www.realtimerendering.com/blog/debugging-webgl-with-spectorjs/) a complete tutorial about the [Spector extension](http://www.realtimerendering.com/blog/debugging-webgl-with-spectorjs/). Else, you can refer to the [extension documentation](https://github.com/BabylonJS/Spector.js/blob/release/documentation/extension.md#how-to-use) to learn how to use it.
 

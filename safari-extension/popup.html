@@ -1,0 +1,146 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <script type="text/javascript" src="spector.bundle.js"></script>
+    <script type="text/javascript" src="popup.js"></script>
+    <style>
+        .canvasListComponent ul {
+            max-height: 240px;
+            overflow-y: visible;
+            overflow-x: hidden;
+        }
+
+        html {
+            background-color: #2c2c2c;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: Consolas, monaco, monospace;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .helpText {
+            position:absolute;
+            top:50px;
+            left:10px;
+            right:10px;
+            bottom:250px;
+            text-align:center;
+        }
+
+        .filler {
+            position:absolute;
+            top:120px;
+            bottom:140px;
+            left:0px;
+            right:0px;
+        }
+
+        img {
+            z-index:-3;
+            width: 418px;
+        }
+        
+        div {
+            z-index:9000;
+        }
+
+        input {
+            width: 13px;
+            height: 13px;
+            padding: 0;
+            margin:0;
+            vertical-align: bottom;
+            position: relative;
+            top: -1px;
+            *overflow: hidden;
+        }
+
+        .captureHint {
+            position:absolute;
+            bottom:146px;
+            left:0px;
+            right:0px;
+            text-align:center;
+            color: #3B789A;
+        }
+
+        .footer {
+            position:absolute;
+            bottom:0px;
+            left:0px;
+            right:0px;
+            padding-left:10px;
+            background-color: #2c2c2c;
+            border: 2px solid #222;
+            color: #f9f9f9;
+        }
+
+        #captureOnLoad, #captureNow {
+            color: #f9f9f9;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        #captureOnLoad:hover, #captureNow:hover {
+            color: red;
+            cursor: pointer; 
+            transition: color 0.3s;
+            -webkit-transition: color 0.3s;
+            -moz-transition: color 0.3s;
+        }
+
+        #captureOnLoadCount {
+            width:25px;
+        }
+    </style>
+</head>
+
+<body style="width:418px;height:460px;margin:0px;padding:0px;">
+    <div class="captureHint">
+        <p>
+            Drag previously saved captures here to open.
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>
+            <label><input type="checkbox" id="offScreen" /> Show offscreen canvas(es)</label> 
+        </p>
+        <p>
+            <label><input type="checkbox" id="quickCapture" /> Quick Capture (no thumbnails)</label> 
+        </p>
+        <p>
+            <label><input type="checkbox" id="fullCapture" /> Full Capture (real size textures: slow)</label> 
+        </p>
+        <p>
+            <input type="text" id="captureOnLoadCount" value="500" />
+            first commands (<label><input type="checkbox" id="captureOnLoadTransient" /> transient</label>):
+            <span id="captureNow">Capture</span>/<span id="captureOnLoad">Reload</span>.
+        </p>
+    </div>
+
+    <img src="spectorjs.svg" alt="SpectorJS" class="filler" /> 
+
+    <div id="openCaptureFile" class="filler">
+    </div>
+
+    <style>
+        .captureMenuComponent {
+            top: 0px;
+        }
+        .captureMenuLogComponent {
+            top: 56px;
+            padding-left: 10px;
+        }
+        .canvasListComponent ul {
+            top: 54px;
+        }
+    </style>
+</body>
+
+</html>

@@ -29,8 +29,9 @@
     "build:bundle": "webpack --config tools/webpack.config.js --env=prod",
     "build:copybuild:copy:bundle": "node ./tools/copy.js /../dist/spector.bundle.js /../extensions/spector.bundle.js",
     "build:concatBundleFunc": "concat-cli -f tools/spector.ext.header.js dist/spector.bundle.js tools/spector.ext.footer.js -o extensions/spector.bundle.func.js",
+    "build:safari:copy:bundle": "node ./tools/copy.js /../dist/spector.bundle.js /../safari-extension/spector.bundle.js",
     "build:tslint": "tslint -c ./tslint.json -p ./src/tsconfig.json",
-    "build": "run-s build:tslint build:bundle build:copybuild:copy:bundle build:concatBundleFunc -n",
+    "build": "run-s build:tslint build:bundle build:copybuild:copy:bundle build:concatBundleFunc build:safari:copy:bundle -n",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

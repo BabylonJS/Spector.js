@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name" : "Spector.js",
+  "version" : "0.9.33",
+  "homepage_url": "http://spector.babylonjs.com/",
+  "description" : "Explore and Troubleshoot your WebGL scenes easily.",
+  "author": "@SpectorJS",
+  "host_permissions": [
+    "http://*/*", "https://*/*"
+  ],
+  "permissions": ["storage", "unlimitedStorage", "activeTab", "scripting"],
+  "action" :
+  {
+    "default_icon" : {
+      "19": "spectorjs-19.png",
+      "38": "spectorjs-38.png"
+    },
+    "default_title" : "Debug with Spector"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts" : [
+    {
+      "matches" : [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js" : ["contentScript.js"],
+      "run_at" : "document_start",
+      "all_frames" : true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "spector.bundle.js",
+        "popup.js",
+        "result.js"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ],
+  "icons" : {
+    "48" : "spectorjs-48.png",
+    "128" : "spectorjs-128128.png",
+    "512" : "spectorjs-512.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
