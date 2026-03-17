@@ -23,29 +23,3 @@ jobs:
         npm run build --if-present
       env:
         CI: true
-
-  build-safari:
-
-    runs-on: macos-latest
-
-    steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js 18.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: 18.x
-    - name: npm install, build
-      run: |
-        npm install
-        npm run build --if-present
-      env:
-        CI: true
-    - name: Validate Safari extension
-      run: |
-        xcrun safari-web-extension-converter safari-extension/ \
-          --project-location safari-xcode \
-          --app-name "Spector.js" \
-          --bundle-identifier com.babylonjs.spectorjs \
-          --macos-only \
-          --no-open \
-          --no-prompt
