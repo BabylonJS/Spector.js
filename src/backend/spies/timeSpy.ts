@@ -153,8 +153,8 @@ export class TimeSpy {
 
             self.lastFrame = ++self.lastFrame % self.speedRatio;
             if (self.willPlayNextFrame || (self.speedRatio && !self.lastFrame)) {
-                self.onFrameStart.trigger(self);
                 try {
+                    self.onFrameStart.trigger(self);
                     callback.apply(self.spiedScope, arguments);
                 }
                 catch (e) {
@@ -163,7 +163,12 @@ export class TimeSpy {
                 self.lastSixtyFramesCurrentIndex = (self.lastSixtyFramesCurrentIndex + 1) % TimeSpy.fpsWindowSize;
                 self.lastSixtyFramesDuration[self.lastSixtyFramesCurrentIndex] =
                     now - self.lastSixtyFramesPreviousStart;
-                self.onFrameEnd.trigger(self);
+                try {
+                    self.onFrameEnd.trigger(self);
+                }
+                catch (e) {
+                    self.onError.trigger(e);
+                }
                 self.willPlayNextFrame = false;
             }
             else {

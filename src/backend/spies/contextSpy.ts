@@ -214,8 +214,19 @@ export class ContextSpy {
             return;
         }
 
-        this.webGlObjectSpy.tagWebGlObjects(functionInformation);
-        this.recorderSpy.recordCommand(functionInformation);
+        try {
+            this.webGlObjectSpy.tagWebGlObjects(functionInformation);
+        }
+        catch (e) {
+            // Tagging failures must not kill the render loop.
+        }
+
+        try {
+            this.recorderSpy.recordCommand(functionInformation);
+        }
+        catch (e) {
+            // Recording failures must not kill the render loop.
+        }
 
         if (this.isCapturing()) {
             const commandCapture = commandSpy.createCapture(functionInformation, this.getNextCommandCaptureId(), this.marker);
