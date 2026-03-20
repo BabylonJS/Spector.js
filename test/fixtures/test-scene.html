@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spector.js Visual Test Scene</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #1a1a2e;
+        }
+        #renderCanvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas" width="800" height="600"></canvas>
+
+    <script src="../../dist/spector.bundle.js"></script>
+    <script>
+    (function () {
+        "use strict";
+
+        var canvas = document.getElementById("renderCanvas");
+        var gl = canvas.getContext("webgl2", { preserveDrawingBuffer: true });
+        if (!gl) {
+            // Fall back to WebGL 1 if WebGL 2 is unavailable (e.g. SwiftShader).
+            gl = canvas.getContext("webgl", { preserveDrawingBuffer: true });
+        }
+        if (!gl) {
+            document.body.textContent = "WebGL not supported";
+            return;
+        }
+
+        // ---- Shaders ----
+        var VERT_SRC =
+            "attribute vec2 aPosition;\n" +
+            "attribute vec3 aColor;\n" +
+            "varying vec3 vColor;\n" +
+            "void main() {\n" +
+            "    gl_Position = vec4(aPosition, 0.0, 1.0);\n" +
+            "    vColor = aColor;\n" +
+            "}\n";
+
+        var FRAG_SRC =
+            "precision mediump float;\n" +
+            "varying vec3 vColor;\n" +
+            "void main() {\n" +
+            "    gl_FragColor = vec4(vColor, 1.0);\n" +
+            "}\n";
+
+        function compileShader(type, src) {
+            var shader = gl.createShader(type);
+            gl.shaderSource(shader, src);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                throw new Error("Shader compile error: " + gl.getShaderInfoLog(shader));
+            }
+            return shader;
+        }
+
+        var vertShader = compileShader(gl.VERTEX_SHADER, VERT_SRC);
+        var fragShader = compileShader(gl.FRAGMENT_SHADER, FRAG_SRC);
+
+        var program = gl.createProgram();
+        gl.attachShader(program, vertShader);
+        gl.attachShader(program, fragShader);
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            throw new Error("Program link error: " + gl.getProgramInfoLog(program));
+        }
+        gl.useProgram(program);
+
+        // ---- Geometry: a static colored triangle ----
+        // Interleaved: [x, y, r, g, b] per vertex
+        var vertices = new Float32Array([
+            // top vertex - red
+             0.0,  0.7,   1.0, 0.0, 0.0,
+            // bottom-left - green
+            -0.7, -0.5,   0.0, 1.0, 0.0,
+            // bottom-right - blue
+             0.7, -0.5,   0.0, 0.0, 1.0
+        ]);
+
+        var buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+        var STRIDE = 5 * Float32Array.BYTES_PER_ELEMENT;
+
+        var aPosition = gl.getAttribLocation(program, "aPosition");
+        gl.enableVertexAttribArray(aPosition);
+        gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, STRIDE, 0);
+
+        var aColor = gl.getAttribLocation(program, "aColor");
+        gl.enableVertexAttribArray(aColor);
+        gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, STRIDE, 2 * Float32Array.BYTES_PER_ELEMENT);
+
+        // ---- Render loop (static — same frame every iteration) ----
+        function render() {
+            gl.clearColor(0.1, 0.1, 0.18, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+            requestAnimationFrame(render);
+        }
+        render();
+
+        // ---- Spector.js setup ----
+        var spector = new SPECTOR.Spector();
+        spector.displayUI();
+        window.__spector = spector;
+        window.__canvas = canvas;
+    })();
+    </script>
+</body>
+</html>
