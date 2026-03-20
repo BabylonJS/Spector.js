@@ -158,9 +158,9 @@
   "commands": [
     {
       "id": 0,
-      "startTime": 1773999928765.6,
-      "commandEndTime": 1773999928765.7,
-      "endTime": 1773999928767.9,
+      "startTime": 1774015140680.3,
+      "commandEndTime": 1774015140680.3,
+      "endTime": 1774015140682.1,
       "name": "clearColor",
       "commandArguments": [
         0.1,
@@ -177,9 +177,9 @@
     },
     {
       "id": 1,
-      "startTime": 1773999928767.9,
-      "commandEndTime": 1773999928767.9,
-      "endTime": 1773999928777,
+      "startTime": 1774015140682.1,
+      "commandEndTime": 1774015140682.1,
+      "endTime": 1774015140687,
       "name": "clear",
       "commandArguments": [
         16384
@@ -225,9 +225,9 @@
     },
     {
       "id": 2,
-      "startTime": 1773999928777,
-      "commandEndTime": 1773999928777,
-      "endTime": 1773999928794.7,
+      "startTime": 1774015140687,
+      "commandEndTime": 1774015140687,
+      "endTime": 1774015140701.2,
       "name": "drawArrays",
       "commandArguments": [
         4,
@@ -682,10 +682,10 @@
       "FrameBuffer": null
     }
   },
-  "startTime": 1773999928746.7,
-  "listenCommandsStartTime": 1773999928765.6,
-  "listenCommandsEndTime": 1773999928794.8,
-  "endTime": 1773999928806.6,
+  "startTime": 1774015140666.1,
+  "listenCommandsStartTime": 1774015140680.3,
+  "listenCommandsEndTime": 1774015140701.3,
+  "endTime": 1774015140711.4,
   "analyses": [
     {
       "analyserName": "Commands",

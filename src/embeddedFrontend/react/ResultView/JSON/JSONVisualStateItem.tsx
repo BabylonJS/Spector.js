@@ -23,7 +23,7 @@ export function JSONVisualStateItem({ visualState }: JSONVisualStateItemProps) {
         <div className="jsonVisualStateItemComponent">
             {visualState.Attachments ? (
                 visualState.Attachments.map((imageState: any, i: number) => {
-                    if (!imageState.src) return null;
+                    if (!imageState.src) { return null; }
                     return (
                         <React.Fragment key={i}>
                             <img src={encodeURI(imageState.src)} />

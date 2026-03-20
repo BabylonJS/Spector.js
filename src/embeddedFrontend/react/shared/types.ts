@@ -96,7 +96,7 @@ export interface ResultViewState {
     visible: boolean;
     menuStatus: MenuStatus;
     searchText: string;
-    captures: Array<{ capture: ICapture; active: boolean }>;
+    captures: { capture: ICapture; active: boolean }[];
     currentCapture: ICapture | null;
     commands: ICommandListItemState[];
     currentCommandIndex: number;

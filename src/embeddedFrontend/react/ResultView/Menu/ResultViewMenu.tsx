@@ -28,7 +28,7 @@ export function ResultViewMenu() {
         e.preventDefault();
         const openButton = (e.currentTarget.parentElement as HTMLLIElement);
         const ul = openButton.parentElement;
-        if (!ul) return;
+        if (!ul) { return; }
         const lis = ul.querySelectorAll("li:not(.resultViewMenuSmall)");
 
         if (openButton.getAttribute("open") === "true") {

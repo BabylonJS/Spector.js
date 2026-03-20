@@ -1,3 +1,4 @@
+// tslint:disable-next-line:no-submodule-imports
 import { createRoot, Root } from "react-dom/client";
 import { createElement } from "react";
 import { Observable } from "../../../shared/utils/observable";
@@ -165,7 +166,7 @@ export class ReactCaptureMenu {
         if (this._isTrackingCanvas) {
             this.trackPageCanvases();
         }
-    };
+    }
 
     /** Called by React component when user selects a specific canvas. */
     public handleCanvasSelected = (canvas: ICanvasInformation): void => {
@@ -178,7 +179,7 @@ export class ReactCaptureMenu {
             logVisible: !this._hideLog,
         }));
         this.onCanvasSelected.trigger(canvas);
-    };
+    }
 
     /** Called by React component when user clicks the capture button. */
     public handleCaptureRequested = (): void => {
@@ -195,24 +196,24 @@ export class ReactCaptureMenu {
         setTimeout(() => {
             this.onCaptureRequested.trigger(canvas);
         }, 200);
-    };
+    }
 
     /** Called by React component when user clicks pause. */
     public handlePauseRequested = (): void => {
         this.onPauseRequested.trigger(this.getSelectedCanvasInformation());
         this.store.setState((prev) => ({ ...prev, isPlaying: false }));
-    };
+    }
 
     /** Called by React component when user clicks play. */
     public handlePlayRequested = (): void => {
         this.onPlayRequested.trigger(this.getSelectedCanvasInformation());
         this.store.setState((prev) => ({ ...prev, isPlaying: true }));
-    };
+    }
 
     /** Called by React component when user clicks play next frame. */
     public handlePlayNextFrameRequested = (): void => {
         this.onPlayNextFrameRequested.trigger(this.getSelectedCanvasInformation());
-    };
+    }
 
     // ─── Private ──────────────────────────────────────────────────────────
 

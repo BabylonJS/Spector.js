@@ -16,7 +16,7 @@ export interface JSONRenderTreeProps {
 }
 
 export function JSONRenderTree({ items }: JSONRenderTreeProps) {
-    if (!items || items.length === 0) return null;
+    if (!items || items.length === 0) { return null; }
 
     return (
         <>

@@ -118,14 +118,14 @@ export function SourceCode({
 
     // Initialize Ace editor once, update content on state changes.
     useEffect(() => {
-        if (!editorContainerRef.current) return undefined;
+        if (!editorContainerRef.current) { return undefined; }
 
         if (!editorRef.current) {
-            const editor = ace.edit(editorContainerRef.current);
-            editor.setTheme("ace/theme/monokai");
-            editor.getSession().setMode("ace/mode/glsl");
-            editor.setShowPrintMargin(false);
-            editorRef.current = editor;
+            const newEditor = ace.edit(editorContainerRef.current);
+            newEditor.setTheme("ace/theme/monokai");
+            newEditor.getSession().setMode("ace/mode/glsl");
+            newEditor.setShowPrintMargin(false);
+            editorRef.current = newEditor;
         }
 
         const editor = editorRef.current;
@@ -168,7 +168,7 @@ export function SourceCode({
 
     // Error annotations.
     useEffect(() => {
-        if (!editorRef.current) return;
+        if (!editorRef.current) { return; }
 
         const msg = errorMessage || "";
         const annotations: any[] = [];
@@ -364,8 +364,8 @@ function getBracket(str: string, searchFrom = -1): { firstIteration: number; las
     let lastBracketIndex = 0;
     for (const char of arr) {
         currentPosInString++;
-        if (char === "{") counter++;
-        if (char === "}") counter--;
+        if (char === "{") { counter++; }
+        if (char === "}") { counter--; }
         if (counter === 0) {
             lastBracketIndex = currentPosInString;
             break;
@@ -447,8 +447,8 @@ function indentIfdef(str: string): string {
 
     for (let index = 0; index < arr2.length; index++) {
         const line = arr2[index];
-        if (line.indexOf("#endif") !== -1) level--;
-        if (line.indexOf("#else") !== -1) level--;
+        if (line.indexOf("#endif") !== -1) { level--; }
+        if (line.indexOf("#else") !== -1) { level--; }
         let spaces = "";
         for (let i = 0; i < level; i++) {
             spaces += "    ";

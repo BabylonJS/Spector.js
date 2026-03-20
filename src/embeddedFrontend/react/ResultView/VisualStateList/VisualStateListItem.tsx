@@ -41,7 +41,7 @@ export function VisualStateListItem({ item, onVisualStateSelected }: VisualState
         <li ref={ref} className={item.active ? "active" : ""} onClick={handleClick} commandName="onVisualStateSelected">
             {vs.Attachments ? (
                 vs.Attachments.map((imageState: any, i: number) => {
-                    if (!imageState.src) return null;
+                    if (!imageState.src) { return null; }
                     return (
                         <React.Fragment key={i}>
                             <img src={encodeURI(imageState.src)} />

@@ -21,24 +21,24 @@ export class ExternalStore<T> {
     }
 
     /** Called by React internally via useSyncExternalStore. */
-    getSnapshot = (): T => {
+    public getSnapshot = (): T => {
         return this._state;
-    };
+    }
 
     /** Subscribe to state changes. Returns unsubscribe function. */
-    subscribe = (listener: () => void): (() => void) => {
+    public subscribe = (listener: () => void): (() => void) => {
         this._listeners.add(listener);
         return () => { this._listeners.delete(listener); };
-    };
+    }
 
     /** Update state via updater function. Must return a new reference to trigger re-render. */
-    setState(updater: (prev: T) => T): void {
+    public setState(updater: (prev: T) => T): void {
         this._state = updater(this._state);
         this._emitChange();
     }
 
     /** Replace state entirely. */
-    setSnapshot(state: T): void {
+    public setSnapshot(state: T): void {
         this._state = state;
         this._emitChange();
     }

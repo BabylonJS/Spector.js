@@ -1,3 +1,4 @@
+// tslint:disable-next-line:no-submodule-imports
 import { createRoot, Root } from "react-dom/client";
 import { createElement } from "react";
 import { Observable } from "../../../shared/utils/observable";
@@ -55,16 +56,16 @@ function getJSONAsString(
     json: any,
     searchText: string,
 ): string | null {
-    if (json === null) return "null";
-    if (json === undefined) return "undefined";
+    if (json === null) { return "null"; }
+    if (json === undefined) { return "undefined"; }
 
     if (typeof json === "number") {
         return Math.floor(json) === json ? json.toFixed(0) : json.toFixed(4);
     }
-    if (typeof json === "string") return json;
-    if (typeof json === "boolean") return json ? "true" : "false";
+    if (typeof json === "string") { return json; }
+    if (typeof json === "boolean") { return json ? "true" : "false"; }
 
-    if (json.length === 0) return "Empty Array";
+    if (json.length === 0) { return "Empty Array"; }
 
     if (json.length) {
         const arrayResult: string[] = [];
@@ -142,11 +143,11 @@ function buildJSONGroup(
     json: any,
     searchText: string,
 ): void {
-    if (!json) return;
+    if (!json) { return; }
 
     const children: JSONRenderItem[] = [];
     buildJSON(children, json, searchText);
-    if (children.length === 0) return;
+    if (children.length === 0) { return; }
 
     parentChildren.push({ type: "group", title, children });
 }
@@ -249,7 +250,7 @@ export class ReactResultView {
         // ── Keyboard navigation ──
         this._rootPlaceHolder.addEventListener("keydown", (event) => {
             const state = this.store.getSnapshot();
-            if (state.menuStatus !== MenuStatus.Commands) return;
+            if (state.menuStatus !== MenuStatus.Commands) { return; }
 
             const keyCode = (event as any).keyCode;
             if (keyCode === 38) {          // Up arrow
@@ -317,7 +318,7 @@ export class ReactResultView {
 
     public selectCommand(commandIndex: number): void {
         const state = this.store.getSnapshot();
-        if (commandIndex < 0 || commandIndex >= state.commands.length) return;
+        if (commandIndex < 0 || commandIndex >= state.commands.length) { return; }
 
         const cmd = state.commands[commandIndex];
         this._currentCommandId = cmd.capture.id;
@@ -337,7 +338,7 @@ export class ReactResultView {
 
     public selectVisualState(visualStateIndex: number): void {
         const state = this.store.getSnapshot();
-        if (visualStateIndex < 0 || visualStateIndex >= state.visualStates.length) return;
+        if (visualStateIndex < 0 || visualStateIndex >= state.visualStates.length) { return; }
 
         const vs = state.visualStates[visualStateIndex];
         const commandIndex = vs.commandIndex;
@@ -418,93 +419,93 @@ export class ReactResultView {
                 this._displayEndState();
                 break;
         }
-    };
+    }
 
     /** Called by React when search text changes. */
     public handleSearchTextChange = (searchText: string): void => {
         this.store.setState((prev) => ({ ...prev, searchText }));
         this._search(searchText);
-    };
+    }
 
     /** Called by React when user selects a command. */
     public handleCommandSelected = (commandIndex: number): void => {
         this.selectCommand(commandIndex);
-    };
+    }
 
     /** Called by React when user selects a visual state. */
     public handleVisualStateSelected = (visualStateIndex: number): void => {
         this.selectVisualState(visualStateIndex);
-    };
+    }
 
     /** Called by React when a shader link is clicked (vertex). */
     public handleVertexSelected = (commandIndex: number): void => {
         this.selectCommand(commandIndex);
         this._openShader(false);
-    };
+    }
 
     /** Called by React when a shader link is clicked (fragment). */
     public handleFragmentSelected = (commandIndex: number): void => {
         this.selectCommand(commandIndex);
         this._openShader(true);
-    };
+    }
 
     /** Called by React when source code is edited. */
     public handleSourceCodeChanged = (event: ISourceCodeChangeEvent): void => {
         this.onSourceCodeChanged.trigger(event);
-    };
+    }
 
     /** Called by React when source code close button is clicked. */
     public handleSourceCodeClose = (): void => {
         this._displayCurrentCapture();
-    };
+    }
 
     /** Called by React when source code tab changes. */
     public handleSourceCodeTabChange = (fragment: boolean, translated: boolean): void => {
         this.store.setState((prev) => {
-            if (!prev.sourceCodeState) return prev;
+            if (!prev.sourceCodeState) { return prev; }
             return {
                 ...prev,
                 sourceCodeState: { ...prev.sourceCodeState, fragment, translated },
             };
         });
-    };
+    }
 
     /** Called by React when beautify checkbox changes. */
     public handleBeautifyChanged = (beautify: boolean): void => {
         this.store.setState((prev) => {
-            if (!prev.sourceCodeState) return prev;
+            if (!prev.sourceCodeState) { return prev; }
             return {
                 ...prev,
                 sourceCodeState: { ...prev.sourceCodeState, beautify },
             };
         });
-    };
+    }
 
     /** Called by React when preprocess checkbox changes. */
     public handlePreprocessChanged = (preprocessed: boolean): void => {
         this.store.setState((prev) => {
-            if (!prev.sourceCodeState) return prev;
+            if (!prev.sourceCodeState) { return prev; }
             return {
                 ...prev,
                 sourceCodeState: { ...prev.sourceCodeState, preprocessed },
             };
         });
-    };
+    }
 
     /** Called by React when save is requested on a capture. */
     public handleSaveRequested = (capture: ICapture): void => {
         this.saveCapture(capture);
-    };
+    }
 
     /** Called by React when a capture is loaded (drag-drop). */
     public handleCaptureLoaded = (capture: ICapture): void => {
         this.addCapture(capture);
-    };
+    }
 
     /** Called by React when user clicks close on the result view. */
     public handleClose = (): void => {
         this.hide();
-    };
+    }
 
     // ─── Private: Display modes ──────────────────────────────────────────
 
@@ -518,7 +519,7 @@ export class ReactResultView {
     private _displayInformation(): void {
         const state = this.store.getSnapshot();
         const capture = state.currentCapture;
-        if (!capture) return;
+        if (!capture) { return; }
 
         const leftItems: JSONRenderItem[] = [];
         buildJSONGroup(leftItems, "Canvas", capture.canvas, state.searchText);
@@ -544,7 +545,7 @@ export class ReactResultView {
     private _displayInitState(): void {
         const state = this.store.getSnapshot();
         const capture = state.currentCapture;
-        if (!capture) return;
+        if (!capture) { return; }
 
         const items: JSONRenderItem[] = [];
         buildJSON(items, capture.initState, state.searchText);
@@ -560,7 +561,7 @@ export class ReactResultView {
     private _displayEndState(): void {
         const state = this.store.getSnapshot();
         const capture = state.currentCapture;
-        if (!capture) return;
+        if (!capture) { return; }
 
         const items: JSONRenderItem[] = [];
         buildJSON(items, capture.endState, state.searchText);
@@ -576,7 +577,7 @@ export class ReactResultView {
     private _displayCurrentCapture(): void {
         const state = this.store.getSnapshot();
         const capture = state.currentCapture;
-        if (!capture) return;
+        if (!capture) { return; }
 
         const searchText = state.searchText;
 
@@ -703,11 +704,11 @@ export class ReactResultView {
 
     private _openShader(fragment: boolean): void {
         const state = this.store.getSnapshot();
-        if (state.currentCommandIndex < 0 || state.currentCommandIndex >= state.commands.length) return;
+        if (state.currentCommandIndex < 0 || state.currentCommandIndex >= state.commands.length) { return; }
 
         const commandState = state.commands[state.currentCommandIndex];
         const drawCall = commandState.capture.DrawCall;
-        if (!drawCall || !drawCall.shaders || drawCall.shaders.length < 2) return;
+        if (!drawCall || !drawCall.shaders || drawCall.shaders.length < 2) { return; }
 
         const sourceCodeState: ISourceCodeState = {
             programId: drawCall.programStatus.program.__SPECTOR_Object_TAG.id,
@@ -745,7 +746,7 @@ export class ReactResultView {
         commands: ICommandListItemState[],
         visualStates: IVisualStateItem[],
     ): JSONRenderItem[] {
-        if (commandIndex < 0 || commandIndex >= commands.length) return [];
+        if (commandIndex < 0 || commandIndex >= commands.length) { return []; }
         const cmd = commands[commandIndex];
         const vs = visualStates[cmd.visualStateIndex];
         return buildCommandDetail(cmd.capture, vs?.VisualState);
@@ -755,33 +756,33 @@ export class ReactResultView {
 
     private _selectPreviousCommand(): void {
         const state = this.store.getSnapshot();
-        if (state.currentCommandIndex < 0) return;
+        if (state.currentCommandIndex < 0) { return; }
         const cmd = state.commands[state.currentCommandIndex];
-        if (cmd.previousCommandIndex < 0) return;
+        if (cmd.previousCommandIndex < 0) { return; }
         this.selectCommand(cmd.previousCommandIndex);
     }
 
     private _selectNextCommand(): void {
         const state = this.store.getSnapshot();
-        if (state.currentCommandIndex < 0) return;
+        if (state.currentCommandIndex < 0) { return; }
         const cmd = state.commands[state.currentCommandIndex];
-        if (cmd.nextCommandIndex < 0) return;
+        if (cmd.nextCommandIndex < 0) { return; }
         this.selectCommand(cmd.nextCommandIndex);
     }
 
     private _selectPreviousVisualState(): void {
         const state = this.store.getSnapshot();
-        if (state.currentVisualStateIndex < 0) return;
+        if (state.currentVisualStateIndex < 0) { return; }
         const vs = state.visualStates[state.currentVisualStateIndex];
-        if (vs.previousVisualStateIndex < 0) return;
+        if (vs.previousVisualStateIndex < 0) { return; }
         this.selectVisualState(vs.previousVisualStateIndex);
     }
 
     private _selectNextVisualState(): void {
         const state = this.store.getSnapshot();
-        if (state.currentVisualStateIndex < 0) return;
+        if (state.currentVisualStateIndex < 0) { return; }
         const vs = state.visualStates[state.currentVisualStateIndex];
-        if (vs.nextVisualStateIndex < 0) return;
+        if (vs.nextVisualStateIndex < 0) { return; }
         this.selectVisualState(vs.nextVisualStateIndex);
     }
 
