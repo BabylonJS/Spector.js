@@ -1,7 +1,8 @@
-// Worker OffscreenCanvas sample — renders WebGL in a Worker via transferControlToOffscreen.
-// The renderCanvas from index.html is transferred to the Worker so rendering is visible.
-var canvas = document.getElementById("renderCanvas");
-var oc = canvas.transferControlToOffscreen();
+// Worker OffscreenCanvas sample — renders WebGL in a Worker.
+// The renderCanvas is transferred to the Worker for visible rendering.
+// The Worker creates a separate OffscreenCanvas for WebGL and blits to the display canvas.
+var displayCanvas = document.getElementById("renderCanvas");
+var displayOC = displayCanvas.transferControlToOffscreen();
 
 var useDist = (document.location.href.toLowerCase().indexOf('dist=true') > 0);
 var bundlePath = useDist ? '/dist/spector.worker.bundle.js' : '/.temp/spector.worker.bundle.js';
@@ -10,8 +11,10 @@ var origin = location.origin;
 var code = 'importScripts("' + origin + bundlePath + '");\n' +
     'self.addEventListener("message", function(e) {\n' +
     '  if (e.data.type === "init") {\n' +
-    '    var canvas = e.data.canvas;\n' +
-    '    var gl = canvas.getContext("webgl2");\n' +
+    '    var displayCanvas = e.data.displayCanvas;\n' +
+    '    var displayCtx = displayCanvas.getContext("2d");\n' +
+    '    var glCanvas = new OffscreenCanvas(displayCanvas.width, displayCanvas.height);\n' +
+    '    var gl = glCanvas.getContext("webgl2");\n' +
     '    var vs = gl.createShader(gl.VERTEX_SHADER);\n' +
     '    gl.shaderSource(vs, "#version 300 es\\nin vec2 p;\\nin vec3 c;\\nout vec3 vc;\\nvoid main(){gl_Position=vec4(p,0,1);vc=c;}");\n' +
     '    gl.compileShader(vs);\n' +
@@ -27,10 +30,11 @@ var code = 'importScripts("' + origin + bundlePath + '");\n' +
     '    gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 20, 8);\n' +
     '    self.postMessage({type:"ready"});\n' +
     '    function render() {\n' +
-    '      gl.viewport(0, 0, canvas.width, canvas.height);\n' +
+    '      gl.viewport(0, 0, glCanvas.width, glCanvas.height);\n' +
     '      gl.clearColor(0.1, 0.1, 0.2, 1.0);\n' +
     '      gl.clear(gl.COLOR_BUFFER_BIT);\n' +
     '      gl.useProgram(prog); gl.bindVertexArray(vao); gl.drawArrays(gl.TRIANGLES, 0, 3);\n' +
+    '      displayCtx.drawImage(glCanvas, 0, 0, displayCanvas.width, displayCanvas.height);\n' +
     '      setTimeout(render, 16);\n' +
     '    }\n' +
     '    render();\n' +
@@ -40,7 +44,4 @@ var code = 'importScripts("' + origin + bundlePath + '");\n' +
 var w = new Worker(URL.createObjectURL(new Blob([code], {type:'application/javascript'})));
 window.worker = w;
 spector.spyWorker(w);
-w.postMessage({ type: 'init', canvas: oc }, [oc]);
-
-// Worker will appear in the Spector capture menu when its context is ready.
-// Users can capture via the UI button.
+w.postMessage({ type: 'init', displayCanvas: displayOC }, [displayOC]);
