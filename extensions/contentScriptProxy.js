@@ -99,35 +99,17 @@ else {
     }, false);
 }
 
-// Listen for Worker capture events
-if (window.__SPECTOR_Workers) {
-    window.__SPECTOR_Workers.forEach(function(workerInfo, index) {
-        if (workerInfo.injected) {
-            workerInfo.worker.addEventListener('message', function(e) {
-                if (e.data && typeof e.data.type === 'string' && e.data.type.indexOf('spector:') === 0) {
-                    if (e.data.type === 'spector:capture-complete') {
-                        // Relay capture to extension
-                        var myEvent = new CustomEvent("SpectorOnCaptureEvent", { detail: { capture: JSON.stringify(e.data.capture) } });
-                        document.dispatchEvent(myEvent);
-                    }
-                    if (e.data.type === 'spector:context-ready') {
-                        // Notify extension that a Worker WebGL context is available
-                        var canvasEvent = new CustomEvent("SpectorWebGLCanvasAvailableEvent");
-                        document.dispatchEvent(canvasEvent);
-                    }
-                }
-            });
-        }
-    });
-}
+// Worker capture events are handled by contentScript.js in the page world.
+// It tracks Workers via window.__SPECTOR_Canvases and handles capture routing.
 
 var refreshCanvases = function() {
-    if (captureOffScreen) {
-        // List is retrieved from all the ever created canvases.
-        var myEvent = new CustomEvent("SpectorRequestCanvasListEvent");
-        document.dispatchEvent(myEvent);
-    }
-    else {
+    // Always request the offscreen canvas list — this includes Worker entries
+    // added via window.__SPECTOR_Canvases in the page world.
+    var myEvent = new CustomEvent("SpectorRequestCanvasListEvent");
+    document.dispatchEvent(myEvent);
+
+    if (!captureOffScreen) {
+        // Also check DOM canvases in normal mode
         if (document.body) {
             var canvasElements = document.body.querySelectorAll("canvas");
             if (canvasElements.length > 0) {
@@ -152,9 +134,11 @@ var refreshCanvases = function() {
                         });
                     }
                 }
-                sendMessage({ canvases: canvasesInformation, captureOffScreen: false }, function (response) {
-                    frameId = response.frameId;
-                });
+                if (canvasesInformation.length > 0) {
+                    sendMessage({ canvases: canvasesInformation, captureOffScreen: false }, function (response) {
+                        frameId = response.frameId;
+                    });
+                }
             }
         }
     }

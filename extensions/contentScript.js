@@ -115,6 +115,33 @@ window.__SPECTOR_Canvases = [];
         var __SPECTOR_Origin_Worker = Worker;
         window.__SPECTOR_Workers = [];
 
+        // When a Worker reports its WebGL context is ready, add it to the canvas list
+        var __SPECTOR_trackWorker = function(w, urlStr) {
+            w.addEventListener('message', function(e) {
+                if (e.data && typeof e.data.type === 'string') {
+                    if (e.data.type === 'spector:context-ready') {
+                        // Add Worker as a virtual canvas entry so the extension can see it
+                        var workerProxy = {
+                            id: "Worker (" + urlStr.split('/').pop().substring(0, 20) + ")",
+                            width: 0,
+                            height: 0,
+                            __spector_worker: w
+                        };
+                        window.__SPECTOR_Canvases.push(workerProxy);
+
+                        var canvasEvent = new CustomEvent("SpectorWebGLCanvasAvailableEvent");
+                        document.dispatchEvent(canvasEvent);
+                    }
+                    if (e.data.type === 'spector:capture-complete') {
+                        var captureEvent = new CustomEvent("SpectorOnCaptureEvent", {
+                            detail: { capture: JSON.stringify(e.data.capture) }
+                        });
+                        document.dispatchEvent(captureEvent);
+                    }
+                }
+            });
+        };
+
         window.Worker = function SpectorWorkerProxy(scriptURL, options) {
             var urlStr = scriptURL.toString();
 
@@ -122,6 +149,7 @@ window.__SPECTOR_Canvases = [];
             if (options && options.type === 'module') {
                 var w = new __SPECTOR_Origin_Worker(scriptURL, options);
                 window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: false });
+                __SPECTOR_trackWorker(w, urlStr);
                 return w;
             }
 
@@ -142,15 +170,18 @@ window.__SPECTOR_Canvases = [];
                         var blobUrl = URL.createObjectURL(blob);
                         var w = new __SPECTOR_Origin_Worker(blobUrl, options);
                         window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: true });
+                        __SPECTOR_trackWorker(w, urlStr);
                         return w;
                     }
                 }
             } catch(e) {
+                // tslint:disable-next-line:no-console
                 // Fallback silently on CORS/CSP errors
             }
 
             var w = new __SPECTOR_Origin_Worker(scriptURL, options);
             window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: false });
+            __SPECTOR_trackWorker(w, urlStr);
             return w;
         };
         window.Worker.prototype = __SPECTOR_Origin_Worker.prototype;
@@ -238,7 +269,13 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                 var fullCapture = (document.getElementById(spectorCommunicationFullCaptureElementId).value === "true");
                 var commandCount = 0 + document.getElementById(spectorCommunicationCommandCountElementId).value;
 
-                spector.captureCanvas(canvas, commandCount, quickCapture, fullCapture);
+                // Route Worker proxy entries to captureWorker
+                if (canvas && canvas.__spector_worker) {
+                    spector.spyWorker(canvas.__spector_worker);
+                    spector.captureWorker(canvas.__spector_worker, commandCount, quickCapture, fullCapture);
+                } else {
+                    spector.captureCanvas(canvas, commandCount, quickCapture, fullCapture);
+                }
             });
             document.addEventListener("SpectorRequestRebuildProgramEvent", function(e) {
                 var buildInfoInText = document.getElementById(spectorCommunicationRebuildProgramElementId).value;
