@@ -133,7 +133,11 @@ export class Spector {
             this.captureMenu.onPlayNextFrameRequested.add(this.playNextFrame, this);
             this.captureMenu.onCaptureRequested.add((info) => {
                 if (info) {
-                    this.captureCanvas(info.ref);
+                    if (info.ref instanceof Worker) {
+                        this.captureWorker(info.ref);
+                    } else {
+                        this.captureCanvas(info.ref);
+                    }
                 }
             }, this);
 
@@ -462,6 +466,19 @@ export class Spector {
         }, this);
         bridge.onError.add((error) => {
             this.onErrorInternal(error);
+        }, this);
+
+        // When the Worker's WebGL context is ready, add it to the capture menu's canvas list.
+        bridge.onContextReady.add(() => {
+            if (this.captureMenu) {
+                const workerIndex = this.workerBridges.size;
+                this.captureMenu.addCanvasInformation({
+                    id: "Worker " + workerIndex,
+                    width: 0,
+                    height: 0,
+                    ref: worker,
+                });
+            }
         }, this);
 
         this.workerBridges.set(worker, bridge);

@@ -41,9 +41,5 @@ window.worker = w;
 spector.spyWorker(w);
 w.postMessage({ type: 'init', canvas: oc }, [oc]);
 
-w.addEventListener('message', function(e) {
-    if (e.data && e.data.type === 'ready') {
-        var nst = window.__SPECTOR_Origin_setTimeout || setTimeout;
-        nst.call(window, function() { spector.captureWorker(w); }, 2000);
-    }
-});
+// Worker will appear in the Spector capture menu when its context is ready.
+// Users can capture via the UI button — no auto-capture needed.

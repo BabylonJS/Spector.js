@@ -1,14 +1,16 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Worker OffscreenCanvas Capture', () => {
-    test('captures a frame from Worker WebGL context with multiple commands', async ({ page }) => {
+    test('Worker appears in canvas list and captures a full frame', async ({ page }) => {
         await page.goto('/sample/index.html?sample=workerOffscreen');
 
         // Wait for scripts to load and Worker to be created
         await page.waitForFunction('window.spector && window.worker', { timeout: 15000 });
 
-        // The workerOffscreen.js sample auto-triggers a capture after the Worker is ready.
-        // Wait for the Worker to send the capture-complete message.
+        // Wait for Worker context to be ready — it auto-registers in the canvas list
+        await page.waitForTimeout(2000);
+
+        // Listen for Worker capture result, then trigger capture via direct message
         const captureData = await page.evaluate(() => {
             return new Promise<any>((resolve, reject) => {
                 const w = (window as any).worker as Worker;
@@ -21,6 +23,8 @@ test.describe('Worker OffscreenCanvas Capture', () => {
                         });
                     }
                 });
+                // Trigger capture via the bridge
+                (window as any).spector.captureWorker(w);
                 setTimeout(() => reject(new Error('Worker capture timed out')), 15000);
             });
         });
@@ -29,9 +33,20 @@ test.describe('Worker OffscreenCanvas Capture', () => {
         expect(captureData.commands).toBeGreaterThanOrEqual(1);
     });
 
+    test('Worker entry appears in Spector canvas list', async ({ page }) => {
+        await page.goto('/sample/index.html?sample=workerOffscreen');
+        await page.waitForFunction('window.spector && window.worker', { timeout: 15000 });
+        await page.waitForTimeout(2000);
+
+        // The Worker should be auto-selected in the canvas dropdown
+        const workerInList = await page.evaluate(() => {
+            const menu = document.querySelector('.canvasListComponent');
+            return menu ? menu.textContent : '';
+        });
+        expect(workerInList).toContain('Worker');
+    });
+
     test('workerRenderer.js does not exist as a standalone sample', async ({ page }) => {
-        // workerRenderer.js was removed — it was a Worker-internal script that caused
-        // a blank page when loaded as a sample. Verify the file no longer exists.
         const response = await page.goto('/sample/js/workerRenderer.js');
         expect(response.status()).toBe(404);
     });

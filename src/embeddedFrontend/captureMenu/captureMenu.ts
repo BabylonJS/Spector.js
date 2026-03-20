@@ -54,12 +54,14 @@ export class CaptureMenu {
     private readonly canvasListStateId: number;
 
     private isTrackingCanvas: boolean;
+    private readonly extraCanvasEntries: ICanvasInformation[];
 
     constructor(private readonly options: ICaptureMenuOptions = {}) {
         this.rootPlaceHolder = options.rootPlaceHolder || document.body;
         this.mvx = new MVX(this.rootPlaceHolder);
 
         this.isTrackingCanvas = false;
+        this.extraCanvasEntries = [];
 
         this.onCanvasSelected = new Observable<ICanvasInformation>();
         this.onCaptureRequested = new Observable<ICanvasInformation>();
@@ -189,6 +191,23 @@ export class CaptureMenu {
         }
     }
 
+    public addCanvasInformation(info: ICanvasInformation): void {
+        this.extraCanvasEntries.push(info);
+
+        this.mvx.addChildState(this.canvasListStateId, info, this.canvasListItemComponent);
+
+        // If no canvas is currently selected, auto-select this one.
+        const canvasListState = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId);
+        if (!canvasListState.currentCanvasInformation) {
+            this.mvx.updateState(this.canvasListStateId, {
+                currentCanvasInformation: info,
+                showList: false,
+            });
+            this.updateMenuStateLog(LogLevel.info, CaptureMenu.ActionsHelpText);
+            this.onCanvasSelected.trigger(info);
+        }
+    }
+
     public setFPS(fps: number): void {
         this.mvx.updateState(this.fpsStateId, fps);
     }
@@ -202,6 +221,12 @@ export class CaptureMenu {
             const canvasInformationClone = convertToListInfo(canvas);
             canvasesInformationClone.push(canvasInformationClone);
             this.mvx.addChildState(this.canvasListStateId, canvasInformationClone, this.canvasListItemComponent);
+        }
+
+        // Re-add persistent extra entries (Workers, etc.) that aren't in the DOM.
+        for (const extra of this.extraCanvasEntries) {
+            canvasesInformationClone.push(extra);
+            this.mvx.addChildState(this.canvasListStateId, extra, this.canvasListItemComponent);
         }
 
         // Auto Select in the list if only one canvas.
