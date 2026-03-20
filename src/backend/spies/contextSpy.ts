@@ -141,7 +141,14 @@ export class ContextSpy {
             ? this.context.canvas.clientHeight || this.context.canvas.height
             : this.context.canvas.height;
 
-        this.stateSpy.startCapture(this.currentCapture, quickCapture, fullCapture);
+        try {
+            this.stateSpy.startCapture(this.currentCapture, quickCapture, fullCapture);
+        }
+        catch (e) {
+            // State capture init may fail (e.g. VisualState in Workers).
+            // Continue capturing commands — state data may be incomplete.
+            Logger.warn("State capture init error: " + e);
+        }
         this.recorderSpy.startCapture();
 
         this.currentCapture.listenCommandsStartTime = Time.now;
@@ -154,7 +161,12 @@ export class ContextSpy {
         }
 
         this.capturing = false;
-        this.stateSpy.stopCapture(this.currentCapture);
+        try {
+            this.stateSpy.stopCapture(this.currentCapture);
+        }
+        catch (e) {
+            Logger.warn("State capture stop error: " + e);
+        }
         this.recorderSpy.stopCapture();
 
         this.currentCapture.listenCommandsEndTime = listenCommandsEndTime;
@@ -207,7 +219,14 @@ export class ContextSpy {
 
         if (this.isCapturing()) {
             const commandCapture = commandSpy.createCapture(functionInformation, this.getNextCommandCaptureId(), this.marker);
-            this.stateSpy.captureState(commandCapture);
+            try {
+                this.stateSpy.captureState(commandCapture);
+            }
+            catch (e) {
+                // State capture failures (e.g. VisualState in Workers) must not
+                // kill the command capture pipeline.
+                Logger.warn("State capture error: " + e);
+            }
             this.currentCapture.commands.push(commandCapture);
 
             commandCapture.endTime = Time.now;

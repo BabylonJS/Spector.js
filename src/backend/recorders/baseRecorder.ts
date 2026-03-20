@@ -146,8 +146,12 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
 
     protected createWithoutSideEffects(functionInformation: IFunctionInformation): void {
         this.options.toggleCapture(false);
-        this.create(functionInformation);
-        this.options.toggleCapture(true);
+        try {
+            this.create(functionInformation);
+        }
+        finally {
+            this.options.toggleCapture(true);
+        }
     }
 
     protected updateWithoutSideEffects(functionInformation: IFunctionInformation): void {
@@ -156,23 +160,25 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
         }
 
         this.options.toggleCapture(false);
-        const target = functionInformation.arguments[0];
-        const instance = this.getBoundInstance(target);
-        if (!instance) {
-            this.options.toggleCapture(true);
-            return;
-        }
+        try {
+            const target = functionInformation.arguments[0];
+            const instance = this.getBoundInstance(target);
+            if (!instance) {
+                return;
+            }
 
-        const tag = WebGlObjects.getWebGlObjectTag(instance);
-        if (!tag) {
-            this.options.toggleCapture(true);
-            return;
-        }
+            const tag = WebGlObjects.getWebGlObjectTag(instance);
+            if (!tag) {
+                return;
+            }
 
-        const targetString = this.getWebGlConstant(target);
-        const size = this.update(functionInformation, targetString, instance);
-        this.changeMemorySize(size);
-        this.options.toggleCapture(true);
+            const targetString = this.getWebGlConstant(target);
+            const size = this.update(functionInformation, targetString, instance);
+            this.changeMemorySize(size);
+        }
+        finally {
+            this.options.toggleCapture(true);
+        }
     }
 
     protected deleteWithoutSideEffects(functionInformation: IFunctionInformation): void {
@@ -186,9 +192,13 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
         }
 
         this.options.toggleCapture(false);
-        const size = this.delete(instance);
-        this.changeMemorySize(-size);
-        this.options.toggleCapture(true);
+        try {
+            const size = this.delete(instance);
+            this.changeMemorySize(-size);
+        }
+        finally {
+            this.options.toggleCapture(true);
+        }
     }
 
     protected changeMemorySize(size: number) {

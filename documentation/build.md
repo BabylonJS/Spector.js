@@ -66,8 +66,7 @@ Once ```npm start``` has been launched, you can access the following samples to 
 
 ### OffscreenCanvas
 1. [Offscreen (BabylonJS)](http://localhost:1337/sample/index.html?sample=offscreen): Test OffscreenCanvas support with BabylonJS engine.
-2. [Offscreen (Raw WebGL2)](http://localhost:1337/sample/offscreen.html): Test main-thread OffscreenCanvas capture with raw WebGL2 (no framework).
-3. [Worker OffscreenCanvas](http://localhost:1337/sample/worker.html): Test Worker-based OffscreenCanvas capture via `transferControlToOffscreen()` and `spector.captureWorker()`.
+2. [Worker OffscreenCanvas](http://localhost:1337/sample/index.html?sample=workerOffscreen): Test Worker-based OffscreenCanvas capture via `transferControlToOffscreen()` and `spector.captureWorker()`.
 
 You can also add &noSpy=1 at the end of the previous Urls to test without enabling the full spy before starting your rendering engine.
 
