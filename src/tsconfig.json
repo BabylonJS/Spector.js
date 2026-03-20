@@ -7,6 +7,7 @@
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "noImplicitThis": true,
+        "skipLibCheck": true,
         "declaration":true,
         "experimentalDecorators": true,
         "module": "es6",

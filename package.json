@@ -11,8 +11,10 @@
   ],
   "readme": "documentation/standaloneVersion.md",
   "main": "dist/spector.bundle.js",
+  "types": "dist/spector.d.ts",
   "files": [
-    "dist/spector.bundle.js"
+    "dist/spector.bundle.js",
+    "dist/spector.d.ts"
   ],
   "author": "@SpectorJS",
   "repository": {
@@ -27,10 +29,11 @@
     "watch": "webpack --config tools/webpack.config.js --env=dev",
     "start": "run-p html watch -l",
     "build:bundle": "webpack --config tools/webpack.config.js --env=prod",
+    "build:types": "node ./tools/bundle-dts.js",
     "build:copybuild:copy:bundle": "node ./tools/copy.js /../dist/spector.bundle.js /../extensions/spector.bundle.js",
     "build:concatBundleFunc": "concat-cli -f tools/spector.ext.header.js dist/spector.bundle.js tools/spector.ext.footer.js -o extensions/spector.bundle.func.js",
     "build:tslint": "tslint -c ./tslint.json -p ./src/tsconfig.json",
-    "build": "run-s build:tslint build:bundle build:copybuild:copy:bundle build:concatBundleFunc -n",
+    "build": "run-s build:tslint build:bundle build:types build:copybuild:copy:bundle build:concatBundleFunc -n",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:visual": "npx playwright test --config test/playwright.config.ts",
     "test:visual:update": "npx playwright test --config test/playwright.config.ts --update-snapshots"
