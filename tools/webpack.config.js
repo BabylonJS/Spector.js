@@ -43,10 +43,21 @@ var buildConfig = function(env) {
                 }
             }, {
                 test: /\.scss$/,
-                use: [ "style-loader?insert=html", "css-loader", "sass-loader" ]
+                use: [
+                    { loader: "style-loader", options: { insert: "html" } },
+                    "css-loader",
+                    {
+                        loader: "sass-loader",
+                        options: {
+                            sassOptions: {
+                                silenceDeprecations: ["import", "global-builtin", "color-functions"],
+                            },
+                        },
+                    },
+                ]
             }, {
                 test: /\.css$/,
-                use: [ "style-loader?insert=html", "css-loader" ]
+                use: [ { loader: "style-loader", options: { insert: "html" } }, "css-loader" ]
             }, {
                 test: /ace.js$/,
                 // use: [ "exports-loader?ace" ]
