@@ -259,10 +259,12 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
             document.addEventListener("SpectorRequestCaptureEvent", function(e) {
                 var canvasIndex = document.getElementById(spectorCommunicationElementId).value;
 
+                // Always look up from __SPECTOR_Canvases first (includes Workers and OffscreenCanvases).
+                // Fall back to DOM query for legacy compatibility.
                 var canvas = null;
-                if (captureOffScreen) {
+                if (window.__SPECTOR_Canvases && window.__SPECTOR_Canvases[canvasIndex]) {
                     canvas = window.__SPECTOR_Canvases[canvasIndex];
-                } else {
+                } else if (!captureOffScreen) {
                     canvas = document.body.querySelectorAll("canvas")[canvasIndex]; 
                 }
                 var quickCapture = (document.getElementById(spectorCommunicationQuickCaptureElementId).value === "true");
@@ -270,11 +272,9 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                 var commandCount = 0 + document.getElementById(spectorCommunicationCommandCountElementId).value;
 
                 // Route Worker proxy entries — send trigger directly to Worker
-                // to bypass the main-thread spy chain (which only captures partial frames)
                 if (canvas && canvas.__spector_worker) {
                     var worker = canvas.__spector_worker;
 
-                    // Listen for capture result from Worker
                     worker.addEventListener('message', function captureHandler(msg) {
                         if (msg.data && msg.data.type === 'spector:capture-complete') {
                             worker.removeEventListener('message', captureHandler);
@@ -285,7 +285,6 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                         }
                     });
 
-                    // Send trigger directly to Worker
                     worker.postMessage({
                         type: 'spector:trigger-capture',
                         version: 1,
@@ -294,7 +293,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                         quickCapture: quickCapture,
                         fullCapture: fullCapture
                     });
-                } else {
+                } else if (canvas) {
                     spector.captureCanvas(canvas, commandCount, quickCapture, fullCapture);
                 }
             });
