@@ -196,16 +196,14 @@ export class CaptureMenu {
 
         this.mvx.addChildState(this.canvasListStateId, info, this.canvasListItemComponent);
 
-        // If no canvas is currently selected, auto-select this one.
-        const canvasListState = this.mvx.getGenericState<ICanvasListComponentState>(this.canvasListStateId);
-        if (!canvasListState.currentCanvasInformation) {
-            this.mvx.updateState(this.canvasListStateId, {
-                currentCanvasInformation: info,
-                showList: false,
-            });
-            this.updateMenuStateLog(LogLevel.info, CaptureMenu.ActionsHelpText);
-            this.onCanvasSelected.trigger(info);
-        }
+        // Always select Worker/extra entries — they are explicitly registered
+        // and take priority over auto-scanned DOM canvases.
+        this.mvx.updateState(this.canvasListStateId, {
+            currentCanvasInformation: info,
+            showList: false,
+        });
+        this.updateMenuStateLog(LogLevel.info, CaptureMenu.ActionsHelpText);
+        this.onCanvasSelected.trigger(info);
     }
 
     public setFPS(fps: number): void {
