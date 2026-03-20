@@ -32,7 +32,8 @@ export abstract class BaseWebGlObject {
 
     // tslint:disable-next-line:ban-types
     public get type(): Function {
-        return (window as any)[this.typeName] || null;
+        const scope = typeof globalThis !== "undefined" ? globalThis : self;
+        return (scope as any)[this.typeName] || null;
     }
 
     private id: number;

@@ -3,6 +3,7 @@ import { ReadPixelsHelper } from "../../utils/readPixelsHelper";
 import { VisualState } from "../context/visualState";
 import { IContextInformation } from "../../types/contextInformation";
 import { ITextureRecorderData } from "../../recorders/texture2DRecorder";
+import { CanvasFactory } from "../../utils/canvasFactory";
 
 export class DrawCallTextureInputState {
     public static captureBaseSize = 64;
@@ -18,21 +19,21 @@ export class DrawCallTextureInputState {
 
     private readonly context: WebGLRenderingContext;
     private readonly captureFrameBuffer: WebGLFramebuffer;
-    private readonly workingCanvas: HTMLCanvasElement;
-    private readonly captureCanvas: HTMLCanvasElement;
-    private readonly workingContext2D: CanvasRenderingContext2D;
-    private readonly captureContext2D: CanvasRenderingContext2D;
+    private readonly workingCanvas: HTMLCanvasElement | OffscreenCanvas;
+    private readonly captureCanvas: HTMLCanvasElement | OffscreenCanvas;
+    private readonly workingContext2D: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+    private readonly captureContext2D: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
     private fullCapture: boolean;
 
     constructor(options: IContextInformation) {
         this.context = options.context;
         this.captureFrameBuffer = options.context.createFramebuffer();
-        this.workingCanvas = document.createElement("canvas");
-        this.workingContext2D = this.workingCanvas.getContext("2d");
-        this.captureCanvas = document.createElement("canvas");
-        this.captureContext2D = this.captureCanvas.getContext("2d");
-        this._setSmoothing(true);
+        this.workingCanvas = CanvasFactory.createCanvas(1, 1);
+        this.workingContext2D = CanvasFactory.get2DContext(this.workingCanvas);
+        this.captureCanvas = CanvasFactory.createCanvas(1, 1);
+        this.captureContext2D = CanvasFactory.get2DContext(this.captureCanvas);
+        CanvasFactory.setImageSmoothing(this.captureContext2D, true);
     }
 
     public appendTextureState(state: any, storage: WebGLTexture, target: WebGlConstant = null, fullCapture: boolean): void {
@@ -196,12 +197,12 @@ export class DrawCallTextureInputState {
             this.captureContext2D.scale(1, -1); // Y flip
             this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
             this._setSmoothing(!pixelated);
-            this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
+            this.captureContext2D.drawImage(this.workingCanvas as any, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
             this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
             this.captureContext2D.globalCompositeOperation = "source-over";
 
             // get the screen capture
-            const src = this.captureCanvas.toDataURL();
+            const src = CanvasFactory.canvasToDataURL(this.captureCanvas, this.captureContext2D);
             return src;
         }
         catch (e) {
@@ -216,10 +217,6 @@ export class DrawCallTextureInputState {
     }
 
     private _setSmoothing(smooth: boolean) {
-        this.captureContext2D.imageSmoothingEnabled = smooth;
-        (this.captureContext2D as any).mozImageSmoothingEnabled = smooth;
-        (this.captureContext2D as any).oImageSmoothingEnabled = smooth;
-        (this.captureContext2D as any).webkitImageSmoothingEnabled = smooth;
-        (this.captureContext2D as any).msImageSmoothingEnabled = smooth;
+        CanvasFactory.setImageSmoothing(this.captureContext2D, smooth);
     }
 }

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spector.js - Worker OffscreenCanvas</title>
+    <style>
+        body { margin: 0; background: #1a1a2e; color: #e0e0e0; font-family: monospace; }
+        #renderCanvas { border: 1px solid #333; display: block; margin: 20px auto; }
+        #controls { text-align: center; margin: 10px; }
+        button { padding: 8px 16px; margin: 4px; cursor: pointer; background: #16213e; color: #e0e0e0; border: 1px solid #0f3460; }
+        button:hover { background: #0f3460; }
+        #status { text-align: center; color: #e94560; min-height: 20px; margin: 10px; }
+        h1 { text-align: center; font-size: 16px; color: #e94560; }
+    </style>
+</head>
+<body>
+    <h1>Spector.js — Worker OffscreenCanvas Demo</h1>
+    <div id="controls">
+        <button id="captureBtn" disabled>Capture Frame</button>
+    </div>
+    <div id="status">Initializing Worker...</div>
+    <canvas id="renderCanvas" width="800" height="600"></canvas>
+
+    <script src="../dist/spector.bundle.js"></script>
+    <script>
+        var statusEl = document.getElementById('status');
+        var captureBtn = document.getElementById('captureBtn');
+        var canvas = document.getElementById('renderCanvas');
+
+        // Transfer canvas control to Worker
+        var offscreen = canvas.transferControlToOffscreen();
+
+        // Create Worker with the renderer script.
+        // The Worker must have spector.worker.bundle.js loaded via importScripts.
+        // We fetch the renderer source, prepend the spector import, and create a blob Worker.
+        var workerScript = [
+            'importScripts("' + location.origin + '/dist/spector.worker.bundle.js");',
+            '',
+        ].join('\n');
+
+        // Fetch the actual worker renderer and prepend the spector import
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'js/workerRenderer.js', false);
+        xhr.send();
+        workerScript += xhr.responseText;
+
+        var blob = new Blob([workerScript], { type: 'application/javascript' });
+        var workerUrl = URL.createObjectURL(blob);
+        var worker = new Worker(workerUrl);
+
+        // Initialize Spector
+        var spector = new SPECTOR.Spector();
+
+        // Spy on this Worker (manual API — the primary, reliable path)
+        var bridge = spector.spyWorker(worker);
+
+        worker.onmessage = function(e) {
+            if (e.data.type === 'ready') {
+                statusEl.textContent = 'Worker ready. WebGL2 rendering in Worker. Ready to capture.';
+                captureBtn.disabled = false;
+            } else if (e.data.type === 'error') {
+                statusEl.textContent = 'Worker error: ' + e.data.message;
+            }
+        };
+
+        worker.onerror = function(e) {
+            statusEl.textContent = 'Worker crashed: ' + e.message + ' at ' + e.filename + ':' + e.lineno;
+        };
+
+        // Send canvas to Worker
+        worker.postMessage({ type: 'init', canvas: offscreen }, [offscreen]);
+
+        // Capture button
+        captureBtn.addEventListener('click', function() {
+            statusEl.textContent = 'Capturing from Worker...';
+            captureBtn.disabled = true;
+
+            spector.onCapture.add(function(capture) {
+                statusEl.textContent = 'Capture complete! ' + capture.commands.length + ' commands recorded.';
+                captureBtn.disabled = false;
+
+                // Display result
+                spector.getResultUI().display();
+                spector.getResultUI().addCapture(capture);
+            });
+            spector.onError.add(function(error) {
+                statusEl.textContent = 'Capture error: ' + error;
+                captureBtn.disabled = false;
+            });
+
+            spector.captureWorker(worker);
+        });
+    </script>
+</body>
+</html>

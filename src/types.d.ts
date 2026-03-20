@@ -1,8 +1,10 @@
 declare type OffscreenCanvas = HTMLCanvasElement;
 declare var OffscreenCanvas: {
     prototype: OffscreenCanvas;
-    new(): OffscreenCanvas;
+    new(width: number, height: number): OffscreenCanvas;
 };
+
+declare type OffscreenCanvasRenderingContext2D = CanvasRenderingContext2D;
 
 declare type WebGLObject = {};
 

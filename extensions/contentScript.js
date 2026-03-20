@@ -110,6 +110,52 @@ window.__SPECTOR_Canvases = [];
         }
     }
 
+    // ---- Worker Interception ----
+    if (typeof Worker !== 'undefined') {
+        var __SPECTOR_Origin_Worker = Worker;
+        window.__SPECTOR_Workers = [];
+
+        window.Worker = function SpectorWorkerProxy(scriptURL, options) {
+            var urlStr = scriptURL.toString();
+
+            // Skip module workers — importScripts doesn't work there
+            if (options && options.type === 'module') {
+                var w = new __SPECTOR_Origin_Worker(scriptURL, options);
+                window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: false });
+                return w;
+            }
+
+            try {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', urlStr, false);
+                xhr.send();
+
+                if (xhr.status === 200) {
+                    // Get the worker bundle URL — use the extension's own URL
+                    var workerBundleUrl = document.getElementById('TexturesId_SpectorWorkerBundleUrl');
+                    var bundleUrl = workerBundleUrl ? workerBundleUrl.value : '';
+
+                    if (bundleUrl) {
+                        var importLine = 'importScripts("' + bundleUrl + '");\n';
+                        var modifiedScript = importLine + xhr.responseText;
+                        var blob = new Blob([modifiedScript], { type: 'application/javascript' });
+                        var blobUrl = URL.createObjectURL(blob);
+                        var w = new __SPECTOR_Origin_Worker(blobUrl, options);
+                        window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: true });
+                        return w;
+                    }
+                }
+            } catch(e) {
+                // Fallback silently on CORS/CSP errors
+            }
+
+            var w = new __SPECTOR_Origin_Worker(scriptURL, options);
+            window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: false });
+            return w;
+        };
+        window.Worker.prototype = __SPECTOR_Origin_Worker.prototype;
+    }
+
     HTMLCanvasElement.prototype.getContext = function () {
         var context = null;
         if (!arguments.length) {

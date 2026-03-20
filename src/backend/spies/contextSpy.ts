@@ -134,8 +134,12 @@ export class ContextSpy {
         // Refreshes canvas info in case it changed beffore the capture.
         this.currentCapture.canvas.width = this.context.canvas.width;
         this.currentCapture.canvas.height = this.context.canvas.height;
-        this.currentCapture.canvas.clientWidth = (this.context.canvas as HTMLCanvasElement).clientWidth || this.context.canvas.width;
-        this.currentCapture.canvas.clientHeight = (this.context.canvas as HTMLCanvasElement).clientHeight || this.context.canvas.height;
+        this.currentCapture.canvas.clientWidth = (typeof HTMLCanvasElement !== "undefined" && this.context.canvas instanceof HTMLCanvasElement)
+            ? this.context.canvas.clientWidth || this.context.canvas.width
+            : this.context.canvas.width;
+        this.currentCapture.canvas.clientHeight = (typeof HTMLCanvasElement !== "undefined" && this.context.canvas instanceof HTMLCanvasElement)
+            ? this.context.canvas.clientHeight || this.context.canvas.height
+            : this.context.canvas.height;
 
         this.stateSpy.startCapture(this.currentCapture, quickCapture, fullCapture);
         this.recorderSpy.startCapture();
@@ -264,9 +268,13 @@ export class ContextSpy {
         this.canvasCapture = {
             width: this.context.canvas.width,
             height: this.context.canvas.height,
-            clientWidth: (this.context.canvas as HTMLCanvasElement).clientWidth || this.context.canvas.width,
-            clientHeight: (this.context.canvas as HTMLCanvasElement).clientHeight || this.context.canvas.height,
-            browserAgent: navigator ? navigator.userAgent : "",
+            clientWidth: (typeof HTMLCanvasElement !== "undefined" && this.context.canvas instanceof HTMLCanvasElement)
+                ? this.context.canvas.clientWidth || this.context.canvas.width
+                : this.context.canvas.width,
+            clientHeight: (typeof HTMLCanvasElement !== "undefined" && this.context.canvas instanceof HTMLCanvasElement)
+                ? this.context.canvas.clientHeight || this.context.canvas.height
+                : this.context.canvas.height,
+            browserAgent: typeof navigator !== "undefined" ? navigator.userAgent : "",
         };
     }
 

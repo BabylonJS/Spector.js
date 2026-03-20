@@ -8,9 +8,11 @@ import { Observable } from "./shared/utils/observable";
 import { ContextSpy } from "./backend/spies/contextSpy";
 import { TimeSpy } from "./backend/spies/timeSpy";
 import { CanvasSpy } from "./backend/spies/canvasSpy";
+import { WorkerSpy } from "./backend/spies/workerSpy";
 import { Program } from "./backend/webGlObjects/webGlObjects";
 import { CaptureMenu } from "./embeddedFrontend/captureMenu/captureMenu";
 import { ResultView } from "./embeddedFrontend/resultView/resultView";
+import { WorkerBridge } from "./backend/bridge/workerBridge";
 import { XRSpy } from "./backend/spies/xrSpy";
 
 const CAPTURE_LIMIT = 10000; // Limit command count to 10000 record (to be kept in sync with the documentation)
@@ -88,6 +90,7 @@ export class Spector {
     private retry: number;
     private noFrameTimeout = -1;
     private marker: string;
+    private readonly workerBridges: Map<Worker, WorkerBridge>;
 
     private options: SpectorInitOptions;
 
@@ -103,6 +106,7 @@ export class Spector {
         this.fullCapture = false;
         this.retry = 0;
         this.contexts = [];
+        this.workerBridges = new Map();
 
         this.timeSpy = new TimeSpy();
         this.onCaptureStarted = new Observable<ICapture>();
@@ -252,7 +256,7 @@ export class Spector {
     }
 
     public getAvailableContexts(): IAvailableContext[] {
-        return this.getAvailableContexts();
+        return this.contexts;
     }
 
     public captureCanvas(canvas: HTMLCanvasElement | OffscreenCanvas,
@@ -423,6 +427,65 @@ export class Spector {
         if (this.capturingContext) {
             this.capturingContext.log(value);
         }
+    }
+
+    /**
+     * Intercept all new Worker() calls to auto-inject Spector.
+     * Best-effort: will fail for CORS, CSP, or module Workers.
+     * @param workerBundleUrl URL to spector.worker.bundle.js
+     */
+    public spyWorkers(workerBundleUrl: string = "spector.worker.bundle.js"): void {
+        WorkerSpy.startIntercepting(workerBundleUrl);
+    }
+
+    /**
+     * Stop intercepting Worker construction.
+     */
+    public stopSpyingWorkers(): void {
+        WorkerSpy.stopIntercepting();
+    }
+
+    /**
+     * Manually spy on a specific Worker.
+     * This is the primary, reliable API for Worker capture.
+     * The Worker must already have the Spector worker bundle loaded.
+     */
+    public spyWorker(worker: Worker): WorkerBridge {
+        let bridge = this.workerBridges.get(worker);
+        if (bridge) {
+            return bridge;
+        }
+
+        bridge = new WorkerBridge(worker);
+        bridge.onCapture.add((capture) => {
+            this.triggerCapture(capture);
+        }, this);
+        bridge.onError.add((error) => {
+            this.onErrorInternal(error);
+        }, this);
+
+        this.workerBridges.set(worker, bridge);
+        return bridge;
+    }
+
+    /**
+     * Capture a frame from a Worker's WebGL context.
+     * @param worker The Worker to capture from
+     * @param commandCount Number of commands to capture (0 = one frame)
+     * @param quickCapture Skip visual state capture
+     * @param fullCapture Full resolution visual state
+     */
+    public captureWorker(
+        worker: Worker,
+        commandCount: number = 0,
+        quickCapture: boolean = false,
+        fullCapture: boolean = false,
+    ): void {
+        let bridge = this.workerBridges.get(worker);
+        if (!bridge) {
+            bridge = this.spyWorker(worker);
+        }
+        bridge.triggerCapture(0, commandCount, quickCapture, fullCapture);
     }
 
     private captureFrames(frameCount: number): void {

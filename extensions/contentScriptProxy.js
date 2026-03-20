@@ -99,6 +99,28 @@ else {
     }, false);
 }
 
+// Listen for Worker capture events
+if (window.__SPECTOR_Workers) {
+    window.__SPECTOR_Workers.forEach(function(workerInfo, index) {
+        if (workerInfo.injected) {
+            workerInfo.worker.addEventListener('message', function(e) {
+                if (e.data && typeof e.data.type === 'string' && e.data.type.indexOf('spector:') === 0) {
+                    if (e.data.type === 'spector:capture-complete') {
+                        // Relay capture to extension
+                        var myEvent = new CustomEvent("SpectorOnCaptureEvent", { detail: { capture: JSON.stringify(e.data.capture) } });
+                        document.dispatchEvent(myEvent);
+                    }
+                    if (e.data.type === 'spector:context-ready') {
+                        // Notify extension that a Worker WebGL context is available
+                        var canvasEvent = new CustomEvent("SpectorWebGLCanvasAvailableEvent");
+                        document.dispatchEvent(canvasEvent);
+                    }
+                }
+            });
+        }
+    });
+}
+
 var refreshCanvases = function() {
     if (captureOffScreen) {
         // List is retrieved from all the ever created canvases.
