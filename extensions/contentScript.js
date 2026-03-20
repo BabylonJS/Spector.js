@@ -269,10 +269,31 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                 var fullCapture = (document.getElementById(spectorCommunicationFullCaptureElementId).value === "true");
                 var commandCount = 0 + document.getElementById(spectorCommunicationCommandCountElementId).value;
 
-                // Route Worker proxy entries to captureWorker
+                // Route Worker proxy entries — send trigger directly to Worker
+                // to bypass the main-thread spy chain (which only captures partial frames)
                 if (canvas && canvas.__spector_worker) {
-                    spector.spyWorker(canvas.__spector_worker);
-                    spector.captureWorker(canvas.__spector_worker, commandCount, quickCapture, fullCapture);
+                    var worker = canvas.__spector_worker;
+
+                    // Listen for capture result from Worker
+                    worker.addEventListener('message', function captureHandler(msg) {
+                        if (msg.data && msg.data.type === 'spector:capture-complete') {
+                            worker.removeEventListener('message', captureHandler);
+                            var captureEvent = new CustomEvent("SpectorOnCaptureEvent", {
+                                detail: { capture: msg.data.capture }
+                            });
+                            document.dispatchEvent(captureEvent);
+                        }
+                    });
+
+                    // Send trigger directly to Worker
+                    worker.postMessage({
+                        type: 'spector:trigger-capture',
+                        version: 1,
+                        canvasIndex: 0,
+                        commandCount: commandCount,
+                        quickCapture: quickCapture,
+                        fullCapture: fullCapture
+                    });
                 } else {
                     spector.captureCanvas(canvas, commandCount, quickCapture, fullCapture);
                 }
