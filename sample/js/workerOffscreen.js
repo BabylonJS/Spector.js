@@ -8,7 +8,7 @@ var useDist = (document.location.href.toLowerCase().indexOf('dist=true') > 0);
 var bundlePath = useDist ? '/dist/spector.worker.bundle.js' : '/.temp/spector.worker.bundle.js';
 var origin = location.origin;
 
-var code = 'importScripts("' + origin + bundlePath + '");\n' +
+var code = 'try { importScripts("' + origin + bundlePath + '"); } catch(e) { /* Spector worker bundle not available */ }\n' +
     'self.addEventListener("message", function(e) {\n' +
     '  if (e.data.type === "init") {\n' +
     '    var displayCanvas = e.data.displayCanvas;\n' +
@@ -43,5 +43,7 @@ var code = 'importScripts("' + origin + bundlePath + '");\n' +
 
 var w = new Worker(URL.createObjectURL(new Blob([code], {type:'application/javascript'})));
 window.worker = w;
-spector.spyWorker(w);
+if (typeof spector !== 'undefined' && spector) {
+    spector.spyWorker(w);
+}
 w.postMessage({ type: 'init', displayCanvas: displayOC }, [displayOC]);

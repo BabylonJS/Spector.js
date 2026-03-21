@@ -153,6 +153,15 @@ window.__SPECTOR_Canvases = [];
                 return w;
             }
 
+            // Skip blob URLs — can't XHR them for injection. The blob code may
+            // already include importScripts for the worker bundle.
+            if (urlStr.indexOf('blob:') === 0) {
+                var w = new __SPECTOR_Origin_Worker(scriptURL, options);
+                window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: false });
+                __SPECTOR_trackWorker(w, urlStr);
+                return w;
+            }
+
             try {
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', urlStr, false);

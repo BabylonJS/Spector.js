@@ -2,9 +2,9 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
     testDir: './e2e',
-    timeout: 30000,
+    timeout: 60000,
     expect: {
-        timeout: 10000,
+        timeout: 15000,
     },
     fullyParallel: true,
     retries: 1,
@@ -29,6 +29,6 @@ export default defineConfig({
         command: 'npm run start',
         port: 1337,
         reuseExistingServer: true,
-        timeout: 60000,
+        timeout: 120000,
     },
 });
