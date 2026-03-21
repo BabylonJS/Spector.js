@@ -118,15 +118,20 @@ export class CommandSpy {
             const result = OriginFunctionHelper.executeOriginFunction(self.spiedCommandRunningContext, self.spiedCommandName, arguments);
             const after = Time.now;
 
-            const functionInformation = {
-                name: self.spiedCommandName,
-                arguments,
-                result,
-                startTime: before,
-                endTime: after,
-            };
+            try {
+                const functionInformation = {
+                    name: self.spiedCommandName,
+                    arguments,
+                    result,
+                    startTime: before,
+                    endTime: after,
+                };
 
-            self.callback(self, functionInformation);
+                self.callback(self, functionInformation);
+            }
+            catch (e) {
+                // Spy callback errors must never kill the application's render loop.
+            }
 
             return result;
         };

@@ -155,6 +155,11 @@ export class TimeSpy {
             if (self.willPlayNextFrame || (self.speedRatio && !self.lastFrame)) {
                 try {
                     self.onFrameStart.trigger(self);
+                }
+                catch (e) {
+                    self.onError.trigger(e);
+                }
+                try {
                     callback.apply(self.spiedScope, arguments);
                 }
                 catch (e) {

@@ -210,7 +210,10 @@ export class ContextSpy {
     }
 
     public onCommand(commandSpy: CommandSpy, functionInformation: IFunctionInformation): void {
-        if (!this.globalCapturing) {
+        // Only skip commands during state reads (toggleCapture(false) is active).
+        // Use the capturing flag to determine if we should record — globalCapturing
+        // may be stale in Worker contexts due to async state read timing.
+        if (!this.globalCapturing && !this.capturing) {
             return;
         }
 
