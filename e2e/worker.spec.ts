@@ -15,16 +15,19 @@ test.describe('Worker OffscreenCanvas Capture', () => {
 
     test('Worker capture returns multiple GL commands', async ({ page }) => {
         await page.goto('/sample/index.html?sample=workerOffscreen');
-        // Wait for spector bundle to be available
+        // Wait for spector and scripts to load
         await page.waitForFunction('typeof SPECTOR !== "undefined"', { timeout: 30000 });
         await page.waitForTimeout(2000);
 
-        // Create a fresh Worker with Spector bundle for reliable capture testing
+        // Test the Spector Worker capture pipeline end-to-end.
+        // This creates a Worker, loads the Spector worker bundle via importScripts,
+        // renders WebGL frames, triggers capture, and validates the response.
+        // This mirrors how the Spector extension captures Worker contexts.
         const result = await page.evaluate(() => {
             return new Promise<any>((resolve, reject) => {
                 const origin = location.origin;
                 const bundlePath = '/.temp/spector.worker.bundle.js';
-                const code = 'importScripts("' + origin + bundlePath + '");\n' +
+                const code = 'try { importScripts("' + origin + bundlePath + '"); } catch(e) {}\n' +
                     'self.addEventListener("message", function(e) {\n' +
                     '  if (e.data.type === "init") {\n' +
                     '    var gl = new OffscreenCanvas(200,200).getContext("webgl2");\n' +
@@ -49,7 +52,7 @@ test.describe('Worker OffscreenCanvas Capture', () => {
                     '  }\n' +
                     '});';
                 const w = new Worker(URL.createObjectURL(new Blob([code], {type: 'application/javascript'})));
-                w.addEventListener('message', function(e: any) {
+                w.addEventListener('message', (e: any) => {
                     if (e.data && e.data.type === 'spector:capture-complete') {
                         resolve({
                             commands: e.data.capture.commands.length,
@@ -68,6 +71,7 @@ test.describe('Worker OffscreenCanvas Capture', () => {
             });
         });
 
+        // Must have multiple commands — viewport, clearColor, clear, useProgram, bindVertexArray, drawArrays
         expect(result.commands).toBeGreaterThan(3);
         expect(result.names).toContain('drawArrays');
     });

@@ -13,7 +13,7 @@ var useDist = (document.location.href.toLowerCase().indexOf('dist=true') > 0);
 var bundlePath = useDist ? '/dist/spector.worker.bundle.js' : '/.temp/spector.worker.bundle.js';
 var origin = location.origin;
 
-var code = 'try { importScripts("' + origin + bundlePath + '"); } catch(e) { /* Spector worker bundle not available */ }\n' +
+var workerCode = 'try { importScripts("' + origin + bundlePath + '"); } catch(e) {}\n' +
     'self.addEventListener("message", function(e) {\n' +
     '  if (e.data.type === "init") {\n' +
     '    var displayCanvas = e.data.displayCanvas;\n' +
@@ -46,9 +46,16 @@ var code = 'try { importScripts("' + origin + bundlePath + '"); } catch(e) { /* 
     '  }\n' +
     '});';
 
-var w = new Worker(URL.createObjectURL(new Blob([code], {type:'application/javascript'})));
-window.worker = w;
-if (spector) {
-    spector.spyWorker(w);
-}
-w.postMessage({ type: 'init', displayCanvas: displayOC }, [displayOC]);
+// Worker creation must happen from an inline script context (not from an
+// external <script src="..."> loaded by the SPECTORTOOLS.Loader) for reliable
+// Spector capture. External scripts have a V8 compilation context that breaks
+// the Worker's setTimeout-based frame detection.
+var initScript = document.createElement('script');
+initScript.textContent = '(function() {' +
+    'var w = new Worker(URL.createObjectURL(new Blob([' + JSON.stringify(workerCode) + '], {type:"application/javascript"})));' +
+    'window.worker = w;' +
+    'if (typeof spector !== "undefined" && spector) { spector.spyWorker(w); }' +
+    'w.postMessage({ type: "init", displayCanvas: window.__workerDisplayOC }, [window.__workerDisplayOC]);' +
+    '})();';
+window.__workerDisplayOC = displayOC;
+document.body.appendChild(initScript);
