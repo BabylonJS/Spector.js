@@ -1,6 +1,11 @@
 // Worker OffscreenCanvas sample — renders WebGL in a Worker.
-// The renderCanvas is transferred to the Worker for visible rendering.
-// The Worker creates a separate OffscreenCanvas for WebGL and blits to the display canvas.
+// Initialize Spector directly (don't rely on injectSpector.js loading order)
+if (!spector && typeof SPECTOR !== 'undefined') {
+    spector = new SPECTOR.Spector();
+    spector.displayUI();
+    spector.spyCanvases();
+}
+
 var displayCanvas = document.getElementById("renderCanvas");
 var displayOC = displayCanvas.transferControlToOffscreen();
 
@@ -43,7 +48,7 @@ var code = 'try { importScripts("' + origin + bundlePath + '"); } catch(e) { /* 
 
 var w = new Worker(URL.createObjectURL(new Blob([code], {type:'application/javascript'})));
 window.worker = w;
-if (typeof spector !== 'undefined' && spector) {
+if (spector) {
     spector.spyWorker(w);
 }
 w.postMessage({ type: 'init', displayCanvas: displayOC }, [displayOC]);
