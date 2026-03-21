@@ -487,10 +487,8 @@ export class Spector {
 
     /**
      * Capture a frame from a Worker's WebGL context.
-     * @param worker The Worker to capture from
-     * @param commandCount Number of commands to capture (0 = one frame)
-     * @param quickCapture Skip visual state capture
-     * @param fullCapture Full resolution visual state
+     * Uses direct postMessage to bypass the main-thread spy chain,
+     * which ensures a full frame is captured.
      */
     public captureWorker(
         worker: Worker,
@@ -498,11 +496,31 @@ export class Spector {
         quickCapture: boolean = false,
         fullCapture: boolean = false,
     ): void {
-        let bridge = this.workerBridges.get(worker);
-        if (!bridge) {
-            bridge = this.spyWorker(worker);
+        // Ensure bridge exists for UI integration
+        if (!this.workerBridges.has(worker)) {
+            this.spyWorker(worker);
         }
-        bridge.triggerCapture(0, commandCount, quickCapture, fullCapture);
+
+        // Listen for capture result directly on the Worker
+        // (bypasses the Spector spy chain for reliable full-frame capture)
+        // tslint:disable-next-line:no-this-assignment
+        const self = this;
+        worker.addEventListener("message", function captureHandler(e: MessageEvent) {
+            if (e.data && e.data.type === "spector:capture-complete") {
+                worker.removeEventListener("message", captureHandler);
+                self.triggerCapture(e.data.capture);
+            }
+        });
+
+        // Send trigger directly to Worker
+        worker.postMessage({
+            type: "spector:trigger-capture",
+            version: 1,
+            canvasIndex: 0,
+            commandCount,
+            quickCapture,
+            fullCapture,
+        });
     }
 
     private captureFrames(frameCount: number): void {
