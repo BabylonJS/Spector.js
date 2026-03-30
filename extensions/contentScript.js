@@ -65,6 +65,21 @@ window.__SPECTOR_Canvases = [];
     var __SPECTOR_Origin_EXTENSION_GetContext = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.__SPECTOR_Origin_EXTENSION_GetContext = __SPECTOR_Origin_EXTENSION_GetContext;
 
+    // Intercept transferControlToOffscreen so we can track canvases that are
+    // sent to Workers.  The Worker may or may not have Spector injected — this
+    // ensures the canvas at least appears in the extension list.
+    if (typeof HTMLCanvasElement.prototype.transferControlToOffscreen === 'function') {
+        var __SPECTOR_Origin_Transfer = HTMLCanvasElement.prototype.transferControlToOffscreen;
+        HTMLCanvasElement.prototype.transferControlToOffscreen = function() {
+            var offscreen = __SPECTOR_Origin_Transfer.call(this);
+            // Tag the source DOM canvas so we can show it later if the Worker
+            // doesn't report context-ready (e.g. module worker injection failed).
+            this.__spector_transferred = true;
+            this.__spector_offscreen = offscreen;
+            return offscreen;
+        };
+    }
+
     if (typeof OffscreenCanvas !== 'undefined') {
         var __SPECTOR_Origin_EXTENSION_OffscreenGetContext = OffscreenCanvas.prototype.getContext;
         OffscreenCanvas.prototype.__SPECTOR_Origin_EXTENSION_OffscreenGetContext = __SPECTOR_Origin_EXTENSION_OffscreenGetContext;
@@ -145,8 +160,32 @@ window.__SPECTOR_Canvases = [];
         window.Worker = function SpectorWorkerProxy(scriptURL, options) {
             var urlStr = scriptURL.toString();
 
-            // Skip module workers — importScripts doesn't work there
+            // Get the Spector worker bundle URL from the hidden element injected
+            // by contentScriptProxy.js (ISOLATED world → DOM → MAIN world).
+            var workerBundleEl = document.getElementById('TexturesId_SpectorWorkerBundleUrl');
+            var bundleUrl = workerBundleEl ? workerBundleEl.value : '';
+
+            // Module workers — importScripts is unavailable, use dynamic import
+            // of a wrapper module that loads the Spector bundle then the original.
             if (options && options.type === 'module') {
+                if (bundleUrl && urlStr.indexOf('blob:') !== 0) {
+                    try {
+                        // Resolve original URL to absolute so imports resolve correctly
+                        var absoluteUrl = new URL(urlStr, location.href).href;
+                        var wrapperCode =
+                            'import "' + bundleUrl + '";\n' +
+                            'import "' + absoluteUrl + '";\n';
+                        var blob = new Blob([wrapperCode], { type: 'application/javascript' });
+                        var blobUrl = URL.createObjectURL(blob);
+                        var w = new __SPECTOR_Origin_Worker(blobUrl, options);
+                        window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: true });
+                        __SPECTOR_trackWorker(w, urlStr);
+                        return w;
+                    } catch(e) {
+                        // Fall through to uninjected path
+                    }
+                }
+
                 var w = new __SPECTOR_Origin_Worker(scriptURL, options);
                 window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: false });
                 __SPECTOR_trackWorker(w, urlStr);
@@ -168,10 +207,6 @@ window.__SPECTOR_Canvases = [];
                 xhr.send();
 
                 if (xhr.status === 200) {
-                    // Get the worker bundle URL — use the extension's own URL
-                    var workerBundleUrl = document.getElementById('TexturesId_SpectorWorkerBundleUrl');
-                    var bundleUrl = workerBundleUrl ? workerBundleUrl.value : '';
-
                     if (bundleUrl) {
                         var importLine = 'importScripts("' + bundleUrl + '");\n';
                         var modifiedScript = importLine + xhr.responseText;
@@ -184,7 +219,6 @@ window.__SPECTOR_Canvases = [];
                     }
                 }
             } catch(e) {
-                // tslint:disable-next-line:no-console
                 // Fallback silently on CORS/CSP errors
             }
 
@@ -329,6 +363,31 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
             });
             document.addEventListener("SpectorRequestCanvasListEvent", function(e) {
                 var canvasList = [];
+
+                // Include transferred-to-Worker canvases that weren't detected
+                // by the Worker injection path (e.g. module workers).
+                if (document.body) {
+                    var domCanvases = document.body.querySelectorAll("canvas");
+                    for (var c = 0; c < domCanvases.length; c++) {
+                        var dc = domCanvases[c];
+                        if (dc.__spector_transferred) {
+                            // Check if already in __SPECTOR_Canvases (Worker injection succeeded)
+                            var alreadyTracked = false;
+                            for (var j = 0; j < window.__SPECTOR_Canvases.length; j++) {
+                                var existing = window.__SPECTOR_Canvases[j];
+                                if (existing === dc || existing.__spector_source_canvas === dc) {
+                                    alreadyTracked = true;
+                                    break;
+                                }
+                            }
+                            if (!alreadyTracked) {
+                                dc.id = dc.id || "OffscreenCanvas (Worker)";
+                                window.__SPECTOR_Canvases.push(dc);
+                            }
+                        }
+                    }
+                }
+
                 for (var i = 0; i < window.__SPECTOR_Canvases.length; i++) {
                     var canvas = window.__SPECTOR_Canvases[i];
                     canvasList.push({

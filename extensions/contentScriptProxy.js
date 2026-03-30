@@ -7,6 +7,21 @@ window.browser = (function () {
 })();
 
 var uniqueId = new Date().getTime() + Math.abs(Math.random() * 1000000);
+
+// Expose the worker bundle URL to the MAIN-world content script via a hidden
+// DOM element. The MAIN world cannot call chrome.runtime.getURL(), so we
+// bridge it here.  DOM is shared across worlds, and this runs before the
+// MAIN-world entry (manifest ordering), so the element is ready by the time
+// the Worker constructor proxy reads it.
+(function injectWorkerBundleUrl() {
+    var url = window.browser.runtime.getURL('spector.worker.bundle.js');
+    var el = document.createElement('input');
+    el.type = 'hidden';
+    el.id = 'TexturesId_SpectorWorkerBundleUrl';
+    el.value = url;
+    // document.body may not exist at document_start, but documentElement does.
+    (document.body || document.documentElement).appendChild(el);
+})();
 function sendMessage(message, cb) {
     message["uniqueId"] = uniqueId;
     window.browser.runtime.sendMessage(message, function (response) {
