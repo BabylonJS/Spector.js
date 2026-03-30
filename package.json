@@ -11,8 +11,10 @@
   ],
   "readme": "documentation/standaloneVersion.md",
   "main": "dist/spector.bundle.js",
+  "types": "dist/spector.d.ts",
   "files": [
-    "dist/spector.bundle.js"
+    "dist/spector.bundle.js",
+    "dist/spector.d.ts"
   ],
   "author": "@SpectorJS",
   "repository": {
@@ -27,38 +29,45 @@
     "watch": "webpack --config tools/webpack.config.js --env=dev",
     "start": "run-p html watch -l",
     "build:bundle": "webpack --config tools/webpack.config.js --env=prod",
+    "build:types": "node ./tools/bundle-dts.js",
     "build:copybuild:copy:bundle": "node ./tools/copy.js /../dist/spector.bundle.js /../extensions/spector.bundle.js",
     "build:copy:worker:bundle": "node ./tools/copy.js /../dist/spector.worker.bundle.js /../extensions/spector.worker.bundle.js",
     "build:concatBundleFunc": "concat-cli -f tools/spector.ext.header.js dist/spector.bundle.js tools/spector.ext.footer.js -o extensions/spector.bundle.func.js",
     "build:tslint": "tslint -c ./tslint.json -p ./src/tsconfig.json",
-    "build": "run-s build:tslint build:bundle build:copybuild:copy:bundle build:copy:worker:bundle build:concatBundleFunc -n",
+    "build": "run-s build:tslint build:bundle build:types build:copybuild:copy:bundle build:copy:worker:bundle build:concatBundleFunc -n",
     "test": "jest --config jest.config.js",
     "test:unit": "jest --config jest.config.js",
-    "test:e2e": "npx playwright test"
+    "test:e2e": "npx playwright test",
+    "test:visual": "npx playwright test --config test/playwright.config.ts",
+    "test:visual:update": "npx playwright test --config test/playwright.config.ts --update-snapshots"
   },
   "dependencies": {
-    "@shaderfrog/glsl-parser": "^5.0.0"
+    "@shaderfrog/glsl-parser": "^7.0.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/jest": "^30.0.0",
-    "@types/webxr": "^0.5.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/webxr": "^0.5.24",
     "concat-cli": "^4.0.0",
-    "css-loader": "^6.7.1",
-    "exports-loader": "^4.0.0",
+    "css-loader": "^7.1.4",
+    "exports-loader": "^5.0.0",
     "http-server": "^14.1.1",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
-    "livereload": "^0.9.3",
+    "livereload": "^0.10.3",
     "npm-run-all": "^4.1.5",
-    "sass": "^1.53.0",
-    "sass-loader": "^13.0.2",
-    "style-loader": "^3.3.1",
+    "sass": "^1.98.0",
+    "sass-loader": "^16.0.7",
+    "style-loader": "^4.0.0",
     "ts-jest": "^29.4.6",
-    "ts-loader": "^9.3.1",
+    "ts-loader": "^9.5.4",
     "tslint": "^6.1.3",
-    "typescript": "^4.7.4",
-    "webpack": "^5.73.0",
-    "webpack-cli": "^4.10.0"
+    "typescript": "^5.9.3",
+    "webpack": "^5.105.4",
+    "webpack-cli": "^7.0.2"
   }
 }

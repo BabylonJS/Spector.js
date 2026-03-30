@@ -10,9 +10,13 @@ import { TimeSpy } from "./backend/spies/timeSpy";
 import { CanvasSpy } from "./backend/spies/canvasSpy";
 import { WorkerSpy } from "./backend/spies/workerSpy";
 import { Program } from "./backend/webGlObjects/webGlObjects";
-import { CaptureMenu } from "./embeddedFrontend/captureMenu/captureMenu";
-import { ResultView } from "./embeddedFrontend/resultView/resultView";
+import { ReactCaptureMenu as CaptureMenu } from "./embeddedFrontend/react/CaptureMenu/ReactCaptureMenu";
+import { ReactResultView as ResultView } from "./embeddedFrontend/react/ResultView/ReactResultView";
 import { WorkerBridge } from "./backend/bridge/workerBridge";
+
+// Import SCSS styles (previously imported by the old MVX component entry files)
+import "./embeddedFrontend/styles/captureMenu.scss";
+import "./embeddedFrontend/styles/resultView.scss";
 import { XRSpy } from "./backend/spies/xrSpy";
 
 const CAPTURE_LIMIT = 10000; // Limit command count to 10000 record (to be kept in sync with the documentation)
