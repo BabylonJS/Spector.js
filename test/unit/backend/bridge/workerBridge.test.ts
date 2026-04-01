@@ -1,6 +1,6 @@
-import { WorkerBridge } from "../../../src/backend/bridge/workerBridge";
-import { PROTOCOL_VERSION } from "../../../src/backend/bridge/messageProtocol";
-import { ICapture } from "../../../src/shared/capture/capture";
+import { WorkerBridge } from "../../../../src/backend/bridge/workerBridge";
+import { PROTOCOL_VERSION } from "../../../../src/backend/bridge/messageProtocol";
+import { ICapture } from "../../../../src/shared/capture/capture";
 
 class MockWorker {
     private listeners: Map<string, Function[]> = new Map();

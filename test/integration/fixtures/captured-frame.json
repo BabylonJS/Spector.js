@@ -158,9 +158,9 @@
   "commands": [
     {
       "id": 0,
-      "startTime": 1774015140680.3,
-      "commandEndTime": 1774015140680.3,
-      "endTime": 1774015140682.1,
+      "startTime": 647.1999999992549,
+      "commandEndTime": 647.3000000007451,
+      "endTime": 648.8000000007451,
       "name": "clearColor",
       "commandArguments": [
         0.1,
@@ -169,7 +169,7 @@
         1
       ],
       "stackTrace": [
-        "render (http://localhost:7777/test/fixtures/test-scene.html:105:16)"
+        "render (http://localhost:7777/test/integration/fixtures/test-scene.html:105:16)"
       ],
       "status": 30,
       "text": "clearColor: 0.1, 0.1, 0.18, 1",
@@ -177,15 +177,15 @@
     },
     {
       "id": 1,
-      "startTime": 1774015140682.1,
-      "commandEndTime": 1774015140682.1,
-      "endTime": 1774015140687,
+      "startTime": 648.8000000007451,
+      "commandEndTime": 648.8000000007451,
+      "endTime": 654,
       "name": "clear",
       "commandArguments": [
         16384
       ],
       "stackTrace": [
-        "render (http://localhost:7777/test/fixtures/test-scene.html:106:16)"
+        "render (http://localhost:7777/test/integration/fixtures/test-scene.html:106:16)"
       ],
       "status": 0,
       "text": "clear: COLOR_BUFFER_BIT",
@@ -225,9 +225,9 @@
     },
     {
       "id": 2,
-      "startTime": 1774015140687,
-      "commandEndTime": 1774015140687,
-      "endTime": 1774015140701.2,
+      "startTime": 654,
+      "commandEndTime": 654.1000000014901,
+      "endTime": 672.6000000014901,
       "name": "drawArrays",
       "commandArguments": [
         4,
@@ -235,7 +235,7 @@
         3
       ],
       "stackTrace": [
-        "render (http://localhost:7777/test/fixtures/test-scene.html:107:16)"
+        "render (http://localhost:7777/test/integration/fixtures/test-scene.html:107:16)"
       ],
       "status": 0,
       "text": "drawArrays: TRIANGLES, 0 indices, 3",
@@ -682,10 +682,10 @@
       "FrameBuffer": null
     }
   },
-  "startTime": 1774015140666.1,
-  "listenCommandsStartTime": 1774015140680.3,
-  "listenCommandsEndTime": 1774015140701.3,
-  "endTime": 1774015140711.4,
+  "startTime": 630.8000000007451,
+  "listenCommandsStartTime": 647.1999999992549,
+  "listenCommandsEndTime": 672.6999999992549,
+  "endTime": 682.5,
   "analyses": [
     {
       "analyserName": "Commands",

@@ -1,4 +1,4 @@
-import { Time } from "../../../src/shared/utils/time";
+import { Time } from "../../../../src/shared/utils/time";
 
 describe('Time', () => {
     it('Time.now returns a number', () => {

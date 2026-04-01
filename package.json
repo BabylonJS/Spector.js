@@ -35,11 +35,11 @@
     "build:concatBundleFunc": "concat-cli -f tools/spector.ext.header.js dist/spector.bundle.js tools/spector.ext.footer.js -o extensions/spector.bundle.func.js",
     "build:tslint": "tslint -c ./tslint.json -p ./src/tsconfig.json",
     "build": "run-s build:tslint build:bundle build:types build:copybuild:copy:bundle build:copy:worker:bundle build:concatBundleFunc -n",
-    "test": "jest --config jest.config.js",
+    "test": "jest --config jest.config.js && npx playwright test && npx playwright test --config test/integration/playwright.config.ts",
     "test:unit": "jest --config jest.config.js",
     "test:e2e": "npx playwright test",
-    "test:visual": "npx playwright test --config test/playwright.config.ts",
-    "test:visual:update": "npx playwright test --config test/playwright.config.ts --update-snapshots"
+    "test:visual": "npx playwright test --config test/integration/playwright.config.ts",
+    "test:visual:update": "npx playwright test --config test/integration/playwright.config.ts --update-snapshots"
   },
   "dependencies": {
     "@shaderfrog/glsl-parser": "^7.0.1",

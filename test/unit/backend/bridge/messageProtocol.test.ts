@@ -1,4 +1,4 @@
-import { isSpectorMessage, SPECTOR_MESSAGE_PREFIX, PROTOCOL_VERSION } from "../../../src/backend/bridge/messageProtocol";
+import { isSpectorMessage, SPECTOR_MESSAGE_PREFIX, PROTOCOL_VERSION } from "../../../../src/backend/bridge/messageProtocol";
 
 // const enum values are inlined at compile time, so we reference the string literals directly.
 const MESSAGE_TYPES = [

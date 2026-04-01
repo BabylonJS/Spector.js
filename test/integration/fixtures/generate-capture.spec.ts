@@ -1,7 +1,7 @@
 /**
  * One-time capture generation script.
  *
- * Run with:  npx playwright test generate-capture --config test/playwright.config.ts
+ * Run with:  npx playwright test generate-capture --config test/integration/playwright.config.ts
  *
  * This navigates to the test scene, triggers a Spector capture, and saves
  * the resulting JSON to test/fixtures/captured-frame.json.
@@ -15,7 +15,7 @@ const FIXTURE_DIR = path.join(__dirname);
 const FIXTURE_PATH = path.join(FIXTURE_DIR, "captured-frame.json");
 
 test("generate captured-frame.json fixture", async ({ page }) => {
-    await page.goto("/test/fixtures/test-scene.html", {
+    await page.goto("/test/integration/fixtures/test-scene.html", {
         waitUntil: "domcontentloaded",
     });
 

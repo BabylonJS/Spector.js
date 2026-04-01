@@ -1,6 +1,6 @@
-import { WorkerMessageSender } from "../../../src/backend/bridge/workerMessageSender";
-import { PROTOCOL_VERSION } from "../../../src/backend/bridge/messageProtocol";
-import { ICapture } from "../../../src/shared/capture/capture";
+import { WorkerMessageSender } from "../../../../src/backend/bridge/workerMessageSender";
+import { PROTOCOL_VERSION } from "../../../../src/backend/bridge/messageProtocol";
+import { ICapture } from "../../../../src/shared/capture/capture";
 
 class MockScope {
     public messages: any[] = [];

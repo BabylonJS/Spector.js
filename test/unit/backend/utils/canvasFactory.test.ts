@@ -1,4 +1,4 @@
-import { CanvasFactory } from "../../../src/backend/utils/canvasFactory";
+import { CanvasFactory } from "../../../../src/backend/utils/canvasFactory";
 
 /**
  * Helper: decode base64 data URI to Uint8Array.

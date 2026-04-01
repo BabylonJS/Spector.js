@@ -1,4 +1,4 @@
-import { WorkerSpy } from "../../../src/backend/spies/workerSpy";
+import { WorkerSpy } from "../../../../src/backend/spies/workerSpy";
 
 describe("WorkerSpy", () => {
     // jsdom does not provide a real Worker, so we install a minimal stub
