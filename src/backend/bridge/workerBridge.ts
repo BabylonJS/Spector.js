@@ -13,6 +13,12 @@ export interface IWorkerBridgeOptions {
     captureTimeout?: number;
 }
 
+export interface IWorkerContextInfo {
+    canvasCount: number;
+    canvasWidth: number;
+    canvasHeight: number;
+}
+
 /**
  * Main-thread bridge that communicates with a WorkerSpector running inside a Worker.
  * Uses addEventListener (not onmessage) to avoid overwriting app communication.
@@ -22,7 +28,7 @@ export class WorkerBridge {
     public readonly onCaptureStarted: Observable<void>;
     public readonly onError: Observable<string>;
     public readonly onFps: Observable<number>;
-    public readonly onContextReady: Observable<number>;
+    public readonly onContextReady: Observable<IWorkerContextInfo>;
 
     private readonly worker: Worker;
     private readonly captureTimeout: number;
@@ -40,7 +46,7 @@ export class WorkerBridge {
         this.onCaptureStarted = new Observable<void>();
         this.onError = new Observable<string>();
         this.onFps = new Observable<number>();
-        this.onContextReady = new Observable<number>();
+        this.onContextReady = new Observable<IWorkerContextInfo>();
 
         this.messageHandler = this.handleMessage.bind(this);
         this.worker.addEventListener("message", this.messageHandler);
@@ -100,7 +106,11 @@ export class WorkerBridge {
         const msg = data as SpectorWorkerMessage;
         switch (msg.type) {
             case SpectorMessageType.ContextReady:
-                this.onContextReady.trigger(msg.canvasCount);
+                this.onContextReady.trigger({
+                    canvasCount: msg.canvasCount,
+                    canvasWidth: msg.canvasWidth,
+                    canvasHeight: msg.canvasHeight,
+                });
                 break;
             case SpectorMessageType.CaptureStarted:
                 this.onCaptureStarted.trigger(undefined);

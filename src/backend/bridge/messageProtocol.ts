@@ -31,6 +31,10 @@ export interface ISpectorMessage {
 export interface IContextReadyMessage extends ISpectorMessage {
     type: SpectorMessageType.ContextReady;
     canvasCount: number;
+    /** Width of the most recently added canvas (0 if unknown). */
+    canvasWidth: number;
+    /** Height of the most recently added canvas (0 if unknown). */
+    canvasHeight: number;
 }
 
 export interface ITriggerCaptureMessage extends ISpectorMessage {

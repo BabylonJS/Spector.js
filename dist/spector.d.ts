@@ -510,6 +510,11 @@ export interface IWorkerBridgeOptions {
     /** Timeout in milliseconds for capture responses. Default: 10000 (10s). */
     captureTimeout?: number;
 }
+export interface IWorkerContextInfo {
+    canvasCount: number;
+    canvasWidth: number;
+    canvasHeight: number;
+}
 /**
  * Main-thread bridge that communicates with a WorkerSpector running inside a Worker.
  * Uses addEventListener (not onmessage) to avoid overwriting app communication.
@@ -519,7 +524,7 @@ export declare class WorkerBridge {
     readonly onCaptureStarted: Observable<void>;
     readonly onError: Observable<string>;
     readonly onFps: Observable<number>;
-    readonly onContextReady: Observable<number>;
+    readonly onContextReady: Observable<IWorkerContextInfo>;
     private readonly worker;
     private readonly captureTimeout;
     private readonly messageHandler;

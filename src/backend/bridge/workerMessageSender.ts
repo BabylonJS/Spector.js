@@ -25,11 +25,13 @@ export class WorkerMessageSender {
         this.scope = scope || (self as any as IWorkerScope);
     }
 
-    public sendContextReady(canvasCount: number): void {
+    public sendContextReady(canvasCount: number, canvasWidth: number = 0, canvasHeight: number = 0): void {
         const msg: IContextReadyMessage = {
             type: SpectorMessageType.ContextReady,
             version: PROTOCOL_VERSION,
             canvasCount,
+            canvasWidth,
+            canvasHeight,
         };
         this.scope.postMessage(msg);
     }

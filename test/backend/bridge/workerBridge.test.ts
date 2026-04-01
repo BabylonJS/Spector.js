@@ -124,9 +124,15 @@ describe("WorkerBridge", () => {
             type: "spector:context-ready",
             version: PROTOCOL_VERSION,
             canvasCount: 3,
+            canvasWidth: 640,
+            canvasHeight: 480,
         });
 
-        expect(handler).toHaveBeenCalledWith(3);
+        expect(handler).toHaveBeenCalledWith({
+            canvasCount: 3,
+            canvasWidth: 640,
+            canvasHeight: 480,
+        });
     });
 
     it("fires onCaptureStarted when CaptureStarted is received", () => {

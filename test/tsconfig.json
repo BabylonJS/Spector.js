@@ -1,7 +1,7 @@
 {
     "extends": "../src/tsconfig.json",
     "compilerOptions": {
-        "types": ["jest", "@types/webxr"],
+        "types": ["jest", "@types/webxr", "node"],
         "rootDir": "..",
         "outDir": "../built/test"
     },

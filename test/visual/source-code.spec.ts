@@ -127,6 +127,36 @@ test.describe("SourceCode editor", () => {
         );
     });
 
+    test("editor survives shader tab switch", async ({ spectorPage }) => {
+        const { page } = spectorPage;
+        await spectorPage.injectStabilizationCSS();
+        await loadCapturedFrame(page);
+
+        const opened = await openShaderEditor(page);
+        if (!opened) {
+            test.skip();
+            return;
+        }
+
+        // Ace editor should be visible on the initial (Vertex) tab.
+        const aceContent = page.locator(".sourceCodeComponent .ace_content");
+        await expect(aceContent).toBeVisible({ timeout: 5_000 });
+
+        // Switch to Fragment tab.
+        await page.click('[commandName="onFragmentSourceClicked"]');
+        await page.waitForTimeout(300);
+
+        // Ace editor must still be visible after the tab switch.
+        await expect(aceContent).toBeVisible({ timeout: 5_000 });
+
+        // Switch back to Vertex tab.
+        await page.click('[commandName="onVertexSourceClicked"]');
+        await page.waitForTimeout(300);
+
+        // Ace editor must still be visible after switching back.
+        await expect(aceContent).toBeVisible({ timeout: 5_000 });
+    });
+
     test("close returns to commands", async ({ spectorPage }) => {
         const { page } = spectorPage;
         await spectorPage.injectStabilizationCSS();

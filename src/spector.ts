@@ -473,15 +473,22 @@ export class Spector {
         }, this);
 
         // When the Worker's WebGL context is ready, add it to the capture menu's canvas list.
-        bridge.onContextReady.add(() => {
+        bridge.onContextReady.add((info) => {
             if (this.captureMenu) {
                 const workerIndex = this.workerBridges.size;
                 this.captureMenu.addCanvasInformation({
                     id: "Worker " + workerIndex,
-                    width: 0,
-                    height: 0,
+                    width: info.canvasWidth,
+                    height: info.canvasHeight,
                     ref: worker,
                 });
+            }
+        }, this);
+
+        // Forward Worker FPS to the capture menu
+        bridge.onFps.add((fps) => {
+            if (this.captureMenu) {
+                this.captureMenu.setFPS(fps);
             }
         }, this);
 

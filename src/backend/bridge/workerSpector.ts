@@ -60,6 +60,13 @@ export class WorkerSpector {
 
         // Start spying canvases
         this.spyCanvases();
+
+        // Periodically send FPS to main thread
+        setInterval(() => {
+            if (this.contexts.length > 0) {
+                this.sender.sendFps(this.timeSpy.getFps());
+            }
+        }, 1500);
     }
 
     public spyCanvases(): void {
@@ -89,8 +96,9 @@ export class WorkerSpector {
         }
         existing.contextSpy.spy();
 
-        // Notify main thread
-        this.sender.sendContextReady(this.contexts.length);
+        // Notify main thread with canvas dimensions
+        const canvas = existing.canvas;
+        this.sender.sendContextReady(this.contexts.length, canvas.width, canvas.height);
     }
 
     private handleTriggerCapture(msg: ITriggerCaptureMessage): void {

@@ -65,6 +65,21 @@ window.__SPECTOR_Canvases = [];
     var __SPECTOR_Origin_EXTENSION_GetContext = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.__SPECTOR_Origin_EXTENSION_GetContext = __SPECTOR_Origin_EXTENSION_GetContext;
 
+    // Intercept transferControlToOffscreen so we can track canvases that are
+    // sent to Workers.  The Worker may or may not have Spector injected — this
+    // ensures the canvas at least appears in the extension list.
+    if (typeof HTMLCanvasElement.prototype.transferControlToOffscreen === 'function') {
+        var __SPECTOR_Origin_Transfer = HTMLCanvasElement.prototype.transferControlToOffscreen;
+        HTMLCanvasElement.prototype.transferControlToOffscreen = function() {
+            var offscreen = __SPECTOR_Origin_Transfer.call(this);
+            // Tag the source DOM canvas so we can show it later if the Worker
+            // doesn't report context-ready (e.g. module worker injection failed).
+            this.__spector_transferred = true;
+            this.__spector_offscreen = offscreen;
+            return offscreen;
+        };
+    }
+
     if (typeof OffscreenCanvas !== 'undefined') {
         var __SPECTOR_Origin_EXTENSION_OffscreenGetContext = OffscreenCanvas.prototype.getContext;
         OffscreenCanvas.prototype.__SPECTOR_Origin_EXTENSION_OffscreenGetContext = __SPECTOR_Origin_EXTENSION_OffscreenGetContext;
@@ -145,7 +160,16 @@ window.__SPECTOR_Canvases = [];
         window.Worker = function SpectorWorkerProxy(scriptURL, options) {
             var urlStr = scriptURL.toString();
 
-            // Skip module workers — importScripts doesn't work there
+            // Get the Spector worker bundle URL from the hidden element injected
+            // by contentScriptProxy.js (ISOLATED world → DOM → MAIN world).
+            var workerBundleEl = document.getElementById('TexturesId_SpectorWorkerBundleUrl');
+            var bundleUrl = workerBundleEl ? workerBundleEl.value : '';
+
+            // Module workers — blob-wrapping breaks ALL relative URL resolution
+            // inside the Worker (fetch, XHR, texture loaders, etc.), not just
+            // import specifiers.  This is unfixable without a Service Worker
+            // proxy.  Track module workers without injecting; users must add
+            // the Spector worker bundle import to their source manually.
             if (options && options.type === 'module') {
                 var w = new __SPECTOR_Origin_Worker(scriptURL, options);
                 window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: false });
@@ -168,10 +192,6 @@ window.__SPECTOR_Canvases = [];
                 xhr.send();
 
                 if (xhr.status === 200) {
-                    // Get the worker bundle URL — use the extension's own URL
-                    var workerBundleUrl = document.getElementById('TexturesId_SpectorWorkerBundleUrl');
-                    var bundleUrl = workerBundleUrl ? workerBundleUrl.value : '';
-
                     if (bundleUrl) {
                         var importLine = 'importScripts("' + bundleUrl + '");\n';
                         var modifiedScript = importLine + xhr.responseText;
@@ -184,7 +204,6 @@ window.__SPECTOR_Canvases = [];
                     }
                 }
             } catch(e) {
-                // tslint:disable-next-line:no-console
                 // Fallback silently on CORS/CSP errors
             }
 
@@ -302,6 +321,51 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                         quickCapture: quickCapture,
                         fullCapture: fullCapture
                     });
+                } else if (canvas && canvas.__spector_transferred) {
+                    // Transferred canvas without __spector_worker — try to find
+                    // and link a tracked Worker.
+                    var linkedWorker = null;
+                    if (window.__SPECTOR_Workers) {
+                        for (var wi = 0; wi < window.__SPECTOR_Workers.length; wi++) {
+                            var entry = window.__SPECTOR_Workers[wi];
+                            if (entry.injected) {
+                                linkedWorker = entry.worker;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (linkedWorker) {
+                        // Injected Worker found — try capture
+                        canvas.__spector_worker = linkedWorker;
+
+                        linkedWorker.addEventListener('message', function captureHandler(msg) {
+                            if (msg.data && msg.data.type === 'spector:capture-complete') {
+                                linkedWorker.removeEventListener('message', captureHandler);
+                                var captureEvent = new CustomEvent("SpectorOnCaptureEvent", {
+                                    detail: { capture: msg.data.capture }
+                                });
+                                document.dispatchEvent(captureEvent);
+                            }
+                        });
+
+                        linkedWorker.postMessage({
+                            type: 'spector:trigger-capture',
+                            version: 1,
+                            canvasIndex: 0,
+                            commandCount: commandCount,
+                            quickCapture: quickCapture,
+                            fullCapture: fullCapture
+                        });
+                    } else {
+                        // No injected Worker — capture not possible
+                        var errorEvent = new CustomEvent("SpectorOnErrorEvent", {
+                            detail: { errorString: "Cannot capture: Spector injection into this module Worker failed. " +
+                                "The Worker may use import maps or non-fetchable URLs. " +
+                                "Try adding: import 'spector.worker.bundle.js' to your Worker manually." }
+                        });
+                        document.dispatchEvent(errorEvent);
+                    }
                 } else if (canvas) {
                     spector.captureCanvas(canvas, commandCount, quickCapture, fullCapture);
                 }
@@ -329,6 +393,38 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
             });
             document.addEventListener("SpectorRequestCanvasListEvent", function(e) {
                 var canvasList = [];
+
+                // Include DOM canvases with WebGL contexts (these may not be in
+                // __SPECTOR_Canvases when captureOffScreen is false).
+                if (document.body) {
+                    var domCanvases = document.body.querySelectorAll("canvas");
+                    for (var c = 0; c < domCanvases.length; c++) {
+                        var dc = domCanvases[c];
+                        var alreadyTracked = false;
+                        for (var j = 0; j < window.__SPECTOR_Canvases.length; j++) {
+                            if (window.__SPECTOR_Canvases[j] === dc) {
+                                alreadyTracked = true;
+                                break;
+                            }
+                        }
+                        if (alreadyTracked) { continue; }
+
+                        if (dc.__spector_transferred) {
+                            // Transferred canvas — add as Worker entry
+                            dc.id = dc.id || "OffscreenCanvas (Worker)";
+                            window.__SPECTOR_Canvases.push(dc);
+                        } else {
+                            // Regular DOM canvas — add if it has a WebGL context
+                            var ctx = null;
+                            try { ctx = dc.getContext(dc.getAttribute(spectorContextTypeKey)); }
+                            catch(ex) { /* ignore */ }
+                            if (ctx) {
+                                window.__SPECTOR_Canvases.push(dc);
+                            }
+                        }
+                    }
+                }
+
                 for (var i = 0; i < window.__SPECTOR_Canvases.length; i++) {
                     var canvas = window.__SPECTOR_Canvases[i];
                     canvasList.push({
