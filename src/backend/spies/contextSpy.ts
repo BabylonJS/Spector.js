@@ -134,10 +134,21 @@ export class ContextSpy {
         // Refreshes canvas info in case it changed beffore the capture.
         this.currentCapture.canvas.width = this.context.canvas.width;
         this.currentCapture.canvas.height = this.context.canvas.height;
-        this.currentCapture.canvas.clientWidth = (this.context.canvas as HTMLCanvasElement).clientWidth || this.context.canvas.width;
-        this.currentCapture.canvas.clientHeight = (this.context.canvas as HTMLCanvasElement).clientHeight || this.context.canvas.height;
+        this.currentCapture.canvas.clientWidth = (typeof HTMLCanvasElement !== "undefined" && this.context.canvas instanceof HTMLCanvasElement)
+            ? this.context.canvas.clientWidth || this.context.canvas.width
+            : this.context.canvas.width;
+        this.currentCapture.canvas.clientHeight = (typeof HTMLCanvasElement !== "undefined" && this.context.canvas instanceof HTMLCanvasElement)
+            ? this.context.canvas.clientHeight || this.context.canvas.height
+            : this.context.canvas.height;
 
-        this.stateSpy.startCapture(this.currentCapture, quickCapture, fullCapture);
+        try {
+            this.stateSpy.startCapture(this.currentCapture, quickCapture, fullCapture);
+        }
+        catch (e) {
+            // State capture init may fail (e.g. VisualState in Workers).
+            // Continue capturing commands — state data may be incomplete.
+            Logger.warn("State capture init error: " + e);
+        }
         this.recorderSpy.startCapture();
 
         this.currentCapture.listenCommandsStartTime = Time.now;
@@ -150,7 +161,12 @@ export class ContextSpy {
         }
 
         this.capturing = false;
-        this.stateSpy.stopCapture(this.currentCapture);
+        try {
+            this.stateSpy.stopCapture(this.currentCapture);
+        }
+        catch (e) {
+            Logger.warn("State capture stop error: " + e);
+        }
         this.recorderSpy.stopCapture();
 
         this.currentCapture.listenCommandsEndTime = listenCommandsEndTime;
@@ -194,16 +210,37 @@ export class ContextSpy {
     }
 
     public onCommand(commandSpy: CommandSpy, functionInformation: IFunctionInformation): void {
-        if (!this.globalCapturing) {
+        // Only skip commands during state reads (toggleCapture(false) is active).
+        // Use the capturing flag to determine if we should record — globalCapturing
+        // may be stale in Worker contexts due to async state read timing.
+        if (!this.globalCapturing && !this.capturing) {
             return;
         }
 
-        this.webGlObjectSpy.tagWebGlObjects(functionInformation);
-        this.recorderSpy.recordCommand(functionInformation);
+        try {
+            this.webGlObjectSpy.tagWebGlObjects(functionInformation);
+        }
+        catch (e) {
+            // Tagging failures must not kill the render loop.
+        }
+
+        try {
+            this.recorderSpy.recordCommand(functionInformation);
+        }
+        catch (e) {
+            // Recording failures must not kill the render loop.
+        }
 
         if (this.isCapturing()) {
             const commandCapture = commandSpy.createCapture(functionInformation, this.getNextCommandCaptureId(), this.marker);
-            this.stateSpy.captureState(commandCapture);
+            try {
+                this.stateSpy.captureState(commandCapture);
+            }
+            catch (e) {
+                // State capture failures (e.g. VisualState in Workers) must not
+                // kill the command capture pipeline.
+                Logger.warn("State capture error: " + e);
+            }
             this.currentCapture.commands.push(commandCapture);
 
             commandCapture.endTime = Time.now;
@@ -264,9 +301,13 @@ export class ContextSpy {
         this.canvasCapture = {
             width: this.context.canvas.width,
             height: this.context.canvas.height,
-            clientWidth: (this.context.canvas as HTMLCanvasElement).clientWidth || this.context.canvas.width,
-            clientHeight: (this.context.canvas as HTMLCanvasElement).clientHeight || this.context.canvas.height,
-            browserAgent: navigator ? navigator.userAgent : "",
+            clientWidth: (typeof HTMLCanvasElement !== "undefined" && this.context.canvas instanceof HTMLCanvasElement)
+                ? this.context.canvas.clientWidth || this.context.canvas.width
+                : this.context.canvas.width,
+            clientHeight: (typeof HTMLCanvasElement !== "undefined" && this.context.canvas instanceof HTMLCanvasElement)
+                ? this.context.canvas.clientHeight || this.context.canvas.height
+                : this.context.canvas.height,
+            browserAgent: typeof navigator !== "undefined" ? navigator.userAgent : "",
         };
     }
 

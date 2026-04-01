@@ -7,6 +7,21 @@ window.browser = (function () {
 })();
 
 var uniqueId = new Date().getTime() + Math.abs(Math.random() * 1000000);
+
+// Expose the worker bundle URL to the MAIN-world content script via a hidden
+// DOM element. The MAIN world cannot call chrome.runtime.getURL(), so we
+// bridge it here.  DOM is shared across worlds, and this runs before the
+// MAIN-world entry (manifest ordering), so the element is ready by the time
+// the Worker constructor proxy reads it.
+(function injectWorkerBundleUrl() {
+    var url = window.browser.runtime.getURL('spector.worker.bundle.js');
+    var el = document.createElement('input');
+    el.type = 'hidden';
+    el.id = 'TexturesId_SpectorWorkerBundleUrl';
+    el.value = url;
+    // document.body may not exist at document_start, but documentElement does.
+    (document.body || document.documentElement).appendChild(el);
+})();
 function sendMessage(message, cb) {
     message["uniqueId"] = uniqueId;
     window.browser.runtime.sendMessage(message, function (response) {
@@ -99,17 +114,22 @@ else {
     }, false);
 }
 
+// Worker capture events are handled by contentScript.js in the page world.
+// It tracks Workers via window.__SPECTOR_Canvases and handles capture routing.
+
 var refreshCanvases = function() {
-    if (captureOffScreen) {
-        // List is retrieved from all the ever created canvases.
+    if (sessionStorage.getItem(spectorLoadedKey)) {
+        // Spector is loaded — the SpectorRequestCanvasListEvent handler in
+        // contentScript.js builds a complete list (DOM + Worker + transferred
+        // canvases) and sends it back via SpectorOnCanvasListEvent.  No
+        // separate DOM scan needed.
         var myEvent = new CustomEvent("SpectorRequestCanvasListEvent");
         document.dispatchEvent(myEvent);
-    }
-    else {
+    } else {
+        // Spector not loaded — fall back to DOM scan only.
         if (document.body) {
             var canvasElements = document.body.querySelectorAll("canvas");
             if (canvasElements.length > 0) {
-
                 var canvasesInformation = [];
                 for (var i = 0; i < canvasElements.length; i++) {
                     var canvas = canvasElements[i];
@@ -120,7 +140,6 @@ var refreshCanvases = function() {
                     catch (e) {
                         // Do Nothing.
                     }
-                    
                     if (context) {
                         canvasesInformation.push({
                             id: canvas.id,
@@ -130,9 +149,11 @@ var refreshCanvases = function() {
                         });
                     }
                 }
-                sendMessage({ canvases: canvasesInformation, captureOffScreen: false }, function (response) {
-                    frameId = response.frameId;
-                });
+                if (canvasesInformation.length > 0) {
+                    sendMessage({ canvases: canvasesInformation, captureOffScreen: false }, function (response) {
+                        frameId = response.frameId;
+                    });
+                }
             }
         }
     }

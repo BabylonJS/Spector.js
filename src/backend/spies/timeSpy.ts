@@ -35,7 +35,7 @@ export class TimeSpy {
     private willPlayNextFrame: boolean;
 
     constructor(spiedScope?: { [name: string]: Function }) {
-        this.spiedScope = spiedScope || window;
+        this.spiedScope = spiedScope || (typeof globalThis !== "undefined" ? globalThis : self);
         this.lastFrame = 0;
 
         this.speedRatio = 1;
@@ -92,14 +92,16 @@ export class TimeSpy {
 
     private init(): void {
         for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
-            this.spyRequestAnimationFrame(Spy, this.spiedScope);
+            if (typeof this.spiedScope[Spy] === "function") {
+                this.spyRequestAnimationFrame(Spy, this.spiedScope);
+            }
         }
 
         for (const Spy of TimeSpy.setTimerFunctions) {
             this.spySetTimer(Spy);
         }
 
-        if (this.spiedScope["VRDisplay"]) {
+        if (this.spiedScope["VRDisplay"] && typeof this.spiedScope.addEventListener === "function") {
             this.spiedScope.addEventListener("vrdisplaypresentchange", (event: any) => {
                 this.spyRequestAnimationFrame("requestAnimationFrame", event.display);
             });
@@ -151,7 +153,12 @@ export class TimeSpy {
 
             self.lastFrame = ++self.lastFrame % self.speedRatio;
             if (self.willPlayNextFrame || (self.speedRatio && !self.lastFrame)) {
-                self.onFrameStart.trigger(self);
+                try {
+                    self.onFrameStart.trigger(self);
+                }
+                catch (e) {
+                    self.onError.trigger(e);
+                }
                 try {
                     callback.apply(self.spiedScope, arguments);
                 }
@@ -161,7 +168,12 @@ export class TimeSpy {
                 self.lastSixtyFramesCurrentIndex = (self.lastSixtyFramesCurrentIndex + 1) % TimeSpy.fpsWindowSize;
                 self.lastSixtyFramesDuration[self.lastSixtyFramesCurrentIndex] =
                     now - self.lastSixtyFramesPreviousStart;
-                self.onFrameEnd.trigger(self);
+                try {
+                    self.onFrameEnd.trigger(self);
+                }
+                catch (e) {
+                    self.onError.trigger(e);
+                }
                 self.willPlayNextFrame = false;
             }
             else {

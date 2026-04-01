@@ -18,7 +18,8 @@ export class CanvasSpy {
         const self = this;
 
         const getContextSpied = function (this: HTMLCanvasElement | OffscreenCanvas) {
-            const OriginalCanvasConstructor: CanvasConstructor = this instanceof HTMLCanvasElement ?
+            const OriginalCanvasConstructor: CanvasConstructor =
+                (typeof HTMLCanvasElement !== "undefined" && this instanceof HTMLCanvasElement) ?
                 HTMLCanvasElement :
                 OffscreenCanvas;
 
@@ -58,8 +59,10 @@ export class CanvasSpy {
             this.canvas.getContext = getContextSpied;
         }
         else {
-            OriginFunctionHelper.storePrototypeOriginFunction(HTMLCanvasElement, "getContext");
-            (HTMLCanvasElement as any).prototype.getContext = getContextSpied;
+            if (typeof HTMLCanvasElement !== "undefined") {
+                OriginFunctionHelper.storePrototypeOriginFunction(HTMLCanvasElement, "getContext");
+                (HTMLCanvasElement as any).prototype.getContext = getContextSpied;
+            }
 
             if (typeof OffscreenCanvas !== "undefined") {
                 OriginFunctionHelper.storePrototypeOriginFunction(OffscreenCanvas, "getContext");

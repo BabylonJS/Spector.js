@@ -7,7 +7,8 @@ var DEV_DIR = path.resolve(MAIN_DIR, "./.temp");
 var buildConfig = function(env) {
     var isProd = env.prod;
 
-    var config = {
+    // Main bundle (existing — UI + backend + vendors)
+    var mainConfig = {
         watch: !isProd,
         context: MAIN_DIR,
         entry: [
@@ -74,10 +75,10 @@ var buildConfig = function(env) {
     };
 
     if (!isProd) {
-        config.devtool = "nosources-source-map";
+        mainConfig.devtool = "nosources-source-map";
 
         // Source Map Remapping for dev tools.
-        config.output.devtoolModuleFilenameTemplate = (info) => {
+        mainConfig.output.devtoolModuleFilenameTemplate = (info) => {
             info.resourcePath = path.normalize(info.resourcePath);
 
             console.error(info.resourcePath);
@@ -90,7 +91,37 @@ var buildConfig = function(env) {
         };
     }
 
-    return config;
+    // Worker bundle (headless capture only — no UI, no vendors)
+    var workerConfig = {
+        watch: !isProd,
+        context: MAIN_DIR,
+        entry: "./src/workerEntry.ts",
+        output: {
+            path: isProd ? BUILD_DIR : DEV_DIR,
+            publicPath: "/",
+            filename: "spector.worker.bundle.js",
+            libraryTarget: "umd",
+            library: "SPECTOR_WORKER",
+            umdNamedDefine: true,
+        },
+        performance: { hints: false },
+        resolve: { extensions: [".ts", ".tsx", ".js"] },
+        devtool: false,
+        mode: isProd ? "production" : "development",
+        module: {
+            rules: [{
+                test: /\.tsx?$/,
+                loader: "ts-loader",
+                options: { configFile: "src/tsconfig.json" },
+            }],
+        },
+    };
+
+    if (!isProd) {
+        workerConfig.devtool = "nosources-source-map";
+    }
+
+    return [mainConfig, workerConfig];
 }
 
 module.exports = buildConfig;

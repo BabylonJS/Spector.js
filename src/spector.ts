@@ -8,9 +8,11 @@ import { Observable } from "./shared/utils/observable";
 import { ContextSpy } from "./backend/spies/contextSpy";
 import { TimeSpy } from "./backend/spies/timeSpy";
 import { CanvasSpy } from "./backend/spies/canvasSpy";
+import { WorkerSpy } from "./backend/spies/workerSpy";
 import { Program } from "./backend/webGlObjects/webGlObjects";
 import { ReactCaptureMenu as CaptureMenu } from "./embeddedFrontend/react/CaptureMenu/ReactCaptureMenu";
 import { ReactResultView as ResultView } from "./embeddedFrontend/react/ResultView/ReactResultView";
+import { WorkerBridge } from "./backend/bridge/workerBridge";
 
 // Import SCSS styles (previously imported by the old MVX component entry files)
 import "./embeddedFrontend/styles/captureMenu.scss";
@@ -92,6 +94,7 @@ export class Spector {
     private retry: number;
     private noFrameTimeout = -1;
     private marker: string;
+    private readonly workerBridges: Map<Worker, WorkerBridge>;
 
     private options: SpectorInitOptions;
 
@@ -107,6 +110,7 @@ export class Spector {
         this.fullCapture = false;
         this.retry = 0;
         this.contexts = [];
+        this.workerBridges = new Map();
 
         this.timeSpy = new TimeSpy();
         this.onCaptureStarted = new Observable<ICapture>();
@@ -133,7 +137,11 @@ export class Spector {
             this.captureMenu.onPlayNextFrameRequested.add(this.playNextFrame, this);
             this.captureMenu.onCaptureRequested.add((info) => {
                 if (info) {
-                    this.captureCanvas(info.ref);
+                    if (info.ref instanceof Worker) {
+                        this.captureWorker(info.ref);
+                    } else {
+                        this.captureCanvas(info.ref);
+                    }
                 }
             }, this);
 
@@ -256,7 +264,7 @@ export class Spector {
     }
 
     public getAvailableContexts(): IAvailableContext[] {
-        return this.getAvailableContexts();
+        return this.contexts;
     }
 
     public captureCanvas(canvas: HTMLCanvasElement | OffscreenCanvas,
@@ -427,6 +435,103 @@ export class Spector {
         if (this.capturingContext) {
             this.capturingContext.log(value);
         }
+    }
+
+    /**
+     * Intercept all new Worker() calls to auto-inject Spector.
+     * Best-effort: will fail for CORS, CSP, or module Workers.
+     * @param workerBundleUrl URL to spector.worker.bundle.js
+     */
+    public spyWorkers(workerBundleUrl: string = "spector.worker.bundle.js"): void {
+        WorkerSpy.startIntercepting(workerBundleUrl);
+    }
+
+    /**
+     * Stop intercepting Worker construction.
+     */
+    public stopSpyingWorkers(): void {
+        WorkerSpy.stopIntercepting();
+    }
+
+    /**
+     * Manually spy on a specific Worker.
+     * This is the primary, reliable API for Worker capture.
+     * The Worker must already have the Spector worker bundle loaded.
+     */
+    public spyWorker(worker: Worker): WorkerBridge {
+        let bridge = this.workerBridges.get(worker);
+        if (bridge) {
+            return bridge;
+        }
+
+        bridge = new WorkerBridge(worker);
+        bridge.onCapture.add((capture) => {
+            this.triggerCapture(capture);
+        }, this);
+        bridge.onError.add((error) => {
+            this.onErrorInternal(error);
+        }, this);
+
+        // When the Worker's WebGL context is ready, add it to the capture menu's canvas list.
+        bridge.onContextReady.add((info) => {
+            if (this.captureMenu) {
+                const workerIndex = this.workerBridges.size;
+                this.captureMenu.addCanvasInformation({
+                    id: "Worker " + workerIndex,
+                    width: info.canvasWidth,
+                    height: info.canvasHeight,
+                    ref: worker,
+                });
+            }
+        }, this);
+
+        // Forward Worker FPS to the capture menu
+        bridge.onFps.add((fps) => {
+            if (this.captureMenu) {
+                this.captureMenu.setFPS(fps);
+            }
+        }, this);
+
+        this.workerBridges.set(worker, bridge);
+        return bridge;
+    }
+
+    /**
+     * Capture a frame from a Worker's WebGL context.
+     * Uses direct postMessage to bypass the main-thread spy chain,
+     * which ensures a full frame is captured.
+     */
+    public captureWorker(
+        worker: Worker,
+        commandCount: number = 0,
+        quickCapture: boolean = false,
+        fullCapture: boolean = false,
+    ): void {
+        // Ensure bridge exists for UI integration
+        if (!this.workerBridges.has(worker)) {
+            this.spyWorker(worker);
+        }
+
+        // Listen for capture result directly on the Worker
+        // (bypasses the Spector spy chain for reliable full-frame capture)
+        // tslint:disable-next-line:no-this-assignment
+        const self = this;
+        worker.addEventListener("message", function captureHandler(e: MessageEvent) {
+            if (e.data && e.data.type === "spector:capture-complete") {
+                worker.removeEventListener("message", captureHandler);
+                self.triggerCapture(e.data.capture);
+            }
+        });
+
+        // Send trigger directly to Worker
+        worker.postMessage({
+            type: "spector:trigger-capture",
+            version: 1,
+            canvasIndex: 0,
+            commandCount,
+            quickCapture,
+            fullCapture,
+        });
     }
 
     private captureFrames(frameCount: number): void {

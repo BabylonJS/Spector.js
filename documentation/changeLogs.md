@@ -5,6 +5,12 @@
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
 ## v0.9.33
+* Add [Offscreen canvas support](https://github.com/BabylonJS/Spector.js/pull/343)
+* Add [Typescript typings](https://github.com/BabylonJS/Spector.js/pull/339)
+* Migrate [MVX to React](https://github.com/BabylonJS/Spector.js/pull/338)
+* Fix [spyContext wrongly hooking non-GL functions](https://github.com/BabylonJS/Spector.js/pull/328)
+* Fix [Offline support - remove fonts from cdn](https://github.com/BabylonJS/Spector.js/pull/321)
+* Fix [Correct error in buffer length calculation](https://github.com/BabylonJS/Spector.js/pull/315)
 
 ## v0.9.32
 * Fix [Capture on Reload](https://github.com/BabylonJS/Spector.js/issues/313)

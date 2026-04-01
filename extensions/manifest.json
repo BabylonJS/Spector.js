@@ -49,6 +49,7 @@
     {
       "resources": [
         "spector.bundle.js",
+        "spector.worker.bundle.js",
         "popup.js",
         "result.js"
       ],

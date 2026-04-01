@@ -37,6 +37,7 @@ import preprocess from "@shaderfrog/glsl-parser/preprocessor";
 interface IAceEditorSession {
     setMode(mode: string): void;
     on(eventName: string, callback: (e: any) => void): void;
+    off(eventName: string, callback: (e: any) => void): void;
     setAnnotations(annotations: any[]): void;
 }
 interface IAceEditor {
@@ -161,6 +162,7 @@ export function SourceCode({
                 clearTimeout(timeoutRef.current);
                 timeoutRef.current = -1;
             }
+            editor.getSession().off("change", changeHandler);
         };
     }, [displayedShader, state.editable, state.translated, state.fragment,
         state.sourceVertex, state.sourceFragment, state.translatedSourceVertex,
@@ -287,9 +289,7 @@ export function SourceCode({
                     </li>
                 </ul>
             </div>
-            <div className="sourceCodeComponent" ref={editorContainerRef}>
-                {displayedShader}
-            </div>
+            <div className="sourceCodeComponent" ref={editorContainerRef} />
             <div className="sourceCodeMenuComponentFooter">
                 <p>
                     <label>

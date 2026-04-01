@@ -15,6 +15,14 @@ Then you can use the following npm commands to speed your development:
 2. ```npm run build``` Will create and build a new version of the dist folder files.
 3. ```npm run clean``` Will clean all the generated files from the repo.
 
+## Testing
+The project includes both unit tests and end-to-end tests:
+
+1. ```npm run test:unit``` Runs Jest unit tests (69 tests covering CanvasFactory, TimeSpy, Time, WorkerBridge, WorkerMessageSender, message protocol, WorkerSpy, and WebGlObject).
+2. ```npm run test:e2e``` Runs Playwright E2E tests against Chromium with SwiftShader (5 tests covering sample page loading, main-thread OffscreenCanvas capture, and Worker OffscreenCanvas capture).
+
+Unit tests live in ```test/``` mirroring the ```src/``` structure. E2E tests live in ```e2e/```.
+
 If you are looking for the temporary generated .js or .map files, they are all available in the built folder which is not under source control.
 
 I would recommend developping on [VsCode](https://code.visualstudio.com/) as the entire setup is present so that if you install the chrome debugger extension you can directly debug from your typescript files by pressing F5.
@@ -55,6 +63,10 @@ Once ```npm start``` has been launched, you can access the following samples to 
 21. [Scissor Clear](http://localhost:1337/sample/index.html?sample=scissorClear): Test scissor redundant calls when clearing.
 22. [Custom Log](http://localhost:1337/sample/index.html?sample=customLog): Test the custom log functionnality.
 22. [Pixelated Nearest](http://localhost:1337/sample/index.html?sample=texturePixelated): Test visual texture capture being pixelated on nearest.
+
+### OffscreenCanvas
+1. [Offscreen (BabylonJS)](http://localhost:1337/sample/index.html?sample=offscreen): Test OffscreenCanvas support with BabylonJS engine.
+2. [Worker OffscreenCanvas](http://localhost:1337/sample/index.html?sample=workerOffscreen): Test Worker-based OffscreenCanvas capture via `transferControlToOffscreen()` and `spector.captureWorker()`.
 
 You can also add &noSpy=1 at the end of the previous Urls to test without enabling the full spy before starting your rendering engine.
 

@@ -28,6 +28,10 @@ This can be used either as a *browser extension* or directly from your page with
   * [How To Reference](#how-to-reference)
 * [Basic usage](#basic-usage)
 * [Custom data](#custom-data)
+* [OffscreenCanvas Support](#offscreencanvas-support)
+  * [Main-thread OffscreenCanvas](#main-thread-offscreencanvas)
+  * [Worker OffscreenCanvas](#worker-offscreencanvas-manual-api--recommended)
+  * [Auto-injection](#auto-injection-best-effort)
 * [Available APIs](documentation/apis.md)
 * [Build Locally](documentation/build.md)
 * [Contribute](documentation/contribute.md)
@@ -173,6 +177,100 @@ cubeVerticesColorBuffer.__SPECTOR_Metadata = { name: "cubeVerticesColorBuffer" }
 ```
 
 This will enable the visibility of your custom name in your capture. This can be an invaluable asset during troubleshoot session. This can also help with referencing your materials' friendly names from your captures.
+
+## OffscreenCanvas Support
+###### [Back to top](#table-of-content)
+Spector supports capturing WebGL commands from **OffscreenCanvas** — both on the main thread and inside Web Workers.
+
+### Bundles
+
+| Bundle | Use |
+|--------|-----|
+| `dist/spector.bundle.js` | Main thread (includes UI) |
+| `dist/spector.worker.bundle.js` | Inside Workers (headless, no UI) |
+
+### Main-thread OffscreenCanvas
+
+No special setup needed — `captureCanvas` works with `OffscreenCanvas` the same way it works with a regular `<canvas>`:
+
+```javascript
+var spector = new SPECTOR.Spector();
+
+var offscreen = new OffscreenCanvas(800, 600);
+var gl = offscreen.getContext('webgl2');
+// ... render ...
+
+spector.onCapture.add(function(capture) {
+    console.log('Captured', capture.commands.length, 'commands');
+});
+spector.captureCanvas(offscreen);
+```
+
+See [`sample/offscreen.html`](sample/offscreen.html) for a working example.
+
+### Worker OffscreenCanvas (Manual API — recommended)
+
+Use `spyWorker()` to bridge a specific Worker, then `captureWorker()` to trigger a capture. The Worker must load `spector.worker.bundle.js`.
+
+**Main thread:**
+
+```javascript
+var spector = new SPECTOR.Spector();
+var worker = new Worker('myWorker.js');
+
+// Bridge the Worker for capture
+spector.spyWorker(worker);
+
+// Capture from the Worker
+spector.onCapture.add(function(capture) {
+    console.log('Captured from Worker:', capture.commands.length, 'commands');
+    spector.getResultUI().display();
+    spector.getResultUI().addCapture(capture);
+});
+spector.captureWorker(worker);
+```
+
+**Inside `myWorker.js`:**
+
+```javascript
+importScripts('spector.worker.bundle.js');
+
+// OffscreenCanvas received via message or created directly
+var canvas = new OffscreenCanvas(800, 600);
+var gl = canvas.getContext('webgl2');
+
+function render() {
+    // ... draw calls ...
+    setTimeout(render, 16); // rAF may not be available in Workers
+}
+render();
+```
+
+See [`sample/worker.html`](sample/worker.html) for a working example.
+
+### Auto-injection (best-effort)
+
+`spyWorkers()` monkey-patches the global `Worker` constructor to automatically inject the Spector bundle into every new Worker:
+
+```javascript
+var spector = new SPECTOR.Spector();
+spector.spyWorkers('spector.worker.bundle.js');
+// All subsequent new Worker() calls get Spector injected automatically
+
+// Stop intercepting:
+// spector.stopSpyingWorkers();
+```
+
+> **⚠️ Limitations:** Auto-injection may fail with cross-origin Workers, strict CSP policies, or ES module Workers. Use the [manual API](#worker-offscreencanvas-manual-api--recommended) as a reliable fallback.
+
+### API Reference
+
+| Method | Description |
+|--------|-------------|
+| `spyWorker(worker)` | Bridge a specific Worker for capture. Returns a `WorkerBridge`. |
+| `captureWorker(worker, commandCount?, quickCapture?, fullCapture?)` | Trigger a capture on a bridged Worker. Auto-bridges if needed. |
+| `spyWorkers(bundleUrl?)` | Intercept all `new Worker()` calls to auto-inject Spector. |
+| `stopSpyingWorkers()` | Stop intercepting Worker construction. |
 
 ## Learn About WebGL
 ###### [Back to top](#table-of-content)

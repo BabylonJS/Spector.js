@@ -8,4 +8,8 @@
 /node_modules
 npm-debug.log.**
 npm-debug.log
-.DS_Storeplaywright-report/
+.DS_Store
+test-results/
+playwright-report/
+
+.playwright-cli/

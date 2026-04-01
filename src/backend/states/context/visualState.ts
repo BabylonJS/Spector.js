@@ -7,6 +7,7 @@ import { IContextInformation } from "../../types/contextInformation";
 import { IRenderBufferRecorderData } from "../../recorders/renderBufferRecorder";
 import { ITextureRecorderData } from "../../recorders/texture2DRecorder";
 import { Logger } from "../../../shared/utils/logger";
+import { CanvasFactory } from "../../utils/canvasFactory";
 
 export class VisualState extends BaseState {
     public static readonly stateName = "VisualState";
@@ -18,23 +19,19 @@ export class VisualState extends BaseState {
     public static captureBaseSize = 256;
 
     private readonly captureFrameBuffer: WebGLFramebuffer;
-    private readonly workingCanvas: HTMLCanvasElement;
-    private readonly captureCanvas: HTMLCanvasElement;
-    private readonly workingContext2D: CanvasRenderingContext2D;
-    private readonly captureContext2D: CanvasRenderingContext2D;
+    private readonly workingCanvas: HTMLCanvasElement | OffscreenCanvas;
+    private readonly captureCanvas: HTMLCanvasElement | OffscreenCanvas;
+    private readonly workingContext2D: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+    private readonly captureContext2D: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
     constructor(options: IContextInformation) {
         super(options);
         this.captureFrameBuffer = options.context.createFramebuffer();
-        this.workingCanvas = document.createElement("canvas");
-        this.workingContext2D = this.workingCanvas.getContext("2d");
-        this.captureCanvas = document.createElement("canvas");
-        this.captureContext2D = this.captureCanvas.getContext("2d");
-        this.captureContext2D.imageSmoothingEnabled = true;
-        (this.captureContext2D as any).mozImageSmoothingEnabled = true;
-        (this.captureContext2D as any).oImageSmoothingEnabled = true;
-        (this.captureContext2D as any).webkitImageSmoothingEnabled = true;
-        (this.captureContext2D as any).msImageSmoothingEnabled = true;
+        this.workingCanvas = CanvasFactory.createCanvas(1, 1);
+        this.workingContext2D = CanvasFactory.get2DContext(this.workingCanvas);
+        this.captureCanvas = CanvasFactory.createCanvas(1, 1);
+        this.captureContext2D = CanvasFactory.get2DContext(this.captureCanvas);
+        CanvasFactory.setImageSmoothing(this.captureContext2D, true);
     }
 
     protected getConsumeCommands(): string[] {
@@ -294,12 +291,12 @@ export class VisualState extends BaseState {
                     this.captureContext2D.globalCompositeOperation = "copy";
                     this.captureContext2D.scale(1, -1); // Y flip
                     this.captureContext2D.translate(0, -this.captureCanvas.height); // so we can draw at 0,0
-                    this.captureContext2D.drawImage(this.workingCanvas, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
+                    this.captureContext2D.drawImage(this.workingCanvas as any, 0, 0, width, height, 0, 0, this.captureCanvas.width, this.captureCanvas.height);
                     this.captureContext2D.setTransform(1, 0, 0, 1, 0, 0);
                     this.captureContext2D.globalCompositeOperation = "source-over";
 
                     // get the screen capture
-                    attachmentVisualState.src = this.captureCanvas.toDataURL();
+                    attachmentVisualState.src = CanvasFactory.canvasToDataURL(this.captureCanvas, this.captureContext2D);
                 }
             }
             catch (e) {

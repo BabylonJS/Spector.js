@@ -48,11 +48,13 @@ export class ReactCaptureMenu {
 
     private _isTrackingCanvas: boolean;
     private readonly _hideLog: boolean;
+    private readonly _extraCanvasEntries: ICanvasInformation[];
 
     constructor(private readonly options: ICaptureMenuOptions = {}) {
         this._rootPlaceHolder = options.rootPlaceHolder || document.body;
         this._hideLog = !!options.hideLog;
         this._isTrackingCanvas = false;
+        this._extraCanvasEntries = [];
 
         // ── Observables ──
         this.onCanvasSelected = new Observable<ICanvasInformation>();
@@ -116,6 +118,25 @@ export class ReactCaptureMenu {
             list.push({ id: info.id, width: info.width, height: info.height, ref: info.ref });
         }
         this._updateCanvasesInternal(list);
+    }
+
+    /**
+     * Appends a single canvas entry (e.g. a Worker OffscreenCanvas) to the
+     * list without replacing existing entries, and auto-selects it.
+     */
+    public addCanvasInformation(info: ICanvasInformation): void {
+        this._extraCanvasEntries.push(info);
+        const prev = this.store.getSnapshot();
+        const merged = [...prev.canvases, info];
+        this.store.setState((s) => ({
+            ...s,
+            canvases: merged,
+            selectedCanvas: info,
+            logLevel: LogLevel.info,
+            logText: ReactCaptureMenu.ActionsHelpText,
+            logVisible: !this._hideLog,
+        }));
+        this.onCanvasSelected.trigger(info);
     }
 
     public display(): void {
@@ -218,6 +239,11 @@ export class ReactCaptureMenu {
     // ─── Private ──────────────────────────────────────────────────────────
 
     private _updateCanvasesInternal(canvases: ICanvasInformation[]): void {
+        // Re-add persistent extra entries (Workers, etc.) that aren't in the DOM.
+        for (const extra of this._extraCanvasEntries) {
+            canvases.push(extra);
+        }
+
         const prevState = this.store.getSnapshot();
         const wasListVisible = prevState.showCanvasList;
 

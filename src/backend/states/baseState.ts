@@ -270,15 +270,22 @@ export abstract class BaseState {
 
     private readFromContextNoSideEffects(): void {
         this.toggleCapture(false);
-        this.readFromContext();
-        this.toggleCapture(true);
+        try {
+            this.readFromContext();
+        }
+        finally {
+            this.toggleCapture(true);
+        }
     }
 
     private isStateEnableNoSideEffects(stateName: string, args: IArguments): boolean {
         this.toggleCapture(false);
-        const enable = this.isStateEnable(stateName, args);
-        this.toggleCapture(true);
-        return enable;
+        try {
+            return this.isStateEnable(stateName, args);
+        }
+        finally {
+            this.toggleCapture(true);
+        }
     }
 
     private getCommandNameToStates(): { [key: string]: string[] } {

@@ -408,11 +408,17 @@ export declare class ReactCaptureMenu {
     private readonly _rootPlaceHolder;
     private _isTrackingCanvas;
     private readonly _hideLog;
+    private readonly _extraCanvasEntries;
     constructor(options?: ICaptureMenuOptions);
     getSelectedCanvasInformation(): ICanvasInformation;
     trackPageCanvases(): void;
     updateCanvasesList(canvases: NodeListOf<HTMLCanvasElement>): void;
     updateCanvasesListInformation(canvasesInformation: ICanvasInformation[]): void;
+    /**
+     * Appends a single canvas entry (e.g. a Worker OffscreenCanvas) to the
+     * list without replacing existing entries, and auto-selects it.
+     */
+    addCanvasInformation(info: ICanvasInformation): void;
     display(): void;
     hide(): void;
     captureComplete(errorText: string): void;
@@ -500,6 +506,40 @@ export declare class ReactResultView {
 }
 
 
+export interface IWorkerBridgeOptions {
+    /** Timeout in milliseconds for capture responses. Default: 10000 (10s). */
+    captureTimeout?: number;
+}
+export interface IWorkerContextInfo {
+    canvasCount: number;
+    canvasWidth: number;
+    canvasHeight: number;
+}
+/**
+ * Main-thread bridge that communicates with a WorkerSpector running inside a Worker.
+ * Uses addEventListener (not onmessage) to avoid overwriting app communication.
+ */
+export declare class WorkerBridge {
+    readonly onCapture: Observable<ICapture>;
+    readonly onCaptureStarted: Observable<void>;
+    readonly onError: Observable<string>;
+    readonly onFps: Observable<number>;
+    readonly onContextReady: Observable<IWorkerContextInfo>;
+    private readonly worker;
+    private readonly captureTimeout;
+    private readonly messageHandler;
+    private captureTimer;
+    private disposed;
+    constructor(worker: Worker, options?: IWorkerBridgeOptions);
+    /** Request a capture from the Worker. */
+    triggerCapture(canvasIndex?: number, commandCount?: number, quickCapture?: boolean, fullCapture?: boolean): void;
+    /** Clean up all resources. */
+    dispose(): void;
+    private handleMessage;
+    private clearCaptureTimer;
+}
+
+
 export interface IAvailableContext {
     readonly canvas: HTMLCanvasElement | OffscreenCanvas;
     readonly contextSpy: ContextSpy;
@@ -532,6 +572,7 @@ export declare class Spector {
     private retry;
     private noFrameTimeout;
     private marker;
+    private readonly workerBridges;
     private options;
     constructor(options?: SpectorInitOptions);
     displayUI(disableTracking?: boolean): void;
@@ -562,6 +603,28 @@ export declare class Spector {
         [name: string]: any;
     }): void;
     log(value: string): void;
+    /**
+     * Intercept all new Worker() calls to auto-inject Spector.
+     * Best-effort: will fail for CORS, CSP, or module Workers.
+     * @param workerBundleUrl URL to spector.worker.bundle.js
+     */
+    spyWorkers(workerBundleUrl?: string): void;
+    /**
+     * Stop intercepting Worker construction.
+     */
+    stopSpyingWorkers(): void;
+    /**
+     * Manually spy on a specific Worker.
+     * This is the primary, reliable API for Worker capture.
+     * The Worker must already have the Spector worker bundle loaded.
+     */
+    spyWorker(worker: Worker): WorkerBridge;
+    /**
+     * Capture a frame from a Worker's WebGL context.
+     * Uses direct postMessage to bypass the main-thread spy chain,
+     * which ensures a full frame is captured.
+     */
+    captureWorker(worker: Worker, commandCount?: number, quickCapture?: boolean, fullCapture?: boolean): void;
     private captureFrames;
     private captureCommands;
     private spyContext;

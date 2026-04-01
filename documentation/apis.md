@@ -34,6 +34,12 @@ And the following list of events:
 - ```onCapture: IEvent<ICapture>```: triggered when a new capture is available (this is a JSON only object containing alll the information).
 - ```onError: IEvent<string>```: triggered when an error occured and return the error message.
 
+### Worker / OffscreenCanvas APIs
+- ```spyWorkers(workerBundleUrl?: string)``` : Intercept all `new Worker()` calls to auto-inject Spector. Best-effort — may fail with CORS, CSP, or module Workers. Defaults to `"spector.worker.bundle.js"`.
+- ```stopSpyingWorkers()``` : Stop intercepting Worker construction.
+- ```spyWorker(worker: Worker): WorkerBridge``` : Manually bridge a specific Worker for capture. This is the primary, reliable API. The Worker must have `spector.worker.bundle.js` loaded via `importScripts`.
+- ```captureWorker(worker: Worker, commandCount?: number, quickCapture?: boolean, fullCapture?: boolean)``` : Capture a frame from a Worker's WebGL context. If the Worker hasn't been bridged yet, `spyWorker` is called automatically.
+
 As you notice you could use the capture without displying the UI (this is the orientation we chosed in the browser extension).
 
 ## SPECTOR.CaptureMenu
