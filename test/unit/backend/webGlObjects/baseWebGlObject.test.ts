@@ -1,4 +1,4 @@
-import { BaseWebGlObject } from "../../../src/backend/webGlObjects/baseWebGlObject";
+import { BaseWebGlObject } from "../../../../src/backend/webGlObjects/baseWebGlObject";
 
 class ConcreteWebGlObject extends BaseWebGlObject {
     get typeName(): string {

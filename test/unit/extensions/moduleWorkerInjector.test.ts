@@ -6,7 +6,7 @@
  */
 
 // Load the module injector — it attaches to window.__SPECTOR_ModuleInjector
-require("../../extensions/moduleWorkerInjector");
+require("../../../extensions/moduleWorkerInjector");
 
 const injector = (window as any).__SPECTOR_ModuleInjector;
 

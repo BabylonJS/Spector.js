@@ -33,7 +33,7 @@ export interface SpectorPage {
 export const test = base.extend<{ spectorPage: SpectorPage }>({
     spectorPage: async ({ page }, use) => {
         // Navigate to the test scene and wait for the canvas + Spector global.
-        await page.goto("/test/fixtures/test-scene.html", {
+        await page.goto("/test/integration/fixtures/test-scene.html", {
             waitUntil: "domcontentloaded",
         });
 

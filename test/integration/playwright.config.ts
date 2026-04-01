@@ -38,7 +38,7 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: `npx http-server "${path.join(__dirname, "..")}" -p ${PORT} --silent -c-1`,
+        command: `npx http-server "${path.join(__dirname, "..", "..")}" -p ${PORT} --silent -c-1`,
         port: PORT,
         reuseExistingServer: !process.env.CI,
         timeout: 10_000,

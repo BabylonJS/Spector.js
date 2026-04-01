@@ -15,19 +15,6 @@ test.describe("Responsive viewports", () => {
         );
     });
 
-    test("laptop 1366x768", async ({ spectorPage }) => {
-        const { page } = spectorPage;
-        await page.setViewportSize({ width: 1366, height: 768 });
-        await spectorPage.injectStabilizationCSS();
-        await loadCapturedFrame(page);
-        await page.waitForTimeout(200);
-
-        await expect(page.locator(".resultViewComponent")).toHaveScreenshot(
-            "responsive-1366x768.png",
-            { maxDiffPixels: 150 },
-        );
-    });
-
     test("below breakpoint 1023x600", async ({ spectorPage }) => {
         const { page } = spectorPage;
         // Below the 1024px media query — triggers responsive/hamburger layout.

@@ -1,5 +1,5 @@
-import { ICapture } from '../../src/shared/capture/capture';
-import { CommandCaptureStatus } from '../../src/shared/capture/commandCapture';
+import { ICapture } from '../../../src/shared/capture/capture';
+import { CommandCaptureStatus } from '../../../src/shared/capture/commandCapture';
 
 /**
  * Creates a mock ICapture for testing.
