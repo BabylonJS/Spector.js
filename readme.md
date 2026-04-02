@@ -32,6 +32,7 @@ This can be used either as a *browser extension* or directly from your page with
   * [Main-thread OffscreenCanvas](#main-thread-offscreencanvas)
   * [Worker OffscreenCanvas](#worker-offscreencanvas-manual-api--recommended)
   * [Auto-injection](#auto-injection-best-effort)
+* [MCP Server](#mcp-server)
 * [Available APIs](documentation/apis.md)
 * [Build Locally](documentation/build.md)
 * [Contribute](documentation/contribute.md)
@@ -271,6 +272,29 @@ spector.spyWorkers('spector.worker.bundle.js');
 | `captureWorker(worker, commandCount?, quickCapture?, fullCapture?)` | Trigger a capture on a bridged Worker. Auto-bridges if needed. |
 | `spyWorkers(bundleUrl?)` | Intercept all `new Worker()` calls to auto-inject Spector. |
 | `stopSpyingWorkers()` | Stop intercepting Worker construction. |
+
+## MCP Server
+###### [Back to top](#table-of-content)
+Spector.js includes an [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that lets AI assistants debug **any WebGL website** directly. Load a URL, capture frames, and inspect draw calls, shaders, textures, and GL state — all from your AI-powered editor.
+
+```
+npm run mcp:install
+npm run mcp:build
+```
+
+Then add to your MCP client config:
+```json
+{
+  "mcpServers": {
+    "spector": {
+      "command": "node",
+      "args": ["<path-to-repo>/mcp/dist/index.js"]
+    }
+  }
+}
+```
+
+See the full documentation in [mcp/README.md](mcp/README.md).
 
 ## Learn About WebGL
 ###### [Back to top](#table-of-content)

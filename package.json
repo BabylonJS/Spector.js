@@ -39,7 +39,12 @@
     "test:unit": "jest --config jest.config.js",
     "test:e2e": "npx playwright test",
     "test:visual": "npx playwright test --config test/integration/playwright.config.ts",
-    "test:visual:update": "npx playwright test --config test/integration/playwright.config.ts --update-snapshots"
+    "test:visual:update": "npx playwright test --config test/integration/playwright.config.ts --update-snapshots",
+    "mcp:install": "cd mcp && npm install && npx playwright install chromium",
+    "mcp:build": "cd mcp && npm run build",
+    "mcp:test": "cd mcp && npm test",
+    "mcp:dev": "cd mcp && npm run dev",
+    "mcp:start": "cd mcp && npm start"
   },
   "dependencies": {
     "@shaderfrog/glsl-parser": "^7.0.1",
