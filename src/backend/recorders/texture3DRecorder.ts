@@ -53,6 +53,9 @@ export class Texture3DRecorder extends BaseRecorder<WebGLTexture> {
             return 0;
         }
 
+        // Snapshot pixelStorei state at upload time
+        customData.pixelStoreState = this.readPixelStoreState();
+
         const previousLength = (instance as any).__SPECTOR_Object_CustomData ? (instance as any).__SPECTOR_Object_CustomData.length : 0;
         if (customData.isCompressed) {
             // Compressed textures are worth the size of their data.

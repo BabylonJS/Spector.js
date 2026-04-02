@@ -4,6 +4,19 @@ import { WebGlConstants } from "../types/webglConstants";
 
 import { IFunctionInformation } from "../types/functionInformation";
 
+export interface IPixelStoreState {
+    UNPACK_FLIP_Y_WEBGL?: boolean;
+    UNPACK_PREMULTIPLY_ALPHA_WEBGL?: boolean;
+    UNPACK_COLORSPACE_CONVERSION_WEBGL?: number;
+    UNPACK_ALIGNMENT?: number;
+    /** WebGL2 only */
+    UNPACK_ROW_LENGTH?: number;
+    UNPACK_IMAGE_HEIGHT?: number;
+    UNPACK_SKIP_PIXELS?: number;
+    UNPACK_SKIP_ROWS?: number;
+    UNPACK_SKIP_IMAGES?: number;
+}
+
 export interface ITextureRecorderData {
     target: string;
     internalFormat: number;
@@ -14,6 +27,7 @@ export interface ITextureRecorderData {
     type?: number;
     depth?: number;
     isCompressed: boolean;
+    pixelStoreState?: IPixelStoreState;
 }
 
 export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
@@ -66,6 +80,9 @@ export class Texture2DRecorder extends BaseRecorder<WebGLTexture> {
         if (!customData) {
             return 0;
         }
+
+        // Snapshot pixelStorei state at upload time
+        customData.pixelStoreState = this.readPixelStoreState();
 
         const previousLength = (instance as any).__SPECTOR_Object_CustomData ? (instance as any).__SPECTOR_Object_CustomData.length : 0;
         if (customData.isCompressed) {

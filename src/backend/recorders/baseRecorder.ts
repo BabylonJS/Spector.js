@@ -4,6 +4,7 @@ import { WebGlConstants, WebGlConstantsByValue } from "../types/webglConstants";
 import { FunctionCallbacks, IFunctionInformation } from "../types/functionInformation";
 import { ICapture } from "../../shared/capture/capture";
 import { WebGlObjects } from "../webGlObjects/baseWebGlObject";
+import { IPixelStoreState } from "./texture2DRecorder";
 
 export interface IRecorder {
     registerCallbacks(onFunctionCallbacks: FunctionCallbacks): void;
@@ -219,5 +220,26 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
     protected getByteSizeForInternalFormat(internalFormat: number) {
         const bytesPerElements = BaseRecorder.byteSizePerInternalFormat[internalFormat];
         return bytesPerElements || 4;
+    }
+
+    protected readPixelStoreState(): IPixelStoreState {
+        const gl = this.options.context;
+        const state: IPixelStoreState = {
+            UNPACK_FLIP_Y_WEBGL: gl.getParameter(WebGlConstants.UNPACK_FLIP_Y_WEBGL.value),
+            UNPACK_PREMULTIPLY_ALPHA_WEBGL: gl.getParameter(WebGlConstants.UNPACK_PREMULTIPLY_ALPHA_WEBGL.value),
+            UNPACK_COLORSPACE_CONVERSION_WEBGL: gl.getParameter(WebGlConstants.UNPACK_COLORSPACE_CONVERSION_WEBGL.value),
+            UNPACK_ALIGNMENT: gl.getParameter(WebGlConstants.UNPACK_ALIGNMENT.value),
+        };
+
+        // Add WebGL2-only parameters if available
+        if (gl instanceof WebGL2RenderingContext) {
+            state.UNPACK_ROW_LENGTH = gl.getParameter(WebGlConstants.UNPACK_ROW_LENGTH.value);
+            state.UNPACK_IMAGE_HEIGHT = gl.getParameter(WebGlConstants.UNPACK_IMAGE_HEIGHT.value);
+            state.UNPACK_SKIP_PIXELS = gl.getParameter(WebGlConstants.UNPACK_SKIP_PIXELS.value);
+            state.UNPACK_SKIP_ROWS = gl.getParameter(WebGlConstants.UNPACK_SKIP_ROWS.value);
+            state.UNPACK_SKIP_IMAGES = gl.getParameter(WebGlConstants.UNPACK_SKIP_IMAGES.value);
+        }
+
+        return state;
     }
 }
