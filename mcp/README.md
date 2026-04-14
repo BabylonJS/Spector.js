@@ -2,7 +2,7 @@
 
 An MCP (Model Context Protocol) server that lets AI assistants debug **any WebGL website** using [Spector.js](https://spector.babylonjs.com/) — a WebGL debugger.
 
-Load any URL, capture WebGL frames, and inspect draw calls, shaders, textures, and GL state — all from your AI-powered editor. Works with Three.js, Babylon.js, PlayCanvas, raw WebGL, and any other WebGL-based site.
+Load any URL, capture WebGL frames, and inspect draw calls, shaders, textures, and GL state — all from your AI-powered editor.
 
 This server lives inside the Spector.js repository at `mcp/`.
 
@@ -103,7 +103,7 @@ Replace `<SPECTOR_REPO>` with the absolute path to your Spector.js repo clone.
 
 ### Debug any WebGL site
 1. **Load a URL:**
-   > "Load https://threejs.org/examples/#webgl_animation_keyframes and capture a frame"
+   > "Load https://playground.babylonjs.com and capture a frame"
 
 2. **Inspect rendering:**
    > "Show me the draw calls and shaders"
