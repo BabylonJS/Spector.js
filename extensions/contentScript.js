@@ -187,14 +187,92 @@ window.__SPECTOR_Canvases = [];
             }
 
             try {
+                // Resolve to absolute so we can fetch and use as base URL
+                // for runtime URL rewriting inside the blob worker.
+                var absoluteScriptUrl;
+                try {
+                    absoluteScriptUrl = new URL(urlStr, location.href).href;
+                } catch (e) {
+                    absoluteScriptUrl = urlStr;
+                }
+
                 var xhr = new XMLHttpRequest();
-                xhr.open('GET', urlStr, false);
+                xhr.open('GET', absoluteScriptUrl, false);
                 xhr.send();
 
                 if (xhr.status === 200) {
                     if (bundleUrl) {
-                        var importLine = 'importScripts("' + bundleUrl + '");\n';
-                        var modifiedScript = importLine + xhr.responseText;
+                        // Runtime shim: when a worker is loaded from a blob:
+                        // URL, `self.location.href` is the blob URL — which
+                        // means every relative URL passed to importScripts,
+                        // fetch, XMLHttpRequest, or new Worker resolves against
+                        // it and breaks (root-relative URLs throw "URL is
+                        // invalid"; relative URLs become blob:scheme paths).
+                        // We wrap each of those APIs to resolve URLs against
+                        // the worker's ORIGINAL location before delegating to
+                        // the real implementation.
+                        var runtimeShim =
+                            '(function(){\n' +
+                            '  var __spectorBase = ' + JSON.stringify(absoluteScriptUrl) + ';\n' +
+                            '  self.__SPECTOR_workerBaseUrl = __spectorBase;\n' +
+                            '  function __spectorResolve(u) {\n' +
+                            '    if (u == null) return u;\n' +
+                            '    if (typeof u !== "string") {\n' +
+                            '      if (u instanceof URL) return u;\n' +
+                            '      try { u = String(u); } catch (e) { return u; }\n' +
+                            '    }\n' +
+                            '    if (/^(?:[a-z][a-z0-9+.-]*:|\\/\\/)/i.test(u)) return u;\n' +
+                            '    try { return new URL(u, __spectorBase).href; }\n' +
+                            '    catch (e) { return u; }\n' +
+                            '  }\n' +
+                            '  self.__SPECTOR_resolveWorkerUrl = __spectorResolve;\n' +
+                            // importScripts (variadic)
+                            '  var __origImportScripts = self.importScripts;\n' +
+                            '  if (typeof __origImportScripts === "function") {\n' +
+                            '    self.importScripts = function() {\n' +
+                            '      var args = new Array(arguments.length);\n' +
+                            '      for (var i = 0; i < arguments.length; i++) args[i] = __spectorResolve(arguments[i]);\n' +
+                            '      return __origImportScripts.apply(self, args);\n' +
+                            '    };\n' +
+                            '  }\n' +
+                            // fetch
+                            '  var __origFetch = self.fetch;\n' +
+                            '  if (typeof __origFetch === "function") {\n' +
+                            '    self.fetch = function(input, init) {\n' +
+                            '      try {\n' +
+                            '        if (typeof input === "string") {\n' +
+                            '          input = __spectorResolve(input);\n' +
+                            '        } else if (input && typeof input === "object" && "url" in input && typeof Request === "function") {\n' +
+                            '          var r = input;\n' +
+                            '          var resolved = __spectorResolve(r.url);\n' +
+                            '          if (resolved !== r.url) input = new Request(resolved, r);\n' +
+                            '        }\n' +
+                            '      } catch (e) { /* fall through with original input */ }\n' +
+                            '      return __origFetch.call(self, input, init);\n' +
+                            '    };\n' +
+                            '  }\n' +
+                            // XMLHttpRequest.open
+                            '  if (typeof XMLHttpRequest === "function" && XMLHttpRequest.prototype && XMLHttpRequest.prototype.open) {\n' +
+                            '    var __origXhrOpen = XMLHttpRequest.prototype.open;\n' +
+                            '    XMLHttpRequest.prototype.open = function(method, url) {\n' +
+                            '      var args = Array.prototype.slice.call(arguments);\n' +
+                            '      args[1] = __spectorResolve(url);\n' +
+                            '      return __origXhrOpen.apply(this, args);\n' +
+                            '    };\n' +
+                            '  }\n' +
+                            // Nested Worker construction (workers can spawn workers)
+                            '  if (typeof Worker === "function") {\n' +
+                            '    var __OrigWorker = Worker;\n' +
+                            '    self.Worker = function(scriptURL, options) {\n' +
+                            '      var resolved = __spectorResolve(scriptURL);\n' +
+                            '      return new __OrigWorker(resolved, options);\n' +
+                            '    };\n' +
+                            '    self.Worker.prototype = __OrigWorker.prototype;\n' +
+                            '  }\n' +
+                            '})();\n';
+
+                        var importLine = 'importScripts(' + JSON.stringify(bundleUrl) + ');\n';
+                        var modifiedScript = runtimeShim + importLine + xhr.responseText;
                         var blob = new Blob([modifiedScript], { type: 'application/javascript' });
                         var blobUrl = URL.createObjectURL(blob);
                         var w = new __SPECTOR_Origin_Worker(blobUrl, options);
