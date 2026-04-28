@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/babylonjs-spector-js-badge.png)](https://mseep.ai/app/babylonjs-spector-js)
+
 [SpectorJS](readme.md)
 =========
 
