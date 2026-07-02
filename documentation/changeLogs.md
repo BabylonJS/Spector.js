@@ -5,6 +5,7 @@
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
 ## v0.9.33
+* Add Parallel Shader Compilation Throttling
 * Add [Texture Storei Information](https://github.com/BabylonJS/Spector.js/issues/80)
 * Add [MCP Support](https://github.com/BabylonJS/Spector.js/pull/345)
 * Add [Offscreen canvas support](https://github.com/BabylonJS/Spector.js/pull/343)

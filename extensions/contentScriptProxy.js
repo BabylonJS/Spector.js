@@ -49,6 +49,8 @@ var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATION_QUICKCAPT
 var spectorCommunicationFullCaptureElementId = "SPECTOR_COMMUNICATION_FULLCAPTURE";
 var spectorCommunicationCommandCountElementId = "SPECTOR_COMMUNICATION_COMMANDCOUNT";
 var spectorCommunicationRebuildProgramElementId = "SPECTOR_COMMUNICATION_REBUILDPROGRAM";
+var spectorCommunicationShaderDelayElementId = "SPECTOR_COMMUNICATION_SHADERDELAY";
+var spectorShaderCompileDelayKey = "SPECTOR_SHADERCOMPILEDELAY";
 
 var spectorContextTypeKey = "__spector_context_type";
 
@@ -217,6 +219,24 @@ listenForMessage(function (message) {
     // Let the paused canvas play again. 
     if (action === "playAll") {
         var myEvent = new CustomEvent("SpectorRequestPlayEvent");
+        document.dispatchEvent(myEvent);
+        return;
+    }
+
+    // Simulate slow parallel shader compilation. Applies live (no reload) and
+    // is persisted for the tab session so it re-applies after a page reload.
+    if (action === "setShaderCompileDelay") {
+        var delayMs = parseInt(message.delayMs, 10);
+        if (isNaN(delayMs) || delayMs < 0) {
+            delayMs = 0;
+        }
+        sessionStorage.setItem(spectorShaderCompileDelayKey, String(delayMs));
+
+        var delayElement = document.getElementById(spectorCommunicationShaderDelayElementId);
+        if (delayElement) {
+            delayElement.value = String(delayMs);
+        }
+        var myEvent = new CustomEvent("SpectorRequestSetShaderCompileDelayEvent");
         document.dispatchEvent(myEvent);
         return;
     }

@@ -589,6 +589,27 @@ export declare class Spector {
     spyCanvases(): void;
     spyCanvas(canvas: HTMLCanvasElement | OffscreenCanvas): void;
     getAvailableContexts(): IAvailableContext[];
+    /**
+     * Simulate slow asynchronous shader compilation.
+     *
+     * While a non-zero delay is set, any program queried via
+     * `getProgramParameter(program, COMPLETION_STATUS_KHR)` reports `false`
+     * (still compiling) for `delayMs` milliseconds after it is linked, then
+     * reports its real completion status. This emulates a slow GPU driver so
+     * loading screens, shader fallbacks, and hitch handling can be tested —
+     * similar to the CPU/network throttling in browser developer tools.
+     *
+     * The throttle is installed globally on the WebGL prototypes, so it applies
+     * to every context on the page without needing canvas spying to be active.
+     * Only programs linked after the throttle is installed are affected.
+     *
+     * @param delayMs - Delay in milliseconds. Use `0` to disable.
+     */
+    setShaderCompileDelay(delayMs: number): void;
+    /** Disable the simulated shader-compile delay. */
+    clearShaderCompileDelay(): void;
+    /** The current simulated shader-compile delay in milliseconds (0 = disabled). */
+    getShaderCompileDelay(): number;
     captureCanvas(canvas: HTMLCanvasElement | OffscreenCanvas, commandCount?: number, quickCapture?: boolean, fullCapture?: boolean): void;
     captureContext(context: WebGLRenderingContexts, commandCount?: number, quickCapture?: boolean, fullCapture?: boolean): void;
     captureXRContext(commandCount?: number, quickCapture?: boolean, fullCapture?: boolean): void;

@@ -36,6 +36,8 @@ var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATION_QUICKCAPT
 var spectorCommunicationFullCaptureElementId = "SPECTOR_COMMUNICATION_FULLCAPTURE";
 var spectorCommunicationCommandCountElementId = "SPECTOR_COMMUNICATION_COMMANDCOUNT";
 var spectorCommunicationRebuildProgramElementId = "SPECTOR_COMMUNICATION_REBUILDPROGRAM";
+var spectorCommunicationShaderDelayElementId = "SPECTOR_COMMUNICATION_SHADERDELAY";
+var spectorShaderCompileDelayKey = "SPECTOR_SHADERCOMPILEDELAY";
 
 var spectorContextTypeKey = "__spector_context_type";
 
@@ -353,6 +355,28 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
     setTimeout(function () {
         spector = new SPECTOR.Spector();
             spector.spyCanvases();
+
+            // Re-apply a persisted shader-compile delay after a page reload.
+            try {
+                var persistedDelay = parseInt(sessionStorage.getItem(spectorShaderCompileDelayKey), 10);
+                if (!isNaN(persistedDelay) && persistedDelay > 0) {
+                    spector.setShaderCompileDelay(persistedDelay);
+                }
+            } catch (e) {
+                // sessionStorage unavailable — ignore.
+            }
+
+            document.addEventListener("SpectorRequestSetShaderCompileDelayEvent", function() {
+                var delayElement = document.getElementById(spectorCommunicationShaderDelayElementId);
+                var delayMs = delayElement ? parseInt(delayElement.value, 10) : 0;
+                if (isNaN(delayMs) || delayMs < 0) {
+                    delayMs = 0;
+                }
+                if (spector && spector.setShaderCompileDelay) {
+                    spector.setShaderCompileDelay(delayMs);
+                }
+            });
+
             document.addEventListener("SpectorRequestPauseEvent", function() {
                 spector.pause();
             });
@@ -555,5 +579,9 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         input5.type = 'Hidden';
         input5.id = spectorCommunicationCommandCountElementId;
         document.body.appendChild(input5);
+        var input6 = document.createElement('input');
+        input6.type = 'Hidden';
+        input6.id = spectorCommunicationShaderDelayElementId;
+        document.body.appendChild(input6);
     });
 }

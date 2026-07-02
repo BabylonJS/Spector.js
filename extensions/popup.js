@@ -72,6 +72,36 @@ window.addEventListener("DOMContentLoaded", function() {
         this.changeOffScreenStatus(offScreenInput.checked);
     };
 
+    var shaderCompileDelayInput = document.getElementById("shaderCompileDelay");
+    if (shaderCompileDelayInput) {
+        // Restore the last selection so the dropdown reflects the active value.
+        try {
+            window.browser.storage.local.get("shaderCompileDelay", function (items) {
+                var stored = items && items.shaderCompileDelay;
+                if (typeof stored !== "undefined" && stored !== null) {
+                    shaderCompileDelayInput.value = String(stored);
+                }
+            });
+        }
+        catch (e) {
+            // Storage unavailable — ignore.
+        }
+
+        shaderCompileDelayInput.onchange = () => {
+            var delayMs = parseInt(shaderCompileDelayInput.value, 10);
+            if (isNaN(delayMs) || delayMs < 0) {
+                delayMs = 0;
+            }
+            try {
+                window.browser.storage.local.set({ shaderCompileDelay: delayMs });
+            }
+            catch (e) {
+                // Storage unavailable — ignore.
+            }
+            this.changeShaderCompileDelay(delayMs);
+        };
+    }
+
     initUI();
     refreshCanvases();
     playAll();
@@ -111,6 +141,13 @@ var changeOffScreenStatus = function(offScreen) {
     sendMessage({ 
         action: "changeOffScreen",
         captureOffScreen : offScreen,
+    });
+}
+
+var changeShaderCompileDelay = function(delayMs) {
+    sendMessage({
+        action: "setShaderCompileDelay",
+        delayMs: delayMs,
     });
 }
 

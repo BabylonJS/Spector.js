@@ -97,6 +97,15 @@
         #captureOnLoadCount {
             width:25px;
         }
+
+        #shaderCompileDelay {
+            background-color: #3a3a3a;
+            color: #f9f9f9;
+            border: 1px solid #222;
+            font-family: Consolas, monaco, monospace;
+            font-size: 13px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -121,6 +130,18 @@
             <input type="text" id="captureOnLoadCount" value="500" />
             first commands (<label><input type="checkbox" id="captureOnLoadTransient" /> transient</label>):
             <span id="captureNow">Capture</span>/<span id="captureOnLoad">Reload</span>.
+        </p>
+        <p>
+            <label>Simulate slow shader compile:
+                <select id="shaderCompileDelay">
+                    <option value="0">Off</option>
+                    <option value="250">250 ms</option>
+                    <option value="500">500 ms</option>
+                    <option value="1000">1 s</option>
+                    <option value="2000">2 s</option>
+                    <option value="5000">5 s</option>
+                </select>
+            </label>
         </p>
     </div>
 

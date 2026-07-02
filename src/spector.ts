@@ -9,6 +9,7 @@ import { ContextSpy } from "./backend/spies/contextSpy";
 import { TimeSpy } from "./backend/spies/timeSpy";
 import { CanvasSpy } from "./backend/spies/canvasSpy";
 import { WorkerSpy } from "./backend/spies/workerSpy";
+import { ShaderCompileThrottle } from "./backend/throttle/shaderCompileThrottle";
 import { Program } from "./backend/webGlObjects/webGlObjects";
 import { ReactCaptureMenu as CaptureMenu } from "./embeddedFrontend/react/CaptureMenu/ReactCaptureMenu";
 import { ReactResultView as ResultView } from "./embeddedFrontend/react/ResultView/ReactResultView";
@@ -120,6 +121,13 @@ export class Spector {
         this.timeSpy.onFrameStart.add(this.onFrameStart, this);
         this.timeSpy.onFrameEnd.add(this.onFrameEnd, this);
         this.timeSpy.onError.add(this.onErrorInternal, this);
+
+        // Install the shader-compile throttle globally (patches the WebGL
+        // prototypes). It is transparent until a delay is set, but installing it
+        // now — before any context is spied — guarantees every present and
+        // future context is covered and that command spies capture the throttle
+        // wrapper as their origin function.
+        ShaderCompileThrottle.install();
 
         // if we want to capture WebXR sessions, we have to polyfill a bunch of stuff to ensure Spector.JS has access to the session
         // and the GL context. So we do that here.
@@ -265,6 +273,37 @@ export class Spector {
 
     public getAvailableContexts(): IAvailableContext[] {
         return this.contexts;
+    }
+
+    /**
+     * Simulate slow asynchronous shader compilation.
+     *
+     * While a non-zero delay is set, any program queried via
+     * `getProgramParameter(program, COMPLETION_STATUS_KHR)` reports `false`
+     * (still compiling) for `delayMs` milliseconds after it is linked, then
+     * reports its real completion status. This emulates a slow GPU driver so
+     * loading screens, shader fallbacks, and hitch handling can be tested —
+     * similar to the CPU/network throttling in browser developer tools.
+     *
+     * The throttle is installed globally on the WebGL prototypes, so it applies
+     * to every context on the page without needing canvas spying to be active.
+     * Only programs linked after the throttle is installed are affected.
+     *
+     * @param delayMs - Delay in milliseconds. Use `0` to disable.
+     */
+    public setShaderCompileDelay(delayMs: number): void {
+        ShaderCompileThrottle.install();
+        ShaderCompileThrottle.setDelay(delayMs);
+    }
+
+    /** Disable the simulated shader-compile delay. */
+    public clearShaderCompileDelay(): void {
+        ShaderCompileThrottle.setDelay(0);
+    }
+
+    /** The current simulated shader-compile delay in milliseconds (0 = disabled). */
+    public getShaderCompileDelay(): number {
+        return ShaderCompileThrottle.getDelay();
     }
 
     public captureCanvas(canvas: HTMLCanvasElement | OffscreenCanvas,
