@@ -454,6 +454,9 @@ export declare class ReactResultView {
     private readonly _container;
     private readonly _rootPlaceHolder;
     private _currentCommandId;
+    private readonly _sourceMapResolver;
+    private readonly _resolvedStackTraces;
+    private readonly _resolvingStackTraces;
     constructor(rootPlaceHolder?: Element);
     display(): void;
     hide(): void;
@@ -498,6 +501,15 @@ export declare class ReactResultView {
     private _displayCurrentCapture;
     private _openShader;
     private _buildCommandDetail;
+    /**
+     * Lazily resolve a command's stack-trace frames through source maps (#98).
+     *
+     * Runs off the capture hot path — only for the command currently being
+     * inspected — then patches the detail panel in place when resolution
+     * completes and the same command is still selected. Any failure leaves the
+     * raw frames untouched.
+     */
+    private _resolveStackTraceAsync;
     private _selectPreviousCommand;
     private _selectNextCommand;
     private _selectPreviousVisualState;
