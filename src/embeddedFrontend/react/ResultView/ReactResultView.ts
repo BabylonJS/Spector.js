@@ -17,6 +17,7 @@ import {
 import { ResultViewRoot } from "./ResultViewRoot";
 import { ResultViewContext } from "./ResultViewContext";
 import { MDNCommandLinkHelper } from "../shared/mdnCommandLinkHelper";
+import { WebGLParameterNameHelper } from "../shared/webglParameterNameHelper";
 
 // ─── Default (empty) state ───────────────────────────────────────────────────
 
@@ -197,12 +198,42 @@ function buildCommandDetail(
         if (key === "VisualState" || key === "result") {
             continue;
         }
+        // Relabel raw argument indices with their WebGL parameter names (#56).
+        if (key === "commandArguments" && Array.isArray(command.commandArguments)) {
+            buildCommandArgumentsGroup(items, command.name, command.commandArguments as any[]);
+            continue;
+        }
         if (typeof command[key] === "object") {
             buildJSONGroup(items, key, command[key], "");
         }
     }
 
     return items;
+}
+
+/**
+ * Build the "commandArguments" group, labelling each argument with its WebGL
+ * parameter name (e.g. `index`, `size`, `type`) when known, falling back to the
+ * numeric index for unknown functions or extra arguments.
+ *
+ * Fallback labels for unknown functions stay purely numeric so iteration order
+ * is preserved; when names are present, unnamed trailing arguments use an
+ * `argN` label (non-numeric) so the named keys keep their signature order.
+ */
+function buildCommandArgumentsGroup(
+    parentChildren: JSONRenderItem[],
+    functionName: string,
+    args: any[],
+): void {
+    const names = WebGLParameterNameHelper.getNames(functionName, args.length);
+    const labelled: { [key: string]: any } = {};
+    for (let i = 0; i < args.length; i++) {
+        const label = names
+            ? (i < names.length ? names[i] : "arg" + i)
+            : String(i);
+        labelled[label] = args[i];
+    }
+    buildJSONGroup(parentChildren, "commandArguments", labelled, "");
 }
 
 // ─── Adapter class ──────────────────────────────────────────────────────────
