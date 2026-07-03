@@ -18,6 +18,7 @@ import { ResultViewRoot } from "./ResultViewRoot";
 import { ResultViewContext } from "./ResultViewContext";
 import { MDNCommandLinkHelper } from "../shared/mdnCommandLinkHelper";
 import { WebGLParameterNameHelper } from "../shared/webglParameterNameHelper";
+import { SourceMapResolver } from "../shared/sourceMapResolver";
 
 // ─── Default (empty) state ───────────────────────────────────────────────────
 
@@ -158,6 +159,7 @@ function buildJSONGroup(
 function buildCommandDetail(
     command: ICommandCapture,
     visualState: any,
+    resolvedStackTrace?: string[],
 ): JSONRenderItem[] {
     const items: JSONRenderItem[] = [];
 
@@ -201,6 +203,11 @@ function buildCommandDetail(
         // Relabel raw argument indices with their WebGL parameter names (#56).
         if (key === "commandArguments" && Array.isArray(command.commandArguments)) {
             buildCommandArgumentsGroup(items, command.name, command.commandArguments as any[]);
+            continue;
+        }
+        // Use source-map-resolved frames for the stack trace when available (#98).
+        if (key === "stackTrace" && Array.isArray(command.stackTrace)) {
+            buildJSONGroup(items, "stackTrace", resolvedStackTrace || command.stackTrace, "");
             continue;
         }
         if (typeof command[key] === "object") {
@@ -258,6 +265,11 @@ export class ReactResultView {
 
     // ─── Tracking ─────────────────────────────────────────────────────────
     private _currentCommandId: number = -1;
+
+    // ─── Source-map resolution (#98): lazy, display-time only ──────────────
+    private readonly _sourceMapResolver: SourceMapResolver = new SourceMapResolver();
+    private readonly _resolvedStackTraces: Map<number, string[]> = new Map();
+    private readonly _resolvingStackTraces: Set<number> = new Set();
 
     constructor(rootPlaceHolder: Element = null) {
         this._rootPlaceHolder = rootPlaceHolder || document.body;
@@ -713,9 +725,7 @@ export class ReactResultView {
         // Build command detail for the selected command
         let commandDetailData: JSONRenderItem[] = [];
         if (autoSelectCommandIdx >= 0) {
-            const selectedCmd = commands[autoSelectCommandIdx];
-            const vsData = visualStates[selectedCmd.visualStateIndex];
-            commandDetailData = buildCommandDetail(selectedCmd.capture, vsData?.VisualState);
+            commandDetailData = this._buildCommandDetail(autoSelectCommandIdx, commands, visualStates);
         }
 
         this.store.setState((prev) => ({
@@ -780,7 +790,59 @@ export class ReactResultView {
         if (commandIndex < 0 || commandIndex >= commands.length) { return []; }
         const cmd = commands[commandIndex];
         const vs = visualStates[cmd.visualStateIndex];
-        return buildCommandDetail(cmd.capture, vs?.VisualState);
+        const resolved = this._resolvedStackTraces.get(cmd.capture.id);
+        const detail = buildCommandDetail(cmd.capture, vs?.VisualState, resolved);
+        if (!resolved) {
+            this._resolveStackTraceAsync(cmd.capture);
+        }
+        return detail;
+    }
+
+    /**
+     * Lazily resolve a command's stack-trace frames through source maps (#98).
+     *
+     * Runs off the capture hot path — only for the command currently being
+     * inspected — then patches the detail panel in place when resolution
+     * completes and the same command is still selected. Any failure leaves the
+     * raw frames untouched.
+     */
+    private _resolveStackTraceAsync(command: ICommandCapture): void {
+        const id = command.id;
+        if (this._resolvedStackTraces.has(id) || this._resolvingStackTraces.has(id)) {
+            return;
+        }
+        if (!command.stackTrace || command.stackTrace.length === 0) {
+            return;
+        }
+
+        this._resolvingStackTraces.add(id);
+        this._sourceMapResolver.resolveFrames(command.stackTrace)
+            .then((resolved) => {
+                this._resolvingStackTraces.delete(id);
+                this._resolvedStackTraces.set(id, resolved);
+
+                // Nothing changed (no maps found) — skip the re-render.
+                let changed = false;
+                for (let i = 0; i < resolved.length; i++) {
+                    if (resolved[i] !== command.stackTrace[i]) { changed = true; break; }
+                }
+                if (!changed) { return; }
+
+                // Only refresh if this command is still the selected one.
+                const state = this.store.getSnapshot();
+                const current = state.commands[state.currentCommandIndex];
+                if (current && current.capture.id === id) {
+                    const commandDetailData = this._buildCommandDetail(
+                        state.currentCommandIndex,
+                        state.commands,
+                        state.visualStates,
+                    );
+                    this.store.setState((prev) => ({ ...prev, commandDetailData }));
+                }
+            })
+            .catch(() => {
+                this._resolvingStackTraces.delete(id);
+            });
     }
 
     // ─── Private: Keyboard navigation ────────────────────────────────────

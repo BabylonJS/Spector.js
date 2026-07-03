@@ -5,6 +5,7 @@
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
 ## v0.9.33
+* Add [Source Map support in the stacktrace](https://github.com/BabylonJS/Spector.js/issues/98)
 * Add [GL Function Param Names](https://github.com/BabylonJS/Spector.js/issues/56)
 * Add Parallel Shader Compilation Throttling
 * Add [Texture Storei Information](https://github.com/BabylonJS/Spector.js/issues/80)
