@@ -62,11 +62,32 @@ var frameId = null;
 if (sessionStorage.getItem(spectorLoadedKey)) {
 
     document.addEventListener('SpectorOnCaptureEvent', function (e) {
-        browser.storage.local.set({
-            "currentCapture": e.detail.capture,
-        });
-
-        sendMessage({ captureDone: true });
+        var capture = e.detail.capture;
+        // Keep a rolling history of recent captures (most recent first) so the
+        // result view's Compare tab (#155) has a previous capture to diff
+        // against. `unlimitedStorage` is granted, but the history is still
+        // capped to keep result-tab loads fast.
+        var MAX_CAPTURE_HISTORY = 5;
+        try {
+            browser.storage.local.get("captureHistory", function (items) {
+                var history = (items && items.captureHistory) || [];
+                history.unshift(capture);
+                if (history.length > MAX_CAPTURE_HISTORY) {
+                    history = history.slice(0, MAX_CAPTURE_HISTORY);
+                }
+                browser.storage.local.set({
+                    "currentCapture": capture,
+                    "captureHistory": history,
+                }, function () {
+                    sendMessage({ captureDone: true });
+                });
+            });
+        } catch (err) {
+            // Fallback: at least store the just-taken capture.
+            browser.storage.local.set({ "currentCapture": capture }, function () {
+                sendMessage({ captureDone: true });
+            });
+        }
     }, false);
 
     document.addEventListener('SpectorOnErrorEvent', function (e) {

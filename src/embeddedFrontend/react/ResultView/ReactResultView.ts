@@ -19,6 +19,7 @@ import { ResultViewContext } from "./ResultViewContext";
 import { MDNCommandLinkHelper } from "../shared/mdnCommandLinkHelper";
 import { WebGLParameterNameHelper } from "../shared/webglParameterNameHelper";
 import { SourceMapResolver } from "../shared/sourceMapResolver";
+import { compareCaptures } from "../shared/captureComparer";
 
 // ─── Default (empty) state ───────────────────────────────────────────────────
 
@@ -40,6 +41,11 @@ const EMPTY_STATE: ResultViewState = {
     initStateData: [],
     endStateData: [],
     commandDetailData: [],
+    compareRows: [],
+    compareSummary: { added: 0, removed: 0, changed: 0, unchanged: 0 },
+    compareOnlyDifferences: true,
+    canCompare: false,
+    compareLabel: "",
 };
 
 // ─── Pure JSON tree builder ──────────────────────────────────────────────────
@@ -461,6 +467,9 @@ export class ReactResultView {
             case MenuStatus.EndState:
                 this._displayEndState();
                 break;
+            case MenuStatus.Compare:
+                this._displayCompare();
+                break;
         }
     }
 
@@ -468,6 +477,22 @@ export class ReactResultView {
     public handleSearchTextChange = (searchText: string): void => {
         this.store.setState((prev) => ({ ...prev, searchText }));
         this._search(searchText);
+    }
+
+    /** Called by React when the Compare "Differences only" toggle changes (#155). */
+    public handleCompareOnlyDifferencesChange = (onlyDifferences: boolean): void => {
+        this.store.setState((prev) => ({ ...prev, compareOnlyDifferences: onlyDifferences }));
+    }
+
+    /**
+     * Called by React when a Compare row's command link is clicked (#155):
+     * switch to the Commands view and select the corresponding command in the
+     * current capture.
+     */
+    public handleCompareCommandSelected = (commandId: number): void => {
+        if (commandId === undefined || commandId === null) { return; }
+        this._currentCommandId = commandId;
+        this._displayCurrentCapture();
     }
 
     /** Called by React when user selects a command. */
@@ -557,6 +582,54 @@ export class ReactResultView {
             ...prev,
             menuStatus: MenuStatus.Captures,
         }));
+    }
+
+    /**
+     * Build and show the capture-to-capture command diff (#155).
+     *
+     * Compares the currently selected capture against the immediately previous
+     * one in the capture list (the next entry, since new captures are unshifted
+     * to the front). When there is no previous capture, the tab shows guidance.
+     */
+    private _displayCompare(): void {
+        const state = this.store.getSnapshot();
+        const activeIndex = state.captures.findIndex((entry) => entry.active);
+        const currentEntry = activeIndex >= 0 ? state.captures[activeIndex] : null;
+        // New captures are prepended, so the "previous" capture is the next index.
+        const previousEntry = currentEntry ? state.captures[activeIndex + 1] : null;
+
+        if (!currentEntry || !previousEntry) {
+            this.store.setState((prev) => ({
+                ...prev,
+                menuStatus: MenuStatus.Compare,
+                canCompare: false,
+                compareRows: [],
+                compareSummary: { added: 0, removed: 0, changed: 0, unchanged: 0 },
+                compareLabel: "",
+            }));
+            return;
+        }
+
+        const diff = compareCaptures(previousEntry.capture, currentEntry.capture);
+        const label = ReactResultView._captureLabel(previousEntry.capture) +
+            "  →  " + ReactResultView._captureLabel(currentEntry.capture);
+
+        this.store.setState((prev) => ({
+            ...prev,
+            menuStatus: MenuStatus.Compare,
+            canCompare: true,
+            compareRows: diff.rows,
+            compareSummary: diff.summary,
+            compareLabel: label,
+        }));
+    }
+
+    private static _captureLabel(capture: ICapture): string {
+        try {
+            return new Date(capture.startTime).toTimeString().split(" ")[0];
+        } catch {
+            return "capture";
+        }
     }
 
     private _displayInformation(): void {
