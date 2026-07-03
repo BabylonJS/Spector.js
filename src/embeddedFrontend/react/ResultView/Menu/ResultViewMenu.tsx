@@ -121,6 +121,15 @@ export function ResultViewMenu() {
             </li>
             <li>
                 <a
+                    className={state.menuStatus === MenuStatus.Compare ? "active" : ""}
+                    href="#"
+                    role="button"
+                    commandName="onCompareClicked"
+                    onClick={handleTab(MenuStatus.Compare)}
+                >Compare</a>
+            </li>
+            <li>
+                <a
                     className={state.menuStatus === MenuStatus.EndState ? "active" : ""}
                     href="#"
                     role="button"

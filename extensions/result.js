@@ -55,8 +55,21 @@ window.addEventListener("DOMContentLoaded", function() {
         tabId = c.currentFrameInfo.currentTabId;
     });
 
-    browser.storage.local.get("currentCapture").then(c => {
-        addCapture(c.currentCapture);
+    // Load the rolling capture history (most recent first) so the Compare tab
+    // has a previous capture to diff against. Add oldest-first so the newest
+    // capture ends up active at the front of the list. Falls back to the single
+    // currentCapture for backward compatibility.
+    browser.storage.local.get("captureHistory").then(c => {
+        const history = c && c.captureHistory;
+        if (history && history.length > 0) {
+            for (let i = history.length - 1; i >= 0; i--) {
+                addCapture(history[i]);
+            }
+        } else {
+            browser.storage.local.get("currentCapture").then(cc => {
+                addCapture(cc.currentCapture);
+            });
+        }
     });
 });
 

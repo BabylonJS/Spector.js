@@ -13,6 +13,7 @@ import { InformationColumn } from "./Information/InformationColumn";
 import { JSONContent } from "./JSON/JSONContent";
 import { SourceCode } from "./SourceCode/SourceCode";
 import { JSONRenderTree } from "./JSON/JSONRenderTree";
+import { CompareView } from "./Compare/CompareView";
 import { MenuStatus, JSONRenderItem } from "../shared/types";
 
 /**
@@ -93,6 +94,10 @@ export function ResultViewRoot() {
                     <JSONContent>
                         <JSONRenderTree items={state.endStateData} />
                     </JSONContent>
+                )}
+
+                {state.menuStatus === MenuStatus.Compare && (
+                    <CompareView />
                 )}
 
                 {state.menuStatus === MenuStatus.SourceCode && state.sourceCodeState && (

@@ -261,6 +261,84 @@ export declare class Logger {
 }
 
 
+/** Classification of a single row in a capture-to-capture command diff. */
+export type CommandDiffType = "unchanged" | "added" | "removed" | "changed";
+/**
+ * A single differing field between two matched commands — typically a uniform
+ * or uniform-block member whose value changed between the two captures.
+ */
+export interface ICommandFieldDiff {
+    /** Human-readable path, e.g. `"uniform uColor"` or `"uniformBlock Scene.time"`. */
+    path: string;
+    /** Stringified value from the previous capture (or `"(absent)"`). */
+    previous: string;
+    /** Stringified value from the current capture (or `"(absent)"`). */
+    current: string;
+    /** For texture visual diffs: previous-capture thumbnail as a data URL. */
+    previousImage?: string;
+    /** For texture visual diffs: current-capture thumbnail as a data URL. */
+    currentImage?: string;
+}
+/**
+ * One row of a capture comparison.
+ *
+ * - `unchanged`: the command is identical in both captures.
+ * - `added`:     the command exists only in the current (B) capture.
+ * - `removed`:   the command exists only in the previous (A) capture.
+ * - `changed`:   a command with the same name whose arguments and/or captured
+ *                state (e.g. uniform values) differ.
+ */
+export interface ICommandDiffRow {
+    type: CommandDiffType;
+    name: string;
+    /** Rendered command text from the previous capture (A), when present. */
+    previousText?: string;
+    /** Rendered command text from the current capture (B), when present. */
+    currentText?: string;
+    /** Index into the previous capture's `commands`, when present. */
+    indexA?: number;
+    /** Index into the current capture's `commands`, when present. */
+    indexB?: number;
+    /**
+     * Id of the current-capture command (present for `unchanged`, `added`, and
+     * `changed` rows). Used to jump to the command in the Commands view.
+     */
+    commandId?: number;
+    /**
+     * Field-level differences (uniforms / uniform blocks) for matched commands.
+     * Present on `changed` rows whose deep state differs.
+     */
+    fieldDiffs?: ICommandFieldDiff[];
+}
+/** Aggregate counts for a capture comparison. */
+export interface ICaptureDiffSummary {
+    added: number;
+    removed: number;
+    changed: number;
+    unchanged: number;
+}
+/** Full result of comparing two captures. */
+export interface ICaptureDiff {
+    rows: ICommandDiffRow[];
+    summary: ICaptureDiffSummary;
+}
+/**
+ * Compare two captures of (ideally) the same page and produce a command-level
+ * diff.
+ *
+ * The algorithm is a longest-common-subsequence (LCS) diff over the commands'
+ * rendered text (`ICommandCapture.text`, e.g. `"drawArrays: TRIANGLES, 0, 3"`),
+ * which is a stable, human-meaningful signature. Anchored on identical calls,
+ * the gaps between anchors hold the removed (A-only) and added (B-only) calls.
+ * Within a gap, a removed+added pair that share the same command *name* is
+ * collapsed into a single `changed` row (a modified call) rather than shown as
+ * an unrelated remove/add.
+ *
+ * Pure and side-effect free so it can be unit-tested without a browser.
+ */
+export declare function compareCaptures(previous: ICapture, current: ICapture): ICaptureDiff;
+
+
 /**
  * Shared types for the React migration layer.
  * These are parallel definitions used by adapter classes and React components.
@@ -294,7 +372,8 @@ export declare const enum MenuStatus {
     InitState = 20,
     EndState = 30,
     Commands = 40,
-    SourceCode = 50
+    SourceCode = 50,
+    Compare = 60
 }
 export interface ISourceCodeChangeEvent {
     sourceVertex: string;
@@ -370,6 +449,13 @@ export interface ResultViewState {
     initStateData: JSONRenderItem[];
     endStateData: JSONRenderItem[];
     commandDetailData: JSONRenderItem[];
+    compareRows: ICommandDiffRow[];
+    compareSummary: ICaptureDiffSummary;
+    compareOnlyDifferences: boolean;
+    /** True when there is a previous capture to diff the current one against. */
+    canCompare: boolean;
+    /** Human label describing which two captures are being compared. */
+    compareLabel: string;
 }
 
 
@@ -470,6 +556,14 @@ export declare class ReactResultView {
     handleMenuStatusChange: (status: MenuStatus) => void;
     /** Called by React when search text changes. */
     handleSearchTextChange: (searchText: string) => void;
+    /** Called by React when the Compare "Differences only" toggle changes (#155). */
+    handleCompareOnlyDifferencesChange: (onlyDifferences: boolean) => void;
+    /**
+     * Called by React when a Compare row's command link is clicked (#155):
+     * switch to the Commands view and select the corresponding command in the
+     * current capture.
+     */
+    handleCompareCommandSelected: (commandId: number) => void;
     /** Called by React when user selects a command. */
     handleCommandSelected: (commandIndex: number) => void;
     /** Called by React when user selects a visual state. */
@@ -495,6 +589,15 @@ export declare class ReactResultView {
     /** Called by React when user clicks close on the result view. */
     handleClose: () => void;
     private _displayCaptures;
+    /**
+     * Build and show the capture-to-capture command diff (#155).
+     *
+     * Compares the currently selected capture against the immediately previous
+     * one in the capture list (the next entry, since new captures are unshifted
+     * to the front). When there is no previous capture, the tab shows guidance.
+     */
+    private _displayCompare;
+    private static _captureLabel;
     private _displayInformation;
     private _displayInitState;
     private _displayEndState;

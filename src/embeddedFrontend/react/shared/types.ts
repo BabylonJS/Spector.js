@@ -7,6 +7,7 @@
 import { ICapture } from "../../../shared/capture/capture";
 import { ICommandCapture } from "../../../shared/capture/commandCapture";
 import { LogLevel } from "../../../shared/utils/logger";
+import { ICommandDiffRow, ICaptureDiffSummary } from "./captureComparer";
 
 // ─── CaptureMenu types ──────────────────────────────────────────────────────
 
@@ -44,6 +45,7 @@ export const enum MenuStatus {
     EndState = 30,
     Commands = 40,
     SourceCode = 50,
+    Compare = 60,
 }
 
 export interface ISourceCodeChangeEvent {
@@ -111,4 +113,12 @@ export interface ResultViewState {
     initStateData: JSONRenderItem[];
     endStateData: JSONRenderItem[];
     commandDetailData: JSONRenderItem[];
+    // Compare tab (#155): capture-to-capture command diff
+    compareRows: ICommandDiffRow[];
+    compareSummary: ICaptureDiffSummary;
+    compareOnlyDifferences: boolean;
+    /** True when there is a previous capture to diff the current one against. */
+    canCompare: boolean;
+    /** Human label describing which two captures are being compared. */
+    compareLabel: string;
 }
