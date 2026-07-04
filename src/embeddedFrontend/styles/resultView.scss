@@ -1031,3 +1031,230 @@ $commandDetailComponentWidth: 40%;
     image-rendering: pixelated;
   }
 }
+
+/* Clickable texture thumbnails open the texture viewer (#183). */
+.jsonItemImageClickable {
+  cursor: zoom-in;
+}
+
+/* Texture viewer modal (#183): channel isolation, alpha reveal, pixel picker. */
+.textureViewerOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  font-family: Consolas, monaco, monospace;
+  font-size: 13px;
+  color: $foreground;
+
+  .textureViewerModal {
+    width: min(900px, 92vw);
+    height: min(640px, 90vh);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: $background;
+    border: 1px solid #000;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  .textureViewerHeader {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 40px;
+    padding: 0 12px;
+    background: $background-even;
+    border-bottom: 2px solid $background;
+
+    .textureViewerTitle { color: $foreground-title; }
+    .textureViewerMeta { color: $foreground-focus; font-size: 12px; }
+    .textureViewerClose {
+      margin-left: auto;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      color: $foreground-focus;
+      cursor: pointer;
+
+      &:hover { color: $foreground; background: rgba(255, 255, 255, 0.08); }
+    }
+  }
+
+  .textureViewerToolbar {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 8px 12px;
+    background: $background-even;
+    border-bottom: 1px solid #000;
+    font-size: 12px;
+
+    .textureViewerGroup {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .lbl { color: $foreground-focus; margin-right: 2px; }
+    }
+
+    .textureViewerGroupEnd { margin-left: auto; }
+
+    .channel {
+      width: 26px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #000;
+      border-radius: 3px;
+      background: #1b1b1b;
+      color: #777;
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+
+      &.on.r { background: #e14b4b; color: #1a1a1a; }
+      &.on.g { background: #4bd44b; color: #1a1a1a; }
+      &.on.b { background: #4b8fe1; color: #1a1a1a; }
+      &.on.a { background: #dedede; color: #1a1a1a; }
+    }
+
+    .tvBtn {
+      height: 24px;
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #000;
+      border-radius: 3px;
+      background: #1b1b1b;
+      color: $foreground;
+      cursor: pointer;
+      user-select: none;
+
+      &:hover { background: #333; }
+      &.active { background: $foreground-important; color: #1a1a1a; border-color: $foreground-important; }
+      &.primary { border-color: $foreground-important; color: $foreground-important; }
+      &.primary:hover { background: $foreground-important; color: #1a1a1a; }
+    }
+
+    .seg {
+      display: flex;
+
+      .tvBtn {
+        border-radius: 0;
+        border-right-width: 0;
+
+        &:first-child { border-radius: 3px 0 0 3px; }
+        &:last-child { border-radius: 0 3px 3px 0; border-right-width: 1px; }
+      }
+    }
+
+    .zoomVal { min-width: 44px; text-align: center; color: $foreground-focus; }
+  }
+
+  .textureViewerBody {
+    flex: 1 1 auto;
+    display: flex;
+    min-height: 0;
+  }
+
+  .textureViewerViewport {
+    flex: 1 1 auto;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #141414;
+
+    &.checker {
+      background-color: #777;
+      background-image:
+        linear-gradient(45deg, #555 25%, transparent 25%),
+        linear-gradient(-45deg, #555 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #555 75%),
+        linear-gradient(-45deg, transparent 75%, #555 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+    }
+  }
+
+  .textureViewerCanvas {
+    image-rendering: pixelated;
+    cursor: crosshair;
+    box-shadow: 0 0 0 1px #000;
+  }
+
+  .textureViewerLoupe {
+    position: absolute;
+    display: none;
+    width: 120px;
+    height: 120px;
+    pointer-events: none;
+    image-rendering: pixelated;
+    border: 1px solid #000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    background: #000;
+    left: 16px;
+    top: 16px;
+  }
+
+  .textureViewerRail {
+    flex: 0 0 210px;
+    box-sizing: border-box;
+    padding: 12px;
+    overflow-y: auto;
+    background: $background-even;
+    border-left: 2px solid $background;
+
+    .railTitle {
+      color: $foreground-title;
+      border-bottom: 1px solid $foreground-title;
+      padding-bottom: 4px;
+      margin: 0 0 8px;
+      text-transform: capitalize;
+    }
+
+    .kv {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+
+      .k { color: $foreground-important; }
+      .v { color: $foreground; }
+    }
+
+    .swatch {
+      width: 100%;
+      height: 34px;
+      margin: 8px 0;
+      border: 1px solid #000;
+      background-color: #777;
+      background-image:
+        linear-gradient(45deg, #555 25%, transparent 25%),
+        linear-gradient(-45deg, #555 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #555 75%),
+        linear-gradient(-45deg, transparent 75%, #555 75%);
+      background-size: 12px 12px;
+      background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+
+      .swatchInner { width: 100%; height: 100%; }
+    }
+
+    .hint { color: $foreground-focus; margin-top: 10px; line-height: 1.5; }
+  }
+}

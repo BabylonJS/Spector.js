@@ -116,7 +116,11 @@ export function CompareView() {
                 </ul>
                 <div className="compareViewDetail">
                     {selectedRow ? (
-                        <CompareDetail row={selectedRow} onSelectCommand={adapter.handleCompareCommandSelected} />
+                        <CompareDetail
+                            row={selectedRow}
+                            onSelectCommand={adapter.handleCompareCommandSelected}
+                            onOpenTexture={(src, label) => adapter.openTextureViewer({ src, label, pixelated: false, raw: null })}
+                        />
                     ) : (
                         <div className="compareDetailEmpty">Select a call to see its details.</div>
                     )}
@@ -155,8 +159,12 @@ function CompareListRow(props: { row: ICommandDiffRow; selected: boolean; onSele
 }
 
 /** Right-hand detail panel: the selected row's changes as JSON-style groups. */
-function CompareDetail(props: { row: ICommandDiffRow; onSelectCommand: (commandId: number) => void }) {
-    const { row, onSelectCommand } = props;
+function CompareDetail(props: {
+    row: ICommandDiffRow;
+    onSelectCommand: (commandId: number) => void;
+    onOpenTexture: (src: string, label: string) => void;
+}) {
+    const { row, onSelectCommand, onOpenTexture } = props;
     const fields = row.fieldDiffs || [];
     const valueFields = fields.filter((f) => !isImageDiff(f));
     const imageFields = fields.filter(isImageDiff);
@@ -222,13 +230,23 @@ function CompareDetail(props: { row: ICommandDiffRow; onSelectCommand: (commandI
                                 <span className="compareDetailKey">{f.path}</span>
                                 <div className="compareImageDiff">
                                     {f.previousImage ? (
-                                        <img className="compareThumb" src={f.previousImage} />
+                                        <img
+                                            className="compareThumb jsonItemImageClickable"
+                                            src={f.previousImage}
+                                            title="Open in texture viewer"
+                                            onClick={() => onOpenTexture(f.previousImage as string, f.path + " (previous)")}
+                                        />
                                     ) : (
                                         <span className="compareOld">{f.previous}</span>
                                     )}
                                     <span className="compareArrow"> → </span>
                                     {f.currentImage ? (
-                                        <img className="compareThumb" src={f.currentImage} />
+                                        <img
+                                            className="compareThumb jsonItemImageClickable"
+                                            src={f.currentImage}
+                                            title="Open in texture viewer"
+                                            onClick={() => onOpenTexture(f.currentImage as string, f.path + " (current)")}
+                                        />
                                     ) : (
                                         <span className="compareNew">{f.current}</span>
                                     )}

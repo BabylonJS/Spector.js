@@ -8,6 +8,7 @@ import { IRenderBufferRecorderData } from "../../recorders/renderBufferRecorder"
 import { ITextureRecorderData } from "../../recorders/texture2DRecorder";
 import { Logger } from "../../../shared/utils/logger";
 import { CanvasFactory } from "../../utils/canvasFactory";
+import { RawTextureData, IRawTextureData } from "../../utils/rawTextureData";
 
 export class VisualState extends BaseState {
     public static readonly stateName = "VisualState";
@@ -246,6 +247,7 @@ export class VisualState extends BaseState {
             src: null as string,
             textureCubeMapFace: textureCubeMapFace ? WebGlConstantsByValue[textureCubeMapFace].name : null,
             textureLayer,
+            raw: null as IRawTextureData,
         };
 
         if (!this.quickCapture) {
@@ -253,6 +255,10 @@ export class VisualState extends BaseState {
                 // Read the pixels from the context.
                 const pixels = ReadPixelsHelper.readPixels(gl, x, y, width, height, type);
                 if (pixels) {
+                    // Preserve non-premultiplied texels (#183) before the lossy
+                    // 2D-canvas round-trip below zeroes the RGB of transparent pixels.
+                    attachmentVisualState.raw = RawTextureData.encode(pixels, width, height);
+
                     // Copy the pixels to a working 2D canvas same size.
                     this.workingCanvas.width = width;
                     this.workingCanvas.height = height;

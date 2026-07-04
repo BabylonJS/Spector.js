@@ -406,6 +406,13 @@ export interface ISourceCodeState extends ISourceCodeChangeEvent {
     beautify: boolean;
     preprocessed: boolean;
 }
+/** Non-premultiplied raw texel data preserved for the texture viewer (#183). */
+export interface IRawImagePixels {
+    /** Base64 of RGBA bytes, top-down, row-major (`width * height * 4` long). */
+    data: string;
+    width: number;
+    height: number;
+}
 export type JSONRenderItem = {
     type: "group";
     title: string;
@@ -419,6 +426,7 @@ export type JSONRenderItem = {
     key: string;
     value: string;
     pixelated: boolean;
+    raw?: IRawImagePixels;
 } | {
     type: "help";
     key: string;
@@ -428,6 +436,19 @@ export type JSONRenderItem = {
     type: "visualState";
     visualState: any;
 };
+/** State of the full-screen texture viewer modal. */
+export interface ITextureViewerState {
+    /** Whether the modal is open. */
+    open: boolean;
+    /** The thumbnail data URL shown (and used as the fallback pixel source). */
+    src: string;
+    /** Human label (e.g. the sampler/target/attachment name). */
+    label: string;
+    /** Whether the texture uses nearest filtering (affects magnifier smoothing). */
+    pixelated: boolean;
+    /** Non-premultiplied raw pixels when available (lets "opaque" reveal hidden RGB). */
+    raw: IRawImagePixels | null;
+}
 export interface ResultViewState {
     visible: boolean;
     menuStatus: MenuStatus;
@@ -456,6 +477,7 @@ export interface ResultViewState {
     canCompare: boolean;
     /** Human label describing which two captures are being compared. */
     compareLabel: string;
+    textureViewer: ITextureViewerState;
 }
 
 
@@ -566,6 +588,15 @@ export declare class ReactResultView {
     handleCompareCommandSelected: (commandId: number) => void;
     /** Called by React when user selects a command. */
     handleCommandSelected: (commandIndex: number) => void;
+    /** Open the texture viewer modal for a displayed texture/attachment (#183). */
+    openTextureViewer: (payload: {
+        src: string;
+        label: string;
+        pixelated: boolean;
+        raw: IRawImagePixels | null;
+    }) => void;
+    /** Close the texture viewer modal (#183). */
+    closeTextureViewer: () => void;
     /** Called by React when user selects a visual state. */
     handleVisualStateSelected: (visualStateIndex: number) => void;
     /** Called by React when a shader link is clicked (vertex). */

@@ -302,7 +302,7 @@ const TOP_LEVEL_SKIP: { [key: string]: boolean } = {
  */
 const DEEP_SKIP: { [key: string]: boolean } = {
     __SPECTOR_Object_TAG: true, __SPECTOR_Object_CustomData: true, __SPECTOR_Metadata: true,
-    customData: true, visual: true, VisualState: true, texture: true, sampler: true,
+    customData: true, visual: true, visualPixels: true, VisualState: true, texture: true, sampler: true,
     location: true, source: true, translatedSource: true, analyserName: true,
     uniforms: true, uniformBlocks: true, length: true,
 };

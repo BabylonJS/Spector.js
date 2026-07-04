@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spector.js Texture Viewer Test Scene (#183)</title>
+<style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #101018; }
+    #renderCanvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="renderCanvas" width="256" height="256"></canvas>
+<script src="../../../dist/spector.bundle.js"></script>
+<script>
+(function () {
+    "use strict";
+    // Spy BEFORE getContext so texImage2D is recorded (customData drives thumbnails).
+    var spector = new SPECTOR.Spector();
+    spector.spyCanvases();
+
+    var canvas = document.getElementById("renderCanvas");
+    var gl = canvas.getContext("webgl2", { preserveDrawingBuffer: true }) ||
+             canvas.getContext("webgl", { preserveDrawingBuffer: true });
+    if (!gl) { document.body.textContent = "WebGL not supported"; return; }
+
+    var VERT =
+        "attribute vec2 aPosition;\n" +
+        "attribute vec2 aUV;\n" +
+        "varying vec2 vUV;\n" +
+        "void main(){ vUV = aUV; gl_Position = vec4(aPosition, 0.0, 1.0); }\n";
+    var FRAG =
+        "precision mediump float;\n" +
+        "varying vec2 vUV;\n" +
+        "uniform sampler2D uTex;\n" +
+        "void main(){ gl_FragColor = texture2D(uTex, vUV); }\n";
+
+    function sh(type, src) {
+        var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { throw new Error(gl.getShaderInfoLog(s)); }
+        return s;
+    }
+    var prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG));
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+
+    var verts = new Float32Array([-1, -1, 0, 0, 1, -1, 1, 0, -1, 1, 0, 1, 1, 1, 1, 1]);
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+    var STRIDE = 16;
+    var aP = gl.getAttribLocation(prog, "aPosition");
+    gl.enableVertexAttribArray(aP);
+    gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, STRIDE, 0);
+    var aUV = gl.getAttribLocation(prog, "aUV");
+    gl.enableVertexAttribArray(aUV);
+    gl.vertexAttribPointer(aUV, 2, gl.FLOAT, false, STRIDE, 8);
+
+    // 64x64 RGBA: colourful RGB everywhere, fully transparent centre hiding it.
+    var TS = 64;
+    var data = new Uint8Array(TS * TS * 4);
+    for (var y = 0; y < TS; y++) {
+        for (var x = 0; x < TS; x++) {
+            var i = (y * TS + x) * 4;
+            data[i] = Math.floor(255 * x / TS);
+            data[i + 1] = Math.floor(255 * y / TS);
+            data[i + 2] = 200;
+            var center = x > TS * 0.3 && x < TS * 0.7 && y > TS * 0.3 && y < TS * 0.7;
+            data[i + 3] = center ? 0 : 255;
+        }
+    }
+    var tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, TS, TS, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.uniform1i(gl.getUniformLocation(prog, "uTex"), 0);
+
+    function render() {
+        gl.clearColor(0.1, 0.1, 0.15, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        requestAnimationFrame(render);
+    }
+    render();
+
+    spector.displayUI();
+    window.__spector = spector;
+    window.__canvas = canvas;
+})();
+</script>
+</body>
+</html>

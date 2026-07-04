@@ -1,8 +1,12 @@
 import React from "react";
+import { useResultView } from "../ResultViewContext";
 
 /**
  * Visual state image in JSON context.
  * Original: src/embeddedFrontend/resultView/JSON/jsonVisualStateItemComponent.ts
+ *
+ * Each attachment image is clickable and opens the texture viewer modal (#183),
+ * passing the preserved non-premultiplied pixels when available.
  *
  * DOM:
  * <div class="jsonVisualStateItemComponent">
@@ -19,6 +23,7 @@ export interface JSONVisualStateItemProps {
 }
 
 export function JSONVisualStateItem({ visualState }: JSONVisualStateItemProps) {
+    const adapter = useResultView();
     return (
         <div className="jsonVisualStateItemComponent">
             {visualState.Attachments ? (
@@ -26,7 +31,17 @@ export function JSONVisualStateItem({ visualState }: JSONVisualStateItemProps) {
                     if (!imageState.src) { return null; }
                     return (
                         <React.Fragment key={i}>
-                            <img src={encodeURI(imageState.src)} />
+                            <img
+                                className="jsonItemImageClickable"
+                                src={encodeURI(imageState.src)}
+                                title="Open in texture viewer"
+                                onClick={() => adapter.openTextureViewer({
+                                    src: imageState.src,
+                                    label: imageState.attachmentName || "Attachment",
+                                    pixelated: false,
+                                    raw: imageState.raw || null,
+                                })}
+                            />
                             {visualState.Attachments.length > 1 && (
                                 <span>{imageState.attachmentName}</span>
                             )}
