@@ -4,6 +4,7 @@ import { VisualState } from "../context/visualState";
 import { IContextInformation } from "../../types/contextInformation";
 import { ITextureRecorderData } from "../../recorders/texture2DRecorder";
 import { CanvasFactory } from "../../utils/canvasFactory";
+import { RawTextureData, IRawTextureData } from "../../utils/rawTextureData";
 
 export class DrawCallTextureInputState {
     public static captureBaseSize = 64;
@@ -66,20 +67,32 @@ export class DrawCallTextureInputState {
 
         if (target) {
             const pixelated = state["samplerMagFilter"] === "NEAREST" || state["magFilter"] === "NEAREST";
-            state.visual = this.getTextureVisualState(target,
+            const visualState = this.getTextureVisualState(target,
                 storage,
                 customData,
                 pixelated);
+            if (visualState) {
+                state.visual = visualState.visual;
+                // Only surface the (gated) non-premultiplied pixel data when a
+                // transparent texel was actually found (#183).
+                for (const key in visualState.visualPixels) {
+                    if (visualState.visualPixels.hasOwnProperty(key)) {
+                        state.visualPixels = visualState.visualPixels;
+                        break;
+                    }
+                }
+            }
         }
     }
 
-    protected getTextureVisualState(target: WebGlConstant, storage: WebGLTexture, info: ITextureRecorderData, pixelated: boolean): any {
+    protected getTextureVisualState(target: WebGlConstant, storage: WebGLTexture, info: ITextureRecorderData, pixelated: boolean): { visual: any; visualPixels: any } | undefined {
         try {
             const gl = this.context;
             const visual: any = {};
+            const visualPixels: any = {};
 
             if (!ReadPixelsHelper.isSupportedCombination(info.type, info.format, info.internalFormat)) {
-                return visual;
+                return { visual, visualPixels };
             }
 
             // Check the framebuffer status.
@@ -100,7 +113,7 @@ export class DrawCallTextureInputState {
                         }
                         gl2.framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                             storage, textureLevel, i);
-                        visual["3D Layer " + i] = this.getCapture(gl, 0, 0, width, height, info.type, pixelated);
+                        this.storeCapture(visual, visualPixels, "3D Layer " + i, gl, 0, 0, width, height, info.type, pixelated);
                     }
                 }
                 else if (target === WebGlConstants.TEXTURE_2D_ARRAY && info.depth) {
@@ -112,20 +125,20 @@ export class DrawCallTextureInputState {
                         }
                         gl2.framebufferTextureLayer(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                             storage, textureLevel, i);
-                        visual["Layer " + i] = this.getCapture(gl, 0, 0, width, height, info.type, pixelated);
+                        this.storeCapture(visual, visualPixels, "Layer " + i, gl, 0, 0, width, height, info.type, pixelated);
                     }
                 }
                 else if (target === WebGlConstants.TEXTURE_CUBE_MAP) {
                     for (const face of DrawCallTextureInputState.cubeMapFaces) {
                         gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                             face.value, storage, textureLevel);
-                        visual[face.name] = this.getCapture(gl, 0, 0, width, height, info.type, pixelated);
+                        this.storeCapture(visual, visualPixels, face.name, gl, 0, 0, width, height, info.type, pixelated);
                     }
                 }
                 else {
                     gl.framebufferTexture2D(WebGlConstants.FRAMEBUFFER.value, WebGlConstants.COLOR_ATTACHMENT0.value,
                         WebGlConstants.TEXTURE_2D.value, storage, textureLevel);
-                    visual[WebGlConstants.TEXTURE_2D.name] = this.getCapture(gl, 0, 0, width, height, info.type, pixelated);
+                    this.storeCapture(visual, visualPixels, WebGlConstants.TEXTURE_2D.name, gl, 0, 0, width, height, info.type, pixelated);
                 }
             }
             catch (e) {
@@ -133,7 +146,7 @@ export class DrawCallTextureInputState {
             }
 
             gl.bindFramebuffer(WebGlConstants.FRAMEBUFFER.value, currentFrameBuffer);
-            return visual;
+            return { visual, visualPixels };
         }
         catch (e) {
             // Do nothing, probably an incompatible format, should add more combinaison check upfront.
@@ -142,7 +155,19 @@ export class DrawCallTextureInputState {
         return undefined;
     }
 
-    protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number, pixelated: boolean): string {
+    /** Capture one target into `visual` (thumbnail) and, when transparent, `visualPixels` (raw). */
+    protected storeCapture(visual: any, visualPixels: any, key: string, gl: WebGLRenderingContext,
+        x: number, y: number, width: number, height: number, type: number, pixelated: boolean): void {
+        const capture = this.getCapture(gl, x, y, width, height, type, pixelated);
+        if (capture.src) {
+            visual[key] = capture.src;
+        }
+        if (capture.raw) {
+            visualPixels[key] = capture.raw;
+        }
+    }
+
+    protected getCapture(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number, type: number, pixelated: boolean): { src: string; raw: IRawTextureData | null } {
         width = Math.floor(width);
         height = Math.floor(height);
 
@@ -150,7 +175,7 @@ export class DrawCallTextureInputState {
             // Check FBO status.
             const status = this.context.checkFramebufferStatus(WebGlConstants.FRAMEBUFFER.value);
             if (status !== WebGlConstants.FRAMEBUFFER_COMPLETE.value) {
-                return undefined;
+                return { src: undefined, raw: null };
             }
 
             // In case of texStorage.
@@ -158,8 +183,12 @@ export class DrawCallTextureInputState {
             // Read the pixels from the context.
             const pixels = ReadPixelsHelper.readPixels(gl, x, y, width, height, type);
             if (!pixels) {
-                return undefined;
+                return { src: undefined, raw: null };
             }
+
+            // Preserve non-premultiplied texels (#183) before the lossy 2D-canvas
+            // round-trip below zeroes the RGB of fully transparent pixels.
+            const raw = RawTextureData.encode(pixels, width, height);
 
             // Copy the pixels to a working 2D canvas same size.
             this.workingCanvas.width = width;
@@ -203,12 +232,12 @@ export class DrawCallTextureInputState {
 
             // get the screen capture
             const src = CanvasFactory.canvasToDataURL(this.captureCanvas, this.captureContext2D);
-            return src;
+            return { src, raw };
         }
         catch (e) {
             // TODO. Nothing to do here... so far.
         }
-        return undefined;
+        return { src: undefined, raw: null };
     }
 
     protected getWebGlConstant(value: number): string {

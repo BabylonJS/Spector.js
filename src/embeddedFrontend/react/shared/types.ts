@@ -85,12 +85,36 @@ export interface ISourceCodeState extends ISourceCodeChangeEvent {
 
 // ─── JSON render tree types ──────────────────────────────────────────────────
 
+/** Non-premultiplied raw texel data preserved for the texture viewer (#183). */
+export interface IRawImagePixels {
+    /** Base64 of RGBA bytes, top-down, row-major (`width * height * 4` long). */
+    data: string;
+    width: number;
+    height: number;
+}
+
 export type JSONRenderItem =
     | { type: "group"; title: string; children: JSONRenderItem[] }
     | { type: "item"; key: string; value: string }
-    | { type: "image"; key: string; value: string; pixelated: boolean }
+    | { type: "image"; key: string; value: string; pixelated: boolean; raw?: IRawImagePixels }
     | { type: "help"; key: string; value: string; help: string }
     | { type: "visualState"; visualState: any };
+
+// ─── Texture viewer (#183) ───────────────────────────────────────────────────
+
+/** State of the full-screen texture viewer modal. */
+export interface ITextureViewerState {
+    /** Whether the modal is open. */
+    open: boolean;
+    /** The thumbnail data URL shown (and used as the fallback pixel source). */
+    src: string;
+    /** Human label (e.g. the sampler/target/attachment name). */
+    label: string;
+    /** Whether the texture uses nearest filtering (affects magnifier smoothing). */
+    pixelated: boolean;
+    /** Non-premultiplied raw pixels when available (lets "opaque" reveal hidden RGB). */
+    raw: IRawImagePixels | null;
+}
 
 // ─── ResultView state ────────────────────────────────────────────────────────
 
@@ -121,4 +145,6 @@ export interface ResultViewState {
     canCompare: boolean;
     /** Human label describing which two captures are being compared. */
     compareLabel: string;
+    // Texture viewer (#183): full-screen channel/alpha/pixel inspector modal
+    textureViewer: ITextureViewerState;
 }

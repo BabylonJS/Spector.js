@@ -6,7 +6,8 @@ Please, find below the per release summary of the contribution added to the proj
 
 ## v0.9.33
 
-* Add a [Capture comparison tool](https://github.com/BabylonJS/Spector.js/issues/155)
+* Add [Texture inspection tool](https://github.com/BabylonJS/Spector.js/issues/183)
+* Add [Capture comparison tool](https://github.com/BabylonJS/Spector.js/issues/155)
 * Add [Source Map support in the stacktrace](https://github.com/BabylonJS/Spector.js/issues/98)
 * Add [GL Function Param Names](https://github.com/BabylonJS/Spector.js/issues/56)
 * Add Parallel Shader Compilation Throttling

@@ -31,7 +31,7 @@ export function JSONRenderTree({ items }: JSONRenderTreeProps) {
                     case "item":
                         return <JSONItem key={i} itemKey={item.key} value={item.value} />;
                     case "image":
-                        return <JSONImageItem key={i} itemKey={item.key} value={item.value} pixelated={item.pixelated} />;
+                        return <JSONImageItem key={i} itemKey={item.key} value={item.value} pixelated={item.pixelated} raw={item.raw} />;
                     case "help":
                         return <JSONHelpItem key={i} itemKey={item.key} value={item.value} help={item.help} />;
                     case "visualState":
