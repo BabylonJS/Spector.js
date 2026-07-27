@@ -11,7 +11,7 @@
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.config.js"
     },
     "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.12.1",
+        "@modelcontextprotocol/sdk": "^1.30.0",
         "playwright": "^1.50.0",
         "zod": "^3.24.0"
     },
