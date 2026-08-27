@@ -195,6 +195,9 @@ export function buildCommandDetail(
             buildCommandArgumentsGroup(items, command.name, command.commandArguments as any[]);
             continue;
         }
+        if (buildCapturedSourceGroup(items, key, command)) {
+            continue;
+        }
         // Use source-map-resolved frames for the stack trace when available (#98).
         if (key === "stackTrace" && Array.isArray(command.stackTrace)) {
             buildJSONGroup(items, "stackTrace", resolvedStackTrace || command.stackTrace, "");
@@ -206,6 +209,22 @@ export function buildCommandDetail(
     }
 
     return items;
+}
+
+function buildCapturedSourceGroup(
+    parentChildren: JSONRenderItem[],
+    key: string,
+    command: ICommandCapture,
+): boolean {
+    if (key === "shader" && command.shader) {
+        buildShaderGroup(parentChildren, command.shader);
+        return true;
+    }
+    if (key === "program" && command.program) {
+        buildProgramGroup(parentChildren, command.program);
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -231,4 +250,55 @@ function buildCommandArgumentsGroup(
         labelled[label] = args[i];
     }
     buildJSONGroup(parentChildren, "commandArguments", labelled, "");
+}
+
+function buildShaderGroup(parentChildren: JSONRenderItem[], shader: ICommandCapture["shader"]): void {
+    if (!shader) {
+        return;
+    }
+
+    const children: JSONRenderItem[] = [
+        { type: "shaderSource", key: "source", shader },
+    ];
+    const details: { [key: string]: any } = {
+        shaderType: shader.shaderType,
+        name: shader.name,
+    };
+    if (typeof shader.COMPILE_STATUS === "boolean") {
+        details.COMPILE_STATUS = shader.COMPILE_STATUS;
+    }
+    if (shader.infoLog) {
+        details.infoLog = shader.infoLog;
+    }
+    buildJSON(children, details, "");
+    parentChildren.push({ type: "group", title: "shader", children });
+}
+
+function buildProgramGroup(parentChildren: JSONRenderItem[], program: ICommandCapture["program"]): void {
+    if (!program) {
+        return;
+    }
+
+    const programLog = program.programStatus.infoLog;
+    const children: JSONRenderItem[] = [];
+    const vertexShader = program.shaders[0];
+    const fragmentShader = program.shaders[1];
+    if (vertexShader) {
+        children.push({
+            type: "shaderSource",
+            key: "vertexSource",
+            shader: vertexShader,
+            programLog,
+        });
+    }
+    if (fragmentShader) {
+        children.push({
+            type: "shaderSource",
+            key: "fragmentSource",
+            shader: fragmentShader,
+            programLog,
+        });
+    }
+    buildJSON(children, program.programStatus, "");
+    parentChildren.push({ type: "group", title: "program", children });
 }

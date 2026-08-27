@@ -6,6 +6,7 @@
 
 import { ICapture } from "../../../shared/capture/capture";
 import { ICommandCapture } from "../../../shared/capture/commandCapture";
+import { IShaderCapture } from "../../../shared/capture/programCapture";
 import { LogLevel } from "../../../shared/utils/logger";
 import { ICommandDiffRow, ICaptureDiffSummary } from "./captureComparer";
 
@@ -81,6 +82,10 @@ export interface ISourceCodeState extends ISourceCodeChangeEvent {
     editable: boolean;
     beautify: boolean;
     preprocessed: boolean;
+    singleShader: boolean;
+    sourceVertexLog: string;
+    sourceFragmentLog: string;
+    programLog: string;
 }
 
 // ─── JSON render tree types ──────────────────────────────────────────────────
@@ -98,6 +103,7 @@ export type JSONRenderItem =
     | { type: "item"; key: string; value: string }
     | { type: "image"; key: string; value: string; pixelated: boolean; raw?: IRawImagePixels }
     | { type: "help"; key: string; value: string; help: string }
+    | { type: "shaderSource"; key: string; shader: IShaderCapture; programLog?: string }
     | { type: "visualState"; visualState: any };
 
 // ─── Texture viewer (#183) ───────────────────────────────────────────────────

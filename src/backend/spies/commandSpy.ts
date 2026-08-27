@@ -7,6 +7,7 @@ import { Time } from "../../shared/utils/time";
 import { BindAttribLocation } from "../commands/bindAttribLocation";
 import { BlitFrameBuffer } from "../commands/blitFrameBuffer";
 import { Clear } from "../commands/clear";
+import { CompileShader } from "../commands/compileShader";
 import { DefaultCommand } from "../commands/defaultCommand";
 import { DisableVertexAttribArray } from "../commands/disableVertexAttribArray";
 import { DrawArrays } from "../commands/drawArrays";
@@ -22,7 +23,9 @@ import { GetAttribLocation } from "../commands/getAttribLocation";
 import { GetExtension } from "../commands/getExtension";
 import { GetParameter } from "../commands/getParameter";
 import { GetShaderPrecisionFormat } from "../commands/getShaderPrecisionFormat";
+import { GetShaderInfoLog } from "../commands/getShaderInfoLog";
 import { GetTransformFeedbackVarying } from "../commands/getTransformFeedbackVarying";
+import { LinkProgram } from "../commands/linkProgram";
 import { MultiDrawArraysInstancedBaseInstanceWEBGL } from "../commands/MultiDrawArraysInstancedBaseInstanceWEBGL";
 import { MultiDrawArraysInstancedWEBGL } from "../commands/MultiDrawArraysInstancedWEBGL";
 import { MultiDrawArraysWEBGL } from "../commands/MultiDrawArraysWEBGL";
@@ -41,6 +44,7 @@ import { VertexAttribPointer } from "../commands/vertexAttribPointer";
 import { Viewport } from "../commands/viewport";
 import { EnableVertexAttribArray } from "../commands/enableVertexAttribArray";
 import { IContextInformation } from "../types/contextInformation";
+import { ShaderSource } from "../commands/shaderSource";
 
 export type CommandSpyCallback = (command: CommandSpy, functionInformation: IFunctionInformation) => void;
 
@@ -147,6 +151,7 @@ export class CommandSpy {
             [BlitFrameBuffer.commandName]: (options: IContextInformation) => new BlitFrameBuffer(options),
             [BufferSubData.commandName]: (options: IContextInformation) => new BufferSubData(options),
             [Clear.commandName]: (options: IContextInformation) => new Clear(options),
+            [CompileShader.commandName]: (options: IContextInformation) => new CompileShader(options),
             [DisableVertexAttribArray.commandName]: (options: IContextInformation) => new DisableVertexAttribArray(options),
             [DrawArrays.commandName]: (options: IContextInformation) => new DrawArrays(options),
             [DrawArraysInstanced.commandName]: (options: IContextInformation) => new DrawArraysInstanced(options),
@@ -160,8 +165,10 @@ export class CommandSpy {
             [GetAttribLocation.commandName]: (options: IContextInformation) => new GetAttribLocation(options),
             [GetExtension.commandName]: (options: IContextInformation) => new GetExtension(options),
             [GetParameter.commandName]: (options: IContextInformation) => new GetParameter(options),
+            [GetShaderInfoLog.commandName]: (options: IContextInformation) => new GetShaderInfoLog(options),
             [GetShaderPrecisionFormat.commandName]: (options: IContextInformation) => new GetShaderPrecisionFormat(options),
             [GetTransformFeedbackVarying.commandName]: (options: IContextInformation) => new GetTransformFeedbackVarying(options),
+            [LinkProgram.commandName]: (options: IContextInformation) => new LinkProgram(options),
             [MultiDrawArraysInstancedBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new MultiDrawArraysInstancedBaseInstanceWEBGL(options),
             [MultiDrawArraysInstancedWEBGL.commandName]: (options: IContextInformation) => new MultiDrawArraysInstancedWEBGL(options),
             [MultiDrawArraysWEBGL.commandName]: (options: IContextInformation) => new MultiDrawArraysWEBGL(options),
@@ -171,6 +178,7 @@ export class CommandSpy {
             [DrawArraysInstancedBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new DrawArraysInstancedBaseInstanceWEBGL(options),
             [DrawElementsInstancedBaseVertexBaseInstanceWEBGL.commandName]: (options: IContextInformation) => new DrawElementsInstancedBaseVertexBaseInstanceWEBGL(options),
             [Scissor.commandName]: (options: IContextInformation) => new Scissor(options),
+            [ShaderSource.commandName]: (options: IContextInformation) => new ShaderSource(options),
             [StencilMask.commandName]: (options: IContextInformation) => new StencilMask(options),
             [StencilMaskSeparate.commandName]: (options: IContextInformation) => new StencilMaskSeparate(options),
             [StencilFunc.commandName]: (options: IContextInformation) => new StencilFunc(options),

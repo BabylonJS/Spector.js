@@ -6,6 +6,7 @@ Please, find below the per release summary of the contribution added to the proj
 
 ## v0.9.33
 
+* Improve [shader debugging](https://github.com/BabylonJS/Spector.js/issues/283) with source links, compiler diagnostics, and parser-backed formatting
 * Add [Texture inspection tool](https://github.com/BabylonJS/Spector.js/issues/183)
 * Add [Capture comparison tool](https://github.com/BabylonJS/Spector.js/issues/155)
 * Add [Source Map support in the stacktrace](https://github.com/BabylonJS/Spector.js/issues/98)

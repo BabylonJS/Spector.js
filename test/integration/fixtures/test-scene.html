@@ -73,6 +73,52 @@
         if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
             throw new Error("Program link error: " + gl.getProgramInfoLog(program));
         }
+
+        function compileShaderForRebuild(type, source, onError) {
+            var shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                var message = gl.getShaderInfoLog(shader) || "Shader compilation failed.";
+                gl.deleteShader(shader);
+                onError(message);
+                return null;
+            }
+            return shader;
+        }
+
+        function rebuildProgram(vertexSource, fragmentSource, onCompiled, onError) {
+            var nextVertexShader = compileShaderForRebuild(gl.VERTEX_SHADER, vertexSource, onError);
+            if (!nextVertexShader) {
+                return;
+            }
+
+            var nextFragmentShader = compileShaderForRebuild(gl.FRAGMENT_SHADER, fragmentSource, onError);
+            if (!nextFragmentShader) {
+                gl.deleteShader(nextVertexShader);
+                return;
+            }
+
+            var nextProgram = gl.createProgram();
+            gl.attachShader(nextProgram, nextVertexShader);
+            gl.attachShader(nextProgram, nextFragmentShader);
+            gl.linkProgram(nextProgram);
+            if (!gl.getProgramParameter(nextProgram, gl.LINK_STATUS)) {
+                var message = gl.getProgramInfoLog(nextProgram) || "Program linking failed.";
+                gl.deleteProgram(nextProgram);
+                gl.deleteShader(nextVertexShader);
+                gl.deleteShader(nextFragmentShader);
+                onError(message);
+                return;
+            }
+
+            nextProgram.__SPECTOR_rebuildProgram = rebuildProgram;
+            program = nextProgram;
+            gl.useProgram(program);
+            onCompiled(program);
+        }
+
+        program.__SPECTOR_rebuildProgram = rebuildProgram;
         gl.useProgram(program);
 
         // ---- Geometry: a static colored triangle ----

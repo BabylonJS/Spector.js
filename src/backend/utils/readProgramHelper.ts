@@ -7,14 +7,15 @@ export class ReadProgramHelper {
         const programStatus = {
             LINK_STATUS: context.getProgramParameter(program, WebGlConstants.LINK_STATUS.value),
             VALIDATE_STATUS: context.getProgramParameter(program, WebGlConstants.VALIDATE_STATUS.value),
+            infoLog: context.getProgramInfoLog(program) || "",
         };
 
-        const webGLshaders = context.getAttachedShaders(program);
+        const webGLshaders = context.getAttachedShaders(program) || [];
         const shaders = new Array(2);
 
         let length = 0;
         for (const shader of webGLshaders) {
-            const shaderState = this.readShaderFromContext(context, shader);
+            const shaderState = this.getShaderData(context, shader);
             length += shaderState.source.length;
 
             if (shaderState.shaderType === WebGlConstants.FRAGMENT_SHADER.name) {
@@ -32,8 +33,9 @@ export class ReadProgramHelper {
         };
     }
 
-    private static readShaderFromContext(context: WebGLRenderingContexts, shader: WebGLShader): IShaderCapture {
-        const source = context.getShaderSource(shader);
+    /** Capture source, type, compilation status, and diagnostics for a shader. */
+    public static getShaderData(context: WebGLRenderingContexts, shader: WebGLShader): IShaderCapture {
+        const source = context.getShaderSource(shader) || "";
         const ext = context.getExtension("WEBGL_debug_shaders");
         const translatedSource = ext ? ext.getTranslatedShaderSource(shader) : null;
 
@@ -55,6 +57,7 @@ export class ReadProgramHelper {
             name,
             source,
             translatedSource,
+            infoLog: context.getShaderInfoLog(shader) || "",
         };
     }
 

@@ -68,6 +68,26 @@ export interface IContextCapture {
 }
 
 
+export interface IShaderCapture {
+    COMPILE_STATUS: boolean | null;
+    shaderType: string;
+    name: string;
+    source: string;
+    translatedSource: string;
+    infoLog: string;
+}
+export interface IProgramStatus {
+    LINK_STATUS: boolean;
+    VALIDATE_STATUS: boolean;
+    infoLog: string;
+}
+export interface IProgramCapture {
+    programStatus: IProgramStatus;
+    shaders: IShaderCapture[];
+    length: number;
+}
+
+
 export type State = {
     [stateName: string]: any;
 };
@@ -96,6 +116,8 @@ export interface ICommandCapture extends State {
     text: string;
     marker: string;
     consumeCommandId?: number;
+    shader?: IShaderCapture;
+    program?: IProgramCapture;
     [stateName: string]: any;
 }
 
@@ -405,6 +427,10 @@ export interface ISourceCodeState extends ISourceCodeChangeEvent {
     editable: boolean;
     beautify: boolean;
     preprocessed: boolean;
+    singleShader: boolean;
+    sourceVertexLog: string;
+    sourceFragmentLog: string;
+    programLog: string;
 }
 /** Non-premultiplied raw texel data preserved for the texture viewer (#183). */
 export interface IRawImagePixels {
@@ -432,6 +458,11 @@ export type JSONRenderItem = {
     key: string;
     value: string;
     help: string;
+} | {
+    type: "shaderSource";
+    key: string;
+    shader: IShaderCapture;
+    programLog?: string;
 } | {
     type: "visualState";
     visualState: any;
@@ -603,6 +634,10 @@ export declare class ReactResultView {
     handleVertexSelected: (commandIndex: number) => void;
     /** Called by React when a shader link is clicked (fragment). */
     handleFragmentSelected: (commandIndex: number) => void;
+    /** Called when a shader-related command's source link is clicked. */
+    handleShaderSelected: (commandIndex: number) => void;
+    /** Called when a shader source link in command details is clicked. */
+    handleShaderSourceOpen: (shader: IShaderCapture, programLog?: string) => void;
     /** Called by React when source code is edited. */
     handleSourceCodeChanged: (event: ISourceCodeChangeEvent) => void;
     /** Called by React when source code close button is clicked. */
@@ -634,6 +669,7 @@ export declare class ReactResultView {
     private _displayEndState;
     private _displayCurrentCapture;
     private _openShader;
+    private _openCapturedShader;
     private _buildCommandDetail;
     /**
      * Lazily resolve a command's stack-trace frames through source maps (#98).

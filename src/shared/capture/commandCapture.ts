@@ -1,3 +1,5 @@
+import { IProgramCapture, IShaderCapture } from "./programCapture";
+
 export type State = { [stateName: string]: any };
 
 export type CommandCapturedCallback = (command: ICommandCapture) => void;
@@ -26,5 +28,7 @@ export interface ICommandCapture extends State {
     text: string;
     marker: string;
     consumeCommandId?: number;
+    shader?: IShaderCapture;
+    program?: IProgramCapture;
     [stateName: string]: any;
 }

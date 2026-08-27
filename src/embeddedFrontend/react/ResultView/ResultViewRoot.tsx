@@ -61,11 +61,15 @@ export function ResultViewRoot() {
                                     onCommandSelected={() => adapter.handleCommandSelected(i)}
                                     onVertexSelected={() => adapter.handleVertexSelected(i)}
                                     onFragmentSelected={() => adapter.handleFragmentSelected(i)}
+                                    onShaderSelected={() => adapter.handleShaderSelected(i)}
                                 />
                             ))}
                         </CommandList>
                         <CommandDetail>
-                            <JSONRenderTree items={state.commandDetailData} />
+                            <JSONRenderTree
+                                items={state.commandDetailData}
+                                onShaderSourceOpen={adapter.handleShaderSourceOpen}
+                            />
                         </CommandDetail>
                     </>
                 )}
@@ -116,7 +120,10 @@ export function ResultViewRoot() {
                             onPreprocessChanged={adapter.handlePreprocessChanged}
                         />
                         <CommandDetail>
-                            <JSONRenderTree items={state.commandDetailData} />
+                            <JSONRenderTree
+                                items={state.commandDetailData}
+                                onShaderSourceOpen={adapter.handleShaderSourceOpen}
+                            />
                         </CommandDetail>
                     </>
                 )}

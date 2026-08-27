@@ -19,6 +19,7 @@ export interface CommandListItemProps {
     onCommandSelected: () => void;
     onVertexSelected?: () => void;
     onFragmentSelected?: () => void;
+    onShaderSelected?: () => void;
 }
 
 function getStatusString(status: CommandCaptureStatus): string {
@@ -32,7 +33,13 @@ function getStatusString(status: CommandCaptureStatus): string {
     }
 }
 
-export function CommandListItem({ command, onCommandSelected, onVertexSelected, onFragmentSelected }: CommandListItemProps) {
+export function CommandListItem({
+    command,
+    onCommandSelected,
+    onVertexSelected,
+    onFragmentSelected,
+    onShaderSelected,
+}: CommandListItemProps) {
     const ref = useRef<HTMLLIElement>(null);
     const capture = command.capture;
     const status = getStatusString(capture.status);
@@ -70,6 +77,12 @@ export function CommandListItem({ command, onCommandSelected, onVertexSelected, 
         onFragmentSelected?.();
     }, [onFragmentSelected]);
 
+    const handleShaderClick = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onShaderSelected?.();
+    }, [onShaderSelected]);
+
     // Render shader links for non-clear draw calls
     let shaderLinks: React.ReactNode = null;
     if (hasVisualState && capture.name !== "clear") {
@@ -85,7 +98,11 @@ export function CommandListItem({ command, onCommandSelected, onVertexSelected, 
         } catch (_e) {
             // Do nothing but prevent crashing — matches original.
         }
+
     }
+    const commandShaderLink = capture.shader?.source ? (
+        <a href="#" commandName="onShaderSourceSelected" onClick={handleShaderClick}>Source</a>
+    ) : null;
 
     return (
         <li ref={ref} className={className} onClick={handleClick} commandName="onCommandSelected">
@@ -108,6 +125,7 @@ export function CommandListItem({ command, onCommandSelected, onVertexSelected, 
                     ),
                 }} />
             )}
+            {commandShaderLink}
             {shaderLinks}
         </li>
     );

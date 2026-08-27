@@ -632,6 +632,21 @@ $commandDetailComponentWidth: 40%;
   padding: 0 15px;
 }
 
+.sourceCodeFormatError {
+  color: $foreground-important;
+  margin-left: 15px;
+}
+
+.sourceCodeDiagnosticsNotice {
+  color: $foreground-title;
+  margin-left: 15px;
+
+  a {
+    color: $foreground-focus;
+    text-decoration: underline;
+  }
+}
+
 .sourceCodeMenuComponent {
   font-family: sans-serif;
   // text-transform: uppercase; 

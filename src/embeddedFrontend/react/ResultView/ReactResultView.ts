@@ -4,6 +4,7 @@ import { createElement } from "react";
 import { Observable } from "../../../shared/utils/observable";
 import { ICapture } from "../../../shared/capture/capture";
 import { ICommandCapture } from "../../../shared/capture/commandCapture";
+import { IShaderCapture } from "../../../shared/capture/programCapture";
 import { ExternalStore } from "../shared/ExternalStore";
 import {
     ISourceCodeChangeEvent,
@@ -336,6 +337,21 @@ export class ReactResultView {
         this._openShader(true);
     }
 
+    /** Called when a shader-related command's source link is clicked. */
+    public handleShaderSelected = (commandIndex: number): void => {
+        const state = this.store.getSnapshot();
+        const shader = state.commands[commandIndex]?.capture.shader;
+        if (!shader) { return; }
+
+        this.selectCommand(commandIndex);
+        this._openCapturedShader(shader);
+    }
+
+    /** Called when a shader source link in command details is clicked. */
+    public handleShaderSourceOpen = (shader: IShaderCapture, programLog?: string): void => {
+        this._openCapturedShader(shader, programLog);
+    }
+
     /** Called by React when source code is edited. */
     public handleSourceCodeChanged = (event: ISourceCodeChangeEvent): void => {
         this.onSourceCodeChanged.trigger(event);
@@ -656,6 +672,10 @@ export class ReactResultView {
             editable: drawCall.programStatus.RECOMPILABLE,
             beautify: true,
             preprocessed: false,
+            singleShader: false,
+            sourceVertexLog: drawCall.shaders[0].infoLog || "",
+            sourceFragmentLog: drawCall.shaders[1].infoLog || "",
+            programLog: drawCall.programStatus.infoLog || "",
         };
 
         // Build command detail for the source code view
@@ -671,6 +691,37 @@ export class ReactResultView {
             sourceCodeState,
             sourceCodeError: "",
             commandDetailData,
+        }));
+    }
+
+    private _openCapturedShader(shader: IShaderCapture, programLog: string = ""): void {
+        if (!shader || typeof shader.source !== "string") { return; }
+
+        const fragment = shader.shaderType === "FRAGMENT_SHADER";
+        const sourceCodeState: ISourceCodeState = {
+            programId: -1,
+            nameVertex: fragment ? "" : shader.name,
+            nameFragment: fragment ? shader.name : "",
+            sourceVertex: fragment ? "" : shader.source,
+            sourceFragment: fragment ? shader.source : "",
+            translatedSourceVertex: fragment ? "" : shader.translatedSource || "",
+            translatedSourceFragment: fragment ? shader.translatedSource || "" : "",
+            fragment,
+            translated: false,
+            editable: false,
+            beautify: true,
+            preprocessed: false,
+            singleShader: true,
+            sourceVertexLog: fragment ? "" : shader.infoLog || "",
+            sourceFragmentLog: fragment ? shader.infoLog || "" : "",
+            programLog,
+        };
+
+        this.store.setState((prev) => ({
+            ...prev,
+            menuStatus: MenuStatus.SourceCode,
+            sourceCodeState,
+            sourceCodeError: "",
         }));
     }
 
