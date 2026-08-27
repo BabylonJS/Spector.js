@@ -398,6 +398,53 @@ test.describe("SourceCode editor", () => {
         expect(await getEditorValue(page)).toBe(editedFragmentSource);
     });
 
+    test("applies formatting controls to an edited draft", async ({ spectorPage }) => {
+        const { page } = spectorPage;
+        await spectorPage.triggerCapture();
+        await spectorPage.waitForCaptureReady();
+
+        expect(await openShaderEditor(page)).toBe(true);
+        await page.click('[commandName="onFragmentSourceClicked"]');
+        const draftSource = [
+            "#define OUTPUT_COLOR vColor",
+            "precision mediump float;",
+            "varying vec3 vColor;",
+            "void main(){gl_FragColor=vec4(OUTPUT_COLOR,1.0);}",
+        ].join("\n");
+        await setEditorValue(page, draftSource);
+        await expect(page.locator('[commandName="onBeautifyChanged"]')).not.toBeChecked();
+        await page.waitForFunction((source) => {
+            const container = document.querySelector(".sourceCodeComponent") as any;
+            return container.env.editor.getValue() === source;
+        }, draftSource);
+
+        await page.click('[commandName="onBeautifyChanged"]');
+        await page.waitForFunction(() => {
+            const container = document.querySelector(".sourceCodeComponent") as any;
+            return container.env.editor.getValue().includes("\n    gl_FragColor");
+        });
+        expect(await getEditorValue(page)).toContain("#define OUTPUT_COLOR vColor");
+
+        await page.click('[commandName="onBeautifyChanged"]');
+        await page.waitForFunction((source) => {
+            const container = document.querySelector(".sourceCodeComponent") as any;
+            return container.env.editor.getValue() === source;
+        }, draftSource);
+
+        await page.click('[commandName="onPreprocessChanged"]');
+        await page.waitForFunction(() => {
+            const container = document.querySelector(".sourceCodeComponent") as any;
+            return !container.env.editor.getValue().includes("#define OUTPUT_COLOR");
+        });
+        expect(await getEditorValue(page)).toContain("vec4(vColor,1.0)");
+
+        await page.click('[commandName="onPreprocessChanged"]');
+        await page.waitForFunction((source) => {
+            const container = document.querySelector(".sourceCodeComponent") as any;
+            return container.env.editor.getValue() === source;
+        }, draftSource);
+    });
+
     test("cancels a pending edit when the source program changes", async ({ spectorPage }) => {
         const { page } = spectorPage;
         await spectorPage.triggerCapture();

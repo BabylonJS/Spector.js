@@ -63,6 +63,7 @@ interface IFormatState {
 }
 
 interface IShaderSelection {
+    edited: boolean;
     source: string;
     preprocessed: boolean;
 }
@@ -72,11 +73,6 @@ interface IShaderDisplay {
     formatted: boolean;
     preprocessed: boolean;
     error: string;
-}
-
-interface IEditorSelection {
-    displayedShader: string;
-    sourceEdited: boolean;
 }
 
 interface IEditedSources {
@@ -154,11 +150,10 @@ export function SourceCode({
         vertex: false,
         fragment: false,
     });
-    const shaderSelection = selectShaderSource(state);
+    const shaderSelection = selectShaderSource(state, draftSourcesRef.current, editedSources);
     const shaderDisplay = useShaderDisplay(shaderSelection.source, shaderSelection.preprocessed, state.beautify);
-    const editorSelection = selectEditorSource(state, shaderDisplay, draftSourcesRef.current, editedSources);
-    const displayedShader = editorSelection.displayedShader;
-    const sourceEdited = editorSelection.sourceEdited;
+    const displayedShader = shaderDisplay.source;
+    const sourceEdited = shaderSelection.edited;
     const capturedLog = [
         state.fragment ? state.sourceFragmentLog : state.sourceVertexLog,
         state.programLog,
@@ -214,6 +209,12 @@ export function SourceCode({
                 }
                 return current.vertex ? current : { ...current, vertex: true };
             });
+            resetShaderTransformations(
+                state.beautify,
+                state.preprocessed,
+                onBeautifyChanged,
+                onPreprocessChanged,
+            );
             if (timeoutRef.current !== -1) {
                 clearTimeout(timeoutRef.current);
             }
@@ -244,8 +245,10 @@ export function SourceCode({
             }
         };
     }, [displayedShader, state.editable, state.translated, state.fragment,
+        state.beautify, state.preprocessed,
         state.sourceVertex, state.sourceFragment, state.translatedSourceVertex,
-        state.translatedSourceFragment, state.programId, onSourceCodeChanged]);
+        state.translatedSourceFragment, state.programId, onBeautifyChanged,
+        onPreprocessChanged, onSourceCodeChanged]);
 
     useEffect(() => {
         if (timeoutRef.current !== -1) {
@@ -481,21 +484,43 @@ function areCapturedDiagnosticsHidden(
     return !errorMessage && !sourceEdited && !!capturedLog && !displaysOriginalSource;
 }
 
-function selectEditorSource(
+function selectShaderSource(
     state: ISourceCodeState,
-    shaderDisplay: IShaderDisplay,
     draftSources: IShaderDraftSources,
     editedSources: IEditedSources,
-): IEditorSelection {
+): IShaderSelection {
+    if (state.translated) {
+        return {
+            edited: false,
+            source: state.fragment ? state.translatedSourceFragment : state.translatedSourceVertex,
+            preprocessed: false,
+        };
+    }
+
     const baseSourcesChanged = draftSources.baseProgramId !== state.programId ||
         draftSources.baseVertex !== state.sourceVertex ||
         draftSources.baseFragment !== state.sourceFragment;
     const sourceEdited = !baseSourcesChanged && (state.fragment ? editedSources.fragment : editedSources.vertex);
     const draftSource = state.fragment ? draftSources.fragment : draftSources.vertex;
     return {
-        displayedShader: sourceEdited && !state.translated ? draftSource : shaderDisplay.source,
-        sourceEdited,
+        edited: sourceEdited,
+        source: sourceEdited ? draftSource : (state.fragment ? state.sourceFragment : state.sourceVertex) ?? "",
+        preprocessed: state.preprocessed,
     };
+}
+
+function resetShaderTransformations(
+    beautify: boolean,
+    preprocessed: boolean,
+    onBeautifyChanged: (beautify: boolean) => void,
+    onPreprocessChanged: (preprocessed: boolean) => void,
+): void {
+    if (beautify) {
+        onBeautifyChanged(false);
+    }
+    if (preprocessed) {
+        onPreprocessChanged(false);
+    }
 }
 
 function isCurrentSourceContext(context: IShaderSourceContext, state: ISourceCodeState): boolean {
@@ -506,20 +531,6 @@ function isCurrentSourceContext(context: IShaderSourceContext, state: ISourceCod
 
 function getErrorMessage(error: any): string {
     return error instanceof Error ? error.message : String(error);
-}
-
-function selectShaderSource(state: ISourceCodeState): IShaderSelection {
-    if (state.translated) {
-        return {
-            source: state.fragment ? state.translatedSourceFragment : state.translatedSourceVertex,
-            preprocessed: false,
-        };
-    }
-
-    return {
-        source: (state.fragment ? state.sourceFragment : state.sourceVertex) ?? "",
-        preprocessed: state.preprocessed,
-    };
 }
 
 function useShaderDisplay(source: string, preprocessed: boolean, beautify: boolean): IShaderDisplay {
