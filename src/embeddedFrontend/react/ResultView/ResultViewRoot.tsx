@@ -15,6 +15,7 @@ import { SourceCode } from "./SourceCode/SourceCode";
 import { JSONRenderTree } from "./JSON/JSONRenderTree";
 import { CompareView } from "./Compare/CompareView";
 import { TextureViewerModal } from "./TextureViewer/TextureViewerModal";
+import { BufferViewerModal } from "./BufferViewer/BufferViewerModal";
 import { MenuStatus, JSONRenderItem } from "../shared/types";
 
 /**
@@ -129,6 +130,7 @@ export function ResultViewRoot() {
                 )}
             </ResultViewContent>
             <TextureViewerModal />
+            <BufferViewerModal />
         </div>
     );
 }
