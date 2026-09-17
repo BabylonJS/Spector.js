@@ -47,7 +47,7 @@ const bufferData = (data: any, usage = WebGlConstants.STATIC_DRAW.value) =>
 const bufferSubData = (offset: number, data: any) =>
     ({ name: "bufferSubData", arguments: [WebGlConstants.ARRAY_BUFFER.value, offset, data] });
 
-describe("BufferRecorder buffer-content capture (#buffer-view)", () => {
+describe("BufferRecorder buffer-content capture", () => {
     afterEach(() => {
         BufferRecorder.cap = 4 * 1024 * 1024;
     });
