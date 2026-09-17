@@ -9,6 +9,8 @@
  * transparent texels. Encoding the raw `readPixels` bytes here — before any
  * canvas round-trip — keeps that colour available to the viewer.
  */
+import { Base64 } from "./base64";
+
 export interface IRawTextureData {
     /** Base64 of the RGBA bytes, top-down, row-major (`width * height * 4` long). */
     data: string;
@@ -82,16 +84,6 @@ export class RawTextureData {
             }
         }
 
-        return { data: RawTextureData.toBase64(out), width: targetWidth, height: targetHeight };
-    }
-
-    /** Base64-encode a byte buffer in stack-safe chunks (works in Workers via `btoa`). */
-    private static toBase64(bytes: Uint8Array): string {
-        let binary = "";
-        const chunkSize = 0x8000;
-        for (let i = 0; i < bytes.length; i += chunkSize) {
-            binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize) as any);
-        }
-        return btoa(binary);
+        return { data: Base64.encode(out), width: targetWidth, height: targetHeight };
     }
 }
