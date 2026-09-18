@@ -251,18 +251,22 @@ See [`sample/worker.html`](sample/worker.html) for a working example.
 
 ### Auto-injection (best-effort)
 
-`spyWorkers()` monkey-patches the global `Worker` constructor to automatically inject the Spector bundle into every new Worker:
+**Browser extension:** Worker auto-injection is **OFF by default**, including for existing users (#394, #395). In the popup, **Auto-inject Workers (experimental)** explicitly enables best-effort instrumentation of Workers, including OffscreenCanvas Workers. Changing the checkbox reloads the tab. Like **Show offscreen canvas(es)**, the choice is stored in page `sessionStorage`, scoped to the tab and origin (and applied to currently loaded frames), not globally to all sites. It survives reloads; an absent setting defaults off.
+
+With the option off, the extension leaves `window.Worker` exactly as it was: no constructor wrapper, options inspection, URL coercion, or preflight fetch. Main-thread canvas capture still works. Disabling the checkbox and reloading stops installing interception; it does not undo instrumentation in an already-running Worker.
+
+**Programmatic API:** `spyWorkers()` remains a separate, explicit opt-in. It monkey-patches the global `Worker` constructor to attempt automatic injection into subsequent classic Workers:
 
 ```javascript
 var spector = new SPECTOR.Spector();
 spector.spyWorkers('spector.worker.bundle.js');
-// All subsequent new Worker() calls get Spector injected automatically
+// Subsequent classic Workers are candidates for best-effort injection
 
 // Stop intercepting:
 // spector.stopSpyingWorkers();
 ```
 
-> **⚠️ Limitations:** Auto-injection may fail with cross-origin Workers, strict CSP policies, or ES module Workers. Use the [manual API](#worker-offscreencanvas-manual-api--recommended) as a reliable fallback.
+> **⚠️ Experimental — can alter Worker behavior:** Blob wrapping changes the Worker's `self.location` and can affect credentials or CSP/CORS-dependent code. For same-origin module Worker entry points, the extension initializes Spector in a loader and imports the application module from its original URL, preserving relative imports and `import.meta.url`; startup messages are queued until the module is ready. Module sources with direct nested Worker construction are bypassed because their URL resolution may still depend on `self.location`. Conservative source checks cannot inspect every dependency or establish safety and are **not a compatibility guarantee**. Constructor interception itself can change JavaScript semantics. Leave auto-injection off for native behavior; prefer the [manual API](#worker-offscreencanvas-manual-api--recommended) when you control the Worker source. For module Workers, load the worker bundle using `import` instead of `importScripts`.
 
 ### API Reference
 
@@ -270,7 +274,7 @@ spector.spyWorkers('spector.worker.bundle.js');
 |--------|-------------|
 | `spyWorker(worker)` | Bridge a specific Worker for capture. Returns a `WorkerBridge`. |
 | `captureWorker(worker, commandCount?, quickCapture?, fullCapture?)` | Trigger a capture on a bridged Worker. Auto-bridges if needed. |
-| `spyWorkers(bundleUrl?)` | Intercept all `new Worker()` calls to auto-inject Spector. |
+| `spyWorkers(bundleUrl?)` | Explicitly opt in to experimental, best-effort Worker auto-injection. |
 | `stopSpyingWorkers()` | Stop intercepting Worker construction. |
 
 ## MCP Server

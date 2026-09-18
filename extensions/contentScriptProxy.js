@@ -25,6 +25,9 @@ var uniqueId = new Date().getTime() + Math.abs(Math.random() * 1000000);
 function sendMessage(message, cb) {
     message["uniqueId"] = uniqueId;
     window.browser.runtime.sendMessage(message, function (response) {
+        if (window.browser.runtime && window.browser.runtime.lastError) {
+            return;
+        }
         if (cb) {
             cb(response);
         }
@@ -44,6 +47,7 @@ var spectorCaptureOnLoadTransientKey = "SPECTOR_CAPTUREONLOAD_TRANSIENT";
 var spectorCaptureOnLoadQuickCaptureKey = "SPECTOR_CAPTUREONLOAD_QUICKCAPTURE";
 var spectorCaptureOnLoadFullCaptureKey = "SPECTOR_CAPTUREONLOAD_FULLCAPTURE";
 var captureOffScreenKey = "SPECTOR_CAPTUREOFFSCREEN";
+var workerAutoInjectKey = "SPECTOR_WORKERAUTOINJECT";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
 var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATION_QUICKCAPTURE";
 var spectorCommunicationFullCaptureElementId = "SPECTOR_COMMUNICATION_FULLCAPTURE";
@@ -55,6 +59,7 @@ var spectorShaderCompileDelayKey = "SPECTOR_SHADERCOMPILEDELAY";
 var spectorContextTypeKey = "__spector_context_type";
 
 var captureOffScreen = (sessionStorage.getItem(captureOffScreenKey) === "true");
+var workerAutoInject = (sessionStorage.getItem(workerAutoInjectKey) === "true");
 
 var frameId = null;
 
@@ -123,7 +128,7 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
         }
 
         // Inform the extension that canvases are present (2 means injection has been done, 1 means ready to inject)
-        sendMessage({ canvases: uiInformation, captureOffScreen: true }, function (response) {
+        sendMessage({ canvases: uiInformation, captureOffScreen: true, workerAutoInject: workerAutoInject }, function (response) {
             frameId = response.frameId;
         });
     });
@@ -173,7 +178,7 @@ var refreshCanvases = function() {
                     }
                 }
                 if (canvasesInformation.length > 0) {
-                    sendMessage({ canvases: canvasesInformation, captureOffScreen: false }, function (response) {
+                    sendMessage({ canvases: canvasesInformation, captureOffScreen: false, workerAutoInject: workerAutoInject }, function (response) {
                         frameId = response.frameId;
                     });
                 }
@@ -220,6 +225,14 @@ listenForMessage(function (message) {
     if (action === "changeOffScreen") {
         sessionStorage.setItem(captureOffScreenKey, message.captureOffScreen ? "true" : "false");
         // Delay for all frames.
+        setTimeout(function () { window.location.reload(); }, 50);
+        return;
+    }
+
+    // Like offscreen capture, persist per tab/origin session before reloading
+    // all frames. MAIN reads this synchronously; no async storage bridge needed.
+    if (action === "changeWorkerAutoInject") {
+        sessionStorage.setItem(workerAutoInjectKey, message.workerAutoInject === true ? "true" : "false");
         setTimeout(function () { window.location.reload(); }, 50);
         return;
     }

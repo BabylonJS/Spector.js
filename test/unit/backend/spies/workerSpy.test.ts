@@ -7,7 +7,7 @@ describe("WorkerSpy", () => {
 
     beforeEach(() => {
         // Create a minimal Worker stub on globalThis so typeof Worker !== "undefined"
-        OriginalWorkerStub = function MockWorker() { /* noop */ };
+        OriginalWorkerStub = jest.fn(function MockWorker() { /* noop */ });
         OriginalWorkerStub.prototype = {};
         (globalThis as any).Worker = OriginalWorkerStub;
 
@@ -135,5 +135,34 @@ describe("WorkerSpy", () => {
                 'importScripts("http://localhost:8081/a.js");\nself.x = 1;\nimportScripts("http://localhost:8081/scripts/b.js");',
             );
         });
+    });
+
+    describe("shouldInjectSource (best-effort bypass)", () => {
+        const shouldInjectSource = (WorkerSpy as any).shouldInjectSource.bind(WorkerSpy) as
+            (source: string) => boolean;
+
+        it("allows simple classic Worker scripts", () => {
+            expect(shouldInjectSource('self.onmessage = function() { postMessage("ok"); };')).toBe(true);
+        });
+
+        it("rejects dynamic imports", () => {
+            expect(shouldInjectSource('import("./dep.js").then(function(dep) { postMessage(dep); });')).toBe(false);
+            expect(shouldInjectSource('import /* webpackIgnore: true */ ("./dep.js");')).toBe(false);
+        });
+
+        it("rejects nested Worker construction", () => {
+            expect(shouldInjectSource('new Worker("./child.js", { type: "module" });')).toBe(false);
+            expect(shouldInjectSource('new self.SharedWorker("./child.js");')).toBe(false);
+        });
+    });
+
+    it("passes module Workers to the native constructor unchanged", () => {
+        const scriptUrl = new URL("https://example.com/worker.js");
+        const options: WorkerOptions = { type: "module", name: "module-worker" };
+
+        WorkerSpy.startIntercepting("spector.worker.bundle.js");
+        new (globalThis as any).Worker(scriptUrl, options);
+
+        expect(OriginalWorkerStub).toHaveBeenCalledWith(scriptUrl, options);
     });
 });

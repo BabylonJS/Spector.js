@@ -35,10 +35,12 @@ And the following list of events:
 - ```onError: IEvent<string>```: triggered when an error occured and return the error message.
 
 ### Worker / OffscreenCanvas APIs
-- ```spyWorkers(workerBundleUrl?: string)``` : Intercept all `new Worker()` calls to auto-inject Spector. Best-effort — may fail with CORS, CSP, or module Workers. Defaults to `"spector.worker.bundle.js"`.
+- ```spyWorkers(workerBundleUrl?: string)``` : Explicitly opt in to experimental, best-effort interception of `new Worker()` calls. Attempts to inject Spector into classic Workers; module Workers are not injected. Recognizable dynamic imports and nested Worker constructions are also bypassed, but source checks cannot establish safety. Blob wrapping, URL/base changes, and constructor interception can alter behavior; CSP/CORS restrictions can prevent injection. Defaults to `"spector.worker.bundle.js"`. Prefer `spyWorker()` when you control the Worker source.
 - ```stopSpyingWorkers()``` : Stop intercepting Worker construction.
-- ```spyWorker(worker: Worker): WorkerBridge``` : Manually bridge a specific Worker for capture. This is the primary, reliable API. The Worker must have `spector.worker.bundle.js` loaded via `importScripts`.
+- ```spyWorker(worker: Worker): WorkerBridge``` : Manually bridge a specific Worker for capture. This is the recommended API and does not replace the Worker constructor. The Worker must load `spector.worker.bundle.js` via `importScripts` (classic Workers) or `import` (module Workers).
 - ```captureWorker(worker: Worker, commandCount?: number, quickCapture?: boolean, fullCapture?: boolean)``` : Capture a frame from a Worker's WebGL context. If the Worker hasn't been bridged yet, `spyWorker` is called automatically.
+
+The browser extension's **Auto-inject Workers (experimental)** checkbox is separate from `spyWorkers()` and defaults **off**, even when offscreen canvas capture was previously enabled. It includes OffscreenCanvas Workers and warns that instrumentation may alter behavior. Changes are persisted in page `sessionStorage` (`SPECTOR_WORKERAUTOINJECT`) for the tab/origin session, like the offscreen capture setting, then reload the tab's loaded frames. The MAIN-world content script reads the exact value `"true"` synchronously at `document_start`; there is no asynchronous storage race. Missing/false values leave `window.Worker` untouched, with no wrapper or preflight fetch. Disabling the checkbox restores that behavior on reload. Main-thread canvas capture and manual Worker APIs remain available.
 
 As you notice you could use the capture without displying the UI (this is the orientation we chosed in the browser extension).
 

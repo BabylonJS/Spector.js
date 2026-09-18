@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Worker interception tests</title>
+</head>
+<body>
+    <input type="hidden" id="TexturesId_SpectorWorkerBundleUrl" value="/test/e2e/fixtures/worker-spector-stub.js">
+    <script>
+        // Construct during parsing, not after the test installs a late hook.
+        window.earlyWorkerResult = new Promise(function(resolve, reject) {
+            var worker = new Worker("./worker-safe.js");
+            var timeout = setTimeout(function() {
+                worker.terminate();
+                reject(new Error("Early Worker response timed out"));
+            }, 10000);
+            worker.onmessage = function(event) {
+                clearTimeout(timeout);
+                worker.terminate();
+                resolve(event.data);
+            };
+            worker.onerror = function(event) {
+                clearTimeout(timeout);
+                worker.terminate();
+                reject(new Error(event.message));
+            };
+            worker.postMessage("start");
+        });
+    </script>
+</body>
+</html>

@@ -7,10 +7,9 @@
  * The core challenge: module workers forbid `importScripts()`, and blob-wrapped
  * modules lose their original base URL — breaking all relative `import` paths.
  *
- * Solution: fetch the original script source, rewrite all relative import
- * specifiers to absolute URLs (preserving the original script's base URL),
- * then create a blob module that first loads the Spector bundle and then
- * includes the rewritten application code.
+ * Solution: inspect the original entry point, inline the Spector bundle in a
+ * loader module, queue messages while dynamically importing the original
+ * module at its real URL, then replay those messages after its handlers exist.
  */
 
 var SpectorModuleInjector = (function () {
@@ -97,19 +96,31 @@ var SpectorModuleInjector = (function () {
     }
 
     /**
+     * Direct nested Worker construction may resolve relative URLs against the
+     * loader blob instead of the original module. Leave those entries native.
+     */
+    function canSafelyInject(source) {
+        var nestedWorkerPattern = /\bnew\s+(?:(?:self|globalThis)\s*\.\s*)?(?:Worker|SharedWorker)\s*\(/;
+        return !nestedWorkerPattern.test(source);
+    }
+
+    /**
      * Attempts to inject the Spector worker bundle into a module worker.
      *
      * Strategy:
      * 1. Synchronously fetch the original worker script
-     * 2. Rewrite all relative import specifiers to absolute URLs
-     * 3. Create a blob module that:
-     *    a. Dynamically imports the Spector worker bundle (via absolute URL)
-     *    b. Contains the rewritten application code
-     * 4. Create the Worker from the blob URL with { type: 'module' }
+     * 2. Reject direct nested Worker construction that depends on blob-relative URLs
+     * 3. Synchronously fetch the Spector worker bundle
+     * 4. Create a blob loader module that:
+     *    a. Initializes Spector
+     *    b. Queues startup messages
+     *    c. Imports the original module from its absolute URL
+     *    d. Signals that application handlers are installed
+     *    e. Replays any Worker-side startup messages
+     * 5. Create the Worker and queue main-thread postMessage calls until ready
      *
-     * The Spector bundle is loaded via a dynamic `import()` of its absolute URL.
-     * This works because `web_accessible_resources` in the extension manifest
-     * allows the page origin to fetch extension resources.
+     * The bundle is fetched in the page and inlined because Chromium can leave
+     * a blob module Worker pending when it imports a chrome-extension URL.
      *
      * @param {string} scriptURL       - The original worker script URL
      * @param {object} options         - The original Worker options (includes type: 'module')
@@ -129,7 +140,7 @@ var SpectorModuleInjector = (function () {
             return { worker: new OriginalWorker(scriptURL, options), injected: false };
         }
 
-        // Skip blob URLs — can't fetch them from main thread for rewriting
+        // Skip blob URLs — their original module URL cannot be recovered.
         if (urlStr.indexOf('blob:') === 0) {
             return { worker: new OriginalWorker(scriptURL, options), injected: false };
         }
@@ -140,6 +151,10 @@ var SpectorModuleInjector = (function () {
         }
 
         if (!bundleUrl) {
+            return { worker: new OriginalWorker(scriptURL, options), injected: false };
+        }
+
+        if (new URL(absoluteScriptUrl).origin !== location.origin) {
             return { worker: new OriginalWorker(scriptURL, options), injected: false };
         }
 
@@ -154,27 +169,98 @@ var SpectorModuleInjector = (function () {
             }
 
             var originalSource = xhr.responseText;
+            if (!canSafelyInject(originalSource)) {
+                return { worker: new OriginalWorker(scriptURL, options), injected: false };
+            }
 
-            // Rewrite relative imports to absolute URLs
-            var rewrittenSource = rewriteImports(originalSource, absoluteScriptUrl);
+            var bundleXhr = new XMLHttpRequest();
+            bundleXhr.open('GET', bundleUrl, false);
+            bundleXhr.send();
+            if (bundleXhr.status !== 200) {
+                return { worker: new OriginalWorker(scriptURL, options), injected: false };
+            }
 
-            // Build the blob module:
-            // 1. Dynamically import the Spector worker bundle (fire-and-forget,
-            //    Spector auto-initializes on load)
-            // 2. Include the rewritten application code
-            //
-            // We use `await import(...)` to ensure Spector is initialized before
-            // the application code runs (so getContext() calls are intercepted).
+            var resolvedScriptUrl = xhr.responseURL || absoluteScriptUrl;
+
+            // Dynamic module import allows the application's relative imports
+            // and import.meta.url to retain their native URL semantics. Worker
+            // messages can be dispatched while top-level await is pending, so
+            // hold and replay them once the application module has evaluated.
+            var runtimeShim =
+                '(function(){\n' +
+                '  var __spectorBase = ' + JSON.stringify(resolvedScriptUrl) + ';\n' +
+                '  self.__SPECTOR_workerBaseUrl = __spectorBase;\n' +
+                '  function __spectorResolve(url) {\n' +
+                '    if (url == null || typeof url !== "string" || /^(?:[a-z][a-z0-9+.-]*:|\\/\\/)/i.test(url)) return url;\n' +
+                '    try { return new URL(url, __spectorBase).href; } catch (e) { return url; }\n' +
+                '  }\n' +
+                '  self.__SPECTOR_resolveWorkerUrl = __spectorResolve;\n' +
+                '  var __originalFetch = self.fetch;\n' +
+                '  if (typeof __originalFetch === "function") {\n' +
+                '    self.fetch = function(input, init) {\n' +
+                '      try {\n' +
+                '        if (typeof input === "string") {\n' +
+                '          input = __spectorResolve(input);\n' +
+                '        } else if (input && typeof input === "object" && "url" in input && typeof Request === "function") {\n' +
+                '          var request = input;\n' +
+                '          var resolved = __spectorResolve(request.url);\n' +
+                '          if (resolved !== request.url) input = new Request(resolved, request);\n' +
+                '        }\n' +
+                '      } catch (e) { /* use the original input */ }\n' +
+                '      return __originalFetch.call(self, input, init);\n' +
+                '    };\n' +
+                '  }\n' +
+                '  if (typeof XMLHttpRequest === "function" && XMLHttpRequest.prototype.open) {\n' +
+                '    var __originalXhrOpen = XMLHttpRequest.prototype.open;\n' +
+                '    XMLHttpRequest.prototype.open = function(method, url) {\n' +
+                '      var args = Array.prototype.slice.call(arguments);\n' +
+                '      args[1] = __spectorResolve(url);\n' +
+                '      return __originalXhrOpen.apply(this, args);\n' +
+                '    };\n' +
+                '  }\n' +
+                '})();\n';
             var blobContent =
                 '/* Spector.js module worker injection */\n' +
-                'try { await import("' + bundleUrl + '"); } catch(e) { console.warn("[Spector] Worker bundle load failed:", e); }\n' +
-                '\n' +
-                rewrittenSource;
+                bundleXhr.responseText + '\n' +
+                runtimeShim +
+                'var __spectorQueuedMessages = [];\n' +
+                'var __spectorQueueMessage = function(event) { __spectorQueuedMessages.push(event); };\n' +
+                'self.addEventListener("message", __spectorQueueMessage);\n' +
+                'try {\n' +
+                '  await import(' + JSON.stringify(resolvedScriptUrl) + ');\n' +
+                '} finally {\n' +
+                '  self.removeEventListener("message", __spectorQueueMessage);\n' +
+                '}\n' +
+                'self.postMessage({ type: "spector:module-ready", version: 1 });\n' +
+                'for (var __spectorMessageIndex = 0; __spectorMessageIndex < __spectorQueuedMessages.length; __spectorMessageIndex++) {\n' +
+                '  self.dispatchEvent(__spectorQueuedMessages[__spectorMessageIndex]);\n' +
+                '}\n';
 
             var blob = new Blob([blobContent], { type: 'application/javascript' });
             var blobUrl = URL.createObjectURL(blob);
 
             var worker = new OriginalWorker(blobUrl, options);
+            var originalPostMessage = worker.postMessage;
+            var queuedPostMessages = [];
+            var moduleReady = false;
+            worker.postMessage = function () {
+                if (moduleReady) {
+                    return originalPostMessage.apply(worker, arguments);
+                }
+                queuedPostMessages.push(Array.prototype.slice.call(arguments));
+            };
+            worker.addEventListener('message', function moduleReadyHandler(event) {
+                if (!event.data || event.data.type !== 'spector:module-ready') {
+                    return;
+                }
+                event.stopImmediatePropagation();
+                worker.removeEventListener('message', moduleReadyHandler);
+                moduleReady = true;
+                for (var i = 0; i < queuedPostMessages.length; i++) {
+                    originalPostMessage.apply(worker, queuedPostMessages[i]);
+                }
+                queuedPostMessages.length = 0;
+            });
 
             // Revoke after a delay — the browser needs time to fetch the blob
             setTimeout(function () { URL.revokeObjectURL(blobUrl); }, 5000);
@@ -190,6 +276,7 @@ var SpectorModuleInjector = (function () {
     return {
         rewriteImports: rewriteImports,
         resolveSpecifier: resolveSpecifier,
+        canSafelyInject: canSafelyInject,
         injectModuleWorker: injectModuleWorker,
     };
 })();

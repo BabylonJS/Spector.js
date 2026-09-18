@@ -477,8 +477,9 @@ export class Spector {
     }
 
     /**
-     * Intercept all new Worker() calls to auto-inject Spector.
-     * Best-effort: will fail for CORS, CSP, or module Workers.
+     * Explicitly opt in to intercepting new Worker() calls to auto-inject Spector.
+     * Experimental/best-effort: can change Worker behavior and fails for some
+     * CORS/CSP policies. Module Workers are not injected. Prefer spyWorker().
      * @param workerBundleUrl URL to spector.worker.bundle.js
      */
     public spyWorkers(workerBundleUrl: string = "spector.worker.bundle.js"): void {

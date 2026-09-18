@@ -12,7 +12,8 @@ interface ISpiedWorker {
  * - Module Workers (type: 'module')
  *
  * The primary API is manual: spector.spyWorker(worker).
- * Auto-injection is a convenience that works in simple cases.
+ * Auto-injection is an explicit opt-in for simple cases, not a transparent
+ * replacement: blob wrapping and constructor interception can change behavior.
  */
 export class WorkerSpy {
     private static readonly spiedWorkers: ISpiedWorker[] = [];
@@ -40,12 +41,12 @@ export class WorkerSpy {
 
         // Replace the global Worker constructor
         (globalThis as any).Worker = function SpectorWorkerProxy(scriptURL: string | URL, options?: WorkerOptions): Worker {
-            const urlStr = scriptURL.toString();
-
             // Don't intercept module workers — importScripts doesn't work there
             if (options && options.type === "module") {
                 return new OriginalWorker(scriptURL, options);
             }
+
+            const urlStr = scriptURL.toString();
 
             try {
                 // Resolve the original script URL to absolute (so we can use it
@@ -62,7 +63,7 @@ export class WorkerSpy {
                 xhr.open("GET", absoluteScriptUrl, false); // synchronous
                 xhr.send();
 
-                if (xhr.status === 200) {
+                if (xhr.status === 200 && WorkerSpy.shouldInjectSource(xhr.responseText)) {
                     // Rewrite static `importScripts(...)` calls in source so
                     // relative / root-relative URLs work when the worker runs
                     // from a `blob:` URL.
@@ -210,6 +211,19 @@ export class WorkerSpy {
             });
             return "importScripts(" + rewrittenArgs + ")";
         });
+    }
+
+    /**
+     * Best-effort bypass for recognizable dynamic imports and nested Workers.
+     * This is not a safety check: aliases, dependencies, and other syntax can
+     * evade detection. Only leaving interception disabled preserves the native
+     * Worker constructor and its behavior.
+     */
+    private static shouldInjectSource(source: string): boolean {
+        const dynamicImportPattern = /\bimport\s*(?:\/\*[\s\S]*?\*\/\s*)?\(/;
+        const nestedWorkerPattern = /\bnew\s+(?:(?:self|globalThis)\s*\.\s*)?(?:Worker|SharedWorker)\s*\(/;
+
+        return !dynamicImportPattern.test(source) && !nestedWorkerPattern.test(source);
     }
 
     /** Get all Workers that were created while intercepting. */

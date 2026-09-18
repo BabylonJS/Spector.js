@@ -115,4 +115,22 @@ describe("SpectorModuleInjector", () => {
             expect(result).toBe(`import { x } from "https://example.com/app/foo.js";`);
         });
     });
+
+    describe("canSafelyInject", () => {
+        it("allows a module entry point with static relative imports", () => {
+            expect(injector.canSafelyInject(`import init from "./scene.js";`)).toBe(true);
+        });
+
+        it("allows import.meta URL dependencies loaded from the original module URL", () => {
+            expect(injector.canSafelyInject(
+                `const url = new URL("./asset.bin", import.meta.url);`,
+            )).toBe(true);
+        });
+
+        it("rejects nested Worker construction", () => {
+            expect(injector.canSafelyInject(
+                `new Worker(new URL("./child.js", import.meta.url), { type: "module" });`,
+            )).toBe(false);
+        });
+    });
 });

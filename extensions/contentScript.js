@@ -31,6 +31,7 @@ var spectorCaptureOnLoadTransientKey = "SPECTOR_CAPTUREONLOAD_TRANSIENT";
 var spectorCaptureOnLoadQuickCaptureKey = "SPECTOR_CAPTUREONLOAD_QUICKCAPTURE";
 var spectorCaptureOnLoadFullCaptureKey = "SPECTOR_CAPTUREONLOAD_FULLCAPTURE";
 var captureOffScreenKey = "SPECTOR_CAPTUREOFFSCREEN";
+var workerAutoInjectKey = "SPECTOR_WORKERAUTOINJECT";
 var spectorCommunicationElementId = "SPECTOR_COMMUNICATION";
 var spectorCommunicationQuickCaptureElementId = "SPECTOR_COMMUNICATION_QUICKCAPTURE";
 var spectorCommunicationFullCaptureElementId = "SPECTOR_COMMUNICATION_FULLCAPTURE";
@@ -59,6 +60,9 @@ if (sessionStorage.getItem(spectorCaptureOnLoadKey) === "true") {
 }
 
 captureOffScreen = (sessionStorage.getItem(captureOffScreenKey) === "true");
+// Read synchronously at document_start, before application Workers are created.
+// Only an explicit opt-in enables interception; older capture settings do not.
+var workerAutoInject = (sessionStorage.getItem(workerAutoInjectKey) === "true");
 
 var spector;
 window.__SPECTOR_Canvases = [];
@@ -75,7 +79,7 @@ window.__SPECTOR_Canvases = [];
         HTMLCanvasElement.prototype.transferControlToOffscreen = function() {
             var offscreen = __SPECTOR_Origin_Transfer.call(this);
             // Tag the source DOM canvas so we can show it later if the Worker
-            // doesn't report context-ready (e.g. module worker injection failed).
+            // doesn't report context-ready (e.g. auto-injection is disabled).
             this.__spector_transferred = true;
             this.__spector_offscreen = offscreen;
             return offscreen;
@@ -128,7 +132,7 @@ window.__SPECTOR_Canvases = [];
     }
 
     // ---- Worker Interception ----
-    if (typeof Worker !== 'undefined') {
+    if (workerAutoInject && typeof Worker !== 'undefined') {
         var __SPECTOR_Origin_Worker = Worker;
         window.__SPECTOR_Workers = [];
 
@@ -159,25 +163,45 @@ window.__SPECTOR_Canvases = [];
             });
         };
 
-        window.Worker = function SpectorWorkerProxy(scriptURL, options) {
-            var urlStr = scriptURL.toString();
+        // Best-effort bypass for recognizable URL-dependent code, not a safety
+        // check: aliases, imported scripts, and other syntax can evade this.
+        // Leaving auto-injection OFF is the compatibility guarantee.
+        var __SPECTOR_shouldInjectWorkerSource = function(source) {
+            var dynamicImportPattern = /\bimport\s*(?:\/\*[\s\S]*?\*\/\s*)?\(/;
+            var nestedWorkerPattern = /\bnew\s+(?:(?:self|globalThis)\s*\.\s*)?(?:Worker|SharedWorker)\s*\(/;
+            return !dynamicImportPattern.test(source) && !nestedWorkerPattern.test(source);
+        };
 
+        window.Worker = function SpectorWorkerProxy(scriptURL, options) {
             // Get the Spector worker bundle URL from the hidden element injected
-            // by contentScriptProxy.js (ISOLATED world → DOM → MAIN world).
+            // by contentScriptProxy.js (ISOLATED world -> DOM -> MAIN world).
             var workerBundleEl = document.getElementById('TexturesId_SpectorWorkerBundleUrl');
             var bundleUrl = workerBundleEl ? workerBundleEl.value : '';
+            if (bundleUrl) {
+                try {
+                    bundleUrl = new URL(bundleUrl, location.href).href;
+                } catch (e) {
+                    bundleUrl = '';
+                }
+            }
 
-            // Module workers — blob-wrapping breaks ALL relative URL resolution
-            // inside the Worker (fetch, XHR, texture loaders, etc.), not just
-            // import specifiers.  This is unfixable without a Service Worker
-            // proxy.  Track module workers without injecting; users must add
-            // the Spector worker bundle import to their source manually.
+            // Module Worker injection is only attempted after the explicit
+            // experimental opt-in. The injector preserves static relative
+            // imports and falls back to native construction for URL-sensitive
+            // module sources it cannot safely rewrite.
             if (options && options.type === 'module') {
-                var w = new __SPECTOR_Origin_Worker(scriptURL, options);
-                window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: false });
+                var urlStr = typeof scriptURL === 'string' ? scriptURL : 'module Worker';
+                var moduleResult = window.__SPECTOR_ModuleInjector
+                    ? window.__SPECTOR_ModuleInjector.injectModuleWorker(
+                        scriptURL, options, bundleUrl, __SPECTOR_Origin_Worker)
+                    : { worker: new __SPECTOR_Origin_Worker(scriptURL, options), injected: false };
+                var w = moduleResult.worker;
+                window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: moduleResult.injected });
                 __SPECTOR_trackWorker(w, urlStr);
                 return w;
             }
+
+            var urlStr = scriptURL.toString();
 
             // Skip blob URLs — can't XHR them for injection. The blob code may
             // already include importScripts for the worker bundle.
@@ -202,7 +226,7 @@ window.__SPECTOR_Canvases = [];
                 xhr.open('GET', absoluteScriptUrl, false);
                 xhr.send();
 
-                if (xhr.status === 200) {
+                if (xhr.status === 200 && __SPECTOR_shouldInjectWorkerSource(xhr.responseText)) {
                     if (bundleUrl) {
                         // Runtime shim: when a worker is loaded from a blob:
                         // URL, `self.location.href` is the blob URL — which
@@ -284,7 +308,7 @@ window.__SPECTOR_Canvases = [];
                     }
                 }
             } catch(e) {
-                // Fallback silently on CORS/CSP errors
+                console.warn("[Spector.js] Could not auto-inject into Worker (" + urlStr + "):", e);
             }
 
             var w = new __SPECTOR_Origin_Worker(scriptURL, options);
@@ -462,9 +486,9 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                     } else {
                         // No injected Worker — capture not possible
                         var errorEvent = new CustomEvent("SpectorOnErrorEvent", {
-                            detail: { errorString: "Cannot capture: Spector injection into this module Worker failed. " +
-                                "The Worker may use import maps or non-fetchable URLs. " +
-                                "Try adding: import 'spector.worker.bundle.js' to your Worker manually." }
+                            detail: { errorString: "Cannot capture: this Worker is not instrumented. " +
+                                "Worker auto-injection is off by default and, when enabled, is experimental and may skip or fail on this Worker. " +
+                                "Use the manual spyWorker() API with spector.worker.bundle.js loaded inside the Worker." }
                         });
                         document.dispatchEvent(errorEvent);
                     }

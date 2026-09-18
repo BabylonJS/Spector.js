@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Spector.js Worker auto-injection test</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            font-family: system-ui, sans-serif;
+            background: #111827;
+            color: #e5e7eb;
+        }
+
+        body {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 20px 64px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        p,
+        li {
+            line-height: 1.55;
+        }
+
+        code {
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: #1f2937;
+        }
+
+        .notice,
+        .summary,
+        .test-card {
+            border: 1px solid #374151;
+            border-radius: 8px;
+            background: #1f2937;
+        }
+
+        .notice,
+        .summary {
+            padding: 16px;
+            margin: 20px 0;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        button {
+            min-height: 44px;
+            padding: 0 18px;
+            border: 1px solid #60a5fa;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:focus-visible {
+            outline: 3px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        .test-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .test-card {
+            padding: 16px;
+        }
+
+        .test-card header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .test-card h2 {
+            margin: 0;
+        }
+
+        .status {
+            flex: none;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: #374151;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .status.pass {
+            background: #14532d;
+            color: #bbf7d0;
+        }
+
+        .status.fail {
+            background: #7f1d1d;
+            color: #fecaca;
+        }
+
+        .status.running {
+            background: #713f12;
+            color: #fef3c7;
+        }
+
+        .details {
+            margin-bottom: 0;
+            color: #cbd5e1;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Worker auto-injection compatibility</h1>
+        <p>
+            This page checks that Spector.js leaves URL-sensitive Workers functional
+            and only injects a simple classic Worker after explicit opt-in.
+        </p>
+
+        <section class="notice" aria-labelledby="setup-title">
+            <h2 id="setup-title">Setup</h2>
+            <ol>
+                <li>Open <code>chrome://extensions</code> and load <code>E:\Babylon\Spector.js\extensions</code> unpacked.</li>
+                <li>Enable Spector.js on this page from the extension popup.</li>
+                <li>Use <strong>Auto-inject Workers (experimental)</strong> in the popup. Changing it reloads this tab.</li>
+                <li>Run all tests with the option off, then enable it and run them again.</li>
+            </ol>
+        </section>
+
+        <section class="summary" aria-live="polite">
+            <strong>Current Worker constructor:</strong>
+            <code id="worker-constructor">checking...</code>
+            <p id="mode-hint">The native constructor should be named Worker when auto-injection is off.</p>
+        </section>
+
+        <div class="controls">
+            <button id="run-all" type="button">Run all Worker tests</button>
+            <button id="clear-results" type="button">Clear results</button>
+        </div>
+
+        <section class="test-grid" aria-label="Worker compatibility results">
+            <article class="test-card" data-test="safe">
+                <header>
+                    <h2>Simple classic Worker</h2>
+                    <span class="status">Not run</span>
+                </header>
+                <p>Should always run. With opt-in enabled, it should also report Spector injection.</p>
+                <p class="details">Waiting.</p>
+            </article>
+
+            <article class="test-card" data-test="dynamic">
+                <header>
+                    <h2>Classic Worker with relative dynamic import</h2>
+                    <span class="status">Not run</span>
+                </header>
+                <p>Must preserve the original URL so <code>import("./workerAutoInjectDependency.js")</code> resolves.</p>
+                <p class="details">Waiting.</p>
+            </article>
+
+            <article class="test-card" data-test="nested">
+                <header>
+                    <h2>Classic Worker creating a nested module Worker</h2>
+                    <span class="status">Not run</span>
+                </header>
+                <p>Must preserve the parent Worker URL used to construct the module child.</p>
+                <p class="details">Waiting.</p>
+            </article>
+
+            <article class="test-card" data-test="module">
+                <header>
+                    <h2>Module Worker creating a nested module Worker</h2>
+                    <span class="status">Not run</span>
+                </header>
+                <p>Module Workers should always use the native constructor path.</p>
+                <p class="details">Waiting.</p>
+            </article>
+        </section>
+    </main>
+
+    <script src="js/workerAutoInjectHarness.js"></script>
+</body>
+</html>
