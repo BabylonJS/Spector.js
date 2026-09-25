@@ -4,6 +4,13 @@
 
 Please, find below the per release summary of the contribution added to the project per version. Each of the listed versions is having its corresponding tag in the repo.
 
+## v0.9.35
+
+* Fix [relative dynamic imports in Workers](https://github.com/BabylonJS/Spector.js/issues/394) and [nested module Workers](https://github.com/BabylonJS/Spector.js/issues/395) by keeping extension Worker construction native unless experimental auto-injection is explicitly enabled; module Workers always stay native.
+* Add a default-off **Auto-inject Workers (experimental)** extension setting, with native fallbacks for ineligible classic Workers, URL-sensitive scripts, detectable CSP restrictions, and failed preflights.
+* Fix Worker and OffscreenCanvas capture routing so Worker captures are delivered once and an unlinked transferred canvas cannot select an unrelated Worker.
+* Clear saved extension captures on browser restart and handle messages to closed tabs without extension errors.
+
 ## v0.9.33
 
 * Improve [shader debugging](https://github.com/BabylonJS/Spector.js/issues/283) with source links, compiler diagnostics, and parser-backed formatting

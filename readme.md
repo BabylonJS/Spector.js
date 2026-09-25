@@ -118,7 +118,7 @@ You are all set. You can open your `index.html` file and see the inspector runni
 ###### [Back to top](#table-of-content)
 
 ### CDN
-Feel free to leverage the jsDelivr CDN to use the library from your own projects: [https://cdn.jsdelivr.net/npm/spectorjs@0.9.33/dist/spector.bundle.js](https://cdn.jsdelivr.net/npm/spectorjs@0.9.33/dist/spector.bundle.js)
+Feel free to leverage the jsDelivr CDN to use the library from your own projects: [https://cdn.jsdelivr.net/npm/spectorjs@0.9.35/dist/spector.bundle.js](https://cdn.jsdelivr.net/npm/spectorjs@0.9.35/dist/spector.bundle.js)
 
 ### Repo
 If you prefer to host your own version, the library is available in the [dist](https://github.com/BabylonJS/Spector.js/blob/master/dist/spector.bundle.js) folder of the repo.
