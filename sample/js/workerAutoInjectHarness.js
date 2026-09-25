@@ -7,7 +7,7 @@
     var modeHint = document.getElementById("mode-hint");
 
     constructorElement.textContent = constructorName;
-    modeHint.textContent = constructorName === "Worker"
+    modeHint.textContent = !window.__SPECTOR_Workers
         ? "Native Worker constructor detected. Auto-injection appears to be off."
         : "A Worker proxy is active. Auto-injection appears to be on.";
 

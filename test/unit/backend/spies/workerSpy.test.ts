@@ -58,6 +58,53 @@ describe("WorkerSpy", () => {
         expect(WorkerSpy.isIntercepting()).toBe(false);
     });
 
+    it("does not overwrite a third-party wrapper on stop or reactivate retained proxies on restart", () => {
+        WorkerSpy.startIntercepting("spector.worker.bundle.js");
+        const retainedProxy = Worker;
+        const thirdParty = new Proxy(Worker, {});
+        (globalThis as any).Worker = thirdParty;
+        WorkerSpy.stopIntercepting();
+        expect(Worker).toBe(thirdParty);
+
+        const count = WorkerSpy.getSpiedWorkers().length;
+        new Worker("worker.js");
+        expect(WorkerSpy.getSpiedWorkers()).toHaveLength(count);
+        WorkerSpy.startIntercepting("spector.worker.bundle.js");
+        new retainedProxy("worker.js");
+        expect(WorkerSpy.getSpiedWorkers()).toHaveLength(count);
+        new Worker("worker.js", { name: "native" });
+        expect(WorkerSpy.getSpiedWorkers()).toHaveLength(count + 1);
+        WorkerSpy.stopIntercepting();
+        expect(Worker).toBe(thirdParty);
+        WorkerSpy.getSpiedWorkers().splice(count);
+    });
+
+    it("does not claim to intercept when installing the proxy fails", () => {
+        const descriptor = Object.getOwnPropertyDescriptor(globalThis, "Worker")!;
+        Object.defineProperty(globalThis, "Worker", { ...descriptor, writable: false });
+        try {
+            expect(() => WorkerSpy.startIntercepting("spector.worker.bundle.js")).toThrow(TypeError);
+            expect(WorkerSpy.isIntercepting()).toBe(false);
+        } finally {
+            Object.defineProperty(globalThis, "Worker", descriptor);
+        }
+    });
+
+    it("deactivates a proxy even if a third party makes the Worker property read-only", () => {
+        WorkerSpy.startIntercepting("spector.worker.bundle.js");
+        const descriptor = Object.getOwnPropertyDescriptor(globalThis, "Worker")!;
+        Object.defineProperty(globalThis, "Worker", { ...descriptor, writable: false });
+        try {
+            expect(() => WorkerSpy.stopIntercepting()).not.toThrow();
+            expect(WorkerSpy.isIntercepting()).toBe(false);
+            const count = WorkerSpy.getSpiedWorkers().length;
+            new Worker("worker.js");
+            expect(WorkerSpy.getSpiedWorkers()).toHaveLength(count);
+        } finally {
+            Object.defineProperty(globalThis, "Worker", descriptor);
+        }
+    });
+
     it("getSpiedWorkers returns empty array initially", () => {
         expect(WorkerSpy.getSpiedWorkers()).toEqual([]);
     });
@@ -72,69 +119,6 @@ describe("WorkerSpy", () => {
         // Should not throw
         WorkerSpy.startIntercepting("spector.worker.bundle.js");
         expect(WorkerSpy.isIntercepting()).toBe(false);
-    });
-
-    describe("rewriteImportScripts", () => {
-        // The method is private but accessible for unit testing via cast.
-        const rewrite = (WorkerSpy as any).rewriteImportScripts.bind(WorkerSpy) as
-            (source: string, baseUrl: string) => string;
-
-        const baseUrl = "http://localhost:8081/scripts/index.worker.js";
-
-        it("rewrites a root-relative URL to absolute", () => {
-            const out = rewrite('importScripts("/scripts/foo.js");', baseUrl);
-            expect(out).toBe('importScripts("http://localhost:8081/scripts/foo.js");');
-        });
-
-        it("rewrites a relative URL to absolute", () => {
-            const out = rewrite('importScripts("./foo.js");', baseUrl);
-            expect(out).toBe('importScripts("http://localhost:8081/scripts/foo.js");');
-        });
-
-        it("leaves an already-absolute URL untouched", () => {
-            const out = rewrite('importScripts("https://cdn.example.com/lib.js");', baseUrl);
-            expect(out).toBe('importScripts("https://cdn.example.com/lib.js");');
-        });
-
-        it("rewrites multiple comma-separated URLs", () => {
-            const out = rewrite(
-                'importScripts("/a.js", "./b.js", "https://x/c.js");',
-                baseUrl,
-            );
-            expect(out).toBe(
-                'importScripts("http://localhost:8081/a.js", "http://localhost:8081/scripts/b.js", "https://x/c.js");',
-            );
-        });
-
-        it("supports single-quoted strings", () => {
-            const out = rewrite("importScripts('/foo.js');", baseUrl);
-            expect(out).toBe("importScripts('http://localhost:8081/foo.js');");
-        });
-
-        it("supports template literals without interpolation", () => {
-            const out = rewrite("importScripts(`/foo.js`);", baseUrl);
-            expect(out).toBe("importScripts(`http://localhost:8081/foo.js`);");
-        });
-
-        it("leaves template literals with interpolation untouched", () => {
-            const src = "importScripts(`/scripts/${name}.js`);";
-            expect(rewrite(src, baseUrl)).toBe(src);
-        });
-
-        it("leaves source without importScripts unchanged", () => {
-            const src = 'self.addEventListener("message", () => {});';
-            expect(rewrite(src, baseUrl)).toBe(src);
-        });
-
-        it("rewrites multiple importScripts calls", () => {
-            const out = rewrite(
-                'importScripts("/a.js");\nself.x = 1;\nimportScripts("./b.js");',
-                baseUrl,
-            );
-            expect(out).toBe(
-                'importScripts("http://localhost:8081/a.js");\nself.x = 1;\nimportScripts("http://localhost:8081/scripts/b.js");',
-            );
-        });
     });
 
     describe("shouldInjectSource (best-effort bypass)", () => {
@@ -153,6 +137,26 @@ describe("WorkerSpy", () => {
         it("rejects nested Worker construction", () => {
             expect(shouldInjectSource('new Worker("./child.js", { type: "module" });')).toBe(false);
             expect(shouldInjectSource('new self.SharedWorker("./child.js");')).toBe(false);
+        });
+
+        it.each([
+            'import // comment\n("./dep.js")',
+            'import /* first */ /* second */ ("./dep.js")',
+            'const Child = Worker; new Child("./child.js")',
+            'new /* comment */ self.Worker("./child.js")',
+            'importScripts("./dependency.js")',
+            'fetch(new Request("./data"))',
+            'new XMLHttpRequest().open("GET", "./data")',
+            'new WebSocket("/socket")',
+            'new EventSource("/events")',
+            'new URL("./child.js", self.location.href)',
+            'postMessage({ isolated: crossOriginIsolated, buffer: typeof SharedArrayBuffer })',
+            'WebAssembly.compile(bytes)',
+            '"use strict"; self.onmessage = function() {}',
+            '#!/usr/bin/env node\nself.onmessage = function() {}',
+            '\uFEFF#!/usr/bin/env node\nself.onmessage = function() {}',
+        ])("bypasses sources whose URL or script semantics cannot be preserved: %s", (source) => {
+            expect(shouldInjectSource(source)).toBe(false);
         });
     });
 

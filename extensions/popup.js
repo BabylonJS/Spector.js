@@ -286,7 +286,7 @@ var pause = function(e) {
 
 listenForMessage(function(request, sender, sendResponse) {
     var frameId;
-    if (sender.frameId) {
+    if (typeof sender.frameId === "number") {
         frameId = sender.frameId;
     } 
     else if (request.uniqueId) {

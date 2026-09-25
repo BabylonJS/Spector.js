@@ -134,11 +134,12 @@ window.__SPECTOR_Canvases = [];
     // ---- Worker Interception ----
     if (workerAutoInject && typeof Worker !== 'undefined') {
         var __SPECTOR_Origin_Worker = Worker;
+        var __SPECTOR_workerAddEventListener = Worker.prototype.addEventListener;
         window.__SPECTOR_Workers = [];
 
         // When a Worker reports its WebGL context is ready, add it to the canvas list
         var __SPECTOR_trackWorker = function(w, urlStr) {
-            w.addEventListener('message', function(e) {
+            __SPECTOR_workerAddEventListener.call(w, 'message', function(e) {
                 if (e.data && typeof e.data.type === 'string') {
                     if (e.data.type === 'spector:context-ready') {
                         // Add Worker as a virtual canvas entry so the extension can see it
@@ -155,7 +156,7 @@ window.__SPECTOR_Canvases = [];
                     }
                     if (e.data.type === 'spector:capture-complete') {
                         var captureEvent = new CustomEvent("SpectorOnCaptureEvent", {
-                            detail: { capture: JSON.stringify(e.data.capture) }
+                            detail: { capture: e.data.capture }
                         });
                         document.dispatchEvent(captureEvent);
                     }
@@ -167,156 +168,92 @@ window.__SPECTOR_Canvases = [];
         // check: aliases, imported scripts, and other syntax can evade this.
         // Leaving auto-injection OFF is the compatibility guarantee.
         var __SPECTOR_shouldInjectWorkerSource = function(source) {
-            var dynamicImportPattern = /\bimport\s*(?:\/\*[\s\S]*?\*\/\s*)?\(/;
-            var nestedWorkerPattern = /\bnew\s+(?:(?:self|globalThis)\s*\.\s*)?(?:Worker|SharedWorker)\s*\(/;
-            return !dynamicImportPattern.test(source) && !nestedWorkerPattern.test(source);
+            // Reject URL-sensitive APIs rather than trying to emulate them on a
+            // blob global. Token checks also cover comments between tokens and
+            // ordinary aliases; computed names remain an experimental limitation.
+            return !/\b(?:import|importScripts|Worker|SharedWorker|location|fetch|Request|XMLHttpRequest|WebSocket|EventSource|crossOriginIsolated|SharedArrayBuffer|Atomics|WebAssembly|eval|Function)\b|\\u|["']use strict["']|^(?:\uFEFF)?#!/.test(source);
         };
 
-        window.Worker = function SpectorWorkerProxy(scriptURL, options) {
-            // Get the Spector worker bundle URL from the hidden element injected
-            // by contentScriptProxy.js (ISOLATED world -> DOM -> MAIN world).
-            var workerBundleEl = document.getElementById('TexturesId_SpectorWorkerBundleUrl');
-            var bundleUrl = workerBundleEl ? workerBundleEl.value : '';
-            if (bundleUrl) {
-                try {
-                    bundleUrl = new URL(bundleUrl, location.href).href;
-                } catch (e) {
-                    bundleUrl = '';
-                }
-            }
+        var __SPECTOR_isJavaScriptResponse = function(xhr, requestedUrl) {
+            var mime = (xhr.getResponseHeader('Content-Type') || '').split(';')[0].trim();
+            return xhr.status === 200 && xhr.responseURL === requestedUrl &&
+                /^(?:text|application)\/(?:x-)?(?:java|ecma)script$/i.test(mime);
+        };
 
-            // Module Worker injection is only attempted after the explicit
-            // experimental opt-in. The injector preserves static relative
-            // imports and falls back to native construction for URL-sensitive
-            // module sources it cannot safely rewrite.
-            if (options && options.type === 'module') {
-                var urlStr = typeof scriptURL === 'string' ? scriptURL : 'module Worker';
-                var moduleResult = window.__SPECTOR_ModuleInjector
-                    ? window.__SPECTOR_ModuleInjector.injectModuleWorker(
-                        scriptURL, options, bundleUrl, __SPECTOR_Origin_Worker)
-                    : { worker: new __SPECTOR_Origin_Worker(scriptURL, options), injected: false };
-                var w = moduleResult.worker;
-                window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: moduleResult.injected });
-                __SPECTOR_trackWorker(w, urlStr);
-                return w;
-            }
+        var workerProxy = new Proxy(__SPECTOR_Origin_Worker, {
+            construct: function(target, args, newTarget) {
+                var scriptURL = args[0];
+                var urlStr = typeof scriptURL === 'string' ? scriptURL : 'Worker';
+                var record = function(worker, injected) {
+                    window.__SPECTOR_Workers.push({ worker: worker, url: urlStr, injected: injected });
+                    __SPECTOR_trackWorker(worker, urlStr);
+                    return worker;
+                };
+                var fallback = function() {
+                    return record(Reflect.construct(target, args, newTarget), false);
+                };
 
-            var urlStr = scriptURL.toString();
-
-            // Skip blob URLs — can't XHR them for injection. The blob code may
-            // already include importScripts for the worker bundle.
-            if (urlStr.indexOf('blob:') === 0) {
-                var w = new __SPECTOR_Origin_Worker(scriptURL, options);
-                window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: false });
-                __SPECTOR_trackWorker(w, urlStr);
-                return w;
-            }
-
-            try {
-                // Resolve to absolute so we can fetch and use as base URL
-                // for runtime URL rewriting inside the blob worker.
-                var absoluteScriptUrl;
-                try {
-                    absoluteScriptUrl = new URL(urlStr, location.href).href;
-                } catch (e) {
-                    absoluteScriptUrl = urlStr;
+                // Never inspect options or coerce objects: WebIDL does that in
+                // a specified order, and even inspecting a Proxy has side effects.
+                // Proxy forwards calls without `new`, statics and descriptors;
+                // Reflect.construct preserves subclassing and original arguments.
+                if (newTarget !== workerProxy || typeof scriptURL !== 'string' ||
+                    args.length > 2 || args[1] !== undefined) {
+                    return fallback();
                 }
 
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', absoluteScriptUrl, false);
-                xhr.send();
-
-                if (xhr.status === 200 && __SPECTOR_shouldInjectWorkerSource(xhr.responseText)) {
-                    if (bundleUrl) {
-                        // Runtime shim: when a worker is loaded from a blob:
-                        // URL, `self.location.href` is the blob URL — which
-                        // means every relative URL passed to importScripts,
-                        // fetch, XMLHttpRequest, or new Worker resolves against
-                        // it and breaks (root-relative URLs throw "URL is
-                        // invalid"; relative URLs become blob:scheme paths).
-                        // We wrap each of those APIs to resolve URLs against
-                        // the worker's ORIGINAL location before delegating to
-                        // the real implementation.
-                        var runtimeShim =
-                            '(function(){\n' +
-                            '  var __spectorBase = ' + JSON.stringify(absoluteScriptUrl) + ';\n' +
-                            '  self.__SPECTOR_workerBaseUrl = __spectorBase;\n' +
-                            '  function __spectorResolve(u) {\n' +
-                            '    if (u == null) return u;\n' +
-                            '    if (typeof u !== "string") {\n' +
-                            '      if (u instanceof URL) return u;\n' +
-                            '      try { u = String(u); } catch (e) { return u; }\n' +
-                            '    }\n' +
-                            '    if (/^(?:[a-z][a-z0-9+.-]*:|\\/\\/)/i.test(u)) return u;\n' +
-                            '    try { return new URL(u, __spectorBase).href; }\n' +
-                            '    catch (e) { return u; }\n' +
-                            '  }\n' +
-                            '  self.__SPECTOR_resolveWorkerUrl = __spectorResolve;\n' +
-                            // importScripts (variadic)
-                            '  var __origImportScripts = self.importScripts;\n' +
-                            '  if (typeof __origImportScripts === "function") {\n' +
-                            '    self.importScripts = function() {\n' +
-                            '      var args = new Array(arguments.length);\n' +
-                            '      for (var i = 0; i < arguments.length; i++) args[i] = __spectorResolve(arguments[i]);\n' +
-                            '      return __origImportScripts.apply(self, args);\n' +
-                            '    };\n' +
-                            '  }\n' +
-                            // fetch
-                            '  var __origFetch = self.fetch;\n' +
-                            '  if (typeof __origFetch === "function") {\n' +
-                            '    self.fetch = function(input, init) {\n' +
-                            '      try {\n' +
-                            '        if (typeof input === "string") {\n' +
-                            '          input = __spectorResolve(input);\n' +
-                            '        } else if (input && typeof input === "object" && "url" in input && typeof Request === "function") {\n' +
-                            '          var r = input;\n' +
-                            '          var resolved = __spectorResolve(r.url);\n' +
-                            '          if (resolved !== r.url) input = new Request(resolved, r);\n' +
-                            '        }\n' +
-                            '      } catch (e) { /* fall through with original input */ }\n' +
-                            '      return __origFetch.call(self, input, init);\n' +
-                            '    };\n' +
-                            '  }\n' +
-                            // XMLHttpRequest.open
-                            '  if (typeof XMLHttpRequest === "function" && XMLHttpRequest.prototype && XMLHttpRequest.prototype.open) {\n' +
-                            '    var __origXhrOpen = XMLHttpRequest.prototype.open;\n' +
-                            '    XMLHttpRequest.prototype.open = function(method, url) {\n' +
-                            '      var args = Array.prototype.slice.call(arguments);\n' +
-                            '      args[1] = __spectorResolve(url);\n' +
-                            '      return __origXhrOpen.apply(this, args);\n' +
-                            '    };\n' +
-                            '  }\n' +
-                            // Nested Worker construction (workers can spawn workers)
-                            '  if (typeof Worker === "function") {\n' +
-                            '    var __OrigWorker = Worker;\n' +
-                            '    self.Worker = function(scriptURL, options) {\n' +
-                            '      var resolved = __spectorResolve(scriptURL);\n' +
-                            '      return new __OrigWorker(resolved, options);\n' +
-                            '    };\n' +
-                            '    self.Worker.prototype = __OrigWorker.prototype;\n' +
-                            '  }\n' +
-                            '})();\n';
-
-                        var importLine = 'importScripts(' + JSON.stringify(bundleUrl) + ');\n';
-                        var modifiedScript = runtimeShim + importLine + xhr.responseText;
-                        var blob = new Blob([modifiedScript], { type: 'application/javascript' });
-                        var blobUrl = URL.createObjectURL(blob);
-                        var w = new __SPECTOR_Origin_Worker(blobUrl, options);
-                        window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: true });
-                        __SPECTOR_trackWorker(w, urlStr);
-                        return w;
+                // Get the bundle URL bridged from the ISOLATED world via the DOM.
+                var workerBundleEl = document.getElementById('TexturesId_SpectorWorkerBundleUrl');
+                var bundleUrl = workerBundleEl ? workerBundleEl.value : '';
+                var blobUrl;
+                try {
+                    var absoluteScriptUrl = new URL(scriptURL, document.baseURI);
+                    if (bundleUrl && /^https?:$/.test(absoluteScriptUrl.protocol) &&
+                        absoluteScriptUrl.origin === location.origin) {
+                        bundleUrl = new URL(bundleUrl, document.baseURI).href;
+                        absoluteScriptUrl.hash = '';
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('GET', absoluteScriptUrl.href, false);
+                        xhr.send();
+                        // Redirects and non-JavaScript responses must retain the
+                        // native loader's URL, MIME, CSP and origin validation.
+                        if (__SPECTOR_isJavaScriptResponse(xhr, absoluteScriptUrl.href) &&
+                            !xhr.getResponseHeader('Content-Security-Policy') &&
+                            !xhr.getResponseHeader('Content-Security-Policy-Report-Only') &&
+                            __SPECTOR_shouldInjectWorkerSource(xhr.responseText)) {
+                            var bundleXhr = new XMLHttpRequest();
+                            bundleXhr.open('GET', bundleUrl, false);
+                            bundleXhr.send();
+                            var bundleAvailable = __SPECTOR_isJavaScriptResponse(bundleXhr, bundleUrl);
+                            if (bundleAvailable) {
+                                // Preflight cannot predict script-src checks or
+                                // bundle execution failures inside the Worker.
+                                var importLine = 'try { importScripts(' + JSON.stringify(bundleUrl) +
+                                    '); } catch (e) { console.warn("[Spector.js] Worker auto-injection failed:", e); }\n';
+                                blobUrl = URL.createObjectURL(new Blob([importLine, xhr.responseText],
+                                    { type: 'application/javascript' }));
+                            }
+                        }
                     }
+                } catch(e) {
+                    console.warn("[Spector.js] Could not auto-inject into Worker (" + urlStr + "):", e);
                 }
-            } catch(e) {
-                console.warn("[Spector.js] Could not auto-inject into Worker (" + urlStr + "):", e);
-            }
 
-            var w = new __SPECTOR_Origin_Worker(scriptURL, options);
-            window.__SPECTOR_Workers.push({ worker: w, url: urlStr, injected: false });
-            __SPECTOR_trackWorker(w, urlStr);
-            return w;
-        };
-        window.Worker.prototype = __SPECTOR_Origin_Worker.prototype;
+                if (blobUrl) {
+                    var worker;
+                    try {
+                        worker = Reflect.construct(target, [blobUrl], newTarget);
+                    } catch (e) {
+                        URL.revokeObjectURL(blobUrl);
+                        return fallback();
+                    }
+                    setTimeout(function() { URL.revokeObjectURL(blobUrl); }, 5000);
+                    return record(worker, true);
+                }
+                return fallback();
+            }
+        });
+        window.Worker = workerProxy;
     }
 
     HTMLCanvasElement.prototype.getContext = function () {
@@ -423,21 +360,11 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                 }
                 var quickCapture = (document.getElementById(spectorCommunicationQuickCaptureElementId).value === "true");
                 var fullCapture = (document.getElementById(spectorCommunicationFullCaptureElementId).value === "true");
-                var commandCount = 0 + document.getElementById(spectorCommunicationCommandCountElementId).value;
+                var commandCount = parseInt(document.getElementById(spectorCommunicationCommandCountElementId).value, 10) || 0;
 
                 // Route Worker proxy entries — send trigger directly to Worker
                 if (canvas && canvas.__spector_worker) {
                     var worker = canvas.__spector_worker;
-
-                    worker.addEventListener('message', function captureHandler(msg) {
-                        if (msg.data && msg.data.type === 'spector:capture-complete') {
-                            worker.removeEventListener('message', captureHandler);
-                            var captureEvent = new CustomEvent("SpectorOnCaptureEvent", {
-                                detail: { capture: msg.data.capture }
-                            });
-                            document.dispatchEvent(captureEvent);
-                        }
-                    });
 
                     worker.postMessage({
                         type: 'spector:trigger-capture',
@@ -448,50 +375,14 @@ if (sessionStorage.getItem(spectorLoadedKey)) {
                         fullCapture: fullCapture
                     });
                 } else if (canvas && canvas.__spector_transferred) {
-                    // Transferred canvas without __spector_worker — try to find
-                    // and link a tracked Worker.
-                    var linkedWorker = null;
-                    if (window.__SPECTOR_Workers) {
-                        for (var wi = 0; wi < window.__SPECTOR_Workers.length; wi++) {
-                            var entry = window.__SPECTOR_Workers[wi];
-                            if (entry.injected) {
-                                linkedWorker = entry.worker;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (linkedWorker) {
-                        // Injected Worker found — try capture
-                        canvas.__spector_worker = linkedWorker;
-
-                        linkedWorker.addEventListener('message', function captureHandler(msg) {
-                            if (msg.data && msg.data.type === 'spector:capture-complete') {
-                                linkedWorker.removeEventListener('message', captureHandler);
-                                var captureEvent = new CustomEvent("SpectorOnCaptureEvent", {
-                                    detail: { capture: msg.data.capture }
-                                });
-                                document.dispatchEvent(captureEvent);
-                            }
-                        });
-
-                        linkedWorker.postMessage({
-                            type: 'spector:trigger-capture',
-                            version: 1,
-                            canvasIndex: 0,
-                            commandCount: commandCount,
-                            quickCapture: quickCapture,
-                            fullCapture: fullCapture
-                        });
-                    } else {
-                        // No injected Worker — capture not possible
-                        var errorEvent = new CustomEvent("SpectorOnErrorEvent", {
-                            detail: { errorString: "Cannot capture: this Worker is not instrumented. " +
-                                "Worker auto-injection is off by default and, when enabled, is experimental and may skip or fail on this Worker. " +
-                                "Use the manual spyWorker() API with spector.worker.bundle.js loaded inside the Worker." }
-                        });
-                        document.dispatchEvent(errorEvent);
-                    }
+                    // The transferred canvas does not identify its owning Worker.
+                    // Never send a capture request to an unrelated injected Worker.
+                    var errorEvent = new CustomEvent("SpectorOnErrorEvent", {
+                        detail: { errorString: "Cannot capture from this canvas: its Worker is unknown. " +
+                            "Select the instrumented Worker entry instead, or load spector.worker.bundle.js " +
+                            "inside the Worker and use the manual spyWorker() API." }
+                    });
+                    document.dispatchEvent(errorEvent);
                 } else if (canvas) {
                     spector.captureCanvas(canvas, commandCount, quickCapture, fullCapture);
                 }

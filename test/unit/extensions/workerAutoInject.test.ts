@@ -37,6 +37,7 @@ function createWorld(storage = createStorage()) {
     const nativeWorker = jest.fn(function() {
         this.addEventListener = jest.fn();
     });
+    nativeWorker.prototype.addEventListener = jest.fn();
     const nativeGetContext = jest.fn();
     const world: any = {
         document: document.implementation.createHTMLDocument(),
@@ -161,7 +162,7 @@ describe("Extension Worker auto-injection opt-in", () => {
         expect(world.__SPECTOR_Workers[0].injected).toBe(false);
     });
 
-    it("uses the module injector after explicit opt-in", () => {
+    it("leaves module Workers native even when an injector is available", () => {
         const world = createWorld(createStorage({ [settingKey]: "true" }));
         const nativeWorker = world.Worker;
         const injectedWorker = {
@@ -176,17 +177,78 @@ describe("Extension Worker auto-injection opt-in", () => {
 
         const worker = new world.Worker("./worker.js", { type: "module" });
 
-        expect(worker).toBe(injectedWorker);
-        expect(nativeWorker).not.toHaveBeenCalled();
-        expect(world.__SPECTOR_ModuleInjector.injectModuleWorker).toHaveBeenCalledWith(
-            "./worker.js",
-            { type: "module" },
-            "https://extension.test/spector.worker.bundle.js",
-            nativeWorker,
-        );
-        expect(world.__SPECTOR_Workers[0].injected).toBe(true);
+        expect(worker).not.toBe(injectedWorker);
+        expect(nativeWorker).toHaveBeenCalledWith("./worker.js", { type: "module" });
+        expect(world.__SPECTOR_ModuleInjector.injectModuleWorker).not.toHaveBeenCalled();
+        expect(world.XMLHttpRequest).not.toHaveBeenCalled();
+        expect(world.__SPECTOR_Workers[0].injected).toBe(false);
     });
 
+    it("publishes a Worker capture once, as an object, with numeric command count", () => {
+        const world = createWorld(createStorage({ [settingKey]: "true", SPECTOR_LOADED: "true" }));
+        const onMessage = world.Worker.prototype.addEventListener;
+        const observable = { add: jest.fn() };
+        world.SPECTOR = {
+            Spector: function() {
+                return { spyCanvases: jest.fn(), onError: observable, onCapture: observable };
+            },
+        };
+        loadScript(world, "contentScript.js");
+        world.setTimeout.mock.calls.find((call: any[]) => call[1] === 0)[0]();
+        const worker = new world.Worker("./worker.js", { type: "module" });
+        worker.postMessage = jest.fn();
+        world.__SPECTOR_Workers[0].injected = true;
+        world.__SPECTOR_Canvases.push({ __spector_worker: worker });
+        world.document.body.innerHTML = `
+            <input id="SPECTOR_COMMUNICATION" value="0">
+            <input id="SPECTOR_COMMUNICATION_COMMANDCOUNT" value="6">
+            <input id="SPECTOR_COMMUNICATION_QUICKCAPTURE" value="true">
+            <input id="SPECTOR_COMMUNICATION_FULLCAPTURE" value="false">`;
+        const published = jest.fn();
+        world.document.addEventListener("SpectorOnCaptureEvent", published);
+        world.document.dispatchEvent(new CustomEvent("SpectorRequestCaptureEvent"));
+
+        expect(worker.postMessage).toHaveBeenCalledWith({
+            type: "spector:trigger-capture", version: 1, canvasIndex: 0,
+            commandCount: 6, quickCapture: true, fullCapture: false,
+        });
+        expect(worker.addEventListener).not.toHaveBeenCalled();
+        const capture = { commands: [{ name: "drawArrays" }] };
+        onMessage.mock.calls[0][1]({ data: { type: "spector:capture-complete", capture } });
+        expect(published).toHaveBeenCalledTimes(1);
+        expect(published.mock.calls[0][0].detail.capture).toBe(capture);
+    });
+
+    it("never routes an unlinked transferred canvas to an unrelated injected Worker", () => {
+        const world = createWorld(createStorage({ [settingKey]: "true", SPECTOR_LOADED: "true" }));
+        const observable = { add: jest.fn() };
+        world.SPECTOR = {
+            Spector: function() {
+                return { spyCanvases: jest.fn(), onError: observable, onCapture: observable };
+            },
+        };
+        loadScript(world, "contentScript.js");
+        world.setTimeout.mock.calls.find((call: any[]) => call[1] === 0)[0]();
+        const worker = new world.Worker("./worker.js", { type: "module" });
+        worker.postMessage = jest.fn();
+        world.__SPECTOR_Workers[0].injected = true;
+        const canvas = { __spector_transferred: true };
+        world.__SPECTOR_Canvases.push(canvas);
+        world.document.body.innerHTML = `
+            <input id="SPECTOR_COMMUNICATION" value="0">
+            <input id="SPECTOR_COMMUNICATION_COMMANDCOUNT" value="6">
+            <input id="SPECTOR_COMMUNICATION_QUICKCAPTURE" value="true">
+            <input id="SPECTOR_COMMUNICATION_FULLCAPTURE" value="false">`;
+        const error = jest.fn();
+        world.document.addEventListener("SpectorOnErrorEvent", error);
+
+        world.document.dispatchEvent(new CustomEvent("SpectorRequestCaptureEvent"));
+
+        expect(worker.postMessage).not.toHaveBeenCalled();
+        expect(canvas).not.toHaveProperty("__spector_worker");
+        expect(error).toHaveBeenCalledTimes(1);
+        expect(error.mock.calls[0][0].detail.errorString).toContain("Worker is unknown");
+    });
     it("starts the popup unchecked and treats older reports as off", () => {
         const popup = loadPopup();
         const checkbox = popup.document.getElementById("workerAutoInject");
@@ -251,6 +313,41 @@ describe("Extension Worker auto-injection opt-in", () => {
         background.refreshCanvases();
 
         expect(background.browser.runtime.sendMessage.mock.calls.at(-1)[0].data.workerAutoInject).toBe(false);
+    });
+
+    it("reports a canvas-free frame's setting before Spector is loaded", () => {
+        const proxy = createWorld(createStorage({ [settingKey]: "true" }));
+        loadScript(proxy, "contentScriptProxy.js");
+
+        proxy.refreshCanvases();
+
+        expect(proxy.browser.runtime.sendMessage.mock.calls.at(-1)[0])
+            .toMatchObject({ canvases: [], workerAutoInject: true });
+    });
+
+    it("replaces top-frame state after navigation instead of retaining document IDs", () => {
+        const background = createWorld();
+        loadScript(background, "background.js");
+        const receive = background.browser.runtime.onMessage.addListener.mock.calls[0][0];
+        const sender = { id: "extension", frameId: 0, tab: { id: 7 } };
+        receive({ canvases: [], workerAutoInject: true, uniqueId: 200 }, sender, jest.fn());
+        receive({ canvases: [], workerAutoInject: false, uniqueId: 100 }, sender, jest.fn());
+
+        background.refreshCanvases();
+
+        expect(Object.keys(background.tabInfo[7])).toEqual(["0"]);
+        expect(background.browser.runtime.sendMessage.mock.calls.at(-1)[0].data.workerAutoInject).toBe(false);
+    });
+
+    it.each(["background.js", "popup.js"])("agrees on frame zero in replies from %s", (file) => {
+        const world = createWorld();
+        loadScript(world, file);
+        const receive = world.browser.runtime.onMessage.addListener.mock.calls[0][0];
+        const reply = jest.fn();
+
+        receive({ canvases: [], uniqueId: 123 }, { frameId: 0, tab: { id: 7 } }, reply);
+
+        expect(reply).toHaveBeenCalledWith({ frameId: "0" });
     });
 
     it("clears capture history when the browser starts", () => {

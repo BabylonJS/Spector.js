@@ -155,10 +155,10 @@ var refreshCanvases = function() {
         document.dispatchEvent(myEvent);
     } else {
         // Spector not loaded — fall back to DOM scan only.
+        var canvasesInformation = [];
         if (document.body) {
             var canvasElements = document.body.querySelectorAll("canvas");
             if (canvasElements.length > 0) {
-                var canvasesInformation = [];
                 for (var i = 0; i < canvasElements.length; i++) {
                     var canvas = canvasElements[i];
                     var context = null;
@@ -177,13 +177,13 @@ var refreshCanvases = function() {
                         });
                     }
                 }
-                if (canvasesInformation.length > 0) {
-                    sendMessage({ canvases: canvasesInformation, captureOffScreen: false, workerAutoInject: workerAutoInject }, function (response) {
-                        frameId = response.frameId;
-                    });
-                }
             }
         }
+        // Settings belong to the frame, not its canvases. Always report an
+        // empty list too, so a canvas-free top frame can clear stale popup state.
+        sendMessage({ canvases: canvasesInformation, captureOffScreen: false, workerAutoInject: workerAutoInject }, function (response) {
+            frameId = response.frameId;
+        });
     }
 }
 

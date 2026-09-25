@@ -808,13 +808,14 @@ export declare class Spector {
     log(value: string): void;
     /**
      * Explicitly opt in to intercepting new Worker() calls to auto-inject Spector.
-     * Experimental/best-effort: can change Worker behavior and fails for some
-     * CORS/CSP policies. Module Workers are not injected. Prefer spyWorker().
+     * Experimental/best-effort: only simple same-origin classic scripts with
+     * string URLs and no options are candidates. Module Workers stay native.
+     * Blob wrapping can still change behavior or fail under CSP. Prefer spyWorker().
      * @param workerBundleUrl URL to spector.worker.bundle.js
      */
     spyWorkers(workerBundleUrl?: string): void;
     /**
-     * Stop intercepting Worker construction.
+     * Stop intercepting Worker construction without replacing later third-party wrappers.
      */
     stopSpyingWorkers(): void;
     /**
@@ -825,8 +826,7 @@ export declare class Spector {
     spyWorker(worker: Worker): WorkerBridge;
     /**
      * Capture a frame from a Worker's WebGL context.
-     * Uses direct postMessage to bypass the main-thread spy chain,
-     * which ensures a full frame is captured.
+     * Uses the Worker's bridge to send the request and publish its result once.
      */
     captureWorker(worker: Worker, commandCount?: number, quickCapture?: boolean, fullCapture?: boolean): void;
     private captureFrames;

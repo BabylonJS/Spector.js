@@ -4,6 +4,5 @@ self.onmessage = function () {
 
     self.postMessage({
         value: gl ? "safe-classic-ok" : "webgl-unavailable",
-        workerLocation: self.location.href,
     });
 };
