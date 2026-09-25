@@ -1,5 +1,5 @@
 import { test, expect } from "../helpers/spector-fixture";
-import { loadCapturedFrame } from "../helpers/capture-helper";
+import { loadCapturedFrame, loadTwoCapturesForCompare } from "../helpers/capture-helper";
 
 test.describe("ResultView — Commands Tab", () => {
     test("commands tab 3-panel layout", async ({ spectorPage }) => {
@@ -87,7 +87,7 @@ test.describe("ResultView — Menu Bar", () => {
     test("switch to Captures tab", async ({ spectorPage }) => {
         const { page } = spectorPage;
         await spectorPage.injectStabilizationCSS();
-        await loadCapturedFrame(page);
+        await loadTwoCapturesForCompare(page);
         await page.waitForTimeout(200);
 
         await page.locator('[commandName="onCapturesClicked"]').click();

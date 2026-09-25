@@ -477,8 +477,10 @@ export class Spector {
     }
 
     /**
-     * Intercept all new Worker() calls to auto-inject Spector.
-     * Best-effort: will fail for CORS, CSP, or module Workers.
+     * Explicitly opt in to intercepting new Worker() calls to auto-inject Spector.
+     * Experimental/best-effort: only simple same-origin classic scripts with
+     * string URLs and no options are candidates. Module Workers stay native.
+     * Blob wrapping can still change behavior or fail under CSP. Prefer spyWorker().
      * @param workerBundleUrl URL to spector.worker.bundle.js
      */
     public spyWorkers(workerBundleUrl: string = "spector.worker.bundle.js"): void {
@@ -486,7 +488,7 @@ export class Spector {
     }
 
     /**
-     * Stop intercepting Worker construction.
+     * Stop intercepting Worker construction without replacing later third-party wrappers.
      */
     public stopSpyingWorkers(): void {
         WorkerSpy.stopIntercepting();
@@ -537,8 +539,7 @@ export class Spector {
 
     /**
      * Capture a frame from a Worker's WebGL context.
-     * Uses direct postMessage to bypass the main-thread spy chain,
-     * which ensures a full frame is captured.
+     * Uses the Worker's bridge to send the request and publish its result once.
      */
     public captureWorker(
         worker: Worker,
@@ -546,31 +547,7 @@ export class Spector {
         quickCapture: boolean = false,
         fullCapture: boolean = false,
     ): void {
-        // Ensure bridge exists for UI integration
-        if (!this.workerBridges.has(worker)) {
-            this.spyWorker(worker);
-        }
-
-        // Listen for capture result directly on the Worker
-        // (bypasses the Spector spy chain for reliable full-frame capture)
-        // tslint:disable-next-line:no-this-assignment
-        const self = this;
-        worker.addEventListener("message", function captureHandler(e: MessageEvent) {
-            if (e.data && e.data.type === "spector:capture-complete") {
-                worker.removeEventListener("message", captureHandler);
-                self.triggerCapture(e.data.capture);
-            }
-        });
-
-        // Send trigger directly to Worker
-        worker.postMessage({
-            type: "spector:trigger-capture",
-            version: 1,
-            canvasIndex: 0,
-            commandCount,
-            quickCapture,
-            fullCapture,
-        });
+        this.spyWorker(worker).triggerCapture(0, commandCount, quickCapture, fullCapture);
     }
 
     private captureFrames(frameCount: number): void {

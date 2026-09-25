@@ -5,14 +5,24 @@ browser = (function () {
         chrome;
 })();
 
+function consumeLastError() {
+    // Reading runtime.lastError marks an expected one-way delivery failure as
+    // handled when the popup, tab, or content script has already closed.
+    if (browser.runtime && browser.runtime.lastError) {
+        return;
+    }
+};
+
 function sendMessage(message) {
     browser.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        browser.tabs.sendMessage(tabs[0].id, message, function(response) { });
+        if (tabs.length > 0) {
+            browser.tabs.sendMessage(tabs[0].id, message, consumeLastError);
+        }
     });
 };
 
 function sendRuntimeMessage(message) {
-    browser.runtime.sendMessage(message, function(response) { });
+    browser.runtime.sendMessage(message, consumeLastError);
 };
 
 function listenForMessage(callback) {
@@ -26,14 +36,33 @@ var currentCapture = null;
 var currentFrameId = null;
 var currentTabId = null;
 
+var clearCaptureSession = function() {
+    browser.storage.local.remove([
+        "currentCapture",
+        "captureHistory",
+        "currentFrameInfo"
+    ], consumeLastError);
+};
+
+// Captures are useful within one browser session for comparison, but should
+// not reappear after the browser is relaunched.
+if (browser.runtime.onStartup) {
+    browser.runtime.onStartup.addListener(clearCaptureSession);
+}
+
 var refreshCanvases = function() {
-    var canvasesToSend = { canvases: [], captureOffScreen: false };
+    var canvasesToSend = { canvases: [], captureOffScreen: false, workerAutoInject: false };
     browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
         for (var tabId in tabInfo) {
             if (tabId == tabs[0].id) {
                 for (var frameId in tabInfo[tabId]) {
                     var infos = tabInfo[tabId][frameId];
                     canvasesToSend.captureOffScreen = infos.captureOffScreen;
+                    // Subframes may navigate to origins with different session
+                    // settings. The popup reflects the top-level page's choice.
+                    if (infos.isTopFrame) {
+                        canvasesToSend.workerAutoInject = infos.workerAutoInject;
+                    }
                     for (var i = 0; i < infos.canvases.length; i++) {
                         var info = infos.canvases[i];
                         canvasesToSend.canvases.push({
@@ -60,7 +89,7 @@ browser.action.onClicked.addListener(function (tab) {
 
 listenForMessage(function(request, sender, sendResponse) {
     var frameId;
-    if (sender.frameId) {
+    if (typeof sender.frameId === "number") {
         frameId = sender.frameId;
     } 
     else if (request.uniqueId) {
@@ -111,7 +140,12 @@ listenForMessage(function(request, sender, sendResponse) {
             tabInfo[tabId] = { };
         }
 
-        tabInfo[tabId][frameId] = { canvases: request.canvases, captureOffScreen: request.captureOffScreen };
+        tabInfo[tabId][frameId] = {
+            canvases: request.canvases,
+            captureOffScreen: request.captureOffScreen,
+            workerAutoInject: request.workerAutoInject === true,
+            isTopFrame: sender.frameId === 0
+        };
     }
     else if (request.errorString) {
         // Close the wait message and may display an error.

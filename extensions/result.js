@@ -6,13 +6,21 @@ window.browser = (function () {
     browser;
 })();
 
+function consumeLastError() {
+    if (window.browser.runtime && window.browser.runtime.lastError) {
+        return;
+    }
+};
+
 function sendMessage(message, tabId) {
     if (tabId) {
-        window.browser.tabs.sendMessage(tabId, message, function(response) { }); 
+        window.browser.tabs.sendMessage(tabId, message, consumeLastError);
     }
     else {
         window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
-            window.browser.tabs.sendMessage(tabs[0].id, message, function(response) { }); 
+            if (tabs.length > 0) {
+                window.browser.tabs.sendMessage(tabs[0].id, message, consumeLastError);
+            }
         });
     }
 };

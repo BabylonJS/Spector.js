@@ -6,10 +6,18 @@ window.browser = (function () {
     browser;
 })();
 
+function consumeLastError() {
+    if (window.browser.runtime && window.browser.runtime.lastError) {
+        return;
+    }
+};
+
 function sendMessage(message) {
     try {
         window.browser.tabs.query({ active: true, currentWindow: true }, function(tabs) { 
-            window.browser.tabs.sendMessage(tabs[0].id, message, function(response) { }); 
+            if (tabs.length > 0) {
+                window.browser.tabs.sendMessage(tabs[0].id, message, consumeLastError);
+            }
         });
     }
     catch (e) {
@@ -24,6 +32,7 @@ function listenForMessage(callback) {
 
 var ui = null;
 var offScreenInput = null;
+var workerAutoInjectInput = null;
 
 // Display the capture UI.
 window.addEventListener("DOMContentLoaded", function() {
@@ -39,6 +48,7 @@ window.addEventListener("DOMContentLoaded", function() {
     var quickCaptureInput = document.getElementById("quickCapture");
     var fullCaptureInput = document.getElementById("fullCapture");
     offScreenInput = document.getElementById("offScreen");
+    workerAutoInjectInput = document.getElementById("workerAutoInject");
 
     captureNowElement.addEventListener("click", (e) => {
         var commandCount = parseInt(captureOnLoadCountInput.value);
@@ -70,6 +80,10 @@ window.addEventListener("DOMContentLoaded", function() {
 
     offScreenInput.onchange = () => {
         this.changeOffScreenStatus(offScreenInput.checked);
+    };
+
+    workerAutoInjectInput.onchange = () => {
+        this.changeWorkerAutoInjectStatus(workerAutoInjectInput.checked);
     };
 
     var shaderCompileDelayInput = document.getElementById("shaderCompileDelay");
@@ -144,6 +158,13 @@ var changeOffScreenStatus = function(offScreen) {
     });
 }
 
+var changeWorkerAutoInjectStatus = function(workerAutoInject) {
+    sendMessage({
+        action: "changeWorkerAutoInject",
+        workerAutoInject: workerAutoInject,
+    });
+}
+
 var changeShaderCompileDelay = function(delayMs) {
     sendMessage({
         action: "setShaderCompileDelay",
@@ -196,7 +217,7 @@ var loadFiles = function(event) {
                             'currentCapture': JSON.parse(e.target['result']),
                         });
                 
-                        window.browser.runtime.sendMessage({ captureDone: true }, function(response) { });
+                        window.browser.runtime.sendMessage({ captureDone: true }, consumeLastError);
 
                     }
                     catch (exception) {
@@ -219,12 +240,13 @@ var initUI = function() {
 }
 
 var refreshCanvases = function() {
-    window.browser.runtime.sendMessage({ refreshCanvases: true }, function(response) { });
+    window.browser.runtime.sendMessage({ refreshCanvases: true }, consumeLastError);
 }
 
 var updateCanvasesListInformation = function (canvasesToSend) {
     ui.updateCanvasesListInformation(canvasesToSend.canvases);
     offScreenInput.checked = canvasesToSend.captureOffScreen;
+    workerAutoInjectInput.checked = canvasesToSend.workerAutoInject === true;
 }
 
 var refreshFps = function(fps, frameId, tabId) {
@@ -264,7 +286,7 @@ var pause = function(e) {
 
 listenForMessage(function(request, sender, sendResponse) {
     var frameId;
-    if (sender.frameId) {
+    if (typeof sender.frameId === "number") {
         frameId = sender.frameId;
     } 
     else if (request.uniqueId) {

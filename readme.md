@@ -118,7 +118,7 @@ You are all set. You can open your `index.html` file and see the inspector runni
 ###### [Back to top](#table-of-content)
 
 ### CDN
-Feel free to leverage the jsDelivr CDN to use the library from your own projects: [https://cdn.jsdelivr.net/npm/spectorjs@0.9.33/dist/spector.bundle.js](https://cdn.jsdelivr.net/npm/spectorjs@0.9.33/dist/spector.bundle.js)
+Feel free to leverage the jsDelivr CDN to use the library from your own projects: [https://cdn.jsdelivr.net/npm/spectorjs@0.9.35/dist/spector.bundle.js](https://cdn.jsdelivr.net/npm/spectorjs@0.9.35/dist/spector.bundle.js)
 
 ### Repo
 If you prefer to host your own version, the library is available in the [dist](https://github.com/BabylonJS/Spector.js/blob/master/dist/spector.bundle.js) folder of the repo.
@@ -251,18 +251,24 @@ See [`sample/worker.html`](sample/worker.html) for a working example.
 
 ### Auto-injection (best-effort)
 
-`spyWorkers()` monkey-patches the global `Worker` constructor to automatically inject the Spector bundle into every new Worker:
+**Browser extension:** Worker auto-injection is **OFF by default**, including for existing users (#394, #395). In the popup, **Auto-inject Workers (experimental)** explicitly enables best-effort instrumentation of Workers, including OffscreenCanvas Workers. Changing the checkbox reloads the tab. Like **Show offscreen canvas(es)**, the choice is stored in page `sessionStorage`, scoped to the tab and origin (and applied to currently loaded frames), not globally to all sites. It survives reloads; an absent setting defaults off.
+
+With the option off, the extension leaves `window.Worker` exactly as it was: no constructor wrapper, options inspection, URL coercion, or preflight fetch. Main-thread canvas capture still works. Disabling the checkbox and reloading stops installing interception; it does not undo instrumentation in an already-running Worker.
+
+**Programmatic API:** `spyWorkers()` remains a separate, explicit opt-in. It monkey-patches the global `Worker` constructor to attempt automatic injection into subsequent classic Workers:
 
 ```javascript
 var spector = new SPECTOR.Spector();
 spector.spyWorkers('spector.worker.bundle.js');
-// All subsequent new Worker() calls get Spector injected automatically
+// Subsequent classic Workers are candidates for best-effort injection
 
 // Stop intercepting:
 // spector.stopSpyingWorkers();
 ```
 
-> **⚠️ Limitations:** Auto-injection may fail with cross-origin Workers, strict CSP policies, or ES module Workers. Use the [manual API](#worker-offscreencanvas-manual-api--recommended) as a reliable fallback.
+> **⚠️ Experimental — can alter Worker behavior:** Both auto-injection paths only consider primitive string URLs for same-origin HTTP(S) classic Workers without options. Module Workers, URL objects, custom options, subclasses, redirects, blob/data/cross-origin URLs, strict scripts, and recognizable URL-sensitive code use native construction. Dynamic imports, `importScripts`, nested Workers, `location`, `Request`, `fetch`, XHR, WebSocket/EventSource, and isolation-sensitive APIs are bypassed rather than rewritten. There is no `postMessage` override or startup message queue. Conservative source checks are **not a compatibility guarantee**: computed names can evade them, source and bundle preflights add synchronous requests, and blob wrapping still changes the worker global and script error locations. Known preflight failures fall back before creating a blob, but asynchronous CSP/startup failures cannot transparently fall back after construction. Leave auto-injection off for native behavior; prefer the [manual API](#worker-offscreencanvas-manual-api--recommended) when you control the Worker source. For module Workers, explicitly load the worker bundle using `import` instead of `importScripts`.
+
+Application scripts served with CSP (including report-only policies) stay native. Bundle import failures are caught so the application can still start, but preflight cannot guarantee injection, undo partially executed instrumentation, or recover a blob Worker blocked by CSP. Stopping `spyWorkers()` deactivates retained interceptor references without overwriting a newer third-party Worker wrapper.
 
 ### API Reference
 
@@ -270,7 +276,7 @@ spector.spyWorkers('spector.worker.bundle.js');
 |--------|-------------|
 | `spyWorker(worker)` | Bridge a specific Worker for capture. Returns a `WorkerBridge`. |
 | `captureWorker(worker, commandCount?, quickCapture?, fullCapture?)` | Trigger a capture on a bridged Worker. Auto-bridges if needed. |
-| `spyWorkers(bundleUrl?)` | Intercept all `new Worker()` calls to auto-inject Spector. |
+| `spyWorkers(bundleUrl?)` | Explicitly opt in to experimental, best-effort Worker auto-injection. |
 | `stopSpyingWorkers()` | Stop intercepting Worker construction. |
 
 ## MCP Server

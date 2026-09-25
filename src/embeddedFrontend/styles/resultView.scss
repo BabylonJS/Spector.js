@@ -301,7 +301,7 @@ $menuHeight: $menuBaseHeight * 2;
             position: absolute;
           }
           &:before {
-            background: $foreground-light;
+            background: $background;
             border-color: $foreground;
             border-style: solid;
             border-width: 7px 2px 1px;
