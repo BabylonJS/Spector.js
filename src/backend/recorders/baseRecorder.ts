@@ -88,7 +88,7 @@ export abstract class BaseRecorder<T extends WebGLObject> implements IRecorder {
 
     private totalMemory: number;
     private frameMemory: number;
-    private capturing: boolean;
+    protected capturing: boolean;
 
     constructor(protected readonly options: IContextInformation) {
         this.createCommandNames = this.getCreateCommandNames();
