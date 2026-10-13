@@ -104,7 +104,8 @@ export type JSONRenderItem =
     | { type: "image"; key: string; value: string; pixelated: boolean; raw?: IRawImagePixels }
     | { type: "help"; key: string; value: string; help: string }
     | { type: "shaderSource"; key: string; shader: IShaderCapture; programLog?: string }
-    | { type: "visualState"; visualState: any };
+    | { type: "visualState"; visualState: any }
+    | { type: "buffer"; label: string; bufferId: number; layout: IBufferLayout };
 
 // ─── Texture viewer (#183) ───────────────────────────────────────────────────
 
@@ -120,6 +121,29 @@ export interface ITextureViewerState {
     pixelated: boolean;
     /** Non-premultiplied raw pixels when available (lets "opaque" reveal hidden RGB). */
     raw: IRawImagePixels | null;
+}
+
+// ─── Buffer viewer ────────────────────────────────────────────
+
+/** How to decode a captured buffer's bytes for display. */
+export interface IBufferLayout {
+    kind: "vertex" | "index";
+    /** Vertex: GL component type name (e.g. "FLOAT"), component count, and byte stride/offset. */
+    componentType?: string;
+    components?: number;
+    stride?: number;
+    offset?: number;
+    normalized?: boolean;
+    /** Index: element type name (e.g. "UNSIGNED_SHORT"). */
+    indexType?: string;
+}
+
+/** State of the buffer viewer modal. */
+export interface IBufferViewerState {
+    open: boolean;
+    label: string;
+    bufferId: number;
+    layout: IBufferLayout | null;
 }
 
 // ─── ResultView state ────────────────────────────────────────────────────────
@@ -153,4 +177,6 @@ export interface ResultViewState {
     compareLabel: string;
     // Texture viewer (#183): full-screen channel/alpha/pixel inspector modal
     textureViewer: ITextureViewerState;
+    // Buffer viewer: decoded vertex/index buffer contents modal
+    bufferViewer: IBufferViewerState;
 }
