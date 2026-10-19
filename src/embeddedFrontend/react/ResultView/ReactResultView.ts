@@ -3,6 +3,7 @@ import { createRoot, Root } from "react-dom/client";
 import { createElement } from "react";
 import { Observable } from "../../../shared/utils/observable";
 import { ICapture } from "../../../shared/capture/capture";
+import { IBufferDataCapture } from "../../../shared/capture/bufferDataCapture";
 import { ICommandCapture } from "../../../shared/capture/commandCapture";
 import { IShaderCapture } from "../../../shared/capture/programCapture";
 import { ExternalStore } from "../shared/ExternalStore";
@@ -15,6 +16,7 @@ import {
     ResultViewState,
     JSONRenderItem,
     IRawImagePixels,
+    IBufferLayout,
 } from "../shared/types";
 import { ResultViewRoot } from "./ResultViewRoot";
 import { ResultViewContext } from "./ResultViewContext";
@@ -48,6 +50,7 @@ const EMPTY_STATE: ResultViewState = {
     canCompare: false,
     compareLabel: "",
     textureViewer: { open: false, src: "", label: "", pixelated: false, raw: null },
+    bufferViewer: { open: false, label: "", bufferId: -1, layout: null },
 };
 
 // ─── Adapter class ──────────────────────────────────────────────────────────
@@ -318,6 +321,19 @@ export class ReactResultView {
     /** Close the texture viewer modal (#183). */
     public closeTextureViewer = (): void => {
         this.store.setState((prev) => ({ ...prev, textureViewer: { ...prev.textureViewer, open: false } }));
+    }
+
+    /** Open the buffer viewer modal for a captured vertex/index buffer. */
+    public openBufferViewer = (payload: { label: string; bufferId: number; layout: IBufferLayout }): void => {
+        this.store.setState((prev) => ({
+            ...prev,
+            bufferViewer: { open: true, label: payload.label, bufferId: payload.bufferId, layout: payload.layout },
+        }));
+    }
+
+    /** Close the buffer viewer modal. */
+    public closeBufferViewer = (): void => {
+        this.store.setState((prev) => ({ ...prev, bufferViewer: { ...prev.bufferViewer, open: false } }));
     }
 
     /** Called by React when user selects a visual state. */
@@ -633,7 +649,7 @@ export class ReactResultView {
         // Build command detail for the selected command
         let commandDetailData: JSONRenderItem[] = [];
         if (autoSelectCommandIdx >= 0) {
-            commandDetailData = this._buildCommandDetail(autoSelectCommandIdx, commands, visualStates);
+            commandDetailData = this._buildCommandDetail(autoSelectCommandIdx, commands, visualStates, capture.buffers);
         }
 
         this.store.setState((prev) => ({
@@ -729,12 +745,14 @@ export class ReactResultView {
         commandIndex: number,
         commands: ICommandListItemState[],
         visualStates: IVisualStateItem[],
+        buffers?: { [id: number]: IBufferDataCapture },
     ): JSONRenderItem[] {
         if (commandIndex < 0 || commandIndex >= commands.length) { return []; }
         const cmd = commands[commandIndex];
         const vs = visualStates[cmd.visualStateIndex];
         const resolved = this._resolvedStackTraces.get(cmd.capture.id);
-        const detail = buildCommandDetail(cmd.capture, vs?.VisualState, resolved);
+        const captureBuffers = buffers ?? this.store.getSnapshot().currentCapture?.buffers;
+        const detail = buildCommandDetail(cmd.capture, vs?.VisualState, resolved, captureBuffers);
         if (!resolved) {
             this._resolveStackTraceAsync(cmd.capture);
         }
