@@ -13,7 +13,7 @@
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.32.0",
         "playwright": "^1.50.0",
-        "zod": "^3.24.0"
+        "zod": "^4.6.7"
     },
     "devDependencies": {
         "@types/jest": "^30.0.0",
