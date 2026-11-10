@@ -4,6 +4,7 @@
         "rootDir": "./",
         "types": ["@types/webxr", "@types/react", "@types/react-dom"],
         "sourceMap": true,
+        "strict": false,
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "noImplicitThis": true,
@@ -11,7 +12,7 @@
         "declaration":true,
         "experimentalDecorators": true,
         "module": "es6",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "target": "ES2015",
         "jsx": "react-jsx",
         "esModuleInterop": true
