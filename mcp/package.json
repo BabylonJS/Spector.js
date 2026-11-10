@@ -11,16 +11,16 @@
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.config.js"
     },
     "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.32.0",
-        "playwright": "^1.50.0",
-        "zod": "^3.24.0"
+        "@modelcontextprotocol/sdk": "^1.32.2",
+        "playwright": "^1.65.0",
+        "zod": "^4.6.7"
     },
     "devDependencies": {
         "@types/jest": "^30.0.0",
-        "@types/node": "^22.0.0",
-        "jest": "^30.3.0",
-        "ts-jest": "^29.4.6",
-        "tsx": "^4.22.4",
-        "typescript": "^5.7.0"
+        "@types/node": "^26.6.6",
+        "jest": "^30.5.2",
+        "ts-jest": "^29.4.15",
+        "tsx": "^4.23.15",
+        "typescript": "^6.0.3"
     }
 }

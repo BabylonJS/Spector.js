@@ -2,6 +2,9 @@
 =========
 
 ## How to build and use locally
+Use Node.js 22.12 or newer. TypeScript is kept on the latest 6.x release because
+the Jest TypeScript transformer (`ts-jest`) does not yet support TypeScript 7.
+
 Like any simple typescript repository everything start with.
 
 ```

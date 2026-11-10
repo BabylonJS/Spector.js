@@ -8,6 +8,8 @@ declare type OffscreenCanvasRenderingContext2D = CanvasRenderingContext2D;
 
 declare type WebGLObject = {};
 
+declare module "*.scss";
+
 interface Window {
 	OffscreenCanvas: OffscreenCanvas;
 }
