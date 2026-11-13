@@ -2,6 +2,7 @@ import { IAnalysis } from "./analysis";
 import { ICanvasCapture } from "./canvasCapture";
 import { IContextCapture } from "./contextCapture";
 import { State, ICommandCapture } from "./commandCapture";
+import { IBufferDataCapture } from "./bufferDataCapture";
 
 export interface ICapture {
     canvas: ICanvasCapture;
@@ -16,4 +17,5 @@ export interface ICapture {
     analyses: IAnalysis[];
     frameMemory: { [objectName: string]: number };
     memory: { [objectName: string]: { [second: number]: number } };
+    buffers?: { [id: number]: IBufferDataCapture };
 }

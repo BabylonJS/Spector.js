@@ -6,6 +6,7 @@ import { JSONImageItem } from "./JSONImageItem";
 import { JSONHelpItem } from "./JSONHelpItem";
 import { JSONVisualStateItem } from "./JSONVisualStateItem";
 import { JSONShaderSourceItem } from "./JSONShaderSourceItem";
+import { JSONBufferItem } from "./JSONBufferItem";
 import { IShaderCapture } from "../../../../shared/capture/programCapture";
 
 /**
@@ -49,6 +50,8 @@ export function JSONRenderTree({ items, onShaderSourceOpen }: JSONRenderTreeProp
                         );
                     case "visualState":
                         return <JSONVisualStateItem key={i} visualState={item.visualState} />;
+                    case "buffer":
+                        return <JSONBufferItem key={i} label={item.label} bufferId={item.bufferId} layout={item.layout} />;
                     default:
                         return null;
                 }

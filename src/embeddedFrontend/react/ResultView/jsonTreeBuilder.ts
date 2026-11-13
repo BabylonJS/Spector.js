@@ -1,7 +1,20 @@
 import { ICommandCapture, CommandCaptureStatus } from "../../../shared/capture/commandCapture";
+import { IBufferDataCapture } from "../../../shared/capture/bufferDataCapture";
 import { JSONRenderItem, IRawImagePixels } from "../shared/types";
 import { MDNCommandLinkHelper } from "../shared/mdnCommandLinkHelper";
 import { WebGLParameterNameHelper } from "../shared/webglParameterNameHelper";
+
+/** Captured buffers for the current command, plus the resolved index type. */
+interface IBufferTreeContext {
+    buffers: { [id: number]: IBufferDataCapture };
+    indexType?: string;
+}
+
+const INDEX_TYPE_NAMES: { [value: number]: string } = {
+    5121: "UNSIGNED_BYTE",
+    5123: "UNSIGNED_SHORT",
+    5125: "UNSIGNED_INT",
+};
 
 /**
  * Pure builders that turn captured GL state (init/end state, command detail,
@@ -34,6 +47,7 @@ function getJSONAsString(
     key: string,
     json: any,
     searchText: string,
+    bufferCtx?: IBufferTreeContext,
 ): string | null {
     if (json === null) { return "null"; }
     if (json === undefined) { return "undefined"; }
@@ -49,7 +63,7 @@ function getJSONAsString(
     if (json.length) {
         const arrayResult: string[] = [];
         for (let i = 0; i < json.length; i++) {
-            const resultItem = getJSONAsString(parentChildren, `${key}(${i.toFixed(0)})`, json[i], searchText);
+            const resultItem = getJSONAsString(parentChildren, `${key}(${i.toFixed(0)})`, json[i], searchText, bufferCtx);
             if (resultItem !== null) {
                 arrayResult.push(resultItem);
             }
@@ -71,10 +85,41 @@ function getJSONAsString(
     }
 
     if (typeof json === "object") {
-        buildJSONGroup(parentChildren, key, json, searchText);
+        buildJSONGroup(parentChildren, key, json, searchText, bufferCtx);
     }
 
     return null;
+}
+
+/** Emit a "View buffer" item when this object references a captured vertex/index buffer. */
+function appendBufferItem(parentChildren: JSONRenderItem[], json: any, bufferCtx: IBufferTreeContext): void {
+    const vertexTag = json.bufferBinding && json.bufferBinding.__SPECTOR_Object_TAG;
+    if (vertexTag && bufferCtx.buffers[vertexTag.id]) {
+        parentChildren.push({
+            type: "buffer",
+            label: json.name || "buffer",
+            bufferId: vertexTag.id,
+            layout: {
+                kind: "vertex",
+                componentType: json.arrayType,
+                components: json.arraySize,
+                stride: json.stride,
+                offset: json.offsetPointer,
+                normalized: json.normalized,
+            },
+        });
+        return;
+    }
+
+    const indexTag = json.arrayBuffer && json.arrayBuffer.__SPECTOR_Object_TAG;
+    if (indexTag && bufferCtx.buffers[indexTag.id]) {
+        parentChildren.push({
+            type: "buffer",
+            label: "element array",
+            bufferId: indexTag.id,
+            layout: { kind: "index", indexType: bufferCtx.indexType },
+        });
+    }
 }
 
 /** Non-premultiplied raw pixels for a given `visual` target, when captured (#183). */
@@ -99,9 +144,13 @@ function buildImageItems(parentChildren: JSONRenderItem[], json: any, value: any
     }
 }
 
-export function buildJSON(parentChildren: JSONRenderItem[], json: any, searchText: string): void {
+export function buildJSON(parentChildren: JSONRenderItem[], json: any, searchText: string, bufferCtx?: IBufferTreeContext): void {
     if (json.VisualState) {
         parentChildren.push({ type: "visualState", visualState: json.VisualState });
+    }
+
+    if (bufferCtx) {
+        appendBufferItem(parentChildren, json, bufferCtx);
     }
 
     for (const key in json) {
@@ -113,7 +162,7 @@ export function buildJSON(parentChildren: JSONRenderItem[], json: any, searchTex
         if (key === "visual") {
             buildImageItems(parentChildren, json, value);
         } else {
-            const result = getJSONAsString(parentChildren, key, value, searchText);
+            const result = getJSONAsString(parentChildren, key, value, searchText, bufferCtx);
             if (result === null || result === undefined) {
                 continue;
             } else if (toFilter(key, searchText) && toFilter(value, searchText)) {
@@ -134,14 +183,26 @@ export function buildJSONGroup(
     title: string,
     json: any,
     searchText: string,
+    bufferCtx?: IBufferTreeContext,
 ): void {
     if (!json) { return; }
 
     const children: JSONRenderItem[] = [];
-    buildJSON(children, json, searchText);
+    buildJSON(children, json, searchText, bufferCtx);
     if (children.length === 0) { return; }
 
     parentChildren.push({ type: "group", title, children });
+}
+
+/** Resolve the index type name of a drawElements call from its arguments. */
+function resolveIndexType(command: ICommandCapture): string | undefined {
+    const args = command.commandArguments as any;
+    if (!args || command.name.indexOf("Elements") < 0) {
+        return undefined;
+    }
+    const names = WebGLParameterNameHelper.getNames(command.name, args.length);
+    const typeIndex = names ? names.indexOf("type") : -1;
+    return typeIndex >= 0 ? INDEX_TYPE_NAMES[args[typeIndex]] : undefined;
 }
 
 // ─── Command detail builder ──────────────────────────────────────────────────
@@ -150,8 +211,10 @@ export function buildCommandDetail(
     command: ICommandCapture,
     visualState: any,
     resolvedStackTrace?: string[],
+    buffers?: { [id: number]: IBufferDataCapture },
 ): JSONRenderItem[] {
     const items: JSONRenderItem[] = [];
+    const bufferCtx = buffers ? { buffers, indexType: resolveIndexType(command) } : undefined;
 
     // Visual state thumbnail at top
     if (visualState) {
@@ -204,7 +267,7 @@ export function buildCommandDetail(
             continue;
         }
         if (typeof command[key] === "object") {
-            buildJSONGroup(items, key, command[key], "");
+            buildJSONGroup(items, key, command[key], "", bufferCtx);
         }
     }
 
